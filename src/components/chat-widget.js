@@ -124,7 +124,7 @@ export function mount() {
 
     // 3. Llamar a la IA (Gemini Vercel Backend)
     try {
-      const response = await fetch(api.chatEndpoint, {
+      const response = await fetch(featureFlags.api.chatEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

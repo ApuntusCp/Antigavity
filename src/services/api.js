@@ -2,7 +2,7 @@
  * Gran Colinos — API Service
  * Handles communication with Vercel Serverless Backend.
  */
-import { api } from '../config/brand.config.js';
+import { featureFlags } from '../config/brand.config.js';
 
 /**
  * Sends the order payload to the local Checkout API.
@@ -13,7 +13,7 @@ import { api } from '../config/brand.config.js';
  */
 export async function submitOrder(orderData) {
   try {
-    const response = await fetch(api.checkoutEndpoint, {
+    const response = await fetch(featureFlags.api.checkoutEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
