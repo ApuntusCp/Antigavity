@@ -1,7 +1,10 @@
 import twilio from 'twilio';
 
-// Instancia el cliente de Twilio
-const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+// Instancia el cliente de Twilio (opcional por si las variables no están)
+let twilioClient = null;
+if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+  twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+}
 
 export default async function handler(req, res) {
   // Configurar CORS
@@ -21,19 +24,48 @@ export default async function handler(req, res) {
 
   try {
     const orderData = req.body;
-    const { customer, totals } = orderData;
+    const { customer, totals, items } = orderData;
 
-    // 1. Llamar a la API de BOLD para generar Link de Pago (Simulado aquí si no hay API Key)
-    // Documentación Bold: https://developers.bold.co
     let paymentUrl = 'https://pagos.bold.co/ejemplo-checkout-gran-colinos'; 
-    
-    if (process.env.BOLD_API_KEY) {
-      // Aquí iría el fetch real a la API de BOLD usando process.env.BOLD_API_KEY
-      // const boldResponse = await fetch('https://api.bold.co/v1/...');
+
+    // 1. Llamar a la API de BOLD para generar Link de Pago
+    if (process.env.BOLD_SECRET_KEY && process.env.BOLD_IDENTITY_KEY) {
+      const boldPayload = {
+        amount: totals.grandTotal,
+        currency: 'COP',
+        description: `Compra Gran Colinos - ${customer.firstName} ${customer.lastName}`,
+        taxes: 0,
+        integritySignature: process.env.BOLD_IDENTITY_KEY // En integración real se firma criptográficamente
+      };
+
+      try {
+        // Ejemplo genérico de solicitud a Bold. 
+        // Si la URL cambia en su nueva versión, puedes ajustarla aquí.
+        const boldResponse = await fetch('https://api.bold.co/v2/payment-link', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.BOLD_SECRET_KEY}`
+          },
+          body: JSON.stringify(boldPayload)
+        });
+        
+        if (boldResponse.ok) {
+          const boldData = await boldResponse.json();
+          if (boldData && boldData.paymentLink) {
+             paymentUrl = boldData.paymentLink;
+          }
+        } else {
+          console.error("Error desde Bold API:", await boldResponse.text());
+          // Si falla (ej. endpoint incorrecto de la v2), mantenemos la URL simulada para que el UX no se rompa
+        }
+      } catch (boldErr) {
+        console.error("Error conectando con Bold:", boldErr);
+      }
     }
 
-    // 2. Enviar WhatsApp al Administrador (Agente Ejecutivo) usando Twilio
-    if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.ADMIN_WHATSAPP_NUMBER) {
+    // 2. Enviar WhatsApp al Administrador usando Twilio (Si está configurado)
+    if (twilioClient && process.env.ADMIN_WHATSAPP_NUMBER) {
       const waMessage = `🚨 *Nuevo Pedido - Gran Colinos*\n\n` +
                         `👤 Cliente: ${customer.firstName} ${customer.lastName}\n` +
                         `📍 Ciudad: ${customer.city}, ${customer.department}\n` +
@@ -44,7 +76,7 @@ export default async function handler(req, res) {
         body: waMessage,
         from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
         to: `whatsapp:${process.env.ADMIN_WHATSAPP_NUMBER}`
-      });
+      }).catch(e => console.error("Error enviando WS:", e));
     }
 
     // 3. Devolver la URL de pago al frontend

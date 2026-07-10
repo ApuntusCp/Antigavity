@@ -49,7 +49,7 @@ export const typography = {
 
 // ─── FEATURE FLAGS ──────────────────────────────────────────
 export const featureFlags = {
-  underConstruction: true,
+  underConstruction: false,
   cbdEnabled:       true,
   ageGateRequired:  true,
   ageMinimum:       18,
@@ -64,109 +64,63 @@ export const featureFlags = {
   },
 };
 
-// ─── PRODUCTS ───────────────────────────────────────────────
 export const products = [
   {
-    id: 'nano-cbd-60ml',
-    name: 'Gotas Nano CBD',
-    subtitle: '60mL — Absorción Rápida',
-    shortDescription: 'Tecnología de nanoemulsificación para una absorción hasta 5× más rápida. Bienestar natural que tu cuerpo agradece.',
-    description: `Nuestras Gotas Nano CBD utilizan tecnología de nanoemulsificación que reduce las partículas de CBD a escala nanométrica, permitiendo una absorción hasta 5 veces más rápida y eficiente que los aceites de CBD convencionales.\n\nCada gota está formulada con CBD de espectro completo, cultivado y procesado en Colombia bajo los más altos estándares de calidad. Producto con registro INVIMA.`,
-    ingredients: 'Aceite MCT (triglicéridos de cadena media), Extracto de CBD de espectro completo (cannabidiol), Emulsificante natural, Terpenos naturales.',
-    usage: 'Coloca 1–2 gotas bajo la lengua. Mantén durante 60 segundos antes de tragar. Usar 1–2 veces al día o según indicación. No exceder la dosis recomendada.',
-    warnings: 'Producto solo para mayores de 18 años. Consulta a tu médico antes de usar si estás embarazada, en lactancia o tomas medicamentos. Registro INVIMA vigente.',
+    id: 'CH-CBD-001',
+    name: 'Gotas Orgánicas GC',
+    subtitle: 'Bienestar Natural',
+    shortDescription: 'Gotas de CBD orgánicas para tu bienestar diario.',
+    description: 'Nuestras Gotas Orgánicas GC están formuladas con los mejores ingredientes naturales para brindarte relajación y equilibrio en tu día a día. Perfectas para aliviar el estrés y mejorar la calidad del sueño.',
+    ingredients: 'Extracto puro orgánico, aceites esenciales naturales.',
+    usage: 'Aplicar 2-3 gotas debajo de la lengua, esperar 60 segundos y tragar. Usar diariamente para mejores resultados.',
+    warnings: 'Mantener fuera del alcance de los niños. Consultar a su médico si está en periodo de gestación.',
     category: 'cbd',
-    price: 167900,
-    salePrice: 157700,
+    price: 193900,
+    salePrice: 169700,
     currency: 'COP',
     requiresAgeVerification: true,
     badge: 'Más Vendido',
     badgeType: 'primary',
-    volume: '60mL',
     inStock: true,
     images: {
       main: '/products/nano-cbd/main.png',
       gallery: [
-        '/products/nano-cbd/main.png',
-        '/products/nano-cbd/lifestyle-1.png',
-        '/products/nano-cbd/lifestyle-2.png',
-        '/products/nano-cbd/detail-1.png',
-        '/products/nano-cbd/detail-2.png',
+        '/products/nano-cbd/main.png'
       ],
     },
     benefits: [
-      { icon: '⚡', text: 'Absorción 5× más rápida' },
-      { icon: '🌿', text: '100% Natural' },
-      { icon: '🇨🇴', text: 'Hecho en Colombia' },
-      { icon: '✅', text: 'Registro INVIMA' },
+      { icon: '🌿', text: '100% Orgánico' },
+      { icon: '🇨🇴', text: 'Hecho en Colombia' }
     ],
   },
   {
-    id: 'apitoxina-relajante',
+    id: 'APX-GC-001',
     name: 'Apitoxina Relajante Muscular',
-    subtitle: 'Efecto Frío-Calor — 100% Natural',
-    shortDescription: 'Relajante muscular con veneno de abeja (apitoxina). Efecto frío-calor que alivia tensión muscular y estrés de forma natural.',
-    description: `La Apitoxina Relajante Muscular de Gran Colinos combina el poder del veneno de abeja con ingredientes naturales para proporcionar un alivio efectivo contra la tensión muscular, el dolor articular y el estrés.\n\nSu exclusiva fórmula de efecto frío-calor penetra profundamente en el músculo, proporcionando primero una sensación refrescante que calma y luego un calor terapéutico que relaja. 100% natural, sin químicos agresivos.`,
-    ingredients: 'Apitoxina (veneno de abeja purificado), Extracto de capsaicina (chile), Mentol natural, Alcanfor, Aceite de eucalipto, Base gel natural.',
-    usage: 'Aplicar una cantidad generosa sobre la zona afectada. Masajear con movimientos circulares hasta su completa absorción. Usar 2–3 veces al día. Solo para uso externo.',
-    warnings: 'No aplicar sobre heridas abiertas ni mucosas. Evitar contacto con los ojos. Realizar prueba de sensibilidad antes del primer uso. Personas alérgicas a picaduras de abeja deben consultar a su médico.',
+    subtitle: 'Alivio Profundo',
+    shortDescription: 'Relajante muscular natural a base de veneno de abeja.',
+    description: 'Poderoso relajante muscular formulado con Apitoxina (veneno de abeja) que actúa directamente sobre la tensión y el dolor. Ideal para deportistas o personas con dolores articulares.',
+    ingredients: 'Apitoxina natural, extractos herbales relajantes.',
+    usage: 'Aplicar sobre la zona de dolor con un suave masaje hasta que se absorba completamente.',
+    warnings: 'No usar si es alérgico a las picaduras de abeja. Solo para uso externo.',
     category: 'bienestar',
-    price: 70000,
-    salePrice: 60000,
+    price: 55700,
+    salePrice: 32900,
     currency: 'COP',
     requiresAgeVerification: false,
-    badge: 'Natural',
-    badgeType: 'success',
+    badge: 'Oferta',
+    badgeType: 'secondary',
     inStock: true,
     images: {
       main: '/products/apitoxina/main.png',
       gallery: [
-        '/products/apitoxina/main.png',
-        '/products/apitoxina/detail-1.png',
-        '/products/apitoxina/lifestyle-1.png',
-        '/products/apitoxina/lifestyle-2.png',
+        '/products/apitoxina/main.png'
       ],
     },
     benefits: [
-      { icon: '🐝', text: 'Apitoxina natural' },
-      { icon: '❄️', text: 'Efecto frío-calor' },
-      { icon: '💪', text: 'Alivio muscular profundo' },
-      { icon: '🌿', text: '100% Natural' },
+      { icon: '🐝', text: 'Apitoxina pura' },
+      { icon: '💪', text: 'Alivio muscular' }
     ],
-  },
-  {
-    id: 'gomas-picante',
-    name: 'Gomas Gran Colinos',
-    subtitle: 'Picante del Bueno — Dulces, Picosas y Brutas',
-    shortDescription: 'Gomitas con un toque picante irresistible. Dulces, picosas y brutas. ¡El snack colombiano que no puedes parar de comer!',
-    description: `Las Gomas Gran Colinos son el snack que rompe con lo convencional: gomitas cubiertas de una mezcla secreta de chile, limón y especias que las hacen dulces, picosas y absolutamente adictivas.\n\nHechas en Colombia con ingredientes de primera calidad, cada bolsa es una explosión de sabor que no vas a poder parar de comer. Perfectas para compartir (si es que puedes).`,
-    ingredients: 'Azúcar, Jarabe de glucosa, Gelatina, Mezcla de chiles naturales, Ácido cítrico, Sal, Limón deshidratado, Colorantes naturales, Aromas naturales.',
-    usage: 'Abrir y disfrutar. Compartir es opcional. Se recomienda tener agua cerca para los valientes.',
-    warnings: 'Contiene azúcar. Puede contener trazas de frutos secos. Producto picante, consumir con moderación si eres sensible al picante.',
-    category: 'snacks',
-    price: 10700,
-    salePrice: 6460,
-    currency: 'COP',
-    requiresAgeVerification: false,
-    badge: '40% OFF',
-    badgeType: 'secondary',
-    inStock: true,
-    images: {
-      main: '/products/gomas/main.png',
-      gallery: [
-        '/products/gomas/main.png',
-        '/products/gomas/detail-1.png',
-        '/products/gomas/detail-2.png',
-        '/products/gomas/detail-3.png',
-      ],
-    },
-    benefits: [
-      { icon: '🌶️', text: 'Picante del bueno' },
-      { icon: '🇨🇴', text: 'Hecho en Colombia' },
-      { icon: '🎉', text: 'Perfecto para compartir' },
-      { icon: '🔥', text: 'Sabor único' },
-    ],
-  },
+  }
 ];
 
 // ─── CATEGORIES ─────────────────────────────────────────────
