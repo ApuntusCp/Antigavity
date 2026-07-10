@@ -49,6 +49,7 @@ export const typography = {
 
 // ─── FEATURE FLAGS ──────────────────────────────────────────
 export const featureFlags = {
+  underConstruction: true,
   cbdEnabled:       true,
   ageGateRequired:  true,
   ageMinimum:       18,
