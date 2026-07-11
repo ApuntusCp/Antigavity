@@ -221,6 +221,12 @@ if ('serviceWorker' in navigator) {
 
 // ─── Initialize ─────────────────────────────────────────────
 async function init() {
+  // Clean up legacy hash URLs (e.g. grancolinos.com/#/catalogo -> grancolinos.com/catalogo)
+  if (window.location.hash && window.location.hash.startsWith('#/')) {
+    const newPath = window.location.hash.slice(1);
+    history.replaceState(null, '', newPath);
+  }
+
   // Always render the app structure immediately
   renderApp();
   

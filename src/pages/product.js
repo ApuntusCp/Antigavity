@@ -152,11 +152,11 @@ export async function mount(productId) {
   const product = getProductById(productId);
   if (!product) return;
 
-  // Age gate for CBD products
   if (product.requiresAgeVerification) {
     const verified = await AgeGate.requireVerification();
     if (!verified) {
-      window.location.hash = '#/';
+      history.pushState(null, '', '/');
+      window.dispatchEvent(new Event('popstate'));
       return;
     }
   }

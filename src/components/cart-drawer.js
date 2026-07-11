@@ -136,7 +136,8 @@ export function mount() {
     if (checkoutBtn) {
       checkoutBtn.addEventListener('click', () => {
         store.toggleCart(false);
-        window.location.hash = '#/checkout';
+        history.pushState(null, '', '/checkout');
+        window.dispatchEvent(new Event('popstate'));
       });
     }
   }
