@@ -1,5 +1,6 @@
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getFirestore, collection, getDocs, query, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAH980UahKAMSzLpnSeSYojJgeeMhE40yU",
@@ -10,9 +11,10 @@ const firebaseConfig = {
   appId: "1:1010400930261:web:aa68fa2eb9515d265d355c"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Initialize Firebase (prevent double-initialization in Next.js HMR)
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
 
 // Fetch products from Firebase Firestore
 export async function fetchProducts() {
@@ -29,7 +31,6 @@ export async function fetchProducts() {
     });
   } catch (error) {
     console.error("Error fetching products from Firebase:", error);
-    // Return empty array or throw error
     return [];
   }
 }

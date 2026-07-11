@@ -1,24 +1,23 @@
 {
-  "name": "grancolinos-store",
+  "name": "temp-app",
+  "version": "0.1.0",
   "private": true,
-  "version": "1.0.0",
-  "type": "module",
-  "description": "Gran Colinos — Tienda online de productos naturales premium colombianos",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "deploy": "npm run build && node scripts/deploy.js"
-  },
-  "devDependencies": {
-    "basic-ftp": "^6.0.1",
-    "terser": "^5.49.0",
-    "vite": "^6.0.0"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
-    "dotenv": "^17.4.2",
     "firebase": "^12.16.0",
-    "twilio": "^6.0.2"
+    "next": "16.2.10",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.10",
+    "tailwindcss": "^4"
   }
 }
