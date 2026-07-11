@@ -17,11 +17,7 @@ import * as ProductPage from './pages/product.js';
 import * as CheckoutPage from './pages/checkout.js';
 import { copy, featureFlags, site } from './config/brand.config.js';
 
-// Setup routing
-router.addRoute('/', HomePage.render, HomePage.mount);
-router.addRoute('/productos', CatalogPage.render, CatalogPage.mount);
-router.addRoute('/producto/:id', ProductPage.render, ProductPage.mount);
-router.addRoute('/checkout', CheckoutPage.render, CheckoutPage.mount);
+// Setup routing removed, handled at the bottom of the file
 
 function renderUnderConstruction() {
   const app = document.getElementById('app');
