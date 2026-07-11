@@ -141,7 +141,7 @@ export const site = {
   currency:       'COP',
   currencySymbol: '$',
   locale:         'es-CO',
-  whatsapp:       '',
+  whatsapp:       '573027697935',
   instagram:      '',
   email:          '',
 };
