@@ -19,21 +19,21 @@ export function render() {
           <div>
             <h4>${copy.footer.quickLinks}</h4>
             <ul class="footer__links">
-              <li><a href="#/"><span class="icon-wrapper">${icons.Home()}</span> Inicio</a></li>
-              <li><a href="#/catalogo"><span class="icon-wrapper">${icons.Sparkles()}</span> Productos</a></li>
-              <li><a href="#/nosotros"><span class="icon-wrapper">${icons.Heart()}</span> Nosotros</a></li>
+              <li><a href="/"><span class="icon-wrapper">${icons.Home()}</span> Inicio</a></li>
+              <li><a href="/catalogo"><span class="icon-wrapper">${icons.Sparkles()}</span> Productos</a></li>
+              <li><a href="/nosotros"><span class="icon-wrapper">${icons.Heart()}</span> Nosotros</a></li>
             </ul>
           </div>
           <div>
             <h4>${copy.footer.legal}</h4>
             <ul class="footer__links">
               <li>
-                <a href="#/politica-devoluciones" class="footer__return-policy" id="footer-return-link">
+                <a href="/politica-devoluciones" class="footer__return-policy" id="footer-return-link">
                   <span class="icon-wrapper">${icons.Clipboard()}</span> ${copy.returns.title}
                 </a>
               </li>
-              <li><a href="#/terminos"><span class="icon-wrapper">${icons.FileText()}</span> Términos y condiciones</a></li>
-              <li><a href="#/privacidad"><span class="icon-wrapper">${icons.Shield()}</span> Política de privacidad</a></li>
+              <li><a href="/terminos"><span class="icon-wrapper">${icons.FileText()}</span> Términos y condiciones</a></li>
+              <li><a href="/privacidad"><span class="icon-wrapper">${icons.Shield()}</span> Política de privacidad</a></li>
             </ul>
           </div>
         </div>

@@ -13,7 +13,7 @@ export function render() {
       <section class="section" style="padding-top: calc(var(--header-h) + var(--space-3xl)); text-align: center;">
         <div class="container">
           <h1 style="margin-bottom: var(--space-md);">Tu carrito está vacío</h1>
-          <a href="#/catalogo" class="btn btn--primary">Volver a la tienda</a>
+          <a href="/catalogo" class="btn btn--primary">Volver a la tienda</a>
         </div>
       </section>
     `;

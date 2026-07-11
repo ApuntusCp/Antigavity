@@ -28,7 +28,7 @@ export function render() {
             ${copy.hero.subtitle}
           </p>
           <div class="hero__actions animate-fade-in stagger-3">
-            <a href="#/catalogo" class="btn btn--primary btn--lg" id="hero-cta">
+            <a href="/catalogo" class="btn btn--primary btn--lg" id="hero-cta">
               ${copy.hero.cta}
             </a>
           </div>

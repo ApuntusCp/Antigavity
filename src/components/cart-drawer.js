@@ -34,7 +34,7 @@ function renderCartItems() {
         <div class="cart-drawer__empty-icon">${icons.Cart('', 48)}</div>
         <h3>${copy.cart.empty}</h3>
         <p>${copy.cart.emptySubtitle}</p>
-        <a href="#/catalogo" class="btn btn--primary mt-md" id="cart-shop-link">${copy.cart.continueShopping}</a>
+        <a href="/catalogo" class="btn btn--primary mt-md" id="cart-shop-link">${copy.cart.continueShopping}</a>
       </div>
     `;
   }

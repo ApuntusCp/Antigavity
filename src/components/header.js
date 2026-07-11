@@ -10,15 +10,15 @@ export function render() {
   return `
     <header class="header" id="site-header">
       <div class="header__inner">
-        <a href="#/" class="header__logo" id="header-logo" aria-label="${site.name} - Inicio">
+        <a href="/" class="header__logo" id="header-logo" aria-label="${site.name} - Inicio">
           <img src="/logo-principal.png" alt="${site.name}" style="height: 40px; width: auto;" />
         </a>
 
         <nav class="header__nav" id="header-nav" aria-label="Navegación principal">
-          <a href="#/">Inicio</a>
-          <a href="#/catalogo">Productos</a>
-          <a href="#/nosotros">Nosotros</a>
-          <a href="#/politica-devoluciones">Devoluciones</a>
+          <a href="/">Inicio</a>
+          <a href="/catalogo">Productos</a>
+          <a href="/nosotros">Nosotros</a>
+          <a href="/politica-devoluciones">Devoluciones</a>
         </nav>
 
         <div class="header__actions">
@@ -39,10 +39,10 @@ export function render() {
       <div class="mobile-nav__panel">
         <button class="mobile-nav__close" id="mobile-nav-close" aria-label="Cerrar menú">${icons.Close()}</button>
         <div class="mobile-nav__links">
-          <a href="#/" class="mobile-nav__link"><span class="icon-wrapper">${icons.Home()}</span> Inicio</a>
-          <a href="#/catalogo" class="mobile-nav__link"><span class="icon-wrapper">${icons.Sparkles()}</span> Productos</a>
-          <a href="#/nosotros" class="mobile-nav__link"><span class="icon-wrapper">${icons.Heart()}</span> Nosotros</a>
-          <a href="#/politica-devoluciones" class="mobile-nav__link"><span class="icon-wrapper">${icons.Clipboard()}</span> Devoluciones</a>
+          <a href="/" class="mobile-nav__link"><span class="icon-wrapper">${icons.Home()}</span> Inicio</a>
+          <a href="/catalogo" class="mobile-nav__link"><span class="icon-wrapper">${icons.Sparkles()}</span> Productos</a>
+          <a href="/nosotros" class="mobile-nav__link"><span class="icon-wrapper">${icons.Heart()}</span> Nosotros</a>
+          <a href="/politica-devoluciones" class="mobile-nav__link"><span class="icon-wrapper">${icons.Clipboard()}</span> Devoluciones</a>
         </div>
       </div>
     </div>

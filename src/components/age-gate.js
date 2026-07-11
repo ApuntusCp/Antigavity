@@ -26,7 +26,7 @@ export function render() {
         </div>
         <div class="age-gate__denied" id="age-gate-denied" style="display:none">
           <p>${copy.ageGate.denied}</p>
-          <a href="#/" class="btn btn--outline mt-md">Volver al inicio</a>
+          <a href="/" class="btn btn--outline mt-md">Volver al inicio</a>
         </div>
       </div>
     </div>

@@ -18,8 +18,8 @@ export function render(productId) {
     <section class="product-detail section">
       <div class="container">
         <div class="product-detail__breadcrumb">
-          <a href="#/">Inicio</a> <span>/</span>
-          <a href="#/catalogo">${category?.name || 'Productos'}</a> <span>/</span>
+          <a href="/">Inicio</a> <span>/</span>
+          <a href="/catalogo">${category?.name || 'Productos'}</a> <span>/</span>
           <span>${product.name}</span>
         </div>
 
@@ -142,7 +142,7 @@ function renderNotFound() {
         <h1 style="font-size: 3rem; margin-bottom: var(--space-md);">${icons.Close('', 48)}</h1>
         <h2>Producto no encontrado</h2>
         <p class="text-muted mb-xl">Lo sentimos, no pudimos encontrar este producto.</p>
-        <a href="#/catalogo" class="btn btn--primary">Ver catálogo</a>
+        <a href="/catalogo" class="btn btn--primary">Ver catálogo</a>
       </div>
     </section>
   `;

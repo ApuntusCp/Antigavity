@@ -32,7 +32,7 @@ export function render(product) {
       <div class="product-card__body">
         <div class="product-card__category">${category?.icon || ''} ${category?.name || ''}</div>
         <h3 class="product-card__name">
-          <a href="#/producto/${product.id}">${product.name}</a>
+          <a href="/producto/${product.id}">${product.name}</a>
         </h3>
         <p class="product-card__subtitle">${product.subtitle}</p>
         <div class="product-card__prices">

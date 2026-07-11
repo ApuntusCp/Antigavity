@@ -71,12 +71,19 @@ function renderApp() {
   ChatWidget.mount();
   Footer.mount();
   setupToast();
-  
-  // Initialize router
-  router.init('main-content');
 }
 
 // ─── Toast ──────────────────────────────────────────────────
+function updateActiveLinks() {
+  const path = window.location.pathname;
+  document.querySelectorAll('nav a').forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === path) {
+      link.classList.add('active');
+    }
+  });
+}
+
 function setupToast() {
   const toast = document.getElementById('toast');
   store.subscribe(state => {
@@ -90,41 +97,60 @@ function setupToast() {
 }
 
 // ─── Page Renderer ──────────────────────────────────────────
-function renderPage(html) {
-  const main = document.getElementById('main-content');
-  main.innerHTML = html;
+function handleRoute() {
+  const path = window.location.pathname;
+  const app = document.getElementById('main-content');
+  if (!app) return;
+  window.scrollTo(0, 0);
+
+  if (featureFlags.underConstruction) {
+    return renderUnderConstruction();
+  }
+
+  if (path === '/') {
+    app.innerHTML = HomePage.render();
+    HomePage.mount();
+  } else if (path === '/catalogo') {
+    app.innerHTML = CatalogPage.render();
+    CatalogPage.mount();
+  } else if (path.startsWith('/producto/')) {
+    const productId = path.split('/')[2];
+    app.innerHTML = ProductPage.render(productId);
+    ProductPage.mount(productId);
+  } else if (path === '/checkout') {
+    app.innerHTML = CheckoutPage.render();
+    CheckoutPage.mount();
+  } else if (path === '/politica-devoluciones' || path === '/terminos' || path === '/privacidad' || path === '/nosotros') {
+    app.innerHTML = renderAbout();
+  } else {
+    app.innerHTML = `
+      <div class="container text-center" style="padding: 120px 0; min-height: 50vh;">
+        <h1 style="font-size: 3rem; margin-bottom: 1rem;">404</h1>
+        <p>Página no encontrada</p>
+        <a href="/" class="btn btn--primary" style="margin-top: 2rem;">Volver al inicio</a>
+      </div>
+    `;
+  }
 }
 
-// ─── Routes ─────────────────────────────────────────────────
-router
-  .add('/', () => {
-    renderPage(HomePage.render());
-    HomePage.mount();
-  })
-  .add('/catalogo', () => {
-    renderPage(CatalogPage.render());
-    CatalogPage.mount();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  })
-  .add('/producto/:id', ({ params }) => {
-    renderPage(ProductPage.render(params.id));
-    ProductPage.mount(params.id);
-  })
-  .add('/checkout', () => {
-    import('./pages/checkout.js').then(CheckoutPage => {
-      renderPage(CheckoutPage.render());
-      CheckoutPage.mount();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  })
-  .add('/politica-devoluciones', () => {
-    renderPage(renderReturnPolicy());
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  })
-  .add('/nosotros', () => {
-    renderPage(renderAbout());
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+// Intercept clicks to prevent full page reload
+document.addEventListener('click', e => {
+  const link = e.target.closest('a');
+  if (link && link.getAttribute('href') && link.getAttribute('href').startsWith('/')) {
+    // Check if it is an external link
+    if (link.getAttribute('target') === '_blank') return;
+    e.preventDefault();
+    history.pushState(null, '', link.getAttribute('href'));
+    handleRoute();
+    updateActiveLinks();
+  }
+});
+
+// Setup routing
+window.addEventListener('popstate', () => {
+  handleRoute();
+  updateActiveLinks();
+});
 
 // ─── Static Pages ───────────────────────────────────────────
 function renderReturnPolicy() {
@@ -177,7 +203,7 @@ function renderAbout() {
           Sin complicaciones. Sin letra pequeña. Porque creemos que la confianza se gana, no se exige.
         </p>
         <div style="margin-top: var(--space-2xl); text-align: center;">
-          <a href="#/catalogo" class="btn btn--primary btn--lg">Conoce nuestros productos</a>
+          <a href="/catalogo" class="btn btn--primary btn--lg">Conoce nuestros productos</a>
         </div>
       </div>
     </section>
@@ -195,9 +221,20 @@ if ('serviceWorker' in navigator) {
 
 // ─── Initialize ─────────────────────────────────────────────
 async function init() {
-  const fetchedProducts = await fetchProducts();
-  setProducts(fetchedProducts);
+  // Always render the app structure immediately
   renderApp();
+  
+  // Fetch products asynchronously in the background
+  try {
+    const fetchedProducts = await fetchProducts();
+    if (fetchedProducts && fetchedProducts.length > 0) {
+      setProducts(fetchedProducts);
+      // Re-render the current view so new products show up
+      handleRoute();
+    }
+  } catch (err) {
+    console.error("Error init fetch products:", err);
+  }
 }
 
 init();

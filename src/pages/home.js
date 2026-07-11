@@ -58,7 +58,7 @@ export function render() {
         </div>
         ${ProductCard.renderGrid(products)}
         <div class="text-center mt-md" style="margin-top: var(--space-2xl);">
-          <a href="#/catalogo" class="btn btn--outline btn--lg">Ver todo el catálogo →</a>
+          <a href="/catalogo" class="btn btn--outline btn--lg">Ver todo el catálogo →</a>
         </div>
       </div>
     </section>
@@ -111,7 +111,7 @@ export function render() {
       <div class="container">
         <h2 class="animate-fade-in" style="font-size: var(--fs-h1); margin-bottom: var(--space-md); color: #fff;">¿Listo para probar lo natural?</h2>
         <p class="animate-fade-in stagger-1" style="font-size: 1.125rem; opacity: 0.85; margin-bottom: var(--space-xl); max-width: 500px; margin-inline: auto;">Dale a tu cuerpo lo que merece. Productos colombianos, naturales y efectivos.</p>
-        <a href="#/catalogo" class="btn btn--secondary btn--lg animate-fade-in stagger-2" style="display:inline-flex; align-items:center; gap:0.5rem; justify-content:center;">Explorar productos ${icons.Leaf('', 20)}</a>
+        <a href="/catalogo" class="btn btn--secondary btn--lg animate-fade-in stagger-2" style="display:inline-flex; align-items:center; gap:0.5rem; justify-content:center;">Explorar productos ${icons.Leaf('', 20)}</a>
       </div>
     </section>
   `;
