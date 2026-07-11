@@ -2,6 +2,7 @@
  * Gran Colinos — Hero Component
  */
 import { copy } from '../config/brand.config.js';
+import { icons } from './icons.js';
 
 export function render() {
   return `
@@ -15,8 +16,8 @@ export function render() {
       </div>
       <div class="container">
         <div class="hero__content">
-          <div class="hero__badge animate-fade-in">
-            <span>🇨🇴</span>
+          <div class="hero__badge animate-fade-in" style="display:flex; align-items:center; gap:8px;">
+            <span>${icons.MapPin('', 16)}</span>
             <span>Productos 100% colombianos</span>
           </div>
           <h1 class="hero__title animate-fade-in stagger-1">
@@ -33,9 +34,9 @@ export function render() {
           </div>
         </div>
       </div>
-      <div class="hero__scroll-indicator" aria-hidden="true">
+      <div class="hero__scroll-indicator" aria-hidden="true" style="display:flex; flex-direction:column; align-items:center;">
         <span>Desliza</span>
-        <span>↓</span>
+        <span>${icons.ChevronDown('', 20)}</span>
       </div>
     </section>
   `;

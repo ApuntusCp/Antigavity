@@ -4,14 +4,14 @@
 import { site } from '../config/brand.config.js';
 import { store } from '../utils/store.js';
 import { router } from '../utils/router.js';
+import { icons } from './icons.js';
 
 export function render() {
   return `
     <header class="header" id="site-header">
       <div class="header__inner">
         <a href="#/" class="header__logo" id="header-logo" aria-label="${site.name} - Inicio">
-          <span>🌿</span>
-          <span>${site.name}</span>
+          <img src="/logo-principal.png" alt="${site.name}" style="height: 40px; width: auto;" />
         </a>
 
         <nav class="header__nav" id="header-nav" aria-label="Navegación principal">
@@ -23,7 +23,7 @@ export function render() {
 
         <div class="header__actions">
           <button class="header__cart-btn" id="header-cart-btn" aria-label="Ver carrito">
-            🛒
+            ${icons.Cart('header-cart-icon')}
             <span class="header__cart-count" id="header-cart-count">0</span>
           </button>
           <button class="header__menu-toggle" id="header-menu-toggle" aria-label="Abrir menú">
@@ -37,12 +37,12 @@ export function render() {
     <div class="mobile-nav" id="mobile-nav">
       <div class="mobile-nav__overlay" id="mobile-nav-overlay"></div>
       <div class="mobile-nav__panel">
-        <button class="mobile-nav__close" id="mobile-nav-close" aria-label="Cerrar menú">✕</button>
+        <button class="mobile-nav__close" id="mobile-nav-close" aria-label="Cerrar menú">${icons.Close()}</button>
         <div class="mobile-nav__links">
-          <a href="#/" class="mobile-nav__link">🏠 Inicio</a>
-          <a href="#/catalogo" class="mobile-nav__link">✨ Productos</a>
-          <a href="#/nosotros" class="mobile-nav__link">💚 Nosotros</a>
-          <a href="#/politica-devoluciones" class="mobile-nav__link">📋 Devoluciones</a>
+          <a href="#/" class="mobile-nav__link"><span class="icon-wrapper">${icons.Home()}</span> Inicio</a>
+          <a href="#/catalogo" class="mobile-nav__link"><span class="icon-wrapper">${icons.Sparkles()}</span> Productos</a>
+          <a href="#/nosotros" class="mobile-nav__link"><span class="icon-wrapper">${icons.Heart()}</span> Nosotros</a>
+          <a href="#/politica-devoluciones" class="mobile-nav__link"><span class="icon-wrapper">${icons.Clipboard()}</span> Devoluciones</a>
         </div>
       </div>
     </div>

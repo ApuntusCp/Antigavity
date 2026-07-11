@@ -3,7 +3,7 @@
  * Cache-first for static assets, network-first for dynamic data.
  */
 
-const CACHE_NAME = 'grancolinos-v1';
+const CACHE_NAME = 'grancolinos-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

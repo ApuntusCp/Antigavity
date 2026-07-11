@@ -3,6 +3,7 @@
  */
 import { getProductById, formatPrice, getDiscountPercent, categories, copy, shipping } from '../config/brand.config.js';
 import { store } from '../utils/store.js';
+import { icons } from '../components/icons.js';
 import * as AgeGate from '../components/age-gate.js';
 
 export function render(productId) {
@@ -78,17 +79,23 @@ export function render(productId) {
               </button>
             </div>
 
-            <!-- Shipping info -->
-            <div style="display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-md); background: var(--c-bg); border-radius: var(--radius-md); font-size: var(--fs-small); color: var(--c-text-secondary);">
-              <span>🚚</span>
-              <span>${shipping.disclaimer}: ${shipping.estimatedDays.min}–${shipping.estimatedDays.max} días hábiles</span>
+            <!-- Shipping/Return info -->
+            <div class="product-benefits">
+              <div class="benefit-item">
+                <span style="display:inline-flex; align-items:center;">${icons.Truck('', 24)}</span>
+                <div>
+                  <strong>${shipping.disclaimer}</strong>
+                  <p>${shipping.estimatedDays.min}–${shipping.estimatedDays.max} días hábiles</p>
+                </div>
+              </div>
+              <div class="benefit-item">
+                <span style="display:inline-flex; align-items:center;">${icons.Clipboard('', 24)}</span>
+                <div>
+                  <strong>${copy.returns.title}</strong>
+                  <p>${copy.returns.summary}</p>
+                </div>
+              </div>
             </div>
-
-            <!-- Return Policy (Phase 7: visible from product page) -->
-            <a href="#/politica-devoluciones" class="product-detail__return-policy">
-              <span>📋</span>
-              <span><strong>${copy.returns.title}:</strong> ${copy.returns.summary}</span>
-            </a>
 
             <!-- Tabs -->
             <div class="product-detail__tabs">
@@ -131,8 +138,8 @@ export function render(productId) {
 function renderNotFound() {
   return `
     <section class="section" style="padding-top: calc(var(--header-h) + var(--space-3xl)); text-align: center;">
-      <div class="container">
-        <h1 style="font-size: 3rem; margin-bottom: var(--space-md);">😕</h1>
+      <div class="container text-center" style="padding-block: var(--space-3xl);">
+        <h1 style="font-size: 3rem; margin-bottom: var(--space-md);">${icons.Close('', 48)}</h1>
         <h2>Producto no encontrado</h2>
         <p class="text-muted mb-xl">Lo sentimos, no pudimos encontrar este producto.</p>
         <a href="#/catalogo" class="btn btn--primary">Ver catálogo</a>
@@ -171,7 +178,7 @@ export async function mount(productId) {
   // Add to cart
   addBtn.addEventListener('click', () => {
     store.addToCart(product.id, qty);
-    store.showToast(`${product.name} agregado al carrito 🛒`);
+    store.showToast(`${product.name} agregado al carrito`);
     addBtn.textContent = '¡Agregado! ✓';
     addBtn.style.background = 'var(--c-success)';
     setTimeout(() => {

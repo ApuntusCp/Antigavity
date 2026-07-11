@@ -15,7 +15,9 @@ import * as HomePage from './pages/home.js';
 import * as CatalogPage from './pages/catalog.js';
 import * as ProductPage from './pages/product.js';
 import * as CheckoutPage from './pages/checkout.js';
-import { copy, featureFlags, site } from './config/brand.config.js';
+import { copy, featureFlags, site, setProducts } from './config/brand.config.js';
+import { fetchProducts } from './utils/firebase.js';
+import { icons } from './components/icons.js';
 
 // Setup routing removed, handled at the bottom of the file
 
@@ -23,7 +25,7 @@ function renderUnderConstruction() {
   const app = document.getElementById('app');
   app.innerHTML = `
     <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: var(--bg); text-align: center; padding: 2rem;">
-      <h1 style="font-family: var(--font-heading); color: var(--primary); font-size: 3rem; margin-bottom: 1rem;">Estamos cultivando algo increíble 🌱</h1>
+      <h1 style="font-family: var(--font-heading); color: var(--primary); font-size: 3rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">Estamos cultivando algo increíble ${icons.Sprout('', 40)}</h1>
       <p style="font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; line-height: 1.6; margin-bottom: 2rem;">
         La tienda oficial de ${site.name} estará disponible muy pronto. Estamos terminando de preparar los mejores productos naturales para ti.
       </p>
@@ -175,7 +177,7 @@ function renderAbout() {
           Sin complicaciones. Sin letra pequeña. Porque creemos que la confianza se gana, no se exige.
         </p>
         <div style="margin-top: var(--space-2xl); text-align: center;">
-          <a href="#/catalogo" class="btn btn--primary btn--lg">Conoce nuestros productos 🌿</a>
+          <a href="#/catalogo" class="btn btn--primary btn--lg">Conoce nuestros productos</a>
         </div>
       </div>
     </section>
@@ -192,4 +194,10 @@ if ('serviceWorker' in navigator) {
 }
 
 // ─── Initialize ─────────────────────────────────────────────
-renderApp();
+async function init() {
+  const fetchedProducts = await fetchProducts();
+  setProducts(fetchedProducts);
+  renderApp();
+}
+
+init();

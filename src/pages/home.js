@@ -4,6 +4,7 @@
 import { products, copy, shipping, formatPrice } from '../config/brand.config.js';
 import * as Hero from '../components/hero.js';
 import * as ProductCard from '../components/product-card.js';
+import { icons } from '../components/icons.js';
 
 export function render() {
   return `
@@ -14,28 +15,28 @@ export function render() {
       <div class="container">
         <div class="features-strip">
           <div class="feature-item animate-fade-in">
-            <div class="feature-item__icon">🌿</div>
+            <div class="feature-item__icon">${icons.Leaf('', 32)}</div>
             <div class="feature-item__text">
               <h4>100% Natural</h4>
               <p>Sin químicos ni aditivos artificiales</p>
             </div>
           </div>
           <div class="feature-item animate-fade-in stagger-1">
-            <div class="feature-item__icon">🇨🇴</div>
+            <div class="feature-item__icon">${icons.MapPin('', 32)}</div>
             <div class="feature-item__text">
               <h4>Hecho en Colombia</h4>
               <p>Con los mejores ingredientes locales</p>
             </div>
           </div>
           <div class="feature-item animate-fade-in stagger-2">
-            <div class="feature-item__icon">🚚</div>
+            <div class="feature-item__icon">${icons.Truck('', 32)}</div>
             <div class="feature-item__text">
               <h4>Envío gratis</h4>
               <p>Desde ${formatPrice(shipping.freeShippingThreshold)}</p>
             </div>
           </div>
           <div class="feature-item animate-fade-in stagger-3">
-            <div class="feature-item__icon">✅</div>
+            <div class="feature-item__icon">${icons.Check('', 32)}</div>
             <div class="feature-item__text">
               <h4>Registro INVIMA</h4>
               <p>Calidad garantizada y certificada</p>
@@ -49,8 +50,8 @@ export function render() {
     <section class="section" id="home-products" style="background: var(--c-bg-alt);">
       <div class="container">
         <div class="section-header">
-          <div class="section-header__label">
-            <span>✨</span> Nuestros productos
+          <div class="section-header__label" style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+            <span>${icons.Sparkles('', 20)}</span> Nuestros productos
           </div>
           <h2 class="section-header__title">Lo mejor de la tierra colombiana</h2>
           <p class="section-header__subtitle">Cada producto está hecho con ingredientes naturales cuidadosamente seleccionados para tu bienestar.</p>
@@ -66,36 +67,36 @@ export function render() {
     <section class="section" id="home-why">
       <div class="container">
         <div class="section-header">
-          <div class="section-header__label">
-            <span>💚</span> ¿Por qué Gran Colinos?
+          <div class="section-header__label" style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+            <span>${icons.Heart('', 20)}</span> ¿Por qué Gran Colinos?
           </div>
           <h2 class="section-header__title">No somos una marca más</h2>
           <p class="section-header__subtitle">Creemos en el poder de lo natural. Cada producto es una promesa de calidad, transparencia y cuidado.</p>
         </div>
         <div class="features-strip">
           <div class="feature-item animate-fade-in">
-            <div class="feature-item__icon">🔬</div>
+            <div class="feature-item__icon">${icons.Sparkles('', 32)}</div>
             <div class="feature-item__text">
               <h4>Tecnología + Naturaleza</h4>
               <p>Nano CBD con 5× más absorción</p>
             </div>
           </div>
           <div class="feature-item animate-fade-in stagger-1">
-            <div class="feature-item__icon">📋</div>
+            <div class="feature-item__icon">${icons.Clipboard('', 32)}</div>
             <div class="feature-item__text">
               <h4>Devoluciones claras</h4>
               <p>30 días, sin letra pequeña</p>
             </div>
           </div>
           <div class="feature-item animate-fade-in stagger-2">
-            <div class="feature-item__icon">🐝</div>
+            <div class="feature-item__icon">${icons.Flame('', 32)}</div>
             <div class="feature-item__text">
               <h4>Ingredientes reales</h4>
               <p>Apitoxina, CBD, chiles naturales</p>
             </div>
           </div>
           <div class="feature-item animate-fade-in stagger-3">
-            <div class="feature-item__icon">💬</div>
+            <div class="feature-item__icon">${icons.MessageCircle('', 32)}</div>
             <div class="feature-item__text">
               <h4>Soporte humano</h4>
               <p>Siempre listos para ayudarte</p>
@@ -110,7 +111,7 @@ export function render() {
       <div class="container">
         <h2 class="animate-fade-in" style="font-size: var(--fs-h1); margin-bottom: var(--space-md); color: #fff;">¿Listo para probar lo natural?</h2>
         <p class="animate-fade-in stagger-1" style="font-size: 1.125rem; opacity: 0.85; margin-bottom: var(--space-xl); max-width: 500px; margin-inline: auto;">Dale a tu cuerpo lo que merece. Productos colombianos, naturales y efectivos.</p>
-        <a href="#/catalogo" class="btn btn--secondary btn--lg animate-fade-in stagger-2">Explorar productos 🌿</a>
+        <a href="#/catalogo" class="btn btn--secondary btn--lg animate-fade-in stagger-2" style="display:inline-flex; align-items:center; gap:0.5rem; justify-content:center;">Explorar productos ${icons.Leaf('', 20)}</a>
       </div>
     </section>
   `;

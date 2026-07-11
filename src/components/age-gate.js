@@ -4,6 +4,7 @@
  */
 import { copy, featureFlags } from '../config/brand.config.js';
 import { store } from '../utils/store.js';
+import { icons } from './icons.js';
 
 export function render() {
   if (!featureFlags.ageGateRequired) return '';
@@ -12,7 +13,7 @@ export function render() {
     <div class="age-gate" id="age-gate">
       <div class="age-gate__overlay"></div>
       <div class="age-gate__modal">
-        <div class="age-gate__icon">🌿</div>
+        <div class="age-gate__icon">${icons.Leaf('', 48)}</div>
         <h2 class="age-gate__title">${copy.ageGate.title}</h2>
         <p class="age-gate__text">${copy.ageGate.subtitle}</p>
         <div class="age-gate__actions" id="age-gate-actions">

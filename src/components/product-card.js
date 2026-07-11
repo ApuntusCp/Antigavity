@@ -64,7 +64,7 @@ export function mount(container) {
       e.stopPropagation();
       const productId = btn.dataset.addToCart;
       store.addToCart(productId);
-      store.showToast('¡Agregado al carrito! 🛒');
+      store.showToast('¡Agregado al carrito!');
 
       // Quick animation
       btn.style.transform = 'scale(1.3)';

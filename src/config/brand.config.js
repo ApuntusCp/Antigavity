@@ -64,71 +64,20 @@ export const featureFlags = {
   },
 };
 
-export const products = [
-  {
-    id: 'CH-CBD-001',
-    name: 'Gotas Orgánicas GC',
-    subtitle: 'Bienestar Natural',
-    shortDescription: 'Gotas de CBD orgánicas para tu bienestar diario.',
-    description: 'Nuestras Gotas Orgánicas GC están formuladas con los mejores ingredientes naturales para brindarte relajación y equilibrio en tu día a día. Perfectas para aliviar el estrés y mejorar la calidad del sueño.',
-    ingredients: 'Extracto puro orgánico, aceites esenciales naturales.',
-    usage: 'Aplicar 2-3 gotas debajo de la lengua, esperar 60 segundos y tragar. Usar diariamente para mejores resultados.',
-    warnings: 'Mantener fuera del alcance de los niños. Consultar a su médico si está en periodo de gestación.',
-    category: 'cbd',
-    price: 193900,
-    salePrice: 169700,
-    currency: 'COP',
-    requiresAgeVerification: true,
-    badge: 'Más Vendido',
-    badgeType: 'primary',
-    inStock: true,
-    images: {
-      main: '/products/nano-cbd/main.png',
-      gallery: [
-        '/products/nano-cbd/main.png'
-      ],
-    },
-    benefits: [
-      { icon: '🌿', text: '100% Orgánico' },
-      { icon: '🇨🇴', text: 'Hecho en Colombia' }
-    ],
-  },
-  {
-    id: 'APX-GC-001',
-    name: 'Apitoxina Relajante Muscular',
-    subtitle: 'Alivio Profundo',
-    shortDescription: 'Relajante muscular natural a base de veneno de abeja.',
-    description: 'Poderoso relajante muscular formulado con Apitoxina (veneno de abeja) que actúa directamente sobre la tensión y el dolor. Ideal para deportistas o personas con dolores articulares.',
-    ingredients: 'Apitoxina natural, extractos herbales relajantes.',
-    usage: 'Aplicar sobre la zona de dolor con un suave masaje hasta que se absorba completamente.',
-    warnings: 'No usar si es alérgico a las picaduras de abeja. Solo para uso externo.',
-    category: 'bienestar',
-    price: 55700,
-    salePrice: 32900,
-    currency: 'COP',
-    requiresAgeVerification: false,
-    badge: 'Oferta',
-    badgeType: 'secondary',
-    inStock: true,
-    images: {
-      main: '/products/apitoxina/main.png',
-      gallery: [
-        '/products/apitoxina/main.png'
-      ],
-    },
-    benefits: [
-      { icon: '🐝', text: 'Apitoxina pura' },
-      { icon: '💪', text: 'Alivio muscular' }
-    ],
-  }
-];
+export let products = [];
+
+export function setProducts(fetchedProducts) {
+  products = fetchedProducts;
+}
 
 // ─── CATEGORIES ─────────────────────────────────────────────
+import { icons } from '../components/icons.js';
+
 export const categories = [
-  { id: 'todos',     name: 'Todos los Productos', icon: '✨', description: 'Explora todo nuestro catálogo', enabled: true },
-  { id: 'cbd',       name: 'CBD & Bienestar',     icon: '🌿', description: 'Productos con CBD de espectro completo', requiresAgeVerification: true, enabled: featureFlags.cbdEnabled },
-  { id: 'bienestar', name: 'Activo Natural',       icon: '🐝', description: 'Productos naturales para tu bienestar', enabled: true },
-  { id: 'snacks',    name: 'Snacks',               icon: '🌶️', description: 'Snacks con sabor colombiano', enabled: true },
+  { id: 'todos',     name: 'Todos los Productos', icon: icons.Sparkles(), description: 'Explora todo nuestro catálogo', enabled: true },
+  { id: 'cbd',       name: 'CBD & Bienestar',     icon: icons.Leaf(), description: 'Productos con CBD de espectro completo', requiresAgeVerification: true, enabled: featureFlags.cbdEnabled },
+  { id: 'bienestar', name: 'Activo Natural',       icon: icons.Flame(), description: 'Productos naturales para tu bienestar', enabled: true },
+  { id: 'snacks',    name: 'Snacks',               icon: icons.Flame(), description: 'Snacks con sabor colombiano', enabled: true },
 ];
 
 // ─── SITE METADATA ──────────────────────────────────────────
@@ -187,7 +136,7 @@ export const copy = {
     legal:     'Legal',
     followUs:  'Síguenos',
     rights:    '© 2026 Gran Colinos. Todos los derechos reservados.',
-    madeIn:    'Hecho con 💚 en Colombia',
+    madeIn:    'Hecho en Colombia',
   },
   returns: {
     title:   'Política de devoluciones',

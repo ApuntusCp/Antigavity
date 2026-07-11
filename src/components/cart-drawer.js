@@ -3,6 +3,7 @@
  */
 import { products, formatPrice, copy, shipping } from '../config/brand.config.js';
 import { store } from '../utils/store.js';
+import { icons } from './icons.js';
 
 export function render() {
   return `
@@ -11,7 +12,7 @@ export function render() {
       <div class="cart-drawer__panel">
         <div class="cart-drawer__header">
           <h2 class="cart-drawer__title">Tu Carrito</h2>
-          <button class="cart-drawer__close" id="cart-close" aria-label="Cerrar carrito">✕</button>
+          <button class="cart-drawer__close" id="cart-close" aria-label="Cerrar carrito">${icons.Close()}</button>
         </div>
         <div class="cart-drawer__items" id="cart-items">
           <!-- Rendered dynamically -->
@@ -30,7 +31,7 @@ function renderCartItems() {
   if (cart.length === 0) {
     return `
       <div class="cart-drawer__empty">
-        <div class="cart-drawer__empty-icon">🛒</div>
+        <div class="cart-drawer__empty-icon">${icons.Cart('', 48)}</div>
         <h3>${copy.cart.empty}</h3>
         <p>${copy.cart.emptySubtitle}</p>
         <a href="#/catalogo" class="btn btn--primary mt-md" id="cart-shop-link">${copy.cart.continueShopping}</a>
@@ -52,10 +53,10 @@ function renderCartItems() {
           <div class="cart-item__name">${product.name}</div>
           <div class="cart-item__price">${formatPrice(price)}</div>
           <div class="cart-item__controls">
-            <button class="cart-item__qty-btn" data-cart-minus="${item.productId}" aria-label="Reducir cantidad">−</button>
+            <button class="cart-item__qty-btn" data-cart-minus="${item.productId}" aria-label="Reducir cantidad">${icons.Minus('', 16)}</button>
             <span class="cart-item__qty">${item.qty}</span>
             <button class="cart-item__qty-btn" data-cart-plus="${item.productId}" aria-label="Aumentar cantidad">+</button>
-            <button class="cart-item__remove" data-cart-remove="${item.productId}" aria-label="Eliminar">🗑️</button>
+            <button class="cart-item__remove" data-cart-remove="${item.productId}" aria-label="Eliminar">${icons.Trash('', 18)}</button>
           </div>
         </div>
       </div>
@@ -84,7 +85,7 @@ function renderCartFooter() {
     </button>
     <p class="cart-drawer__shipping-note">
       ${isFreeShipping
-        ? '🎉 ¡Envío gratis!'
+        ? `<span style="vertical-align: middle; display: inline-flex; align-items: center; gap: 4px;">${icons.Check('', 16)} ¡Envío gratis!</span>`
         : `Envío gratis a partir de ${formatPrice(shipping.freeShippingThreshold)}`}
     </p>
   `;

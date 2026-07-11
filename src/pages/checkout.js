@@ -4,6 +4,7 @@
 import { products, formatPrice, shipping } from '../config/brand.config.js';
 import { store } from '../utils/store.js';
 import { submitOrder } from '../services/api.js';
+import { icons } from '../components/icons.js';
 
 export function render() {
   const { cart } = store.state;
@@ -84,7 +85,7 @@ export function render() {
 
               <button type="submit" id="checkout-submit-btn" class="btn btn--primary btn--full btn--lg" style="display:flex; justify-content:center; gap:10px;">
                 <span>Ir a Pagar con Bold</span>
-                <span>🔒</span>
+                <span style="display:inline-flex; align-items:center;">${icons.Shield('', 20)}</span>
               </button>
               <p style="text-align:center; font-size:var(--fs-xs); color:var(--c-text-muted); margin-top:var(--space-sm);">Pagos 100% seguros a través de Bold.</p>
             </form>

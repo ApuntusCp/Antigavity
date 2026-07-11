@@ -4,6 +4,7 @@
  */
 import { copy, featureFlags, site } from '../config/brand.config.js';
 import { store } from '../utils/store.js';
+import { icons } from './icons.js';
 
 export function render() {
   if (!featureFlags.chatEnabled) return '';
@@ -14,19 +15,19 @@ export function render() {
       <div class="chat-window" id="chat-window">
         <div class="chat-header">
           <div class="chat-header__info">
-            <span class="chat-header__avatar">👩‍💼</span>
+            <span class="chat-header__avatar">${icons.Bot()}</span>
             <div>
               <h4 class="chat-header__title">Asistente ${site.name}</h4>
               <span class="chat-header__status">En línea</span>
             </div>
           </div>
-          <button class="chat-header__close" id="chat-close" aria-label="Cerrar chat">✕</button>
+          <button class="chat-header__close" id="chat-close" aria-label="Cerrar chat">${icons.Close()}</button>
         </div>
         
         <div class="chat-messages" id="chat-messages">
           <div class="message message--bot">
             <div class="message__bubble">
-              ¡Hola! Soy tu asistente virtual de ${site.name}. 🌿<br><br>
+              ¡Hola! Soy tu asistente virtual de ${site.name}. <span style="display:inline-block; vertical-align:text-bottom;">${icons.Leaf('', 18)}</span><br><br>
               ¿En qué te puedo ayudar hoy? Puedo recomendarte productos o ayudarte con tu pedido.
             </div>
             <span class="message__time">Ahora</span>
@@ -35,13 +36,13 @@ export function render() {
         
         <form class="chat-input-area" id="chat-form">
           <input type="text" id="chat-input" class="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off" required />
-          <button type="submit" class="chat-submit" aria-label="Enviar mensaje">➤</button>
+          <button type="submit" class="chat-submit" aria-label="Enviar mensaje">${icons.Send()}</button>
         </form>
       </div>
       
       <!-- Floating Button -->
       <button class="chat-toggle" id="chat-toggle" aria-label="Abrir chat">
-        <span class="chat-toggle__icon">💬</span>
+        <span class="chat-toggle__icon">${icons.MessageCircle()}</span>
         <span class="chat-toggle__badge" id="chat-badge">1</span>
       </button>
     </div>
