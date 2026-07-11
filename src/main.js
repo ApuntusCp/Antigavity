@@ -193,4 +193,4 @@ if ('serviceWorker' in navigator) {
 }
 
 // ─── Initialize ─────────────────────────────────────────────
-renderShell();
+renderApp();
