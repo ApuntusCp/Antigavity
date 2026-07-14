@@ -115,7 +115,7 @@ export default function MaintenancePage() {
               ¿Urgente? Escríbenos
             </p>
             <p style={{ fontSize: '14px', color: '#D4AF37', fontWeight: '600' }}>
-              WhatsApp +57 322 983 3062
+              WhatsApp +57 302 769 7935
             </p>
           </div>
         </div>
