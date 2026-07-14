@@ -66,6 +66,7 @@ export default function RootLayout({ children }) {
             <p className="mt-4 md:mt-0 tracking-widest">DISEÑADO CON EXCELENCIA</p>
           </div>
         </footer>
+        </Providers>
       </body>
     </html>
   );

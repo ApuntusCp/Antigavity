@@ -6,6 +6,7 @@ import { db } from '../../utils/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
+import Script from 'next/script';
 import { ShieldCheck, ArrowRight, Truck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -69,24 +70,35 @@ export default function CheckoutPage() {
       // 1. Guardar la orden en Firebase (Colección 'orders')
       const orderRef = await addDoc(collection(db, 'orders'), orderData);
       
-      // 2. Registrar/Actualizar en 'carts' para GC Admin (Recuperación)
+      // 2. Registrar/Actualizar en 'carts' para GC Admin
       await setDoc(doc(db, 'carts', orderRef.id), {
         customerName: orderData.customer.name,
         customerEmail: orderData.customer.email,
         customerPhone: orderData.customer.phone,
         items: orderData.items,
         total: grandTotal,
-        status: 'recovered', // Marca como recuperado/completado
+        status: 'active', // 'active' hasta que Bold confirme el pago (en un webhook real)
         updatedAt: serverTimestamp()
       });
 
-      // 3. Limpiar carrito local
-      clearCart();
+      // 3. Iniciar Widget de Bold
+      if (typeof window.BoldCheckout !== 'undefined') {
+        const checkout = new window.BoldCheckout({
+          orderId: orderRef.id,
+          currency: "COP",
+          amount: grandTotal,
+          apiKey: process.env.NEXT_PUBLIC_BOLD_INTEGRATION_ID,
+          redirectionUrl: `${window.location.origin}/`,
+          payerEmail: orderData.customer.email,
+          payerPhone: orderData.customer.phone,
+          payerName: orderData.customer.name,
+        });
 
-      // 4. Redirigir a Bold Pasarela (Placeholder - aquí se integrará el link de Bold)
-      // En una integración real con Bold, haríamos un POST a su API para generar un link de pago
-      alert(`Orden ${orderRef.id} creada. Redirigiendo a pasarela Bold...`);
-      router.push('/'); 
+        checkout.open();
+        clearCart();
+      } else {
+        alert("El sistema de pagos se está cargando o no está disponible. Por favor intenta de nuevo.");
+      }
 
     } catch (error) {
       console.error("Error procesando checkout:", error);
@@ -99,6 +111,8 @@ export default function CheckoutPage() {
   if (cart.length === 0) return null; // Evitar render mientras redirige
 
   return (
+    <>
+    <Script src="https://checkout.bold.co/v2/bold.js" strategy="lazyOnload" />
     <div className="min-h-screen bg-brand-light dark:bg-[#050505] text-brand-dark dark:text-white pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-6">
         
@@ -222,5 +236,6 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
