@@ -1,6 +1,7 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const CartContext = createContext();
 
@@ -42,9 +43,11 @@ export function CartProvider({ children }) {
           ...newCart[existingProductIndex],
           quantity: newCart[existingProductIndex].quantity + quantity,
         };
+        toast.success('Cantidad actualizada');
         return newCart;
       } else {
         // Add new item
+        toast.success('Añadido al carrito');
         return [...prevCart, { ...product, quantity }];
       }
     });

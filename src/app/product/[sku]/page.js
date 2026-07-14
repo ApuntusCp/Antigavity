@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { CheckCircle2, ShieldCheck, Truck } from 'lucide-react';
 import AddToCartButton from './AddToCartButton';
 import ProductGallery from './ProductGallery';
+import RelatedProducts from './RelatedProducts';
 
 // Revalidar cada 60 segundos (ISR - Incremental Static Regeneration)
 export const revalidate = 60;
@@ -165,6 +166,11 @@ export default async function ProductPage({ params }) {
           </div>
 
         </div>
+      </div>
+      
+      {/* Productos Relacionados */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <RelatedProducts currentSku={params.sku} />
       </div>
     </div>
   );
