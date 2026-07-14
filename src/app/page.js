@@ -13,8 +13,14 @@ export default async function Home() {
       {/* High-Impact Hero Section */}
       <section className="relative h-[90vh] w-full flex items-center justify-center overflow-hidden bg-brand-dark fade-in">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-brand-dark z-10" />
-          <div className="w-full h-full bg-brand-green/20" />
+          <Image 
+            src="https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=2000&auto=format&fit=crop"
+            alt="Naturaleza Colombiana GranColinos"
+            fill
+            className="object-cover object-center opacity-80"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-brand-dark z-10" />
         </div>
         
         <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-4xl fade-in delay-300">

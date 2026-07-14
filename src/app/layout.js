@@ -1,6 +1,8 @@
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import Image from "next/image";
+import Providers from "../components/Providers";
+import Header from "../components/Header";
+import CartDrawer from "../components/CartDrawer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -21,38 +23,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es" className={`${inter.variable} ${playfair.variable} h-full scroll-smooth`}>
       <body className="font-sans bg-brand-light dark:bg-brand-dark text-brand-dark dark:text-brand-light min-h-full flex flex-col antialiased">
-        
-        {/* Minimal Navigation */}
-        <header className="w-full fixed top-0 z-50 bg-brand-light/90 dark:bg-brand-dark/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
-          <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
-            <a href="/" className="flex items-center gap-2">
-              <Image 
-                src="/Logos/GranColinos.Com.png" 
-                alt="GranColinos Logo" 
-                width={180} 
-                height={50} 
-                className="object-contain"
-                priority
-              />
-            </a>
-            
-            <nav className="hidden md:flex gap-10 text-xs font-semibold tracking-[0.2em] uppercase">
-              <a href="#catalogo" className="hover:text-brand-gold transition-colors duration-300">Catálogo</a>
-              <a href="#origen" className="hover:text-brand-gold transition-colors duration-300">Origen</a>
-              <a href="/blog" className="hover:text-brand-gold transition-colors duration-300">Journal</a>
-            </nav>
+        <Providers>
+          <Header />
+          <CartDrawer />
 
-            <div className="flex gap-6 items-center text-xs font-semibold tracking-[0.2em] uppercase">
-              <button className="hover:text-brand-gold transition-colors duration-300">Cart (0)</button>
-              <button className="hidden md:block hover:text-brand-gold transition-colors duration-300">Menu</button>
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="flex-grow pt-24">
-          {children}
-        </main>
+          {/* Main Content */}
+          <main className="flex-grow pt-24">
+            {children}
+          </main>
 
         {/* Minimal Luxury Footer */}
         <footer className="bg-brand-dark text-white py-24">
@@ -76,9 +54,9 @@ export default function RootLayout({ children }) {
             <div>
                <h4 className="text-[10px] font-bold tracking-[0.2em] uppercase mb-8 text-brand-gold">Legal & Soporte</h4>
               <ul className="space-y-4 text-sm text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Términos de Servicio</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Habeas Data (Privacidad)</a></li>
-                <li><a href="#" className="hover:text-white transition-colors duration-300">Contacto Directo</a></li>
+                <li><a href="/terminos-de-servicio" className="hover:text-white transition-colors duration-300">Términos de Servicio</a></li>
+                <li><a href="/habeas-data" className="hover:text-white transition-colors duration-300">Habeas Data (Privacidad)</a></li>
+                <li><a href="/contacto" className="hover:text-white transition-colors duration-300">Contacto Directo</a></li>
               </ul>
             </div>
           </div>
