@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { fetchProducts } from "../utils/firebase";
 
 export const revalidate = 60; // ISR: Revalidate catalog every 60 seconds
@@ -68,31 +69,32 @@ export default async function Home() {
               </p>
             ) : (
               products.slice(0, 3).map((product, index) => (
-                <div key={product.id} className={`group cursor-pointer fade-in delay-${(index % 3 + 1) * 100}`}>
+                <Link href={`/product/${product.sku}`} key={product.id} className={`group cursor-pointer fade-in delay-${(index % 3 + 1) * 100} block`}>
                   <div className="aspect-[3/4] bg-gray-100 dark:bg-gray-800 mb-6 overflow-hidden relative">
                     <div className="absolute inset-0 bg-brand-green/5 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                    {product.image ? (
+                    {product.images && product.images.length > 0 ? (
                       <Image 
-                        src={product.image}
+                        src={product.images[0]}
                         alt={product.title || product.name || 'Producto GranColinos'}
                         fill
                         className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs tracking-widest uppercase">
-                        Sin Imagen
+                      <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-[#0a0a0a] border border-white/5 shadow-inner">
+                        <div className="w-12 h-12 border-2 border-dashed border-gray-700 rounded-full mb-3"></div>
+                        <span className="text-[10px] tracking-widest uppercase">Sin Imagen</span>
                       </div>
                     )}
                   </div>
                   <div className="flex flex-col items-center text-center">
-                    <h3 className="font-playfair text-xl mb-2 text-brand-dark dark:text-white">
+                    <h3 className="font-playfair text-xl mb-2 text-brand-dark dark:text-white group-hover:text-brand-gold transition-colors duration-300">
                       {product.title || product.name}
                     </h3>
-                    <p className="text-brand-gold text-sm tracking-widest">
-                      ${parseInt(product.price).toLocaleString('es-CO')} COP
+                    <p className="text-brand-gold text-sm tracking-widest font-mono">
+                      {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price || 0)}
                     </p>
                   </div>
-                </div>
+                </Link>
               ))
             )}
           </div>
