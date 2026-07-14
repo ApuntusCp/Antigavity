@@ -4,6 +4,7 @@ import Script from 'next/script';
 
 export default function Analytics() {
   const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_ID;
+  const GA_TRACKING_ID_2 = process.env.NEXT_PUBLIC_GA_ID_2;
   const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID;
 
   return (
@@ -22,6 +23,7 @@ export default function Analytics() {
               gtag('js', new Date());
 
               gtag('config', '${GA_TRACKING_ID}');
+              ${GA_TRACKING_ID_2 ? `gtag('config', '${GA_TRACKING_ID_2}');` : ''}
             `}
           </Script>
         </>
