@@ -14,8 +14,16 @@ export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  
+  // Estados para cupón
+  const [couponCode, setCouponCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [couponError, setCouponError] = useState('');
+  const [couponSuccess, setCouponSuccess] = useState('');
+
   const SHIPPING_COST = 15000; // Tarifa fija nacional
-  const grandTotal = cartTotal + SHIPPING_COST;
+  const discountAmount = cartTotal * discount;
+  const grandTotal = cartTotal - discountAmount + SHIPPING_COST;
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -36,6 +44,28 @@ export default function CheckoutPage() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleApplyCoupon = () => {
+    setCouponError('');
+    setCouponSuccess('');
+    
+    // Lista de cupones válidos (esto idealmente iría en Firebase)
+    const validCoupons = {
+      'GRANCOLINOS10': 0.10, // 10% off
+      'BIENESTAR15': 0.15, // 15% off
+    };
+
+    const code = couponCode.toUpperCase().trim();
+    if (validCoupons[code]) {
+      setDiscount(validCoupons[code]);
+      setCouponSuccess(`Cupón ${code} aplicado (${validCoupons[code] * 100}% de descuento)`);
+    } else {
+      setDiscount(0);
+      if (code !== '') {
+        setCouponError('Cupón inválido o expirado.');
+      }
+    }
   };
 
   const handleCheckout = async (e) => {
@@ -61,6 +91,8 @@ export default function CheckoutPage() {
         })),
         subtotal: cartTotal,
         shippingCost: SHIPPING_COST,
+        discountApplied: discountAmount,
+        couponCode: discount > 0 ? couponCode.toUpperCase().trim() : null,
         total: grandTotal,
         status: 'pending_payment',
         paymentGateway: 'bold',
@@ -194,11 +226,40 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
-              <div className="border-t border-gray-200 dark:border-white/10 pt-6 space-y-4">
+              <div className="border-t border-gray-200 dark:border-white/10 pt-6 mt-6 space-y-4">
+                {/* Input Cupón */}
+                <div className="flex flex-col gap-2 mb-4">
+                  <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">¿Tienes un cupón?</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      placeholder="Ej: GRANCOLINOS10"
+                      className="flex-1 bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 p-3 rounded-sm outline-none focus:border-brand-gold text-sm uppercase"
+                    />
+                    <button 
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      className="px-4 bg-brand-dark dark:bg-white text-white dark:text-brand-dark text-xs font-bold uppercase tracking-widest rounded-sm hover:opacity-80 transition-opacity"
+                    >
+                      Aplicar
+                    </button>
+                  </div>
+                  {couponError && <p className="text-red-500 text-[10px] uppercase tracking-wider">{couponError}</p>}
+                  {couponSuccess && <p className="text-brand-gold text-[10px] uppercase tracking-wider">{couponSuccess}</p>}
+                </div>
+
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Subtotal</span>
                   <span className="font-mono">{new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(cartTotal)}</span>
                 </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-sm text-brand-gold">
+                    <span>Descuento ({discount * 100}%)</span>
+                    <span className="font-mono">- {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(discountAmount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Envío Nacional</span>
                   <span className="font-mono">{new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(SHIPPING_COST)}</span>
