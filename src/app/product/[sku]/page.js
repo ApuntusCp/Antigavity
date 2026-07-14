@@ -25,7 +25,8 @@ async function getProductBySku(sku) {
 
 // Generación Dinámica de Metadata (SEO & Open Graph)
 export async function generateMetadata({ params }) {
-  const product = await getProductBySku(params.sku);
+  const resolvedParams = await params;
+  const product = await getProductBySku(resolvedParams.sku);
   
   if (!product) {
     return { title: 'Producto No Encontrado | GranColinos' };
@@ -51,13 +52,14 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
-  const product = await getProductBySku(params.sku);
+  const resolvedParams = await params;
+  const product = await getProductBySku(resolvedParams.sku);
 
   if (!product) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white p-4 text-center">
         <h1 className="text-4xl font-bold mb-4 text-[#D4AF37]">Error 404</h1>
-        <p className="text-gray-400 mb-8 max-w-md">El producto con SKU <span className="font-mono text-white">{decodeURIComponent(params.sku)}</span> no fue encontrado o no está disponible en este momento.</p>
+        <p className="text-gray-400 mb-8 max-w-md">El producto con SKU <span className="font-mono text-white">{decodeURIComponent(resolvedParams.sku)}</span> no fue encontrado o no está disponible en este momento.</p>
         <Link href="/" className="px-8 py-3 border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition-colors uppercase tracking-widest text-xs font-bold shadow-[0_0_15px_rgba(212,175,55,0.2)]">
           Volver a la tienda
         </Link>

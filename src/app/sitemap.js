@@ -1,5 +1,5 @@
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../utils/firebase';
+import { db } from '../utils/firebase';
 
 export default async function sitemap() {
   const baseUrl = 'https://grancolinos.com';
