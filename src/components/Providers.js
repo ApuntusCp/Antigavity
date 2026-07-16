@@ -1,6 +1,7 @@
 'use client';
 
 import { CartProvider } from './CartContext';
+import { AuthProvider } from './AuthProvider';
 import { Toaster } from 'react-hot-toast';
 
 export default function Providers({ children }) {
@@ -24,7 +25,9 @@ export default function Providers({ children }) {
           },
         }}
       />
-      {children}
+      <AuthProvider>
+        {children}
+      </AuthProvider>
     </CartProvider>
   );
 }

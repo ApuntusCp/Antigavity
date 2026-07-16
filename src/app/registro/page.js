@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useAuth } from "../../components/AuthProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { User, Mail, Lock, Loader2, AlertCircle, CheckCircle } from "lucide-react";
+import { User, Mail, Lock, Loader2, AlertCircle, CheckCircle, Eye, EyeOff } from "lucide-react";
 import { db } from "../../utils/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
@@ -15,6 +15,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { register } = useAuth();
   const router = useRouter();
 
@@ -164,18 +165,29 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold tracking-widest uppercase text-gray-600 dark:text-gray-400 mb-2">Contraseña</label>
-              <div className="relative">
-                <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input 
-                  type="password" 
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-gray-50 dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 rounded-lg pl-12 pr-4 py-3 text-brand-dark dark:text-white focus:outline-none focus:border-brand-gold transition-colors"
-                  placeholder="Mínimo 6 caracteres"
-                />
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+              Contraseña
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Lock className="h-4 w-4 text-gray-500" />
               </div>
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-lg pl-11 pr-12 py-3 text-white focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-all"
+                placeholder="••••••••••"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-brand-gold transition-colors"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
             </div>
 
             <button 
