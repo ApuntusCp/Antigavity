@@ -85,7 +85,7 @@ export default function RegisterPage() {
       if (err.code === 'auth/email-already-in-use') {
         setError("Este correo electrónico ya está registrado. Por favor inicia sesión.");
       } else {
-        setError("Ocurrió un error al registrarte. Verifica tu conexión e intenta de nuevo.");
+        setError("Ocurrió un error al registrarte: " + err.message);
       }
       setIsLoading(false);
     }
