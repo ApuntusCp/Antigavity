@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '../../components/CartContext';
 import { db } from '../../utils/firebase';
-import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, updateDoc, increment } from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
 import Script from 'next/script';
@@ -17,13 +17,13 @@ export default function CheckoutPage() {
   
   // Estados para cupón
   const [couponCode, setCouponCode] = useState('');
-  const [discount, setDiscount] = useState(0);
+  const [discount, setDiscount] = useState({ type: 'NONE', value: 0 });
   const [couponError, setCouponError] = useState('');
   const [couponSuccess, setCouponSuccess] = useState('');
 
   const SHIPPING_COST = 15000; // Tarifa fija nacional
-  const discountAmount = cartTotal * discount;
-  const grandTotal = cartTotal - discountAmount + SHIPPING_COST;
+  const discountAmount = discount.type === 'PERCENTAGE' ? cartTotal * (discount.value / 100) : (discount.type === 'FIXED' ? discount.value : 0);
+  const grandTotal = Math.max(0, cartTotal - discountAmount + SHIPPING_COST);
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -46,25 +46,44 @@ export default function CheckoutPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleApplyCoupon = () => {
+  const handleApplyCoupon = async () => {
     setCouponError('');
     setCouponSuccess('');
     
-    // Lista de cupones válidos (esto idealmente iría en Firebase)
-    const validCoupons = {
-      'GRANCOLINOS10': 0.10, // 10% off
-      'BIENESTAR15': 0.15, // 15% off
-    };
-
     const code = couponCode.toUpperCase().trim();
-    if (validCoupons[code]) {
-      setDiscount(validCoupons[code]);
-      setCouponSuccess(`Cupón ${code} aplicado (${validCoupons[code] * 100}% de descuento)`);
-    } else {
-      setDiscount(0);
-      if (code !== '') {
-        setCouponError('Cupón inválido o expirado.');
+    if (!code) return;
+    
+    try {
+      const docRef = doc(db, 'coupons', code);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        const couponData = snap.data();
+        if (!couponData.active) {
+          setCouponError('El cupón está inactivo.');
+          setDiscount({ type: 'NONE', value: 0 });
+          return;
+        }
+        if (couponData.minPurchase && cartTotal < couponData.minPurchase) {
+          setCouponError(`Compra mínima de $${couponData.minPurchase.toLocaleString()} requerida.`);
+          setDiscount({ type: 'NONE', value: 0 });
+          return;
+        }
+        if (couponData.maxUses && couponData.usedCount >= couponData.maxUses) {
+          setCouponError('El cupón ha alcanzado su límite de usos.');
+          setDiscount({ type: 'NONE', value: 0 });
+          return;
+        }
+        
+        setDiscount({ type: couponData.type, value: couponData.value });
+        setCouponSuccess(`Cupón ${code} aplicado (${couponData.type === 'PERCENTAGE' ? couponData.value + '%' : '$' + couponData.value.toLocaleString()} de descuento)`);
+      } else {
+         setCouponError('Cupón inválido o no encontrado.');
+         setDiscount({ type: 'NONE', value: 0 });
       }
+    } catch (e) {
+      console.error(e);
+      setCouponError('Error al validar el cupón.');
+      setDiscount({ type: 'NONE', value: 0 });
     }
   };
 
@@ -92,7 +111,7 @@ export default function CheckoutPage() {
         subtotal: cartTotal,
         shippingCost: SHIPPING_COST,
         discountApplied: discountAmount,
-        couponCode: discount > 0 ? couponCode.toUpperCase().trim() : null,
+        couponCode: discount.value > 0 ? couponCode.toUpperCase().trim() : null,
         total: grandTotal,
         status: 'pending_payment',
         paymentGateway: 'bold',
@@ -112,6 +131,17 @@ export default function CheckoutPage() {
         status: 'active', // 'active' hasta que Bold confirme el pago (en un webhook real)
         updatedAt: serverTimestamp()
       });
+
+      // 3. Incrementar el contador de uso del cupón (si aplica)
+      if (discount.value > 0 && couponCode) {
+        try {
+          await updateDoc(doc(db, 'coupons', couponCode.toUpperCase().trim()), {
+            usedCount: increment(1)
+          });
+        } catch (e) {
+          console.error("Error updating coupon count:", e);
+        }
+      }
 
       // 3. Iniciar Widget de Bold
       if (typeof window.BoldCheckout !== 'undefined') {

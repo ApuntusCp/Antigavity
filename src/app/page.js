@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { fetchProducts } from "../utils/firebase";
+import NewsletterForm from "../components/NewsletterForm";
 
 export const revalidate = 60; // ISR: Revalidate catalog every 60 seconds
 
@@ -105,6 +106,11 @@ export default async function Home() {
             )}
           </div>
         </div>
+      </section>
+
+      {/* Newsletter / Club Section */}
+      <section className="py-24 bg-[#0a0a0a] px-6 border-t border-white/5">
+        <NewsletterForm />
       </section>
     </div>
   );

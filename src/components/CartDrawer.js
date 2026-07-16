@@ -76,9 +76,22 @@ export default function CartDrawer() {
                     <div className="flex justify-between items-start gap-2">
                       <div>
                         <h3 className="font-playfair text-brand-dark dark:text-white line-clamp-1">{item.title || item.name}</h3>
-                        <p className="text-brand-gold text-sm tracking-wider font-mono mt-1">
-                          {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(item.price)}
-                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          {item.discountPrice ? (
+                            <>
+                              <span className="text-gray-500 text-xs tracking-wider font-mono line-through opacity-70">
+                                {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(item.price)}
+                              </span>
+                              <span className="text-red-400 text-sm tracking-wider font-mono font-bold">
+                                {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(item.discountPrice)}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-brand-gold text-sm tracking-wider font-mono">
+                              {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(item.price)}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <button 
                         onClick={() => removeFromCart(item.sku)}

@@ -51,6 +51,13 @@ export default async function ShopPage() {
                     </div>
                   )}
 
+                  {/* Discount Badge */}
+                  {product.discountPrice && product.stock > 0 && (
+                    <div className="absolute top-4 right-4 z-20 bg-brand-gold/90 text-brand-dark text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-sm">
+                      Oferta
+                    </div>
+                  )}
+
                   {product.images && product.images.length > 0 ? (
                     <Image 
                       src={product.images[0]}
@@ -73,9 +80,22 @@ export default async function ShopPage() {
                   <h3 className="font-playfair text-xl mb-3 text-brand-dark dark:text-white group-hover:text-brand-gold transition-colors duration-300">
                     {product.title || product.name}
                   </h3>
-                  <p className="text-brand-gold text-sm tracking-widest font-mono">
-                    {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price || 0)}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    {product.discountPrice ? (
+                      <>
+                        <span className="text-gray-500 text-xs tracking-widest font-mono line-through opacity-70">
+                          {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price || 0)}
+                        </span>
+                        <span className="text-red-400 text-sm tracking-widest font-mono font-bold">
+                          {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.discountPrice)}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-brand-gold text-sm tracking-widest font-mono">
+                        {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price || 0)}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </Link>
             ))

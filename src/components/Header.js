@@ -4,9 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "./CartContext";
+import { useAuth } from "./AuthProvider";
+import { User } from "lucide-react";
 
 export default function Header() {
   const { cartItemCount, setIsCartOpen } = useCart();
+  const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -33,6 +36,21 @@ export default function Header() {
           </nav>
 
           <div className="flex gap-6 items-center text-xs font-semibold tracking-[0.2em] uppercase relative z-50">
+            {user ? (
+              <div className="hidden md:flex items-center gap-4">
+                <Link href="/comunidad" className="hover:text-brand-gold transition-colors duration-300">
+                  Mi Club
+                </Link>
+                <button onClick={() => logout()} className="hover:text-red-400 transition-colors duration-300 text-[10px]">
+                  Salir
+                </button>
+              </div>
+            ) : (
+              <Link href="/login" className="hidden md:flex items-center gap-1 hover:text-brand-gold transition-colors duration-300">
+                <User size={14} /> Ingresar
+              </Link>
+            )}
+            
             <button 
               onClick={() => setIsCartOpen(true)}
               className="hover:text-brand-gold transition-colors duration-300 flex items-center gap-1"
@@ -55,7 +73,15 @@ export default function Header() {
             <Link href="/#origen" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Nuestra Esencia</Link>
             <Link href="/blog" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Journal de Bienestar</Link>
             <Link href="/shop" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Ver Todo</Link>
-            <Link href="/comunidad" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Comunidad VIP</Link>
+            <Link href="/comunidad" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Club Gran Colinos</Link>
+            {!user && (
+              <Link href="/login" onClick={toggleMobileMenu} className="text-sm hover:text-brand-gold transition-colors mt-4">Iniciar Sesión</Link>
+            )}
+            {user && (
+              <button onClick={() => { logout(); toggleMobileMenu(); }} className="text-sm text-gray-500 hover:text-red-400 transition-colors mt-4">
+                Cerrar Sesión
+              </button>
+            )}
           </nav>
         </div>
       </header>

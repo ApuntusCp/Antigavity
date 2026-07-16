@@ -15,6 +15,7 @@ export function CartProvider({ children }) {
     const savedCart = localStorage.getItem('gc_cart');
     if (savedCart) {
       try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCart(JSON.parse(savedCart));
       } catch (e) {
         console.error("Error loading cart:", e);
@@ -71,7 +72,7 @@ export function CartProvider({ children }) {
     setCart([]);
   };
 
-  const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const cartTotal = cart.reduce((total, item) => total + ((item.discountPrice || item.price) * item.quantity), 0);
   const cartItemCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   return (

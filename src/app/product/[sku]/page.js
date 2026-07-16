@@ -88,9 +88,25 @@ export default async function ProductPage({ params }) {
                 SKU: {product.sku}
               </span>
             </div>
-            <div className="text-5xl font-light text-brand-gold mb-8">
-              {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price || 0)}
-            </div>
+            {product.discountPrice ? (
+              <div className="flex flex-col gap-1 mb-8">
+                <div className="text-2xl font-light text-gray-400 line-through">
+                  {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price || 0)}
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-5xl font-light text-red-500 font-bold drop-shadow-md">
+                    {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.discountPrice)}
+                  </div>
+                  <div className="bg-brand-gold/20 text-brand-gold px-3 py-1 rounded-sm text-xs font-bold uppercase tracking-widest border border-brand-gold/50 shadow-[0_0_15px_rgba(212,175,55,0.2)] animate-pulse">
+                    En Oferta
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-5xl font-light text-brand-gold mb-8">
+                {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price || 0)}
+              </div>
+            )}
             
             <p className="text-gray-600 dark:text-gray-300 font-light leading-relaxed mb-6">
               {product.description || 'Fórmula botánica premium desarrollada con los más altos estándares de calidad colombiana para promover tu bienestar diario.'}
