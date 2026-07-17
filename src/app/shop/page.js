@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { fetchProducts } from "../../utils/firebase";
 
-export const revalidate = 60; // ISR: Revalidate catalog every 60 seconds
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: "Catálogo Premium | GranColinos",

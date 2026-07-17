@@ -34,3 +34,23 @@ export async function fetchProducts() {
     return [];
   }
 }
+
+// Fetch blog posts from Firebase Firestore
+export async function fetchBlogPosts() {
+  try {
+    const q = query(collection(db, 'blog_posts'), orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q);
+    
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        date: data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Fecha desconocida'
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching blog posts from Firebase:", error);
+    return [];
+  }
+}

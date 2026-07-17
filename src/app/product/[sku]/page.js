@@ -6,8 +6,8 @@ import AddToCartButton from './AddToCartButton';
 import ProductGallery from './ProductGallery';
 import RelatedProducts from './RelatedProducts';
 
-// Revalidar cada 60 segundos (ISR - Incremental Static Regeneration)
-export const revalidate = 60;
+// Forzar datos en tiempo real (evitar problemas de sincronización de caché)
+export const dynamic = 'force-dynamic';
 
 // Helper para obtener el producto
 async function getProductBySku(sku) {

@@ -1,26 +1,27 @@
 import Image from "next/image";
 import Link from "next/link";
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../../../utils/firebase';
 
-// This is a placeholder. In the real app, this would fetch from Firebase or MDX
-const POST = {
-  title: 'El CBD como Aliado Natural contra el Estrés y la Ansiedad',
-  date: '10 de Julio, 2026',
-  author: 'Dra. María Aponte',
-  image: 'https://images.unsplash.com/photo-1611078731519-2166a4bc2c8e?q=80&w=1000&auto=format&fit=crop',
-  content: `
-    El ritmo de vida moderno nos empuja constantemente hacia límites físicos y mentales. En esta búsqueda por el equilibrio, los extractos puros de la naturaleza se presentan no como una cura mágica, sino como herramientas para recuperar nuestra homeostasis.
+export const dynamic = 'force-dynamic';
 
-    Nuestro sistema endocannabinoide juega un papel fundamental en la regulación del estrés. Al introducir CBD (Cannabidiol) de alta pureza, sin trazas de THC, estamos proporcionando al cuerpo moléculas que interactúan suavemente con nuestros propios receptores para promover un estado de calma sin alterar la consciencia.
-
-    ## ¿Cómo integrarlo en la rutina?
-    
-    1. **Mañanas con propósito:** Unas gotas bajo la lengua antes del café pueden ayudar a mitigar los picos de cortisol.
-    2. **Tardes de enfoque:** Cuando la mente se satura, el CBD actúa como un "reset" sutil.
-    3. **Noches profundas:** Combinado con una buena higiene del sueño, facilita la transición hacia el descanso reparador.
-
-    En GranColinos, nuestro compromiso es entregar la esencia pura de este milagro botánico, con certificaciones que garantizan que cada frasco contiene exactamente lo que promete, ni más ni menos.
-  `
-};
+async function getPostBySlug(slug) {
+  try {
+    const q = query(collection(db, 'blog_posts'), where('slug', '==', decodeURIComponent(slug)));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
+    const doc = snapshot.docs[0];
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      date: data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Fecha desconocida'
+    };
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    return null;
+  }
+}
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -32,6 +33,16 @@ export async function generateMetadata({ params }) {
 export default async function BlogPost({ params }) {
   // Await the params as required by Next.js 15+ 
   const { slug } = await params;
+  const POST = await getPostBySlug(slug);
+
+  if (!POST) {
+    return (
+      <div className="max-w-4xl mx-auto px-6 py-32 text-center text-white">
+        <h1 className="text-4xl mb-4 font-playfair">Artículo no encontrado</h1>
+        <Link href="/blog" className="text-brand-gold hover:underline">Volver al Journal</Link>
+      </div>
+    );
+  }
   
   return (
     <article className="max-w-4xl mx-auto px-6 py-20 bg-brand-light dark:bg-brand-dark fade-in">
@@ -45,7 +56,7 @@ export default async function BlogPost({ params }) {
 
       <header className="mb-16 text-center">
         <span className="text-brand-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-6 block">
-          {POST.date} &bull; Por {POST.author}
+          {POST.date} &bull; Por {POST.author || 'Gran Colinos'}
         </span>
         <h1 className="font-playfair text-4xl md:text-6xl text-brand-dark dark:text-white leading-tight mb-12">
           {POST.title}
@@ -53,7 +64,7 @@ export default async function BlogPost({ params }) {
         
         <div className="relative aspect-[21/9] w-full overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm">
           <Image 
-            src={POST.image} 
+            src={POST.image || 'https://images.unsplash.com/photo-1611078731519-2166a4bc2c8e?q=80&w=1000&auto=format&fit=crop'} 
             alt={POST.title} 
             fill 
             className="object-cover object-center" 

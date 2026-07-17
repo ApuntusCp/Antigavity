@@ -33,6 +33,7 @@ export default function Header() {
             <Link href="/#catalogo" className="hover:text-brand-gold transition-colors duration-300">Catálogo</Link>
             <Link href="/#origen" className="hover:text-brand-gold transition-colors duration-300">Origen</Link>
             <Link href="/blog" className="hover:text-brand-gold transition-colors duration-300">Journal</Link>
+            <Link href="/movimiento" className="text-brand-green hover:text-brand-gold transition-colors duration-300 font-bold">Movimiento</Link>
           </nav>
 
           <div className="flex gap-6 items-center text-xs font-semibold tracking-[0.2em] uppercase relative z-50">
@@ -72,6 +73,7 @@ export default function Header() {
             <Link href="/#catalogo" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Catálogo Premium</Link>
             <Link href="/#origen" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Nuestra Esencia</Link>
             <Link href="/blog" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Journal de Bienestar</Link>
+            <Link href="/movimiento" onClick={toggleMobileMenu} className="text-brand-green hover:text-brand-gold transition-colors">Movimiento Gran Colinos</Link>
             <Link href="/shop" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Ver Todo</Link>
             <Link href="/comunidad" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Club Gran Colinos</Link>
             {!user && (
