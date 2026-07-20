@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useCart } from '../../components/CartContext';
-import { db } from '../../utils/firebase';
+import { db, auth } from '../../utils/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, updateDoc, increment } from 'firebase/firestore';
+import { signInAnonymously } from 'firebase/auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import Script from 'next/script';
@@ -117,6 +118,15 @@ export default function CheckoutPage() {
         paymentGateway: 'bold',
         createdAt: serverTimestamp(),
       };
+
+      // 0. Asegurar que el usuario tiene una sesión anónima para permisos de Firebase
+      if (!auth.currentUser) {
+        try {
+          await signInAnonymously(auth);
+        } catch (authErr) {
+          console.warn("No se pudo iniciar sesión anónima (puede fallar si está deshabilitado en Firebase Console):", authErr);
+        }
+      }
 
       // 1. Guardar la orden en Firebase (Colección 'orders')
       const orderRef = await addDoc(collection(db, 'orders'), orderData);

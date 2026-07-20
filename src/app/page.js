@@ -50,14 +50,14 @@ export default async function Home() {
             </a>
           </FadeInWhenVisible>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          <div className="flex flex-wrap justify-center gap-12">
             {products.length === 0 ? (
-              <p className="text-gray-500 font-sans tracking-widest uppercase text-sm col-span-3 text-center py-20">
+              <p className="text-gray-500 font-sans tracking-widest uppercase text-sm w-full text-center py-20">
                 Catálogo en preparación.
               </p>
             ) : (
               products.slice(0, 3).map((product, index) => (
-                <FadeInWhenVisible key={product.id} delay={index * 0.15}>
+                <FadeInWhenVisible key={product.id} delay={index * 0.15} className="w-full sm:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)] max-w-sm">
                   <Link href={`/product/${product.sku}`} className="group cursor-pointer block">
                     <div className="aspect-[3/4] bg-white dark:bg-black/30 mb-6 overflow-hidden relative rounded-xl border border-gray-100 dark:border-white/5 backdrop-blur-sm shadow-xl transition-all duration-700 group-hover:shadow-[0_20px_50px_rgba(212,175,55,0.1)] group-hover:border-brand-gold/30">
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:opacity-0 transition-opacity duration-500 z-10" />
