@@ -143,13 +143,31 @@ export default function CheckoutPage() {
         }
       }
 
-      // 3. Iniciar Widget de Bold
+      // 4. Obtener Integrity Hash de nuestro servidor seguro
+      const hashRes = await fetch('/api/checkout/hash', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: orderRef.id,
+          amount: grandTotal,
+          currency: 'COP'
+        })
+      });
+      
+      const hashData = await hashRes.json();
+      
+      if (!hashRes.ok) {
+        throw new Error(hashData.error || 'Error al generar firma de seguridad');
+      }
+
+      // 5. Iniciar Widget de Bold
       if (typeof window.BoldCheckout !== 'undefined') {
         const checkout = new window.BoldCheckout({
           orderId: orderRef.id,
           currency: "COP",
           amount: grandTotal,
           apiKey: process.env.NEXT_PUBLIC_BOLD_INTEGRATION_ID,
+          integritySignature: hashData.hash,
           redirectionUrl: `${window.location.origin}/`,
           payerEmail: orderData.customer.email,
           payerPhone: orderData.customer.phone,
@@ -164,7 +182,7 @@ export default function CheckoutPage() {
 
     } catch (error) {
       console.error("Error procesando checkout:", error);
-      alert("Hubo un error procesando tu pedido. Por favor intenta de nuevo.");
+      alert(`Error procesando pedido: ${error.message || "Por favor intenta de nuevo"}. Si el error persiste, contáctanos.`);
     } finally {
       setLoading(false);
     }
