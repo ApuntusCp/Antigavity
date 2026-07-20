@@ -23,7 +23,7 @@ export default function ProductGallery({ images, productName }) {
           alt={productName}
           fill
           priority
-          className="object-cover transition-transform duration-700 hover:scale-105"
+          className="object-contain p-4 transition-transform duration-700 hover:scale-105"
         />
       </div>
       {images.length > 1 && (
@@ -34,7 +34,7 @@ export default function ProductGallery({ images, productName }) {
               onClick={() => setMainImage(img)}
               className={`w-24 h-24 shrink-0 relative rounded-lg overflow-hidden border transition-all cursor-pointer ${mainImage === img ? 'border-brand-gold ring-2 ring-brand-gold opacity-100' : 'border-white/10 opacity-60 hover:opacity-100'}`}
             >
-              <Image src={img} alt={`${productName} vista ${i+1}`} fill className="object-cover" />
+              <Image src={img} alt={`${productName} vista ${i+1}`} fill className="object-contain p-1" />
             </div>
           ))}
         </div>

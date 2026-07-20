@@ -295,7 +295,7 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
                     </div>
                     <Link 
                       href={`/product/${activeVariant.sku || activeVariant.id}`}
-                      className="px-8 py-2.5 rounded-full text-sm font-bold bg-white text-black hover:scale-105 transition-transform uppercase tracking-widest shadow-xl"
+                      className="px-8 py-2.5 rounded-full text-sm font-bold bg-white text-black hover:scale-105 transition-transform uppercase tracking-widest shadow-xl whitespace-nowrap flex-shrink-0"
                     >
                       Comprar Ahora
                     </Link>
