@@ -190,12 +190,13 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
         {/* 3. Contenido principal */}
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 h-full flex flex-col justify-center">
 
-          {/* Sello INVIMA estático */}
+          {/* Sello INVIMA temporalmente oculto hasta tener módulo legal
           <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center w-full">
             <p className="text-[10px] md:text-xs tracking-[0.35em] text-white/60 uppercase font-medium">
               CALIDAD INVIMA CERTIFICADA · RS-2024-12345
             </p>
           </div>
+          */}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center h-full pt-16">
 
@@ -205,7 +206,7 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
                 <h1 className="text-5xl md:text-7xl font-serif font-bold text-white leading-tight mb-2">
                   <span style={{ color: currentAccentColor }} className="transition-colors duration-700">Gran</span>Colinos
                 </h1>
-                <div className="h-16 overflow-hidden">
+                <div className="min-h-[4rem] overflow-visible">
                   <AnimatePresence mode="wait">
                     <motion.h2
                       key={activeVariant.id}
