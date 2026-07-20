@@ -264,7 +264,7 @@ export default function CheckoutPage() {
 
   return (
     <>
-    <Script src="https://checkout.bold.co/v2/bold.js" strategy="lazyOnload" />
+    <Script src="https://checkout.bold.co/library/boldPaymentButton.js" strategy="beforeInteractive" />
     <div className="min-h-screen bg-brand-light dark:bg-[#050505] text-brand-dark dark:text-white pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-6">
         
