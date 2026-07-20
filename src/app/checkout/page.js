@@ -253,6 +253,7 @@ export default function CheckoutPage() {
           amount: grandTotal,
           apiKey: process.env.NEXT_PUBLIC_BOLD_INTEGRATION_ID,
           integritySignature: hashData.hash,
+          renderMode: 'embedded',
           redirectionUrl: `${window.location.origin}/`,
           payerEmail: orderData.customer.email,
           payerPhone: orderData.customer.phone,
