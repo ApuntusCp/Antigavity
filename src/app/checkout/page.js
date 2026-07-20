@@ -247,21 +247,6 @@ export default function CheckoutPage() {
           console.warn("Error updating coupon count:", e);
         }
       }
-      
-      // 4.5. Enviar Notificación de Telegram al celular del administrador
-      try {
-        await fetch('/api/notify/order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: orderData.customer.name,
-            total: grandTotal,
-            city: orderData.customer.city
-          })
-        });
-      } catch(e) {
-        console.warn("No se pudo notificar a telegram", e);
-      }
 
       // 5. Obtener Integrity Hash de nuestro servidor seguro
       const hashRes = await fetch('/api/checkout/hash', {
@@ -303,7 +288,7 @@ export default function CheckoutPage() {
           apiKey: process.env.NEXT_PUBLIC_BOLD_INTEGRATION_ID,
           integritySignature: hashData.hash,
           renderMode: 'embedded',
-          redirectionUrl: `${window.location.origin}/`,
+          redirectionUrl: `${window.location.origin}/checkout/success?order_id=${orderRef.id}`,
           payerEmail: orderData.customer.email,
           payerPhone: orderData.customer.phone,
           payerName: orderData.customer.name,
