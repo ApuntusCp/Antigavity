@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '../../components/CartContext';
 import { db } from '../../utils/firebase';
-import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, updateDoc, increment } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, updateDoc, increment, onSnapshot } from 'firebase/firestore';
 import { useAuth } from '../../components/AuthProvider';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -22,6 +22,9 @@ export default function CheckoutPage() {
   const [showAuthPassword, setShowAuthPassword] = useState(false);
   const [registering, setRegistering] = useState(false);
   
+  // Base shipping cost (fetched from Firestore)
+  const [baseShippingCost, setBaseShippingCost] = useState(15000);
+  
   // Estados para cupón
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState({ type: 'NONE', value: 0 });
@@ -30,7 +33,7 @@ export default function CheckoutPage() {
 
   // Lógica de Envío Gratis
   const purchaseCount = user?.customProfile?.purchaseCount || 0;
-  const SHIPPING_COST = (user && purchaseCount >= 1) ? 0 : 15000;
+  const SHIPPING_COST = (user && purchaseCount >= 1) ? 0 : baseShippingCost;
   
   const discountAmount = discount.type === 'PERCENTAGE' ? cartTotal * (discount.value / 100) : (discount.type === 'FIXED' ? discount.value : 0);
   const grandTotal = Math.max(0, cartTotal - discountAmount + SHIPPING_COST);
@@ -51,6 +54,20 @@ export default function CheckoutPage() {
       router.push('/shop');
     }
   }, [cart, router]);
+
+  // Fetch dynamic shipping cost from Firestore (Realtime)
+  useEffect(() => {
+    const docRef = doc(db, 'settings', 'shipping');
+    const unsubscribe = onSnapshot(docRef, (snap) => {
+      if (snap.exists() && typeof snap.data().cost === 'number') {
+        setBaseShippingCost(snap.data().cost);
+      }
+    }, (error) => {
+      console.error("Error fetching shipping cost in realtime:", error);
+    });
+    
+    return () => unsubscribe();
+  }, []);
 
   // Autocompletar email si el usuario ya está logueado
   useEffect(() => {
@@ -512,7 +529,7 @@ export default function CheckoutPage() {
                     onClick={handleGuestCheckout}
                     className="w-full py-4 bg-transparent border border-white/10 text-gray-400 hover:text-white font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-white/5 transition-colors"
                   >
-                    Pagar como Invitado (Envío $15.000)
+                    Pagar como Invitado (Envío ${new Intl.NumberFormat('es-CO').format(baseShippingCost)})
                   </button>
                 </div>
               </div>
