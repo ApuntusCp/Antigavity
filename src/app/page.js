@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { fetchProducts } from "../utils/firebase";
 import NewsletterForm from "../components/NewsletterForm";
+import HeroSection from "../components/HeroSection";
 
 export const revalidate = 60; // ISR: Revalidate catalog every 60 seconds
 
@@ -11,35 +12,8 @@ export default async function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       
-      {/* High-Impact Hero Section */}
-      <section className="relative h-[90vh] w-full flex items-center justify-center overflow-hidden bg-brand-dark fade-in">
-        <div className="absolute inset-0 z-0">
-          <Image 
-            src="https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=2000&auto=format&fit=crop"
-            alt="Naturaleza Colombiana GranColinos"
-            fill
-            className="object-cover object-center opacity-80"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-brand-dark z-10" />
-        </div>
-        
-        <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-4xl fade-in delay-300">
-          <span className="text-brand-gold text-xs font-bold tracking-[0.3em] uppercase mb-6 block">
-            Calidad INVIMA Certificada
-          </span>
-          <h1 className="font-playfair text-5xl md:text-7xl lg:text-8xl text-white font-normal leading-tight mb-8">
-            La Esencia del <br/> Bienestar
-          </h1>
-          <p className="text-gray-300 text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed mb-12">
-            Descubre nuestra línea exclusiva de CBD y snacks naturales, diseñados para elevar tu rutina diaria con pureza inigualable.
-          </p>
-          
-          <a href="#catalogo" className="inline-flex items-center justify-center px-10 py-4 border border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-dark transition-all duration-500 text-xs font-bold tracking-[0.2em] uppercase">
-            Explorar Colección
-          </a>
-        </div>
-      </section>
+      {/* Animated Hero Section with Variant Selector */}
+      <HeroSection />
 
       {/* Philosophy / Space Section */}
       <section id="origen" className="py-32 md:py-48 bg-brand-light dark:bg-brand-dark px-6">
@@ -104,6 +78,50 @@ export default async function Home() {
                 </Link>
               ))
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials / Social Proof Section */}
+      <section className="py-24 bg-brand-light dark:bg-[#0a0a0a] px-6 border-t border-white/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16 fade-in">
+            <span className="text-brand-gold text-xs font-bold tracking-[0.2em] uppercase mb-4 block">
+              Prueba Social Premium
+            </span>
+            <h2 className="font-playfair text-4xl text-brand-dark dark:text-white mb-6">
+              Voces del Club
+            </h2>
+            <div className="w-px h-12 bg-brand-gold mx-auto"></div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { name: "Carolina M.", role: "Miembro Oro", text: "La pureza de estos extractos ha cambiado mi rutina. Sentir que consumo algo 100% orgánico y colombiano no tiene precio." },
+              { name: "Dr. Alejandro V.", role: "Miembro Plata", text: "Recomiendo Gran Colinos por su compromiso con la calidad. Es raro encontrar marcas con esta dedicación a la formulación botánica." },
+              { name: "Sofía T.", role: "Miembro Bronce", text: "Desde el empaque hasta la última gota, todo grita exclusividad. Son más que productos, es un estilo de vida consciente." }
+            ].map((testimonial, i) => (
+              <div key={i} className={`p-8 bg-white dark:bg-black/40 border border-gray-100 dark:border-white/5 rounded-xl shadow-lg fade-in delay-${(i + 1) * 100}`}>
+                <div className="flex text-brand-gold mb-6">
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <svg key={star} className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                  ))}
+                </div>
+                <p className="text-gray-600 dark:text-gray-300 font-light italic leading-relaxed mb-8 relative">
+                  <span className="text-4xl text-brand-gold absolute -top-4 -left-2 opacity-20 font-serif">"</span>
+                  {testimonial.text}
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-gold to-brand-green flex items-center justify-center text-brand-dark font-bold">
+                    {testimonial.name[0]}
+                  </div>
+                  <div>
+                    <h4 className="font-playfair text-brand-dark dark:text-white font-bold">{testimonial.name}</h4>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest">{testimonial.role}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
