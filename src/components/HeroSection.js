@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { FastAverageColor } from 'fast-average-color';
 
 // --- CONFIGURACIÓN DE ANIMACIÓN ---
 const EASE = [0.65, 0, 0.35, 1];
@@ -52,11 +53,11 @@ const DEFAULT_VARIANTS = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// HeroSection — acepta cmsConfig del Editor Visual de GC Admin.
-// Si cmsConfig contiene un bloque tipo "hero", sus valores sobreescriben los defaults.
+// HeroSection — acepta cmsConfig del Editor Visual de GC Admin y el inventario real.
 // ─────────────────────────────────────────────────────────────────────────────
-export default function HeroSection({ cmsConfig = null }) {
+export default function HeroSection({ cmsConfig = null, products = [] }) {
   const [activeIdx, setActiveIdx] = useState(0);
+  const [dynamicColors, setDynamicColors] = useState({});
 
   // ── Extraer overrides del Editor Visual ──
   let heroOverride = null;
@@ -81,8 +82,48 @@ export default function HeroSection({ cmsConfig = null }) {
     }
   }
 
-  const VARIANTS = DEFAULT_VARIANTS;
-  const activeVariant = VARIANTS[activeIdx];
+  const VARIANTS = useMemo(() => {
+    if (products && products.length > 0) {
+      return products.slice(0, 3).map(p => ({
+        id: p.id,
+        name: p.title || p.name,
+        tagline: p.category || 'Colección Premium',
+        price: p.discountPrice 
+                 ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.discountPrice)
+                 : new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price || 0),
+        oldPrice: p.discountPrice ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price || 0) : null,
+        image: p.images?.[0] || '/Muestras/preview.webp',
+        decorations: [], // Can generate dynamic decorations if needed
+        colorBg: '#0a0a0a',
+        colorAccent: '#D4AF37'
+      }));
+    }
+    return DEFAULT_VARIANTS;
+  }, [products]);
+
+  useEffect(() => {
+    const fac = new FastAverageColor();
+    VARIANTS.forEach(v => {
+      fac.getColorAsync(v.image, { crossOrigin: 'anonymous' })
+        .then(color => {
+          setDynamicColors(prev => ({
+            ...prev,
+            [v.id]: {
+              accent: color.hex,
+              // Create a very dark version of the color for the background
+              bg: `rgba(${Math.floor(color.value[0]*0.15)}, ${Math.floor(color.value[1]*0.15)}, ${Math.floor(color.value[2]*0.15)}, 1)`
+            }
+          }));
+        })
+        .catch(e => console.error("Error extracting color", e));
+    });
+    return () => fac.destroy();
+  }, [VARIANTS]);
+
+  const activeVariant = VARIANTS[activeIdx] || VARIANTS[0];
+  const activeDynamicColor = dynamicColors[activeVariant?.id];
+  const currentBgColor = activeDynamicColor?.bg || activeVariant?.colorBg;
+  const currentAccentColor = activeDynamicColor?.accent || activeVariant?.colorAccent;
 
   const handleNext = () => setActiveIdx(prev => (prev + 1) % VARIANTS.length);
   const handlePrev = () => setActiveIdx(prev => (prev - 1 + VARIANTS.length) % VARIANTS.length);
@@ -115,7 +156,7 @@ export default function HeroSection({ cmsConfig = null }) {
             transition={{ duration: 0.8, ease: EASE }}
             className="absolute inset-0 z-0"
             style={{
-              backgroundColor: activeVariant.colorBg,
+              backgroundColor: currentBgColor,
               ...(heroOverride?.bgImage
                 ? {
                     backgroundImage: `url('${heroOverride.bgImage}')`,
@@ -162,7 +203,7 @@ export default function HeroSection({ cmsConfig = null }) {
             <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, ...TRANSITION }}>
                 <h1 className="text-5xl md:text-7xl font-serif font-bold text-white leading-tight mb-2">
-                  <span style={{ color: activeVariant.colorAccent }} className="transition-colors duration-700">Gran</span>Colinos
+                  <span style={{ color: currentAccentColor }} className="transition-colors duration-700">Gran</span>Colinos
                 </h1>
                 <div className="h-16 overflow-hidden">
                   <AnimatePresence mode="wait">
@@ -234,9 +275,19 @@ export default function HeroSection({ cmsConfig = null }) {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={TRANSITION}
-                    className="text-4xl font-bold text-[#D4AF37] tracking-tight"
+                    className="flex items-center gap-3"
                   >
-                    {activeVariant.price}
+                    {activeVariant.oldPrice && (
+                      <span className="text-lg text-white/40 line-through tracking-tight font-light">
+                        {activeVariant.oldPrice}
+                      </span>
+                    )}
+                    <span 
+                      className="text-4xl font-bold tracking-tight transition-colors duration-700"
+                      style={{ color: currentAccentColor }}
+                    >
+                      {activeVariant.price}
+                    </span>
                   </motion.div>
                 </AnimatePresence>
               </div>

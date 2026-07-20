@@ -16,7 +16,7 @@ export default async function Home() {
     <div className="flex flex-col min-h-screen">
       
       {/* Animated Hero Section with Variant Selector */}
-      <HeroSection cmsConfig={cmsConfig} />
+      <HeroSection cmsConfig={cmsConfig} products={products} />
 
       {/* Philosophy / Space Section */}
       <section id="origen" className="py-32 md:py-48 bg-brand-light dark:bg-brand-dark px-6">

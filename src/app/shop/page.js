@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { fetchProducts } from "../../utils/firebase";
+import { fetchProducts, fetchCMSPage } from "../../utils/firebase";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30; // ISR for shop page
 
 export const metadata = {
   title: "Catálogo Premium | GranColinos",
@@ -10,7 +10,16 @@ export const metadata = {
 };
 
 export default async function ShopPage() {
-  const products = await fetchProducts();
+  const [products, cmsConfig] = await Promise.all([
+    fetchProducts(),
+    fetchCMSPage('shop')
+  ]);
+
+  const headerBlock = cmsConfig?.blocks?.find(b => b.type === 'shop_header')?.content || {};
+  
+  const title = headerBlock.title || "Catálogo Premium";
+  const subtitle = headerBlock.subtitle || "Colección Completa";
+  const text = headerBlock.text || "Nuestra selección exclusiva de productos desarrollados con pureza botánica y los más altos estándares de calidad colombiana.";
 
   return (
     <div className="min-h-screen bg-brand-light dark:bg-brand-dark pt-32 pb-24 px-6">
@@ -19,14 +28,14 @@ export default async function ShopPage() {
         {/* Header */}
         <div className="text-center mb-20 fade-in">
           <span className="text-brand-gold text-xs font-bold tracking-[0.3em] uppercase mb-4 block">
-            Colección Completa
+            {subtitle}
           </span>
           <h1 className="font-playfair text-5xl md:text-7xl text-brand-dark dark:text-white mb-6">
-            Catálogo Premium
+            {title}
           </h1>
           <div className="w-px h-16 bg-brand-gold mx-auto mb-6"></div>
           <p className="text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
-            Nuestra selección exclusiva de productos desarrollados con pureza botánica y los más altos estándares de calidad colombiana.
+            {text}
           </p>
         </div>
 

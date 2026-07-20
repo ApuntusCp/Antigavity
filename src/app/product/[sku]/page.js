@@ -139,16 +139,29 @@ export default async function ProductPage({ params }) {
             <div className="p-6 bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/5 rounded-xl shadow-xl">
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Disponibilidad en Almacén</h3>
               {product.stock > 0 ? (
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <div className="w-4 h-4 rounded-full bg-green-500 animate-ping absolute opacity-40"></div>
-                    <div className="w-4 h-4 rounded-full bg-green-500 relative border-2 border-brand-light dark:border-black"></div>
+                product.stock <= 5 ? (
+                  <div className="flex items-center gap-4 bg-brand-gold/10 p-4 rounded-lg border border-brand-gold/30">
+                    <div className="relative">
+                      <div className="w-4 h-4 rounded-full bg-brand-gold animate-ping absolute opacity-40"></div>
+                      <div className="w-4 h-4 rounded-full bg-brand-gold relative border-2 border-brand-light dark:border-black"></div>
+                    </div>
+                    <div>
+                      <div className="text-brand-gold text-lg font-bold">¡Alta demanda!</div>
+                      <div className="text-sm text-gray-800 dark:text-gray-300">Solo quedan {product.stock} unidades</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-brand-dark dark:text-white text-lg font-medium">Disponible para envío</div>
-                    <div className="text-sm text-gray-400">{product.stock} unidades en inventario</div>
+                ) : (
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <div className="w-4 h-4 rounded-full bg-green-500 animate-ping absolute opacity-40"></div>
+                      <div className="w-4 h-4 rounded-full bg-green-500 relative border-2 border-brand-light dark:border-black"></div>
+                    </div>
+                    <div>
+                      <div className="text-brand-dark dark:text-white text-lg font-medium">Disponible para envío</div>
+                      <div className="text-sm text-gray-400">{product.stock} unidades en inventario</div>
+                    </div>
                   </div>
-                </div>
+                )
               ) : (
                 <div className="flex items-center gap-4">
                   <div className="w-4 h-4 rounded-full bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)] border-2 border-brand-light dark:border-black"></div>

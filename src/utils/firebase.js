@@ -63,16 +63,19 @@ export async function fetchBlogPosts(category = null) {
 }
 
 // Fetch CMS page config published from GC Admin Editor Visual
-// Reads from cms_pages/home_production, written by Editor when user clicks "Publicar"
-export async function fetchHomeCMSConfig() {
+// Reads from cms_pages/{pageId}_production, written by Editor when user clicks "Publicar"
+export async function fetchCMSPage(pageId = 'home') {
   try {
-    const snap = await getDoc(doc(db, 'cms_pages', 'home_production'));
+    const snap = await getDoc(doc(db, 'cms_pages', `${pageId}_production`));
     if (snap.exists()) {
       return snap.data(); // { blocks: [...], publishedAt, version }
     }
     return null;
   } catch (error) {
-    console.error("Error fetching CMS config:", error);
+    console.error(`Error fetching CMS config for ${pageId}:`, error);
     return null;
   }
 }
+
+// Retro-compatibility (or specific use)
+export const fetchHomeCMSConfig = () => fetchCMSPage('home');

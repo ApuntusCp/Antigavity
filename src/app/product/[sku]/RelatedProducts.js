@@ -28,7 +28,7 @@ export default async function RelatedProducts({ currentSku }) {
 
   return (
     <div className="mt-24 pt-16 border-t border-gray-200 dark:border-white/10">
-      <h3 className="font-playfair text-3xl mb-10 text-center text-brand-dark dark:text-white">Explora También</h3>
+      <h3 className="font-playfair text-3xl mb-10 text-center text-brand-dark dark:text-white">Miembros del club también compraron...</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {relatedProducts.map(product => (

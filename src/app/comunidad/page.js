@@ -48,10 +48,17 @@ export default function ClubGranColinosPage() {
 
     const q = query(collection(db, "community_messages"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const msgs = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          // Fallback para createdAt localmente antes de sincronizar
+          createdAt: data.createdAt ? data.createdAt : { toDate: () => new Date() }
+        };
+      });
+      // Sort manually just in case the null timestamp throws it at the end
+      msgs.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
       setMessages(msgs);
     });
 
@@ -151,11 +158,24 @@ export default function ClubGranColinosPage() {
         <div className="bg-gradient-to-br from-[#111] to-black p-8 rounded-2xl border border-brand-gold/20 mb-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl relative overflow-hidden fade-in">
           <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-[80px]" />
           
-          <div className="relative z-10 text-center md:text-left">
-            <h1 className="font-playfair text-3xl text-white mb-2">
-              Hola, {clientData?.name ? clientData.name.split(' ')[0] : 'Miembro'}
-            </h1>
-            <p className="text-brand-gold text-xs tracking-widest uppercase">Membresía Club Gran Colinos</p>
+          <div className="relative z-10 text-center md:text-left flex flex-col md:flex-row gap-6 items-center">
+            <div>
+              <h1 className="font-playfair text-3xl text-white mb-3">
+                Hola, {clientData?.name ? clientData.name.split(' ')[0] : 'Miembro'}
+              </h1>
+              <div className="flex items-center gap-3">
+                <span className={`text-xs tracking-widest uppercase px-3 py-1 rounded-full border font-bold ${
+                  clientData?.vipLevel === 'Oro' ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/50' :
+                  clientData?.vipLevel === 'Plata' ? 'bg-gray-400/20 text-gray-300 border-gray-400/50' :
+                  'bg-orange-700/20 text-orange-400 border-orange-700/50'
+                }`}>
+                  Rango: {clientData?.vipLevel || 'Bronce'}
+                </span>
+                <span className="text-brand-green text-xs tracking-widest uppercase bg-brand-green/20 px-3 py-1 rounded-full border border-brand-green/50">
+                  {clientData?.ecoPoints || 0} Eco-Points
+                </span>
+              </div>
+            </div>
           </div>
 
           {clientData?.couponCode && (

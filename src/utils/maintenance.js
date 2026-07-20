@@ -15,13 +15,28 @@ const db = getFirestore(app);
 
 export async function isMaintenanceModeActive() {
   try {
-    const snap = await getDoc(doc(db, 'config', 'site'));
-    if (snap.exists()) {
-      return snap.data().maintenanceMode === true;
+    // Usar la API REST de Firestore con 'no-store' para forzar que siempre lea en tiempo real
+    // y evitar el caché del servidor de Next.js
+    const response = await fetch(
+      'https://firestore.googleapis.com/v1/projects/aponte-sas/databases/(default)/documents/config/site',
+      { cache: 'no-store' }
+    );
+    
+    if (!response.ok) {
+      return false;
     }
+
+    const data = await response.json();
+    
+    // En Firestore REST, los booleanos vienen como { booleanValue: true/false }
+    if (data.fields && data.fields.maintenanceMode) {
+      return data.fields.maintenanceMode.booleanValue === true;
+    }
+    
     return false;
   } catch (e) {
-    // Si falla, no bloqueamos la tienda
+    // Si falla la red, no bloqueamos la tienda
+    console.error("Error fetching maintenance mode:", e);
     return false;
   }
 }

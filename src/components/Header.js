@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "./CartContext";
 import { useAuth } from "./AuthProvider";
-import { User } from "lucide-react";
+import { User, LogOut, ShoppingCart, Menu, X, Layers } from "lucide-react";
 
-export default function Header() {
+export default function Header({ headerConfig = {} }) {
   const { cartItemCount, setIsCartOpen } = useCart();
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -19,14 +19,18 @@ export default function Header() {
       <header className="w-full fixed top-0 z-40 bg-brand-light/90 dark:bg-brand-dark/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 relative z-50">
-            <Image 
-              src="/Logos/GranColinos.Com.png" 
-              alt="GranColinos Logo" 
-              width={180} 
-              height={50} 
-              className="object-contain"
-              priority
-            />
+            {headerConfig.logoText ? (
+              <span className="font-playfair text-2xl font-bold text-brand-dark dark:text-brand-gold">{headerConfig.logoText}</span>
+            ) : (
+              <Image 
+                src="/Logos/GranColinos.Com.png" 
+                alt="GranColinos Logo" 
+                width={180} 
+                height={50} 
+                className="object-contain"
+                priority
+              />
+            )}
           </Link>
           
           <nav className="hidden md:flex gap-10 text-xs font-semibold tracking-[0.2em] uppercase">
@@ -39,11 +43,11 @@ export default function Header() {
           <div className="flex gap-6 items-center text-xs font-semibold tracking-[0.2em] uppercase relative z-50">
             {user ? (
               <div className="hidden md:flex items-center gap-4">
-                <Link href="/comunidad" className="hover:text-brand-gold transition-colors duration-300">
-                  Mi Club
+                <Link href="/comunidad" className="hover:text-brand-gold transition-colors duration-300 flex items-center gap-2">
+                  MI CLUB
                 </Link>
-                <button onClick={() => logout()} className="hover:text-red-400 transition-colors duration-300 text-[10px]">
-                  Salir
+                <button onClick={() => logout()} className="hover:text-red-400 transition-colors duration-300" title="Salir">
+                  <LogOut size={16} />
                 </button>
               </div>
             ) : (
@@ -54,15 +58,16 @@ export default function Header() {
             
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="hover:text-brand-gold transition-colors duration-300 flex items-center gap-1"
+              className="hover:text-brand-gold transition-colors duration-300 flex items-center gap-2"
+              title="Carrito"
             >
-              Cart <span className="bg-brand-gold text-brand-dark px-1.5 py-0.5 rounded-full text-[10px]">{cartItemCount}</span>
+              <ShoppingCart size={16} /> <span className="bg-brand-gold text-brand-dark px-1.5 py-0.5 rounded-full text-[10px]">{cartItemCount}</span>
             </button>
             <button 
               onClick={toggleMobileMenu}
               className="md:hidden hover:text-brand-gold transition-colors duration-300"
             >
-              {isMobileMenuOpen ? 'Cerrar' : 'Menu'}
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>

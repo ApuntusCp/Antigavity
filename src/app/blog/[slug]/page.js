@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../../utils/firebase';
+import BlogComments from '../../../components/BlogComments';
 
 export const dynamic = 'force-dynamic';
 
@@ -92,6 +93,8 @@ export default async function BlogPost({ params }) {
           return <p key={idx} className="mb-6 text-gray-600 dark:text-gray-400">{paragraph.trim()}</p>;
         })}
       </div>
+
+      <BlogComments postId={POST.id} />
     </article>
   );
 }

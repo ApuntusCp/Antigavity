@@ -5,7 +5,9 @@ import Header from "../components/Header";
 import CartDrawer from "../components/CartDrawer";
 import Analytics from "../components/Analytics";
 import MaintenancePage from "../components/MaintenancePage";
-import { isMaintenanceModeActive } from "../utils/maintenance";
+import { fetchCMSPage } from "../utils/firebase";
+
+export const dynamic = 'force-dynamic';
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,17 +25,24 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const inMaintenance = await isMaintenanceModeActive();
+  const globalConfig = await fetchCMSPage('global');
+  const blocks = globalConfig?.blocks || [];
+  
+  const maintenanceBlock = blocks.find(b => b.type === 'maintenance')?.content || {};
+  const inMaintenance = maintenanceBlock.active || false;
+  
+  const headerBlock = blocks.find(b => b.type === 'header_config')?.content || {};
+  const footerBlock = blocks.find(b => b.type === 'footer_config')?.content || {};
 
   return (
     <html lang="es" className={`${inter.variable} ${playfair.variable} h-full scroll-smooth`}>
       <body className="font-sans bg-brand-light dark:bg-brand-dark text-brand-dark dark:text-brand-light min-h-full flex flex-col antialiased">
         <Analytics />
         {inMaintenance ? (
-          <MaintenancePage />
+          <MaintenancePage customMessage={maintenanceBlock.message} />
         ) : (
           <Providers>
-            <Header />
+            <Header headerConfig={headerBlock} />
             <CartDrawer />
 
             {/* Main Content */}
@@ -45,9 +54,9 @@ export default async function RootLayout({ children }) {
             <footer className="bg-brand-dark text-white py-24">
               <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-16">
                 <div className="md:col-span-2">
-                  <h3 className="font-playfair text-3xl text-brand-gold mb-6">GranColinos</h3>
+                  <h3 className="font-playfair text-3xl text-brand-gold mb-6">{footerBlock.logoText || "GranColinos"}</h3>
                   <p className="text-gray-400 text-sm leading-loose max-w-sm">
-                    Bienestar premium y snacks naturales de alta gama en Colombia. Calidad INVIMA certificada.
+                    {footerBlock.description || "Bienestar premium y snacks naturales de alta gama en Colombia. Calidad INVIMA certificada."}
                   </p>
                 </div>
                 
@@ -71,7 +80,7 @@ export default async function RootLayout({ children }) {
               </div>
               
               <div className="max-w-7xl mx-auto px-6 mt-20 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-                <p>&copy; {new Date().getFullYear()} GranColinos. Todos los derechos reservados.</p>
+                <p>&copy; {new Date().getFullYear()} {footerBlock.copyright || "GRAN COLINOS SAS. TODOS LOS DERECHOS RESERVADOS."}</p>
                 <p className="mt-4 md:mt-0 tracking-widest">DISEÑADO CON EXCELENCIA</p>
               </div>
             </footer>

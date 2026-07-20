@@ -1,4 +1,4 @@
-export default function MaintenancePage() {
+export default function MaintenancePage({ customMessage }) {
   return (
     <div
       style={{
@@ -90,8 +90,7 @@ export default function MaintenancePage() {
           maxWidth: '480px',
           margin: '0 auto 48px',
         }}>
-          Nuestra tienda está en mantenimiento programado para ofrecerte una experiencia aún mejor.
-          Volveremos muy pronto.
+          {customMessage || "Nuestra tienda está en mantenimiento programado para ofrecerte una experiencia aún mejor. Volveremos muy pronto."}
         </p>
 
         {/* Línea divisora dorada */}
