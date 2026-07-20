@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FastAverageColor } from 'fast-average-color';
+import Link from 'next/link';
 
 // --- CONFIGURACIÓN DE ANIMACIÓN ---
 const EASE = [0.65, 0, 0.35, 1];
@@ -88,6 +89,7 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
         id: p.id,
         name: p.title || p.name,
         tagline: p.category || 'Colección Premium',
+        sku: p.sku || p.id,
         price: p.discountPrice 
                  ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.discountPrice)
                  : new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price || 0),
@@ -276,19 +278,27 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={TRANSITION}
-                    className="flex items-center gap-3"
+                    className="flex flex-col lg:flex-row items-center gap-4"
                   >
-                    {activeVariant.oldPrice && (
-                      <span className="text-lg text-white/40 line-through tracking-tight font-light">
-                        {activeVariant.oldPrice}
+                    <div className="flex items-center gap-3">
+                      {activeVariant.oldPrice && (
+                        <span className="text-lg text-white/40 line-through tracking-tight font-light">
+                          {activeVariant.oldPrice}
+                        </span>
+                      )}
+                      <span 
+                        className="text-4xl font-bold tracking-tight transition-colors duration-700"
+                        style={{ color: currentAccentColor }}
+                      >
+                        {activeVariant.price}
                       </span>
-                    )}
-                    <span 
-                      className="text-4xl font-bold tracking-tight transition-colors duration-700"
-                      style={{ color: currentAccentColor }}
+                    </div>
+                    <Link 
+                      href={`/product/${activeVariant.sku || activeVariant.id}`}
+                      className="px-8 py-2.5 rounded-full text-sm font-bold bg-white text-black hover:scale-105 transition-transform uppercase tracking-widest shadow-xl"
                     >
-                      {activeVariant.price}
-                    </span>
+                      Comprar Ahora
+                    </Link>
                   </motion.div>
                 </AnimatePresence>
               </div>
