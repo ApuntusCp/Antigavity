@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart();
-  const { user, register } = useAuth();
+  const { user, register, login } = useAuth();
   const router = useRouter();
   
   const [loading, setLoading] = useState(false);
