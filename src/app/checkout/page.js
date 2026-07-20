@@ -2,19 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import { useCart } from '../../components/CartContext';
-import { db, auth } from '../../utils/firebase';
+import { db } from '../../utils/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, updateDoc, increment } from 'firebase/firestore';
-import { signInAnonymously } from 'firebase/auth';
+import { useAuth } from '../../components/AuthProvider';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import Script from 'next/script';
-import { ShieldCheck, ArrowRight, Truck } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Truck, Lock, Eye, EyeOff, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart();
+  const { user, register } = useAuth();
   const router = useRouter();
+  
   const [loading, setLoading] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authPassword, setAuthPassword] = useState('');
+  const [showAuthPassword, setShowAuthPassword] = useState(false);
+  const [registering, setRegistering] = useState(false);
   
   // Estados para cupón
   const [couponCode, setCouponCode] = useState('');
@@ -22,14 +29,17 @@ export default function CheckoutPage() {
   const [couponError, setCouponError] = useState('');
   const [couponSuccess, setCouponSuccess] = useState('');
 
-  const SHIPPING_COST = 15000; // Tarifa fija nacional
+  // Lógica de Envío Gratis
+  const purchaseCount = user?.customProfile?.purchaseCount || 0;
+  const SHIPPING_COST = (user && purchaseCount >= 1) ? 0 : 15000;
+  
   const discountAmount = discount.type === 'PERCENTAGE' ? cartTotal * (discount.value / 100) : (discount.type === 'FIXED' ? discount.value : 0);
   const grandTotal = Math.max(0, cartTotal - discountAmount + SHIPPING_COST);
 
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
+    email: user?.email || '',
     phone: '',
     address: '',
     city: '',
@@ -42,6 +52,13 @@ export default function CheckoutPage() {
       router.push('/shop');
     }
   }, [cart, router]);
+
+  // Autocompletar email si el usuario ya está logueado
+  useEffect(() => {
+    if (user?.email && !formData.email) {
+      setFormData(prev => ({ ...prev, email: user.email }));
+    }
+  }, [user, formData.email]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -88,15 +105,57 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleCheckout = async (e) => {
+  const handleCheckoutSubmit = (e) => {
     e.preventDefault();
+    // Si no hay usuario logueado, mostramos el modal para ofrecer envío gratis
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+    // Si ya está logueado, procesamos directamente
+    processCheckout(user.uid, user.email);
+  };
+
+  const handleRegisterAndCheckout = async () => {
+    if (authPassword.length < 6) return alert("La contraseña debe tener al menos 6 caracteres.");
+    setRegistering(true);
+    try {
+      const userCredential = await register(formData.email, authPassword);
+      const newUser = userCredential.user;
+      
+      // Crear el perfil del cliente
+      await setDoc(doc(db, 'clients', newUser.uid), {
+        uid: newUser.uid,
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email.toLowerCase().trim(),
+        source: 'Checkout',
+        purchaseCount: 0,
+        createdAt: serverTimestamp()
+      });
+      
+      await processCheckout(newUser.uid, formData.email);
+    } catch (e) {
+      alert("Error al registrar: " + e.message);
+    } finally {
+      setRegistering(false);
+      setShowAuthModal(false);
+    }
+  };
+
+  const handleGuestCheckout = () => {
+    setShowAuthModal(false);
+    processCheckout(null, formData.email);
+  };
+
+  const processCheckout = async (userId = null, payerEmail = null) => {
     setLoading(true);
 
     try {
+      const finalEmail = payerEmail || formData.email;
       const orderData = {
         customer: {
           name: `${formData.firstName} ${formData.lastName}`,
-          email: formData.email,
+          email: finalEmail,
           phone: formData.phone,
           address: formData.address,
           city: formData.city,
@@ -117,16 +176,8 @@ export default function CheckoutPage() {
         status: 'pending_payment',
         paymentGateway: 'bold',
         createdAt: serverTimestamp(),
+        userId: userId // Vinculamos la orden al usuario si existe
       };
-
-      // 0. Asegurar que el usuario tiene una sesión anónima para permisos de Firebase
-      if (!auth.currentUser) {
-        try {
-          await signInAnonymously(auth);
-        } catch (authErr) {
-          console.warn("No se pudo iniciar sesión anónima (puede fallar si está deshabilitado en Firebase Console):", authErr);
-        }
-      }
 
       // 1. Guardar la orden en Firebase (Colección 'orders')
       const orderRef = await addDoc(collection(db, 'orders'), orderData);
@@ -138,22 +189,33 @@ export default function CheckoutPage() {
         customerPhone: orderData.customer.phone,
         items: orderData.items,
         total: grandTotal,
-        status: 'active', // 'active' hasta que Bold confirme el pago (en un webhook real)
+        status: 'active',
         updatedAt: serverTimestamp()
       });
 
-      // 3. Incrementar el contador de uso del cupón (si aplica)
+      // 3. Incrementar el contador de compras del usuario (si está registrado)
+      if (userId) {
+        try {
+          await updateDoc(doc(db, 'clients', userId), {
+            purchaseCount: increment(1)
+          });
+        } catch (e) {
+          console.warn("Could not increment purchase count", e);
+        }
+      }
+
+      // 4. Incrementar el contador de uso del cupón (si aplica)
       if (discount.value > 0 && couponCode) {
         try {
           await updateDoc(doc(db, 'coupons', couponCode.toUpperCase().trim()), {
             usedCount: increment(1)
           });
         } catch (e) {
-          console.error("Error updating coupon count:", e);
+          console.warn("Error updating coupon count:", e);
         }
       }
 
-      // 4. Obtener Integrity Hash de nuestro servidor seguro
+      // 5. Obtener Integrity Hash de nuestro servidor seguro
       const hashRes = await fetch('/api/checkout/hash', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -170,7 +232,7 @@ export default function CheckoutPage() {
         throw new Error(hashData.error || 'Error al generar firma de seguridad');
       }
 
-      // 5. Iniciar Widget de Bold
+      // 6. Iniciar Widget de Bold
       if (typeof window.BoldCheckout !== 'undefined') {
         const checkout = new window.BoldCheckout({
           orderId: orderRef.id,
@@ -198,7 +260,7 @@ export default function CheckoutPage() {
     }
   };
 
-  if (cart.length === 0) return null; // Evitar render mientras redirige
+  if (cart.length === 0) return null;
 
   return (
     <>
@@ -218,7 +280,7 @@ export default function CheckoutPage() {
           <div className="w-full lg:w-3/5">
             <h1 className="font-playfair text-3xl mb-8">Información de Envío</h1>
             
-            <form id="checkout-form" onSubmit={handleCheckout} className="space-y-6">
+            <form id="checkout-form" onSubmit={handleCheckoutSubmit} className="space-y-6">
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Nombre</label>
@@ -232,7 +294,7 @@ export default function CheckoutPage() {
 
               <div className="space-y-2">
                 <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Correo Electrónico</label>
-                <input required name="email" value={formData.email} onChange={handleChange} type="email" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="correo@ejemplo.com" />
+                <input required name="email" value={formData.email} onChange={handleChange} type="email" readOnly={!!user} className={`w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm ${user ? 'opacity-70 cursor-not-allowed' : ''}`} placeholder="correo@ejemplo.com" />
               </div>
 
               <div className="space-y-2">
@@ -319,8 +381,13 @@ export default function CheckoutPage() {
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Envío Nacional</span>
-                  <span className="font-mono">{new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(SHIPPING_COST)}</span>
+                  <span className="text-gray-500">
+                    Envío Nacional 
+                    {user && purchaseCount >= 1 && <span className="text-brand-gold text-[10px] uppercase ml-2 tracking-wider">(Beneficio Club)</span>}
+                  </span>
+                  <span className="font-mono">
+                    {SHIPPING_COST === 0 ? <span className="text-brand-gold font-bold">GRATIS</span> : new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(SHIPPING_COST)}
+                  </span>
                 </div>
               </div>
 
@@ -354,6 +421,92 @@ export default function CheckoutPage() {
 
         </div>
       </div>
+      
+      {/* Modal de Registro de Alta Gama */}
+      <AnimatePresence>
+        {showAuthModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+              onClick={() => setShowAuthModal(false)}
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", duration: 0.6 }}
+              className="relative w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-[0_0_50px_rgba(212,175,55,0.15)] overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-gold to-transparent" />
+              <button 
+                onClick={() => setShowAuthModal(false)} 
+                className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="p-8 md:p-10">
+                <h3 className="font-playfair text-3xl text-white mb-2 text-center">Únete al Club</h3>
+                <p className="text-gray-400 text-sm text-center mb-8 leading-relaxed">
+                  Crea tu cuenta ahora. Por tu registro, el envío de tu <strong className="text-white">segunda compra</strong> (y todas las siguientes) será <span className="text-brand-gold font-bold uppercase tracking-wider">Totalmente Gratis</span> de por vida.
+                </p>
+
+                <div className="space-y-4 mb-8">
+                  <div>
+                    <label className="block text-[10px] font-bold tracking-widest uppercase text-gray-500 mb-2">Contraseña para {formData.email}</label>
+                    <div className="relative">
+                      <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
+                      <input 
+                        type={showAuthPassword ? "text" : "password"} 
+                        value={authPassword}
+                        onChange={(e) => setAuthPassword(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 p-4 pl-12 rounded-lg outline-none focus:border-brand-gold focus:bg-white/10 transition-all text-white text-sm"
+                        placeholder="Crea una contraseña segura"
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => setShowAuthPassword(!showAuthPassword)} 
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-brand-gold transition-colors"
+                      >
+                        {showAuthPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  <button 
+                    type="button" 
+                    onClick={handleRegisterAndCheckout}
+                    disabled={registering || !authPassword}
+                    className="w-full py-4 bg-brand-gold text-black font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-white transition-all flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-gold"
+                  >
+                    {registering ? 'Creando cuenta...' : 'Registrarme y Pagar'}
+                  </button>
+                  
+                  <div className="relative flex items-center py-2">
+                    <div className="flex-grow border-t border-white/5"></div>
+                    <span className="flex-shrink-0 mx-4 text-gray-600 text-[10px] uppercase tracking-widest font-bold">O</span>
+                    <div className="flex-grow border-t border-white/5"></div>
+                  </div>
+
+                  <button 
+                    type="button" 
+                    onClick={handleGuestCheckout}
+                    className="w-full py-4 bg-transparent border border-white/10 text-gray-400 hover:text-white font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-white/5 transition-colors"
+                  >
+                    Pagar como Invitado (Envío $15.000)
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
     </>
   );
