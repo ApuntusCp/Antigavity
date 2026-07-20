@@ -1,19 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
-import { fetchProducts } from "../utils/firebase";
+import { fetchProducts, fetchHomeCMSConfig } from "../utils/firebase";
 import NewsletterForm from "../components/NewsletterForm";
 import HeroSection from "../components/HeroSection";
 
-export const revalidate = 60; // ISR: Revalidate catalog every 60 seconds
+export const revalidate = 30; // ISR: check for new CMS publishes every 30 seconds
 
 export default async function Home() {
-  const products = await fetchProducts();
+  const [products, cmsConfig] = await Promise.all([
+    fetchProducts(),
+    fetchHomeCMSConfig(),
+  ]);
 
   return (
     <div className="flex flex-col min-h-screen">
       
       {/* Animated Hero Section with Variant Selector */}
-      <HeroSection />
+      <HeroSection cmsConfig={cmsConfig} />
 
       {/* Philosophy / Space Section */}
       <section id="origen" className="py-32 md:py-48 bg-brand-light dark:bg-brand-dark px-6">

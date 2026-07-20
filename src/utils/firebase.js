@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, query, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, getDoc, doc, query, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -36,12 +36,12 @@ export async function fetchProducts() {
 }
 
 // Fetch blog posts from Firebase Firestore
-export async function fetchBlogPosts() {
+export async function fetchBlogPosts(category = null) {
   try {
     const q = query(collection(db, 'blog_posts'), orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
     
-    return snapshot.docs.map(doc => {
+    let posts = snapshot.docs.map(doc => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -49,8 +49,30 @@ export async function fetchBlogPosts() {
         date: data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Fecha desconocida'
       };
     });
+
+    if (category) {
+      // If a post doesn't have a category, we default it to 'tienda'
+      posts = posts.filter(post => (post.category || 'tienda') === category);
+    }
+    
+    return posts;
   } catch (error) {
     console.error("Error fetching blog posts from Firebase:", error);
     return [];
+  }
+}
+
+// Fetch CMS page config published from GC Admin Editor Visual
+// Reads from cms_pages/home_production, written by Editor when user clicks "Publicar"
+export async function fetchHomeCMSConfig() {
+  try {
+    const snap = await getDoc(doc(db, 'cms_pages', 'home_production'));
+    if (snap.exists()) {
+      return snap.data(); // { blocks: [...], publishedAt, version }
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching CMS config:", error);
+    return null;
   }
 }
