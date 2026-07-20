@@ -8,7 +8,6 @@ import { useAuth } from '../../components/AuthProvider';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import Script from 'next/script';
 import { ShieldCheck, ArrowRight, Truck, Lock, Eye, EyeOff, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -232,7 +231,21 @@ export default function CheckoutPage() {
         throw new Error(hashData.error || 'Error al generar firma de seguridad');
       }
 
-      // 6. Iniciar Widget de Bold
+      // 6. Cargar el script de Bold dinámicamente si no existe
+      if (typeof window.BoldCheckout === 'undefined') {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = "https://checkout.bold.co/library/boldPaymentButton.js";
+          script.onload = () => {
+            // Dar un pequeño respiro para que el script termine de inicializarse
+            setTimeout(resolve, 500); 
+          };
+          script.onerror = () => reject(new Error("No se pudo cargar la pasarela de Bold."));
+          document.head.appendChild(script);
+        });
+      }
+
+      // 7. Iniciar Widget de Bold
       if (typeof window.BoldCheckout !== 'undefined') {
         const checkout = new window.BoldCheckout({
           orderId: orderRef.id,
@@ -264,7 +277,6 @@ export default function CheckoutPage() {
 
   return (
     <>
-    <Script src="https://checkout.bold.co/library/boldPaymentButton.js" strategy="beforeInteractive" />
     <div className="min-h-screen bg-brand-light dark:bg-[#050505] text-brand-dark dark:text-white pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-6">
         
