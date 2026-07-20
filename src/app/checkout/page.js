@@ -21,6 +21,7 @@ export default function CheckoutPage() {
   const [authPassword, setAuthPassword] = useState('');
   const [showAuthPassword, setShowAuthPassword] = useState(false);
   const [registering, setRegistering] = useState(false);
+  const [isLoginMode, setIsLoginMode] = useState(false);
   
   // Base shipping cost (fetched from Firestore)
   const [baseShippingCost, setBaseShippingCost] = useState(15000);
@@ -136,22 +137,38 @@ export default function CheckoutPage() {
     if (authPassword.length < 6) return alert("La contraseña debe tener al menos 6 caracteres.");
     setRegistering(true);
     try {
-      const userCredential = await register(formData.email, authPassword);
-      const newUser = userCredential.user;
+      let newUser;
       
-      // Crear el perfil del cliente
-      await setDoc(doc(db, 'clients', newUser.uid), {
-        uid: newUser.uid,
-        name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email.toLowerCase().trim(),
-        source: 'Checkout',
-        purchaseCount: 0,
-        createdAt: serverTimestamp()
-      });
+      if (isLoginMode) {
+        // Iniciar Sesión
+        const userCredential = await login(formData.email, authPassword);
+        newUser = userCredential.user;
+      } else {
+        // Registro
+        const userCredential = await register(formData.email, authPassword);
+        newUser = userCredential.user;
+        
+        // Crear el perfil del cliente solo en registro
+        await setDoc(doc(db, 'clients', newUser.uid), {
+          uid: newUser.uid,
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email.toLowerCase().trim(),
+          source: 'Checkout',
+          purchaseCount: 0,
+          createdAt: serverTimestamp()
+        });
+      }
       
       await processCheckout(newUser.uid, formData.email);
     } catch (e) {
-      alert("Error al registrar: " + e.message);
+      if (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') {
+        alert("Contraseña incorrecta o usuario no encontrado.");
+      } else if (e.code === 'auth/email-already-in-use') {
+        alert("Este correo ya está registrado. Por favor, selecciona 'Ya tengo cuenta' para iniciar sesión.");
+        setIsLoginMode(true);
+      } else {
+        alert("Error: " + e.message);
+      }
     } finally {
       setRegistering(false);
       setShowAuthModal(false);
@@ -229,6 +246,21 @@ export default function CheckoutPage() {
         } catch (e) {
           console.warn("Error updating coupon count:", e);
         }
+      }
+      
+      // 4.5. Enviar Notificación de Telegram al celular del administrador
+      try {
+        await fetch('/api/notify/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: orderData.customer.name,
+            total: grandTotal,
+            city: orderData.customer.city
+          })
+        });
+      } catch(e) {
+        console.warn("No se pudo notificar a telegram", e);
       }
 
       // 5. Obtener Integrity Hash de nuestro servidor seguro
@@ -480,9 +512,14 @@ export default function CheckoutPage() {
               </button>
 
               <div className="p-8 md:p-10">
-                <h3 className="font-playfair text-3xl text-white mb-2 text-center">Únete al Club</h3>
+                <h3 className="font-playfair text-3xl text-white mb-2 text-center">
+                  {isLoginMode ? 'Iniciar Sesión' : 'Únete al Club'}
+                </h3>
                 <p className="text-gray-400 text-sm text-center mb-8 leading-relaxed">
-                  Crea tu cuenta ahora. Por tu registro, el envío de tu <strong className="text-white">segunda compra</strong> (y todas las siguientes) será <span className="text-brand-gold font-bold uppercase tracking-wider">Totalmente Gratis</span> de por vida.
+                  {isLoginMode 
+                    ? 'Ingresa tu contraseña para continuar con tu compra VIP.'
+                    : <>Crea tu cuenta ahora. Por tu registro, el envío de tu <strong className="text-white">segunda compra</strong> (y todas las siguientes) será <span className="text-brand-gold font-bold uppercase tracking-wider">Totalmente Gratis</span> de por vida.</>
+                  }
                 </p>
 
                 <div className="space-y-4 mb-8">
@@ -515,7 +552,15 @@ export default function CheckoutPage() {
                     disabled={registering || !authPassword}
                     className="w-full py-4 bg-brand-gold text-black font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-white transition-all flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-gold"
                   >
-                    {registering ? 'Creando cuenta...' : 'Registrarme y Pagar'}
+                    {registering ? 'Procesando...' : (isLoginMode ? 'Ingresar y Pagar' : 'Registrarme y Pagar')}
+                  </button>
+
+                  <button 
+                    type="button"
+                    onClick={() => setIsLoginMode(!isLoginMode)}
+                    className="w-full text-center text-xs text-brand-gold hover:text-white transition-colors underline tracking-widest uppercase mt-2"
+                  >
+                    {isLoginMode ? 'No tengo cuenta, quiero registrarme' : 'Ya tengo cuenta, iniciar sesión'}
                   </button>
                   
                   <div className="relative flex items-center py-2">
