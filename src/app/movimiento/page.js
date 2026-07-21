@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Leaf, Cpu, Sun, Sprout, ShieldCheck, TrendingUp, Layers } from "lucide-react";
 import { fetchCMSPage } from "../../utils/firebase";
+import JoinMovementButton from "../../components/JoinMovementButton";
 
 export const revalidate = 30;
 
@@ -62,9 +63,7 @@ export default async function MovimientoPage() {
             className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto font-light leading-relaxed mb-12"
             dangerouslySetInnerHTML={{ __html: heroText }}
           />
-          <button className="bg-brand-green/10 border border-brand-green/30 text-brand-green hover:bg-brand-green hover:text-black font-bold uppercase tracking-widest px-8 py-4 rounded-lg transition-all duration-300">
-            {heroCta}
-          </button>
+          <JoinMovementButton text={heroCta} />
         </div>
       </section>
 
