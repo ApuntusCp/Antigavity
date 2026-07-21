@@ -84,7 +84,11 @@ export default function ClubGranColinosPage() {
       await addDoc(collection(db, "community_messages"), {
         text: newMessage,
         uid: user.uid,
+        name: clientData?.name || "Miembro del Club",
         authorName: clientData?.name || "Miembro del Club",
+        role: clientData?.vipLevel ? `Miembro ${clientData.vipLevel}` : "Voz del Club",
+        photoUrl: clientData?.photoUrl || null,
+        isPublished: false,
         createdAt: serverTimestamp(),
       });
       setNewMessage("");
@@ -134,29 +138,6 @@ export default function ClubGranColinosPage() {
     }
   };
 
-  const submitTestimonial = async (e) => {
-    e.preventDefault();
-    if (!testimonialText.trim() || !user) return;
-    try {
-      setSavingProfile(true);
-      await addDoc(collection(db, "client_testimonials"), {
-        uid: user.uid,
-        name: clientData?.name || "Miembro",
-        role: clientData?.vipLevel ? `Miembro ${clientData.vipLevel}` : "Miembro",
-        photoUrl: clientData?.photoUrl || null,
-        text: testimonialText,
-        isPublished: false,
-        createdAt: serverTimestamp()
-      });
-      setTestimonialText("");
-      alert("¡Gracias! Tu testimonio ha sido enviado y será revisado por nuestro equipo para publicarlo en Voces del Club.");
-      setIsEditingProfile(false);
-    } catch (error) {
-      console.error("Error submit testimonial", error);
-      alert("Hubo un error al enviar tu testimonio.");
-    } finally {
-      setSavingProfile(false);
-    }
   };
 
   if (loading || loadingData) {
@@ -289,48 +270,24 @@ export default function ClubGranColinosPage() {
 
         {/* Profile Settings Panel */}
         {isEditingProfile && (
-          <div className="bg-[#111] rounded-2xl border border-brand-gold/30 p-8 mb-12 shadow-2xl fade-in relative">
-            <h2 className="font-playfair text-2xl text-brand-gold mb-6 border-b border-white/10 pb-4">Personaliza tu Perfil</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-bold">Tu Apodo / Nombre</label>
-                <input 
-                  type="text" 
-                  value={profileName} 
-                  onChange={e => setProfileName(e.target.value)}
-                  className="w-full bg-black border border-white/20 rounded-lg p-3 text-white focus:border-brand-gold outline-none transition-colors"
-                />
-                <button 
-                  onClick={saveProfile}
-                  disabled={savingProfile || !profileName.trim()}
-                  className="mt-4 bg-brand-gold text-black font-bold text-xs uppercase tracking-widest px-6 py-2 rounded flex items-center gap-2 hover:bg-yellow-400 transition-colors disabled:opacity-50"
-                >
-                  {savingProfile ? <Loader2 size={14} className="animate-spin" /> : "Guardar Cambios"}
-                </button>
-              </div>
-              <div>
-                <label className="block text-xs uppercase tracking-widest text-brand-gold mb-2 font-bold flex items-center gap-2">
-                  <Star size={14} /> Ser Voz del Club
-                </label>
-                <p className="text-gray-400 text-sm mb-3">Cuéntale a la comunidad qué tal te han parecido nuestros productos. Tu testimonio podría ser destacado en nuestra página principal.</p>
-                <form onSubmit={submitTestimonial}>
-                  <textarea 
-                    value={testimonialText}
-                    onChange={e => setTestimonialText(e.target.value)}
-                    placeholder="Escribe tu testimonio aquí..."
-                    className="w-full bg-black border border-white/20 rounded-lg p-3 text-white focus:border-brand-gold outline-none transition-colors resize-none mb-3"
-                    rows="3"
-                    required
-                  />
-                  <button 
-                    type="submit"
-                    disabled={savingProfile || !testimonialText.trim()}
-                    className="w-full bg-white/10 text-white font-bold text-xs uppercase tracking-widest px-6 py-2 rounded hover:bg-white/20 transition-colors disabled:opacity-50"
-                  >
-                    Enviar Testimonio
-                  </button>
-                </form>
-              </div>
+          <div className="bg-[#111] rounded-2xl border border-brand-gold/30 p-8 mb-12 shadow-2xl fade-in relative max-w-md mx-auto">
+            <h2 className="font-playfair text-2xl text-brand-gold mb-6 border-b border-white/10 pb-4 text-center">Personaliza tu Perfil</h2>
+            <div>
+              <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-bold">Tu Apodo / Nombre</label>
+              <input 
+                type="text" 
+                value={profileName} 
+                onChange={e => setProfileName(e.target.value)}
+                className="w-full bg-black border border-white/20 rounded-lg p-3 text-white focus:border-brand-gold outline-none transition-colors"
+                placeholder="¿Cómo quieres que te llamemos?"
+              />
+              <button 
+                onClick={saveProfile}
+                disabled={savingProfile || !profileName.trim()}
+                className="mt-4 w-full bg-brand-gold text-black font-bold text-xs uppercase tracking-widest px-6 py-3 rounded flex items-center justify-center gap-2 hover:bg-yellow-400 transition-colors disabled:opacity-50"
+              >
+                {savingProfile ? <Loader2 size={16} className="animate-spin" /> : "Guardar Cambios"}
+              </button>
             </div>
           </div>
         )}

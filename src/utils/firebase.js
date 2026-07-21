@@ -67,7 +67,7 @@ export async function fetchBlogPosts(category = null) {
 // Fetch published client testimonials
 export async function fetchClientTestimonials() {
   try {
-    const q = query(collection(db, 'client_testimonials'), where('isPublished', '==', true));
+    const q = query(collection(db, 'community_messages'), where('isPublished', '==', true));
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
