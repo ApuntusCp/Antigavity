@@ -27,12 +27,20 @@ export default async function MovimientoPage() {
     { title: "Impacto Político", text: "Para cambiar el país, debemos legislar. Gran Colinos aspira a influir en la política colombiana creando un marco legal donde la salud mental y física sea un derecho, no un privilegio.", icon: <TrendingUp size={32} />, colorClass: "text-emerald-500", bgClass: "bg-emerald-500/10", borderHover: "hover:border-emerald-500/30" }
   ];
 
-  const pillarsToRender = defaultPillars.map((def, i) => {
-    if (pillarBlocks[i]) {
-      return { ...def, title: pillarBlocks[i].title, text: pillarBlocks[i].text };
-    }
-    return def;
-  });
+  const cyclicStyles = [
+    { icon: <Leaf size={32} />, colorClass: "text-brand-green", bgClass: "bg-brand-green/10", borderHover: "hover:border-brand-green/30" },
+    { icon: <Cpu size={32} />, colorClass: "text-brand-gold", bgClass: "bg-brand-gold/10", borderHover: "hover:border-brand-gold/30" },
+    { icon: <TrendingUp size={32} />, colorClass: "text-emerald-500", bgClass: "bg-emerald-500/10", borderHover: "hover:border-emerald-500/30" },
+    { icon: <ShieldCheck size={32} />, colorClass: "text-blue-500", bgClass: "bg-blue-500/10", borderHover: "hover:border-blue-500/30" }
+  ];
+
+  let pillarsToRender = defaultPillars;
+  if (pillarBlocks.length > 0) {
+    pillarsToRender = pillarBlocks.map((block, i) => {
+      const style = cyclicStyles[i % cyclicStyles.length];
+      return { ...style, title: block.title || 'Pilar', text: block.text || '' };
+    });
+  }
 
   return (
     <div className="min-h-screen bg-[#050505] text-gray-300 font-sans selection:bg-brand-green/30 selection:text-brand-gold overflow-hidden">
