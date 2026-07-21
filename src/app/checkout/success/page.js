@@ -30,30 +30,9 @@ function SuccessContent() {
         if (orderSnap.exists()) {
           const orderData = orderSnap.data();
           setOrder(orderData);
-
-          // Si la orden aún estaba pendiente, la actualizamos y notificamos
-          if (orderData.status === 'pending_payment') {
-            await updateDoc(orderRef, {
-              status: 'paid'
-            });
-
-            // Actualizar también en carts para GC Admin
-            const cartRef = doc(db, 'carts', orderId);
-            await updateDoc(cartRef, {
-              status: 'paid'
-            }).catch(console.warn);
-
-            // Enviar notificación a Telegram
-            await fetch('/api/notify/order', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                name: orderData.customer.name,
-                total: orderData.total,
-                city: orderData.customer.city
-              })
-            }).catch(console.warn);
-          }
+          // La actualización de estado, descuento de inventario y notificación a Telegram
+          // AHORA se manejan de manera 100% segura en el backend mediante el Webhook de Bold
+          // (/api/checkout/webhook). El cliente no puede falsificar esto nunca más.
         } else {
           setError(true);
         }
