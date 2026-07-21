@@ -23,6 +23,7 @@ export default function ClubGranColinosPage() {
   const [profileName, setProfileName] = useState("");
   const [testimonialText, setTestimonialText] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const fileInputRef = useRef(null);
 
   // Cargar datos del cliente logueado
@@ -110,7 +111,7 @@ export default function ClubGranColinosPage() {
     const file = e.target.files[0];
     if (!file || !user) return;
     try {
-      setSavingProfile(true);
+      setIsUploadingPhoto(true);
       const storageRef = ref(storage, `clients_avatars/${user.uid}_${Date.now()}`);
       await uploadBytes(storageRef, file);
       const url = await getDownloadURL(storageRef);
@@ -118,9 +119,10 @@ export default function ClubGranColinosPage() {
       setClientData(prev => ({ ...prev, photoUrl: url }));
     } catch (error) {
       console.error("Error uploading photo", error);
-      alert("No se pudo subir la foto.");
+      alert("No se pudo subir la foto: " + error.message);
     } finally {
-      setSavingProfile(false);
+      setIsUploadingPhoto(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -216,9 +218,10 @@ export default function ClubGranColinosPage() {
               )}
               <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm cursor-pointer"
+                disabled={isUploadingPhoto}
+                className={`absolute inset-0 bg-black/50 rounded-full flex items-center justify-center transition-opacity backdrop-blur-sm cursor-pointer ${isUploadingPhoto ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
               >
-                <Camera size={24} className="text-white" />
+                {isUploadingPhoto ? <Loader2 size={24} className="text-white animate-spin" /> : <Camera size={24} className="text-white" />}
               </button>
             </div>
 
