@@ -6,7 +6,7 @@ import { db, storage } from "../../utils/firebase";
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Link from "next/link";
-import { Crown, Gift, MessageSquare, ShieldCheck, Copy, CheckCircle, Loader2, Camera, Star, Settings } from "lucide-react";
+import { Crown, Gift, MessageSquare, ShieldCheck, Copy, CheckCircle, Loader2, Camera, Star, Settings, User } from "lucide-react";
 
 export default function ClubGranColinosPage() {
   const { user, loading } = useAuth();
