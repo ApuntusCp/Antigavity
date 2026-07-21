@@ -192,8 +192,8 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
         {/* 3. Contenido principal */}
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 h-full flex flex-col justify-center">
 
-          {/* Sello INVIMA: Flotante superior derecha, sutil pero visible */}
-          <div className="absolute top-6 right-6 md:top-10 md:right-10 z-50 flex items-center gap-3 bg-white/5 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full shadow-2xl">
+          {/* Sello INVIMA: Flotante superior derecha, sutil pero visible (OCULTO TEMPORALMENTE) */}
+          <div className="hidden absolute top-6 right-6 md:top-10 md:right-10 z-50 items-center gap-3 bg-white/5 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full shadow-2xl">
             <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)] animate-pulse"></div>
             <p className="text-[9px] md:text-[10px] tracking-[0.2em] text-white/80 uppercase font-bold">
               INVIMA <span className="text-brand-gold font-light">RS-2024-12345</span>
