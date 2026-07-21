@@ -1,11 +1,12 @@
 "use client";
 
 import { useAuth } from "../../components/AuthProvider";
-import { useState, useEffect } from "react";
-import { db } from "../../utils/firebase";
-import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, getDoc } from "firebase/firestore";
+import { useState, useEffect, useRef } from "react";
+import { db, storage } from "../../utils/firebase";
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, getDoc, updateDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Link from "next/link";
-import { Crown, Gift, MessageSquare, ShieldCheck, Copy, CheckCircle, Loader2 } from "lucide-react";
+import { Crown, Gift, MessageSquare, ShieldCheck, Copy, CheckCircle, Loader2, Camera, Star, Settings } from "lucide-react";
 
 export default function ClubGranColinosPage() {
   const { user, loading } = useAuth();
@@ -16,6 +17,13 @@ export default function ClubGranColinosPage() {
   const [clientData, setClientData] = useState(null);
   const [copied, setCopied] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
+
+  // Estados Perfil / Testimonio
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileName, setProfileName] = useState("");
+  const [testimonialText, setTestimonialText] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
+  const fileInputRef = useRef(null);
 
   // Cargar datos del cliente logueado
   useEffect(() => {
@@ -30,7 +38,9 @@ export default function ClubGranColinosPage() {
         const docRef = doc(db, "clients", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setClientData(docSnap.data());
+          const data = docSnap.data();
+          setClientData(data);
+          setProfileName(data.name || "");
         }
       } catch (error) {
         console.error("Error fetching client data:", error);
@@ -90,6 +100,63 @@ export default function ClubGranColinosPage() {
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !user) return;
+    try {
+      setSavingProfile(true);
+      const storageRef = ref(storage, `clients_avatars/${user.uid}_${Date.now()}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      await updateDoc(doc(db, "clients", user.uid), { photoUrl: url });
+      setClientData(prev => ({ ...prev, photoUrl: url }));
+    } catch (error) {
+      console.error("Error uploading photo", error);
+      alert("No se pudo subir la foto.");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const saveProfile = async () => {
+    if (!user || !profileName.trim()) return;
+    try {
+      setSavingProfile(true);
+      await updateDoc(doc(db, "clients", user.uid), { name: profileName });
+      setClientData(prev => ({ ...prev, name: profileName }));
+      setIsEditingProfile(false);
+    } catch (error) {
+      console.error("Error saving profile", error);
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const submitTestimonial = async (e) => {
+    e.preventDefault();
+    if (!testimonialText.trim() || !user) return;
+    try {
+      setSavingProfile(true);
+      await addDoc(collection(db, "client_testimonials"), {
+        uid: user.uid,
+        name: clientData?.name || "Miembro",
+        role: clientData?.vipLevel ? `Miembro ${clientData.vipLevel}` : "Miembro",
+        photoUrl: clientData?.photoUrl || null,
+        text: testimonialText,
+        isPublished: false,
+        createdAt: serverTimestamp()
+      });
+      setTestimonialText("");
+      alert("¡Gracias! Tu testimonio ha sido enviado y será revisado por nuestro equipo para publicarlo en Voces del Club.");
+      setIsEditingProfile(false);
+    } catch (error) {
+      console.error("Error submit testimonial", error);
+      alert("Hubo un error al enviar tu testimonio.");
+    } finally {
+      setSavingProfile(false);
+    }
   };
 
   if (loading || loadingData) {
@@ -159,6 +226,23 @@ export default function ClubGranColinosPage() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-[80px]" />
           
           <div className="relative z-10 text-center md:text-left flex flex-col md:flex-row gap-6 items-center">
+            <div className="relative group">
+              <input type="file" ref={fileInputRef} onChange={handlePhotoUpload} accept="image/*" className="hidden" />
+              {clientData?.photoUrl ? (
+                <img src={clientData.photoUrl} alt="Avatar" className="w-24 h-24 rounded-full object-cover border-2 border-brand-gold/50 shadow-xl" />
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-brand-gold/20 to-brand-green/20 border-2 border-brand-gold/30 flex items-center justify-center text-brand-gold shadow-xl">
+                  <User size={40} />
+                </div>
+              )}
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm cursor-pointer"
+              >
+                <Camera size={24} className="text-white" />
+              </button>
+            </div>
+
             <div>
               <h1 className="font-playfair text-3xl text-white mb-3">
                 Hola, {clientData?.name ? clientData.name.split(' ')[0] : 'Miembro'}
@@ -178,22 +262,78 @@ export default function ClubGranColinosPage() {
             </div>
           </div>
 
-          {clientData?.couponCode && (
-            <div className="relative z-10 bg-white/5 border border-brand-gold/30 p-4 rounded-xl flex items-center gap-6">
-              <div>
-                <p className="text-[10px] text-gray-400 tracking-widest uppercase mb-1">Tu Cupón Activo</p>
-                <p className="text-2xl font-mono font-bold text-white tracking-widest">{clientData.couponCode}</p>
+          <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
+            <button 
+              onClick={() => setIsEditingProfile(!isEditingProfile)}
+              className="border border-white/20 text-gray-300 hover:text-white px-4 py-2 rounded-lg flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors"
+            >
+              <Settings size={14} /> Perfil
+            </button>
+            {clientData?.couponCode && (
+              <div className="bg-white/5 border border-brand-gold/30 p-2 rounded-xl flex items-center gap-4 px-4">
+                <div>
+                  <p className="text-[9px] text-gray-400 tracking-widest uppercase mb-1">Tu Cupón</p>
+                  <p className="text-lg font-mono font-bold text-white tracking-widest leading-none">{clientData.couponCode}</p>
+                </div>
+                <button 
+                  onClick={() => copyToClipboard(clientData.couponCode)}
+                  className="bg-brand-gold text-brand-dark p-2 rounded-lg hover:bg-yellow-400 transition-colors"
+                  title="Copiar cupón"
+                >
+                  {copied ? <CheckCircle size={16} /> : <Copy size={16} />}
+                </button>
               </div>
-              <button 
-                onClick={() => copyToClipboard(clientData.couponCode)}
-                className="bg-brand-gold text-brand-dark p-3 rounded-lg hover:bg-yellow-400 transition-colors"
-                title="Copiar cupón"
-              >
-                {copied ? <CheckCircle size={20} /> : <Copy size={20} />}
-              </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
+
+        {/* Profile Settings Panel */}
+        {isEditingProfile && (
+          <div className="bg-[#111] rounded-2xl border border-brand-gold/30 p-8 mb-12 shadow-2xl fade-in relative">
+            <h2 className="font-playfair text-2xl text-brand-gold mb-6 border-b border-white/10 pb-4">Personaliza tu Perfil</h2>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-bold">Tu Apodo / Nombre</label>
+                <input 
+                  type="text" 
+                  value={profileName} 
+                  onChange={e => setProfileName(e.target.value)}
+                  className="w-full bg-black border border-white/20 rounded-lg p-3 text-white focus:border-brand-gold outline-none transition-colors"
+                />
+                <button 
+                  onClick={saveProfile}
+                  disabled={savingProfile || !profileName.trim()}
+                  className="mt-4 bg-brand-gold text-black font-bold text-xs uppercase tracking-widest px-6 py-2 rounded flex items-center gap-2 hover:bg-yellow-400 transition-colors disabled:opacity-50"
+                >
+                  {savingProfile ? <Loader2 size={14} className="animate-spin" /> : "Guardar Cambios"}
+                </button>
+              </div>
+              <div>
+                <label className="block text-xs uppercase tracking-widest text-brand-gold mb-2 font-bold flex items-center gap-2">
+                  <Star size={14} /> Ser Voz del Club
+                </label>
+                <p className="text-gray-400 text-sm mb-3">Cuéntale a la comunidad qué tal te han parecido nuestros productos. Tu testimonio podría ser destacado en nuestra página principal.</p>
+                <form onSubmit={submitTestimonial}>
+                  <textarea 
+                    value={testimonialText}
+                    onChange={e => setTestimonialText(e.target.value)}
+                    placeholder="Escribe tu testimonio aquí..."
+                    className="w-full bg-black border border-white/20 rounded-lg p-3 text-white focus:border-brand-gold outline-none transition-colors resize-none mb-3"
+                    rows="3"
+                    required
+                  />
+                  <button 
+                    type="submit"
+                    disabled={savingProfile || !testimonialText.trim()}
+                    className="w-full bg-white/10 text-white font-bold text-xs uppercase tracking-widest px-6 py-2 rounded hover:bg-white/20 transition-colors disabled:opacity-50"
+                  >
+                    Enviar Testimonio
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Community Chat */}
         <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-100 dark:border-white/5 overflow-hidden shadow-xl fade-in delay-100">

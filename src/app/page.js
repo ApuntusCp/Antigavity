@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { fetchProducts, fetchHomeCMSConfig } from "../utils/firebase";
+import { fetchProducts, fetchHomeCMSConfig, fetchClientTestimonials } from "../utils/firebase";
 import NewsletterForm from "../components/NewsletterForm";
 import HeroSection from "../components/HeroSection";
 import FadeInWhenVisible from "../components/FadeInWhenVisible";
@@ -8,9 +8,10 @@ import FadeInWhenVisible from "../components/FadeInWhenVisible";
 export const revalidate = 30; // ISR: check for new CMS publishes every 30 seconds
 
 export default async function Home() {
-  const [products, cmsConfig] = await Promise.all([
+  const [products, cmsConfig, clientTestimonials] = await Promise.all([
     fetchProducts(),
     fetchHomeCMSConfig(),
+    fetchClientTestimonials(),
   ]);
 
   // Extraer configuración de testimonios del CMS
@@ -21,7 +22,9 @@ export default async function Home() {
   ];
   let testimonialsTitle = "Voces del Club";
 
-  if (cmsConfig?.blocks && Array.isArray(cmsConfig.blocks)) {
+  if (clientTestimonials && clientTestimonials.length > 0) {
+    testimonialsData = clientTestimonials;
+  } else if (cmsConfig?.blocks && Array.isArray(cmsConfig.blocks)) {
     const testBlock = cmsConfig.blocks.find(b => b.type === 'testimonials');
     if (testBlock?.content) {
       if (testBlock.content.title) testimonialsTitle = testBlock.content.title;
@@ -151,16 +154,20 @@ export default async function Home() {
                     {testimonial.text}
                   </p>
                   <div className="flex items-center gap-4 mt-auto">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-brand-gold to-[#f0e6d2] flex items-center justify-center text-brand-dark font-bold text-lg shadow-inner">
-                      {testimonial.name[0]}
-                    </div>
+                    {testimonial.photoUrl ? (
+                      <img src={testimonial.photoUrl} alt={testimonial.name} className="w-12 h-12 rounded-full object-cover border border-brand-gold/50 shadow-inner" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-brand-gold to-[#f0e6d2] flex items-center justify-center text-brand-dark font-bold text-lg shadow-inner">
+                        {testimonial.name[0]}
+                      </div>
+                    )}
                     <div>
                       <h4 className="font-playfair text-brand-dark dark:text-white font-bold text-lg flex items-center gap-2">
                         {testimonial.name}
                         <svg className="w-4 h-4 text-brand-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                       </h4>
                       <span className="text-[10px] text-brand-gold font-bold uppercase tracking-widest block">{testimonial.role}</span>
-                      <span className="text-[9px] text-gray-400 uppercase tracking-wider block mt-0.5">Compra Verificada</span>
+                      <span className="text-[9px] text-gray-400 uppercase tracking-wider block mt-0.5">Voz del Club</span>
                     </div>
                   </div>
                 </div>

@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, getDoc, doc, query, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, getDoc, doc, query, orderBy, addDoc, serverTimestamp, where } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAH980UahKAMSzLpnSeSYojJgeeMhE40yU",
@@ -15,6 +16,7 @@ const firebaseConfig = {
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 
 // Fetch products from Firebase Firestore
 export async function fetchProducts() {
@@ -58,6 +60,18 @@ export async function fetchBlogPosts(category = null) {
     return posts;
   } catch (error) {
     console.error("Error fetching blog posts from Firebase:", error);
+    return [];
+  }
+}
+
+// Fetch published client testimonials
+export async function fetchClientTestimonials() {
+  try {
+    const q = query(collection(db, 'client_testimonials'), where('isPublished', '==', true));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error fetching testimonials:", error);
     return [];
   }
 }
