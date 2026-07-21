@@ -46,12 +46,12 @@ export default async function RootLayout({ children }) {
             <CartDrawer />
 
             {/* Main Content */}
-            <main className="flex-grow pt-24">
+            <main className="flex-grow">
               {children}
             </main>
 
             {/* Minimal Luxury Footer */}
-            <footer className="bg-brand-dark text-white py-24">
+            <footer className="bg-brand-dark text-white pt-24 pb-40">
               <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-16">
                 <div className="md:col-span-2">
                   <h3 className="font-playfair text-3xl text-brand-gold mb-6">{footerBlock.logoText || "GranColinos"}</h3>

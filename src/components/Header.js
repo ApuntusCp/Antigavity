@@ -16,7 +16,7 @@ export default function Header({ headerConfig = {} }) {
 
   return (
     <>
-      <header className="w-full fixed top-0 z-40 bg-brand-light/90 dark:bg-brand-dark/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+      <header className="w-full fixed bottom-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-xl border-t border-brand-gold/30 shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
         <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 relative z-50">
             {headerConfig.logoText ? (
@@ -34,42 +34,43 @@ export default function Header({ headerConfig = {} }) {
           </Link>
           
           <nav className="hidden md:flex gap-8 items-center">
-            <Link href="/#catalogo" className="relative group flex items-center justify-center w-12 h-12 rounded-full border border-transparent hover:border-brand-gold/20 hover:bg-brand-gold/5 transition-all duration-700">
-              <LayoutGrid size={20} strokeWidth={1.2} className="text-gray-500 dark:text-gray-400 group-hover:text-brand-gold group-hover:scale-110 transition-all duration-500" />
-              <span className="absolute -bottom-6 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 text-[9px] tracking-widest uppercase font-bold text-brand-gold whitespace-nowrap">Catálogo</span>
+            <Link href="/#catalogo" className="relative group flex items-center justify-center w-14 h-14 rounded-full border border-transparent hover:border-brand-gold/30 hover:bg-brand-gold/10 transition-all duration-700">
+              <LayoutGrid size={28} strokeWidth={1.2} className="text-gray-400 group-hover:text-brand-gold group-hover:scale-110 transition-all duration-500 drop-shadow-md" />
+              <span className="absolute -top-8 opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all duration-500 text-[10px] tracking-widest uppercase font-bold text-brand-gold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full border border-brand-gold/20">Catálogo</span>
             </Link>
-            <Link href="/blog" className="relative group flex items-center justify-center w-12 h-12 rounded-full border border-transparent hover:border-brand-gold/20 hover:bg-brand-gold/5 transition-all duration-700">
-              <Feather size={20} strokeWidth={1.2} className="text-gray-500 dark:text-gray-400 group-hover:text-brand-gold group-hover:scale-110 transition-all duration-500" />
-              <span className="absolute -bottom-6 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 text-[9px] tracking-widest uppercase font-bold text-brand-gold whitespace-nowrap">Journal</span>
+            <Link href="/blog" className="relative group flex items-center justify-center w-14 h-14 rounded-full border border-transparent hover:border-brand-gold/30 hover:bg-brand-gold/10 transition-all duration-700">
+              <Feather size={28} strokeWidth={1.2} className="text-gray-400 group-hover:text-brand-gold group-hover:scale-110 transition-all duration-500 drop-shadow-md" />
+              <span className="absolute -top-8 opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all duration-500 text-[10px] tracking-widest uppercase font-bold text-brand-gold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full border border-brand-gold/20">Journal</span>
             </Link>
-            <Link href="/movimiento" className="relative group flex items-center justify-center w-12 h-12 rounded-full border border-transparent hover:border-brand-gold/20 hover:bg-brand-gold/5 transition-all duration-700">
-              <Flame size={20} strokeWidth={1.2} className="text-brand-green group-hover:text-brand-gold group-hover:scale-110 transition-all duration-500" />
-              <span className="absolute -bottom-6 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 text-[9px] tracking-widest uppercase font-bold text-brand-gold whitespace-nowrap">Movimiento</span>
+            <Link href="/movimiento" className="relative group flex items-center justify-center w-14 h-14 rounded-full border border-transparent hover:border-brand-gold/30 hover:bg-brand-gold/10 transition-all duration-700">
+              <Flame size={28} strokeWidth={1.2} className="text-brand-green group-hover:text-brand-gold group-hover:scale-110 transition-all duration-500 drop-shadow-md" />
+              <span className="absolute -top-8 opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all duration-500 text-[10px] tracking-widest uppercase font-bold text-brand-gold whitespace-nowrap bg-black/80 px-3 py-1 rounded-full border border-brand-gold/20">Movimiento</span>
             </Link>
           </nav>
 
           <div className="flex gap-6 items-center text-xs font-semibold tracking-[0.2em] uppercase relative z-50">
             {user ? (
               <div className="hidden md:flex items-center gap-4">
-                <Link href="/comunidad" className="hover:text-brand-gold transition-colors duration-300 flex items-center gap-2">
+                <Link href="/comunidad" className="hover:text-brand-gold transition-colors duration-300 flex items-center gap-2 text-white">
                   MI CLUB
                 </Link>
-                <button onClick={() => logout()} className="hover:text-red-400 transition-colors duration-300" title="Salir">
-                  <LogOut size={16} />
+                <button onClick={() => logout()} className="text-gray-400 hover:text-red-400 transition-colors duration-300" title="Salir">
+                  <LogOut size={24} />
                 </button>
               </div>
             ) : (
-              <Link href="/login" className="hidden md:flex items-center gap-1 hover:text-brand-gold transition-colors duration-300">
-                <User size={14} /> Ingresar
+              <Link href="/login" className="hidden md:flex items-center gap-2 text-gray-300 hover:text-brand-gold transition-colors duration-300">
+                <User size={22} /> Ingresar
               </Link>
             )}
             
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="hover:text-brand-gold transition-colors duration-300 flex items-center gap-2"
+              className="text-gray-300 hover:text-brand-gold transition-colors duration-300 flex items-center gap-2 relative"
               title="Carrito"
             >
-              <ShoppingCart size={16} /> <span className="bg-brand-gold text-brand-dark px-1.5 py-0.5 rounded-full text-[10px]">{cartItemCount}</span>
+              <ShoppingCart size={26} /> 
+              <span className="absolute -top-2 -right-2 bg-brand-gold text-brand-dark flex items-center justify-center w-5 h-5 rounded-full text-[11px] font-bold shadow-lg">{cartItemCount}</span>
             </button>
             <button 
               onClick={toggleMobileMenu}
