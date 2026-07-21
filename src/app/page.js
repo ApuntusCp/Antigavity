@@ -13,6 +13,24 @@ export default async function Home() {
     fetchHomeCMSConfig(),
   ]);
 
+  // Extraer configuración de testimonios del CMS
+  let testimonialsData = [
+    { name: "Carolina M.", role: "Miembro Oro", text: "La pureza de estos extractos ha cambiado mi rutina. Sentir que consumo algo 100% orgánico y colombiano no tiene precio." },
+    { name: "Dr. Alejandro V.", role: "Miembro Plata", text: "Recomiendo Gran Colinos por su compromiso con la calidad. Es raro encontrar marcas con esta dedicación a la formulación botánica." },
+    { name: "Sofía T.", role: "Miembro Bronce", text: "Desde el empaque hasta la última gota, todo grita exclusividad. Son más que productos, es un estilo de vida consciente." }
+  ];
+  let testimonialsTitle = "Voces del Club";
+
+  if (cmsConfig?.blocks && Array.isArray(cmsConfig.blocks)) {
+    const testBlock = cmsConfig.blocks.find(b => b.type === 'testimonials');
+    if (testBlock?.content) {
+      if (testBlock.content.title) testimonialsTitle = testBlock.content.title;
+      if (Array.isArray(testBlock.content.items) && testBlock.content.items.length > 0) {
+        testimonialsData = testBlock.content.items;
+      }
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       
@@ -20,15 +38,15 @@ export default async function Home() {
       <HeroSection cmsConfig={cmsConfig} products={products} />
 
       {/* Philosophy / Space Section */}
-      <section id="origen" className="py-32 md:py-48 bg-brand-light dark:bg-brand-dark px-6 relative overflow-hidden">
+      <section id="origen" className="py-32 md:py-48 bg-brand-light dark:bg-brand-dark px-6 relative overflow-hidden group">
         {/* Decorative elements for premium feel */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-brand-gold/5 blur-[120px] pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-brand-gold/5 blur-[120px] pointer-events-none transition-all duration-1000 group-hover:bg-brand-gold/10 group-hover:scale-110" />
         
-        <FadeInWhenVisible className="max-w-4xl mx-auto text-center relative z-10">
+        <FadeInWhenVisible className="max-w-4xl mx-auto text-center relative z-10 bg-white/30 dark:bg-black/30 backdrop-blur-md border border-brand-gold/10 p-12 md:p-20 rounded-3xl shadow-2xl transition-all duration-500 hover:shadow-brand-gold/5 hover:border-brand-gold/20">
           <h2 className="font-playfair text-4xl md:text-6xl text-brand-green dark:text-brand-gold mb-10 leading-snug drop-shadow-sm">
             El lujo reside en la pureza de los ingredientes y el tiempo que nos dedicamos.
           </h2>
-          <div className="w-px h-32 bg-gradient-to-b from-brand-gold to-transparent mx-auto mb-10"></div>
+          <div className="w-px h-32 bg-gradient-to-b from-brand-gold to-transparent mx-auto mb-10 transition-all duration-700 group-hover:h-40"></div>
           <p className="text-gray-600 dark:text-gray-400 text-lg leading-loose max-w-2xl mx-auto font-light">
             GranColinos nace de la fusión entre la naturaleza colombiana y los estándares más exigentes de bienestar. Cada gota, cada extracto, es un testimonio de nuestra devoción por la calidad absoluta.
           </p>
@@ -52,9 +70,21 @@ export default async function Home() {
 
           <div className="flex flex-wrap justify-center gap-12">
             {products.length === 0 ? (
-              <p className="text-gray-500 font-sans tracking-widest uppercase text-sm w-full text-center py-20">
-                Catálogo en preparación.
-              </p>
+              <div className="flex flex-col items-center justify-center w-full py-20 px-4 bg-brand-light/50 dark:bg-black/30 rounded-2xl border border-gray-100 dark:border-white/5 backdrop-blur-sm">
+                <span className="text-brand-gold mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+                </span>
+                <h3 className="font-playfair text-2xl text-brand-dark dark:text-white mb-2 text-center">Nuevos Ingredientes en Cultivo</h3>
+                <p className="text-gray-500 font-sans text-sm w-full max-w-md text-center mb-6">
+                  Nuestra próxima colección ultra-premium está siendo preparada. Suscríbete para acceso anticipado.
+                </p>
+                <div className="flex w-full max-w-sm">
+                  <input type="email" placeholder="Correo electrónico" className="flex-1 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-l-full px-6 text-sm focus:outline-none focus:border-brand-gold" />
+                  <button className="bg-brand-dark dark:bg-white text-white dark:text-black font-bold uppercase tracking-wider text-xs px-6 py-3 rounded-r-full hover:bg-brand-gold hover:text-white transition-colors">
+                    Avisarme
+                  </button>
+                </div>
+              </div>
             ) : (
               products.slice(0, 3).map((product, index) => (
                 <FadeInWhenVisible key={product.id} delay={index * 0.15} className="w-full sm:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)] max-w-sm">
@@ -102,17 +132,13 @@ export default async function Home() {
               Prueba Social Premium
             </span>
             <h2 className="font-playfair text-5xl text-brand-dark dark:text-white mb-8 drop-shadow-md">
-              Voces del Club
+              {testimonialsTitle}
             </h2>
             <div className="w-px h-16 bg-gradient-to-b from-brand-gold to-transparent mx-auto"></div>
           </FadeInWhenVisible>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { name: "Carolina M.", role: "Miembro Oro", text: "La pureza de estos extractos ha cambiado mi rutina. Sentir que consumo algo 100% orgánico y colombiano no tiene precio." },
-              { name: "Dr. Alejandro V.", role: "Miembro Plata", text: "Recomiendo Gran Colinos por su compromiso con la calidad. Es raro encontrar marcas con esta dedicación a la formulación botánica." },
-              { name: "Sofía T.", role: "Miembro Bronce", text: "Desde el empaque hasta la última gota, todo grita exclusividad. Son más que productos, es un estilo de vida consciente." }
-            ].map((testimonial, i) => (
+            {testimonialsData.map((testimonial, i) => (
               <FadeInWhenVisible key={i} delay={i * 0.2}>
                 <div className="h-full p-10 bg-white/50 dark:bg-black/40 backdrop-blur-xl border border-gray-100 dark:border-white/10 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] hover:shadow-2xl hover:border-brand-gold/30 transition-all duration-500">
                   <div className="flex text-brand-gold mb-8 drop-shadow-sm">
@@ -129,8 +155,12 @@ export default async function Home() {
                       {testimonial.name[0]}
                     </div>
                     <div>
-                      <h4 className="font-playfair text-brand-dark dark:text-white font-bold text-lg">{testimonial.name}</h4>
-                      <span className="text-[10px] text-brand-gold font-bold uppercase tracking-widest">{testimonial.role}</span>
+                      <h4 className="font-playfair text-brand-dark dark:text-white font-bold text-lg flex items-center gap-2">
+                        {testimonial.name}
+                        <svg className="w-4 h-4 text-brand-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                      </h4>
+                      <span className="text-[10px] text-brand-gold font-bold uppercase tracking-widest block">{testimonial.role}</span>
+                      <span className="text-[9px] text-gray-400 uppercase tracking-wider block mt-0.5">Compra Verificada</span>
                     </div>
                   </div>
                 </div>
