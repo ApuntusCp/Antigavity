@@ -1,17 +1,18 @@
-import admin from 'firebase-admin';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 
 // Initialize Firebase Admin SDK
-if (!admin.apps.length) {
+if (!getApps().length) {
   try {
     if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
+      initializeApp({
+        credential: cert(serviceAccount)
       });
     } else {
       // Fallback: This works perfectly if the local gcloud is authenticated
       // or if deployed on Vercel/GCP with GOOGLE_APPLICATION_CREDENTIALS
-      admin.initializeApp({
+      initializeApp({
         projectId: "aponte-sas",
       });
     }
@@ -20,4 +21,4 @@ if (!admin.apps.length) {
   }
 }
 
-export const adminDb = admin.firestore();
+export const adminDb = getFirestore();

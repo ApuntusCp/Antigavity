@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "./CartContext";
 import { useAuth } from "./AuthProvider";
-import { User, LogOut, ShoppingCart, Menu, X, Layers } from "lucide-react";
+import { User, LogOut, ShoppingCart, Menu, X, Layers, LayoutGrid, Feather, Flame } from "lucide-react";
 
 export default function Header({ headerConfig = {} }) {
   const { cartItemCount, setIsCartOpen } = useCart();
@@ -33,11 +33,19 @@ export default function Header({ headerConfig = {} }) {
             )}
           </Link>
           
-          <nav className="hidden md:flex gap-10 text-xs font-semibold tracking-[0.2em] uppercase">
-            <Link href="/#catalogo" className="hover:text-brand-gold transition-colors duration-300">Catálogo</Link>
-            <Link href="/#origen" className="hover:text-brand-gold transition-colors duration-300">Origen</Link>
-            <Link href="/blog" className="hover:text-brand-gold transition-colors duration-300">Journal</Link>
-            <Link href="/movimiento" className="text-brand-green hover:text-brand-gold transition-colors duration-300 font-bold">Movimiento</Link>
+          <nav className="hidden md:flex gap-8 items-center">
+            <Link href="/#catalogo" className="relative group flex items-center justify-center w-12 h-12 rounded-full border border-transparent hover:border-brand-gold/20 hover:bg-brand-gold/5 transition-all duration-700">
+              <LayoutGrid size={20} strokeWidth={1.2} className="text-gray-500 dark:text-gray-400 group-hover:text-brand-gold group-hover:scale-110 transition-all duration-500" />
+              <span className="absolute -bottom-6 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 text-[9px] tracking-widest uppercase font-bold text-brand-gold whitespace-nowrap">Catálogo</span>
+            </Link>
+            <Link href="/blog" className="relative group flex items-center justify-center w-12 h-12 rounded-full border border-transparent hover:border-brand-gold/20 hover:bg-brand-gold/5 transition-all duration-700">
+              <Feather size={20} strokeWidth={1.2} className="text-gray-500 dark:text-gray-400 group-hover:text-brand-gold group-hover:scale-110 transition-all duration-500" />
+              <span className="absolute -bottom-6 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 text-[9px] tracking-widest uppercase font-bold text-brand-gold whitespace-nowrap">Journal</span>
+            </Link>
+            <Link href="/movimiento" className="relative group flex items-center justify-center w-12 h-12 rounded-full border border-transparent hover:border-brand-gold/20 hover:bg-brand-gold/5 transition-all duration-700">
+              <Flame size={20} strokeWidth={1.2} className="text-brand-green group-hover:text-brand-gold group-hover:scale-110 transition-all duration-500" />
+              <span className="absolute -bottom-6 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 text-[9px] tracking-widest uppercase font-bold text-brand-gold whitespace-nowrap">Movimiento</span>
+            </Link>
           </nav>
 
           <div className="flex gap-6 items-center text-xs font-semibold tracking-[0.2em] uppercase relative z-50">
@@ -75,10 +83,9 @@ export default function Header({ headerConfig = {} }) {
         {/* Mobile Menu Overlay */}
         <div className={`fixed inset-0 bg-brand-dark z-30 flex flex-col items-center justify-center transition-transform duration-500 ease-in-out ${isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full'} md:hidden`}>
           <nav className="flex flex-col gap-8 text-center text-xl font-playfair tracking-widest uppercase text-white">
-            <Link href="/#catalogo" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Catálogo Premium</Link>
-            <Link href="/#origen" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Nuestra Esencia</Link>
-            <Link href="/blog" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Journal de Bienestar</Link>
-            <Link href="/movimiento" onClick={toggleMobileMenu} className="text-brand-green hover:text-brand-gold transition-colors">Movimiento Gran Colinos</Link>
+            <Link href="/#catalogo" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors flex items-center justify-center gap-3"><LayoutGrid size={24}/> Catálogo Premium</Link>
+            <Link href="/blog" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors flex items-center justify-center gap-3"><Feather size={24}/> Journal de Bienestar</Link>
+            <Link href="/movimiento" onClick={toggleMobileMenu} className="text-brand-green hover:text-brand-gold transition-colors flex items-center justify-center gap-3"><Flame size={24}/> Movimiento Gran Colinos</Link>
             <Link href="/shop" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Ver Todo</Link>
             <Link href="/comunidad" onClick={toggleMobileMenu} className="hover:text-brand-gold transition-colors">Club Gran Colinos</Link>
             {!user && (

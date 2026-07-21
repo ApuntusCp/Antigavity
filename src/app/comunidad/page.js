@@ -138,8 +138,6 @@ export default function ClubGranColinosPage() {
     }
   };
 
-  };
-
   if (loading || loadingData) {
     return <div className="min-h-screen flex items-center justify-center bg-brand-dark"><Loader2 className="w-8 h-8 text-brand-gold animate-spin" /></div>;
   }

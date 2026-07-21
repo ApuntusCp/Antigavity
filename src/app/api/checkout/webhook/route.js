@@ -1,4 +1,3 @@
-import admin from 'firebase-admin';
 import { adminDb } from '../../../../utils/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 
