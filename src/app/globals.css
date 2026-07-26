@@ -2,12 +2,7 @@
 
 @theme {
   --color-brand-green: #2D5016;
-  --color-brand-darkgreen: #0A1408;
   --color-brand-gold: #D4AF37;
-  --color-brand-gold-bright: #E5C158;
-  --color-brand-leather: #070D06;
-  --color-brand-light: #F9F9F9;
-  --color-brand-dark: #050A04;
   --font-sans: var(--font-inter);
   --font-playfair: var(--font-playfair);
 }
@@ -15,7 +10,15 @@
 :root {
   --background: #040903;
   --foreground: #F9F9F9;
-  --gold-accent: #D4AF37;
+  
+  /* Section Color Tokens */
+  --accent-tienda: #D4AF37;
+  --accent-noticias: #E2E8F0;
+  --accent-periodismo: #FF6B35;
+  --accent-libros: #F3E5AB;
+  --accent-datos: #00F0FF;
+  --accent-movimiento: #FF4D4D;
+  --gold-brand-constant: #D4AF37;
 }
 
 body {
@@ -34,6 +37,60 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Section Leather Themes */
+.theme-tienda {
+  background-image: 
+    radial-gradient(ellipse at 50% 10%, rgba(212, 175, 55, 0.22) 0%, transparent 65%),
+    url('/images/bg_leather.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.theme-noticias {
+  background-image: 
+    radial-gradient(ellipse at 50% 10%, rgba(226, 232, 240, 0.18) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(12, 18, 24, 0.82) 0%, rgba(5, 8, 12, 0.95) 100%),
+    url('/images/bg_leather.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.theme-periodismo {
+  background-image: 
+    radial-gradient(ellipse at 50% 10%, rgba(255, 107, 53, 0.2) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(28, 10, 8, 0.82) 0%, rgba(12, 4, 3, 0.95) 100%),
+    url('/images/bg_leather.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.theme-libros {
+  background-image: 
+    radial-gradient(ellipse at 50% 10%, rgba(243, 229, 171, 0.18) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(20, 14, 8, 0.85) 0%, rgba(8, 5, 2, 0.96) 100%),
+    url('/images/bg_leather.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.theme-datos {
+  background-image: 
+    radial-gradient(ellipse at 50% 10%, rgba(0, 240, 255, 0.18) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(6, 16, 26, 0.85) 0%, rgba(2, 7, 12, 0.96) 100%),
+    url('/images/bg_leather.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.theme-movimiento {
+  background-image: 
+    radial-gradient(ellipse at 50% 10%, rgba(255, 77, 77, 0.22) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(24, 6, 6, 0.85) 0%, rgba(10, 2, 2, 0.96) 100%),
+    url('/images/bg_leather.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+}
+
 /* Global Leather Texture Container */
 .bg-leather-global {
   background-image: 
@@ -45,19 +102,21 @@ body {
   background-attachment: fixed;
 }
 
-/* Golden Glow Effects */
-.glow-gold {
-  box-shadow: 0 0 24px rgba(212, 175, 55, 0.4);
-}
+/* Intelligent Glow Effects */
+.glow-tienda { box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+.glow-noticias { box-shadow: 0 0 20px rgba(226, 232, 240, 0.35); }
+.glow-periodismo { box-shadow: 0 0 20px rgba(255, 107, 53, 0.45); }
+.glow-libros { box-shadow: 0 0 20px rgba(243, 229, 171, 0.35); }
+.glow-datos { box-shadow: 0 0 20px rgba(0, 240, 255, 0.45); }
+.glow-movimiento { box-shadow: 0 0 20px rgba(255, 77, 77, 0.45); }
 
-.glow-gold-subtle {
-  box-shadow: 0 0 14px rgba(212, 175, 55, 0.22);
-}
-
-.glow-gold-hover:hover {
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.55);
-  border-color: rgba(212, 175, 55, 0.85) !important;
-}
+/* Active Item Brasa Glow */
+.active-brasa-tienda { background: radial-gradient(circle, rgba(212, 175, 55, 0.28) 0%, transparent 75%); }
+.active-brasa-noticias { background: radial-gradient(circle, rgba(226, 232, 240, 0.25) 0%, transparent 75%); }
+.active-brasa-periodismo { background: radial-gradient(circle, rgba(255, 107, 53, 0.3) 0%, transparent 75%); }
+.active-brasa-libros { background: radial-gradient(circle, rgba(243, 229, 171, 0.25) 0%, transparent 75%); }
+.active-brasa-datos { background: radial-gradient(circle, rgba(0, 240, 255, 0.3) 0%, transparent 75%); }
+.active-brasa-movimiento { background: radial-gradient(circle, rgba(255, 77, 77, 0.3) 0%, transparent 75%); }
 
 /* Gold Gradient Text */
 .text-gold-gradient {
@@ -68,22 +127,17 @@ body {
 
 /* Bottom Floating Pill Navigation */
 .nav-pill-bottom-floating {
-  background: rgba(8, 15, 7, 0.92);
-  backdrop-filter: blur(20px);
+  background: rgba(8, 15, 7, 0.94);
+  backdrop-filter: blur(24px);
   border: 1px solid rgba(212, 175, 55, 0.4);
-  box-shadow: 0 -10px 45px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 -10px 45px rgba(0, 0, 0, 0.92), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
 }
 
-/* Luxury transitions */
 .fade-in {
   animation: fadeIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   opacity: 0;
 }
-
-.delay-100 { animation-delay: 100ms; }
-.delay-300 { animation-delay: 300ms; }
-.delay-500 { animation-delay: 500ms; }
 
 @keyframes fadeIn {
   0% { opacity: 0; transform: translateY(16px); }
