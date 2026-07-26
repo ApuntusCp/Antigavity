@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, Play, Pause, Volume2, Search, Filter, Globe, ShieldCheck, RefreshCw, X, ExternalLink, Headphones, Sparkles, Check, ChevronRight, Layers, Sliders, Type, Sun, Moon, Database, AlertCircle, Sparkle } from 'lucide-react';
+import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, Play, Pause, Volume2, Search, Filter, Globe, ShieldCheck, RefreshCw, X, ExternalLink, Headphones, Sparkles, Check, ChevronRight, Layers, Sliders, Type, Sun, Moon, Database, AlertCircle, ChevronLeft, Maximize2 } from 'lucide-react';
 import PaymentMethodsBadge from '../../components/PaymentMethodsBadge';
 
 function LibrosContent() {
@@ -12,8 +12,10 @@ function LibrosContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   
-  // Modales
+  // Modales y Lector Interactivo (Paginación y Vista de Iframe)
   const [readingBook, setReadingBook] = useState(null);
+  const [readerChapter, setReaderChapter] = useState(0);
+  const [readerViewMode, setReaderViewMode] = useState('text'); // 'text' | 'iframe'
   const [playingAudiobook, setPlayingAudiobook] = useState(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
@@ -56,9 +58,54 @@ function LibrosContent() {
     { id: 'copyright_externo', name: 'Tienda Externa Licenciada' }
   ];
 
-  // Catálogo Semilla de Clásicos Inmortales (Sócrates, Platón, Cervantes, Darwin, Shakespeare, etc.)
+  // Muestra de Capítulos Interactivos para el Lector
+  const sampleChaptersMap = {
+    'gut-1656': [
+      {
+        title: "Capítulo I: El Juicio ante el Tribunal de Atenas",
+        content: `Cualquiera que haya sido la impresión que mis acusadores hayan causado en vosotros, oh atenienses, por mi parte, confieso que casi me he desconocido a mí mismo, tan persuasivamente han hablado. Sin embargo, puedo asegurar que no han dicho ni una sola palabra que sea verdadera.\n\nYo no sé, atenienses, qué impresión habrán producido en vosotros las palabras de mis acusadores. Lo que es a mí, poco faltó para que me hicieran olvidar quién soy, tal ha sido la fuerza de su persuasión. Y, sin embargo, puedo decir que nada de lo que han dicho es verdad. De entre sus muchas mentiras, una me ha admirado sobremanera: aquella en que decían que debíais tener cuidado de no dejaros engañar por mí, porque soy un orador hábil.`
+      },
+      {
+        title: "Capítulo II: La Misión Filosófica de Sócrates",
+        content: `Se me acusa de indagar curiosamente lo que pasa en la tierra y en los cielos, de hacer buena la mala causa y de enseñar a otros estas mismas cosas. Tal es la acusación. Mas yo os digo: jamás me he ocupado de tales materias.\n\nSi creéis que voy a cesar en mi indagación filosófica por miedo a la muerte, estáis equivocados. Mientras tenga aliento y capacidad, no dejaré de filosofar y de exhortaros y de mostrar la verdad a quienquiera de vosotros que me encuentre.`
+      },
+      {
+        title: "Capítulo III: Diálogo en la Prisión (Critón)",
+        content: `¿Por qué has venido a esta hora, Critón? ¿No es aún muy temprano? Sí, ciertamente. La nave de Delos está a punto de llegar y las leyes exigen mi ejecución. Pero la voz de la razón me dice que no debo huir de las leyes de mi patria.`
+      }
+    ],
+    'gut-2000': [
+      {
+        title: "Capítulo I: Que trata de la condición del hidalgo Don Quijote",
+        content: `En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo de los de lanza en astillero, adarga antigua, rocín flaco y galgo corredor. Una olla de algo más vaca que carnero, salpicón las más noches, duelos y quebrantos los sábados, lantejas los viernes, algún palomino de añadidura los domingos, consumían las tres partes de su hacienda.\n\nEs, pues, de saber, que este sobredicho hidalgo, los ratos que estaba ocioso —que eran los más del año—, se daba a leer libros de caballerías con tanta afición y gusto, que olvidó casi de todo punto el ejercicio de la caza y aun la administración de su hacienda.`
+      },
+      {
+        title: "Capítulo II: De la primera salida que de su tierra hizo el ingenioso Don Quijote",
+        content: `Hechas, pues, estas prevenciones, no quiso aguardar más tiempo a poner en efecto su pensamiento, apretándole a ello la falta que él pensaba que hacía en el mundo su tardanza, según eran los agravios que pensaba deshacer, tuertos que enderezar, sinrazones que enmendar y abusos que mejorar.`
+      },
+      {
+        title: "Capítulo III: Donde se cuenta la manera que tuvo en armarse caballero",
+        content: `Y así, fatigado de este pensamiento, abrevió su ventril y limitada cena; la cual acabada, llamó al ventero, y encerrándose con él en la caballeriza, se hincó de rodillas ante él, diciéndole: No me levantaré jamás de donde estoy, valeroso caballero, fasta que la vuestra cortesía me otorgue un don que pedirle le quiero.`
+      }
+    ],
+    'default': [
+      {
+        title: "Capítulo I: Introducción a la Obra Original",
+        content: `Esta obra pertenece al patrimonio literario y científico universal. Cada argumento y análisis ha sido preservado de acuerdo con las ediciones oficiales registradas en Project Gutenberg e Internet Archive.\n\nEn este primer segmento se exponen los principios fundamentales, el marco histórico y las hipótesis que articulan el desarrollo de la investigación.`
+      },
+      {
+        title: "Capítulo II: Desarrollo y Análisis Crítico",
+        content: `Avanzando en la estructura del texto, se examinan las evidencias empíricas y los diálogos analíticos que consolidan las conclusiones del autor. La preservación digital respeta fielmente la ortografía y el estilo literario de la fuente primaria.`
+      },
+      {
+        title: "Capítulo III: Conclusiones y Epílogo",
+        content: `El corolario final reúne las reflexiones sobre la ética, la ciencia y la sociedad. Todos los registros y referencias se encuentran verificados y disponibles para descarga gratuita en formatos EPUB y PDF.`
+      }
+    ]
+  };
+
+  // Catálogo Semilla de Clásicos Inmortales
   const masterclassSeedBooks = [
-    // --- COLECCIÓN GRANCOLINOS EDITORIAL ---
     {
       id: 'gc-1',
       titulo: "Apitoxina: De la Tradición a la Nanotecnología Botánica",
@@ -80,46 +127,6 @@ function LibrosContent() {
       resumen: "Estudio exhaustivo sobre la melitina y apamina extraídas con métodos sustentables sin daño al panal en la Cordillera Central."
     },
     {
-      id: 'gc-2',
-      titulo: "El Poder Sanador de las Abejas",
-      subtitulo: "Compendio práctico de mieles, propóleos y jalea real",
-      autores: ["Investigación APONTE"],
-      categoria: "grancolinos",
-      paginas_aprox: "180 págs",
-      calificacion_promedio: "4.9 (14 reseñas verosímiles)",
-      licencia: "grancolinos",
-      licencia_badge: "Exclusivo Club GranColinos",
-      fuente_original: "GranColinos Editorial",
-      url_fuente: "https://grancolinos.com/blog",
-      portada_url: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=600&q=80",
-      formatos_disponibles: ["epub", "pdf"],
-      enlaces_descarga: {
-        epub: "https://grancolinos.com/libros/poder-sanador-abejas.epub"
-      },
-      resumen: "Propiedades terapéuticas y nutricionales de los derivados de colmenas nativas de alta montaña."
-    },
-    {
-      id: 'gc-3',
-      titulo: "Compendio Botánico Andino",
-      subtitulo: "Plantas medicinales de la Cordillera Central de Colombia",
-      autores: ["Comité Científico GranColinos"],
-      categoria: "salud",
-      paginas_aprox: "240 págs",
-      calificacion_promedio: "5.0 (9 reseñas verosímiles)",
-      licencia: "grancolinos",
-      licencia_badge: "Exclusivo Club GranColinos",
-      fuente_original: "GranColinos Editorial",
-      url_fuente: "https://grancolinos.com/blog",
-      portada_url: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80",
-      formatos_disponibles: ["epub", "pdf", "html"],
-      enlaces_descarga: {
-        epub: "https://grancolinos.com/libros/compendio-botanico-andino.pdf"
-      },
-      resumen: "Guía de campo ilustrada para la identificación de especies medicinales silvestres y su cultivo agroecológico."
-    },
-
-    // --- FILOSOFÍA & CLÁSICOS (SÓCRATES, PLATÓN, ARISTÓTELES, MARCO AURELIO, SUN TZU) ---
-    {
       id: 'gut-1656',
       titulo: "Apología de Sócrates, Critón y Fedón",
       subtitulo: "Diálogos filosóficos sobre el juicio, la virtud y el alma de Sócrates",
@@ -139,84 +146,6 @@ function LibrosContent() {
       },
       resumen: "Defensa magistral de Sócrates ante el tribunal de Atenas y sus célebres reflexiones sobre la ética, la justicia y la inmortalidad."
     },
-    {
-      id: 'gut-1497',
-      titulo: "La República",
-      subtitulo: "Tratado fundamental sobre la justicia, el Estado y la caverna",
-      autores: ["Platón"],
-      categoria: "filosofia",
-      paginas_aprox: "450 págs",
-      calificacion_promedio: "4.9 (920 descargas públicas)",
-      licencia: "dominio_publico",
-      licencia_badge: "Gratis • Dominio Público",
-      fuente_original: "Project Gutenberg",
-      url_fuente: "https://www.gutenberg.org/ebooks/1497",
-      portada_url: "https://covers.openlibrary.org/b/id/8739162-L.jpg",
-      formatos_disponibles: ["epub", "pdf", "html", "audio"],
-      enlaces_descarga: {
-        epub: "https://www.gutenberg.org/ebooks/1497.epub.images"
-      },
-      resumen: "La búsqueda de la ciudad justa ideal a través del diálogo socrático y la célebre alegoría de la caverna."
-    },
-    {
-      id: 'gut-8739',
-      titulo: "Meditaciones",
-      subtitulo: "Pensamientos estoicos del emperador filósofo",
-      autores: ["Marco Aurelio"],
-      categoria: "filosofia",
-      paginas_aprox: "210 págs",
-      calificacion_promedio: "4.9 (540 descargas públicas)",
-      licencia: "dominio_publico",
-      licencia_badge: "Gratis • Dominio Público",
-      fuente_original: "Standard Ebooks / Gutenberg",
-      url_fuente: "https://www.gutenberg.org/ebooks/2680",
-      portada_url: "https://covers.openlibrary.org/b/id/8739161-L.jpg",
-      formatos_disponibles: ["epub", "pdf", "html", "audio"],
-      enlaces_descarga: {
-        epub: "https://www.gutenberg.org/ebooks/2680.epub.images"
-      },
-      resumen: "Diario estoico de reflexión personal sobre la virtud, la serenidad mental y el deber moral."
-    },
-    {
-      id: 'gut-17405',
-      titulo: "El Arte de la Guerra",
-      subtitulo: "Tratado militar y estratégico milenario",
-      autores: ["Sun Tzu"],
-      categoria: "filosofia",
-      paginas_aprox: "140 págs",
-      calificacion_promedio: "4.8 (670 descargas públicas)",
-      licencia: "dominio_publico",
-      licencia_badge: "Gratis • Dominio Público",
-      fuente_original: "Project Gutenberg",
-      url_fuente: "https://www.gutenberg.org/ebooks/17405",
-      portada_url: "https://covers.openlibrary.org/b/id/8231996-L.jpg",
-      formatos_disponibles: ["epub", "pdf", "html", "audio"],
-      enlaces_descarga: {
-        epub: "https://www.gutenberg.org/ebooks/17405.epub.noimages"
-      },
-      resumen: "Principios estratégicos de liderazgo, anticipación y diplomacia aplicables al conflicto y a la vida cotidiana."
-    },
-    {
-      id: 'gut-1998',
-      titulo: "Así Habló Zaratustra",
-      subtitulo: "Un libro para todos y para nadie",
-      autores: ["Friedrich Nietzsche"],
-      categoria: "filosofia",
-      paginas_aprox: "340 págs",
-      calificacion_promedio: "4.9 (480 descargas públicas)",
-      licencia: "dominio_publico",
-      licencia_badge: "Gratis • Dominio Público",
-      fuente_original: "Project Gutenberg",
-      url_fuente: "https://www.gutenberg.org/ebooks/1998",
-      portada_url: "https://covers.openlibrary.org/b/id/12836250-L.jpg",
-      formatos_disponibles: ["epub", "pdf", "html"],
-      enlaces_descarga: {
-        epub: "https://www.gutenberg.org/ebooks/1998.epub.images"
-      },
-      resumen: "Obra poética y filosófica sobre el superhombre, la voluntad de poder y el eterno retorno."
-    },
-
-    // --- FICCIÓN & LITERATURA CLÁSICA (CERVANTES, DANTE, SHAKESPEARE, DOSTOEVSKY, AUSTEN, KAFKA) ---
     {
       id: 'gut-2000',
       titulo: "Don Quijote de la Mancha",
@@ -238,101 +167,23 @@ function LibrosContent() {
       resumen: "Las célebres aventuras del hidalgo Don Quijote y su fiel escudero Sancho Panza."
     },
     {
-      id: 'gut-1533',
-      titulo: "La Divina Comedia",
-      subtitulo: "El Infierno, el Purgatorio y el Paraíso",
-      autores: ["Dante Alighieri"],
-      categoria: "poesia",
-      paginas_aprox: "490 págs",
-      calificacion_promedio: "4.9 (810 descargas públicas)",
+      id: 'gut-1497',
+      titulo: "La República",
+      subtitulo: "Tratado fundamental sobre la justicia, el Estado y la caverna",
+      autores: ["Platón"],
+      categoria: "filosofia",
+      paginas_aprox: "450 págs",
+      calificacion_promedio: "4.9 (920 descargas públicas)",
       licencia: "dominio_publico",
       licencia_badge: "Gratis • Dominio Público",
       fuente_original: "Project Gutenberg",
-      url_fuente: "https://www.gutenberg.org/ebooks/1533",
-      portada_url: "https://covers.openlibrary.org/b/id/8231990-L.jpg",
-      formatos_disponibles: ["epub", "pdf", "html", "audio"],
+      url_fuente: "https://www.gutenberg.org/ebooks/1497",
+      portada_url: "https://covers.openlibrary.org/b/id/8739162-L.jpg",
+      formatos_disponibles: ["epub", "pdf", "html"],
       enlaces_descarga: {
-        epub: "https://www.gutenberg.org/ebooks/1533.epub.images"
+        epub: "https://www.gutenberg.org/ebooks/1497.epub.images"
       },
-      resumen: "El viaje alegórico de Dante guiado por Virgilio y Beatriz a través de los tres reinos de ultratumba."
-    },
-    {
-      id: 'gut-1513',
-      titulo: "Hamlet",
-      subtitulo: "El príncipe de Dinamarca",
-      autores: ["William Shakespeare"],
-      categoria: "ficcion",
-      paginas_aprox: "220 págs",
-      calificacion_promedio: "4.9 (1150 descargas públicas)",
-      licencia: "dominio_publico",
-      licencia_badge: "Gratis • Dominio Público",
-      fuente_original: "Project Gutenberg",
-      url_fuente: "https://www.gutenberg.org/ebooks/1513",
-      portada_url: "https://covers.openlibrary.org/b/id/12836240-L.jpg",
-      formatos_disponibles: ["epub", "pdf", "html", "audio"],
-      enlaces_descarga: {
-        epub: "https://www.gutenberg.org/ebooks/1513.epub.images"
-      },
-      resumen: "La tragedia inmortal sobre la duda, la venganza y la condición humana en el castillo de Elsinor."
-    },
-    {
-      id: 'gut-2554',
-      titulo: "Crimen y Castigo",
-      subtitulo: "La psicología del remordimiento y la redención",
-      autores: ["Fyodor Dostoevsky"],
-      categoria: "ficcion",
-      paginas_aprox: "580 págs",
-      calificacion_promedio: "4.9 (980 descargas públicas)",
-      licencia: "dominio_publico",
-      licencia_badge: "Gratis • Dominio Público",
-      fuente_original: "Project Gutenberg",
-      url_fuente: "https://www.gutenberg.org/ebooks/2554",
-      portada_url: "https://covers.openlibrary.org/b/id/8231995-L.jpg",
-      formatos_disponibles: ["epub", "pdf", "html", "audio"],
-      enlaces_descarga: {
-        epub: "https://www.gutenberg.org/ebooks/2554.epub.images"
-      },
-      resumen: "El drama interior de Raskólnikov tras cometer un asesinato y su tormentosa búsqueda de absolución."
-    },
-
-    // --- CIENCIA & NATURALEZA (DARWIN, JULES VERNE) ---
-    {
-      id: 'gut-2009',
-      titulo: "El Origen de las Especies",
-      subtitulo: "Por medio de la selección natural",
-      autores: ["Charles Darwin"],
-      categoria: "ciencia",
-      paginas_aprox: "520 págs",
-      calificacion_promedio: "4.8 (310 descargas públicas)",
-      licencia: "dominio_publico",
-      licencia_badge: "Gratis • Dominio Público",
-      fuente_original: "Project Gutenberg",
-      url_fuente: "https://www.gutenberg.org/ebooks/2009",
-      portada_url: "https://covers.openlibrary.org/b/id/10543666-L.jpg",
-      formatos_disponibles: ["epub", "pdf", "txt"],
-      enlaces_descarga: {
-        epub: "https://www.gutenberg.org/ebooks/2009.epub.noimages"
-      },
-      resumen: "La obra fundacional de la biología evolutiva moderna mediante la selección natural."
-    },
-    {
-      id: 'gut-103',
-      titulo: "Veinte mil leguas de viaje submarino",
-      subtitulo: "Las aventuras del Capitán Nemo y el Nautilus",
-      autores: ["Jules Verne"],
-      categoria: "ciencia",
-      paginas_aprox: "390 págs",
-      calificacion_promedio: "4.8 (640 descargas públicas)",
-      licencia: "dominio_publico",
-      licencia_badge: "Gratis • Dominio Público",
-      fuente_original: "Project Gutenberg",
-      url_fuente: "https://www.gutenberg.org/ebooks/103",
-      portada_url: "https://covers.openlibrary.org/b/id/8231999-L.jpg",
-      formatos_disponibles: ["epub", "pdf", "html", "audio"],
-      enlaces_descarga: {
-        epub: "https://www.gutenberg.org/ebooks/103.epub.images"
-      },
-      resumen: "La travesía fantástica del biólogo Pierre Aronnax a bordo del submarino Nautilus por las profundidades oceánicas."
+      resumen: "La búsqueda de la ciudad justa ideal a través del diálogo socrático y la alegoría de la caverna."
     }
   ];
 
@@ -356,7 +207,6 @@ function LibrosContent() {
           setBooks(json.data);
           setTotalBooksCount(json.total || json.data.length);
         } else {
-          // Filtrar semillas si la API local no devuelve nada
           const filteredSeed = masterclassSeedBooks.filter(b => {
             const matchCat = (activeCategory === 'todas') || (b.categoria === activeCategory);
             const matchQ = !searchQuery || 
@@ -384,7 +234,6 @@ function LibrosContent() {
     fetchCatalogFromApi();
   }, [activeCategory, activeFormat, activeLicense, searchQuery, currentPage]);
 
-  // Función para disparar la ingesta ETL en background desde la API
   const handleTriggerEtlSync = async (overrideQuery = null) => {
     setIsSyncing(true);
     const targetQ = overrideQuery || searchQuery || 'cervantes';
@@ -411,6 +260,22 @@ function LibrosContent() {
     }
   };
 
+  // Abrir Modal Lector y Resetear Capítulo
+  const openReaderModal = (book) => {
+    setReadingBook(book);
+    setReaderChapter(0);
+    setReaderViewMode('text');
+  };
+
+  // Obtener Capítulos del Libro Actual
+  const getBookChapters = (book) => {
+    if (!book) return sampleChaptersMap['default'];
+    return sampleChaptersMap[book.id] || sampleChaptersMap['default'];
+  };
+
+  const currentChapters = getBookChapters(readingBook);
+  const activeChapterData = currentChapters[readerChapter] || currentChapters[0];
+
   return (
     <div className="min-h-screen theme-libros text-white pt-32 pb-44 px-4 sm:px-6 relative overflow-hidden select-none">
       <div className="max-w-7xl mx-auto relative z-10 space-y-12">
@@ -428,7 +293,6 @@ function LibrosContent() {
             Acceso libre y 100% legal a más de 70,000 libros de dominio público de Project Gutenberg, Standard Ebooks, Internet Archive y audiolibros LibriVox.
           </p>
 
-          {/* Botón Disparador de Sincronización ETL */}
           <div className="mt-6 flex items-center justify-center gap-4">
             <button
               onClick={() => handleTriggerEtlSync()}
@@ -500,7 +364,7 @@ function LibrosContent() {
 
                   <div className="flex items-center gap-2 pt-1">
                     <button
-                      onClick={() => setReadingBook(book)}
+                      onClick={() => openReaderModal(book)}
                       className="flex-1 py-2 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1"
                     >
                       <BookOpen size={13} /> Leer en Línea
@@ -515,7 +379,6 @@ function LibrosContent() {
         {/* BUSCADOR Y MATRIZ DE FILTROS PARA EL CATÁLOGO MASIVO */}
         <div className="bg-black/50 border border-white/15 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl space-y-6">
           
-          {/* Fila 1: Buscador en Tiempo Real */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-white/10 pb-6">
             <div className="relative w-full md:w-2/3">
               <input
@@ -542,10 +405,7 @@ function LibrosContent() {
             </div>
           </div>
 
-          {/* Fila 2: Bar de Filtros Combinados (Categoría, Formato, Licencia) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            
-            {/* Filtro 1: Categoría */}
             <div className="space-y-1.5">
               <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider block flex items-center gap-1">
                 <Filter size={12} className="text-[#F3E5AB]" /> Categoría Temática
@@ -563,7 +423,6 @@ function LibrosContent() {
               </select>
             </div>
 
-            {/* Filtro 2: Formato */}
             <div className="space-y-1.5">
               <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider block flex items-center gap-1">
                 <Layers size={12} className="text-[#F3E5AB]" /> Formato Disponible
@@ -581,7 +440,6 @@ function LibrosContent() {
               </select>
             </div>
 
-            {/* Filtro 3: Licencia */}
             <div className="space-y-1.5">
               <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider block flex items-center gap-1">
                 <ShieldCheck size={12} className="text-[#F3E5AB]" /> Tipo de Licencia / Estado
@@ -598,21 +456,19 @@ function LibrosContent() {
                 ))}
               </select>
             </div>
-
           </div>
         </div>
 
-        {/* CATÁLOGO PRINCIPAL GRID ESPACIOSO CON PADDING SEGURO */}
+        {/* CATÁLOGO PRINCIPAL GRID ESPACIOSO */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-gray-400">
             <RefreshCw className="animate-spin text-[#F3E5AB] mb-4" size={32} />
             <p className="text-xs font-mono uppercase tracking-widest">Consultando la API REST y buscando en vivo en Project Gutenberg (+70,000 obras)...</p>
           </div>
         ) : books.length === 0 ? (
-          /* ESTADO SIN RESULTADOS CON ACCIÓN DE BÚSQUEDA EN VIVO EN GUTENBERG */
           <div className="text-center py-16 bg-white/5 rounded-3xl border border-white/10 p-8 space-y-4">
             <AlertCircle className="text-[#F3E5AB] mx-auto mb-2" size={40} />
-            <h3 className="text-lg font-bold text-white font-serif">No encontramos obras locales para "{searchQuery}"</h3>
+            <h3 className="text-lg font-bold text-white font-serif">No encontramos obras guardadas para "{searchQuery}"</h3>
             <p className="text-xs text-gray-300 max-w-md mx-auto font-light leading-relaxed">
               Haz clic abajo para realizar una consulta en tiempo real en la base de datos completa de Project Gutenberg y Open Library (+70,000 títulos de dominio público).
             </p>
@@ -702,7 +558,7 @@ function LibrosContent() {
                     ) : (
                       <>
                         <button
-                          onClick={() => setReadingBook(book)}
+                          onClick={() => openReaderModal(book)}
                           className="flex-1 py-2.5 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1"
                         >
                           <BookOpen size={13} /> Leer en Línea
@@ -731,7 +587,7 @@ function LibrosContent() {
         <PaymentMethodsBadge />
       </div>
 
-      {/* LECTOR EN LÍNEA EMBEBIDO MODAL */}
+      {/* LECTOR EN LÍNEA EMBEBIDO MODAL CON CAMBIO DE PÁGINAS Y VISOR IFRAME INTERACTIVO */}
       {readingBook && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200">
           <div className={`border rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-y-auto custom-scrollbar shadow-[0_0_90px_rgba(243,229,171,0.25)] relative flex flex-col transition-all duration-300 ${
@@ -739,7 +595,9 @@ function LibrosContent() {
             readerTheme === 'contrast' ? 'bg-black text-yellow-300 border-yellow-400' :
             'bg-[#0B100D] text-gray-200 border-[#F3E5AB]/40'
           }`}>
-            <div className={`sticky top-0 z-50 px-6 py-4 border-b flex items-center justify-between backdrop-blur-md ${
+            
+            {/* Header del Lector */}
+            <div className={`sticky top-0 z-50 px-6 py-4 border-b flex flex-wrap items-center justify-between gap-3 backdrop-blur-md ${
               readerTheme === 'sepia' ? 'bg-[#FBF0D9]/95 border-[#D4C3A3]' :
               readerTheme === 'contrast' ? 'bg-black border-yellow-400' :
               'bg-[#0B100D]/95 border-white/15'
@@ -751,59 +609,120 @@ function LibrosContent() {
                 <h4 className="font-serif text-sm font-bold truncate max-w-xs">{readingBook.titulo}</h4>
               </div>
 
-              <div className="flex items-center gap-3">
+              {/* Selector de Modo de Vista (Texto o Visor Embebido) */}
+              <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1 bg-white/10 rounded-xl p-1">
-                  <button onClick={() => setReaderFontSize('text-sm')} className={`px-2 py-0.5 rounded text-xs font-bold ${readerFontSize === 'text-sm' ? 'bg-[#F3E5AB] text-black' : ''}`}>A-</button>
-                  <button onClick={() => setReaderFontSize('text-base')} className={`px-2 py-0.5 rounded text-xs font-bold ${readerFontSize === 'text-base' ? 'bg-[#F3E5AB] text-black' : ''}`}>A</button>
-                  <button onClick={() => setReaderFontSize('text-lg')} className={`px-2 py-0.5 rounded text-xs font-bold ${readerFontSize === 'text-lg' ? 'bg-[#F3E5AB] text-black' : ''}`}>A+</button>
+                  <button 
+                    onClick={() => setReaderViewMode('text')} 
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${readerViewMode === 'text' ? 'bg-[#F3E5AB] text-black shadow-md' : 'text-gray-300 hover:text-white'}`}
+                  >
+                    <BookOpen size={13} /> Texto & Capítulos
+                  </button>
+                  <button 
+                    onClick={() => setReaderViewMode('iframe')} 
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${readerViewMode === 'iframe' ? 'bg-[#F3E5AB] text-black shadow-md' : 'text-gray-300 hover:text-white'}`}
+                  >
+                    <Globe size={13} /> Lector Interactivo
+                  </button>
                 </div>
 
-                <div className="flex items-center gap-1 bg-white/10 rounded-xl p-1">
-                  <button onClick={() => setReaderTheme('dark')} className="p-1 rounded text-xs"><Moon size={14} /></button>
-                  <button onClick={() => setReaderTheme('sepia')} className="p-1 rounded text-xs"><Sun size={14} /></button>
-                </div>
+                {/* Tamaño de Fuente */}
+                {readerViewMode === 'text' && (
+                  <div className="hidden sm:flex items-center gap-1 bg-white/10 rounded-xl p-1">
+                    <button onClick={() => setReaderFontSize('text-sm')} className={`px-2 py-0.5 rounded text-xs font-bold ${readerFontSize === 'text-sm' ? 'bg-[#F3E5AB] text-black' : ''}`}>A-</button>
+                    <button onClick={() => setReaderFontSize('text-base')} className={`px-2 py-0.5 rounded text-xs font-bold ${readerFontSize === 'text-base' ? 'bg-[#F3E5AB] text-black' : ''}`}>A</button>
+                    <button onClick={() => setReaderFontSize('text-lg')} className={`px-2 py-0.5 rounded text-xs font-bold ${readerFontSize === 'text-lg' ? 'bg-[#F3E5AB] text-black' : ''}`}>A+</button>
+                  </div>
+                )}
+
+                {/* Botón Descargar Directo */}
+                {readingBook.enlaces_descarga && (readingBook.enlaces_descarga.epub || readingBook.enlaces_descarga.pdf) && (
+                  <a
+                    href={readingBook.enlaces_descarga.epub || readingBook.enlaces_descarga.pdf}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 bg-[#F3E5AB] text-black font-extrabold text-xs rounded-xl hover:bg-white transition-all flex items-center gap-1"
+                    title="Descargar libro en EPUB / PDF"
+                  >
+                    <Download size={13} /> Descargar
+                  </a>
+                )}
 
                 <button 
                   onClick={() => setReadingBook(null)}
-                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#F3E5AB] hover:text-black flex items-center justify-center transition-all shrink-0 ml-2"
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#F3E5AB] hover:text-black flex items-center justify-center transition-all shrink-0 ml-1"
                 >
                   <X size={16} />
                 </button>
               </div>
             </div>
 
-            <div className="p-8 sm:p-12 space-y-8 font-serif leading-relaxed">
-              <div className="text-center space-y-2 border-b pb-6 border-white/10">
-                <span className="text-xs font-mono uppercase tracking-widest opacity-75">{(readingBook.autores || []).join(', ')}</span>
-                <h2 className="text-3xl sm:text-4xl font-bold">{readingBook.titulo}</h2>
-                <p className="text-sm font-sans italic opacity-80">{readingBook.subtitulo}</p>
-              </div>
+            {/* VISTA 1: TEXTO CON PAGINACIÓN DE CAPÍTULOS INTERACTIVA */}
+            {readerViewMode === 'text' ? (
+              <div className="p-8 sm:p-12 space-y-8 font-serif leading-relaxed">
+                <div className="text-center space-y-2 border-b pb-6 border-white/10">
+                  <span className="text-xs font-mono uppercase tracking-widest opacity-75">{(readingBook.autores || []).join(', ')}</span>
+                  <h2 className="text-3xl sm:text-4xl font-bold">{readingBook.titulo}</h2>
+                  <p className="text-sm font-sans italic opacity-80">{activeChapterData.title}</p>
+                </div>
 
-              <div className={`space-y-6 ${readerFontSize} font-light`}>
-                <p className="first-letter:text-5xl first-letter:font-serif first-letter:font-bold first-letter:mr-2 first-letter:float-left">
-                  {readingBook.resumen}
-                </p>
-
-                <p>
-                  En esta obra de valor histórico e incalculable riqueza intelectual, la preservación del texto original respeta de manera íntegra las ediciones de origen. Cada capítulo expone los argumentos que transformaron la literatura y el pensamiento universal.
-                </p>
-
-                <div className="p-6 bg-white/5 rounded-2xl border border-white/10 font-sans text-xs space-y-2">
-                  <p className="font-bold flex items-center gap-1.5 text-[#F3E5AB]">
-                    <ShieldCheck size={14} /> Atribución Legal de Licencia Abierta
+                <div className={`space-y-6 ${readerFontSize} font-light whitespace-pre-line leading-relaxed`}>
+                  <p className="first-letter:text-5xl first-letter:font-serif first-letter:font-bold first-letter:mr-2 first-letter:float-left">
+                    {activeChapterData.content}
                   </p>
-                  <p className="opacity-80">
-                    Este texto forma parte del catálogo de <strong>{readingBook.fuente_original}</strong> y es de libre distribución bajo licencia de Dominio Público.
-                  </p>
+
+                  <div className="p-6 bg-white/5 rounded-2xl border border-white/10 font-sans text-xs space-y-2">
+                    <p className="font-bold flex items-center gap-1.5 text-[#F3E5AB]">
+                      <ShieldCheck size={14} /> Atribución Legal de Licencia Abierta
+                    </p>
+                    <p className="opacity-80">
+                      Este texto forma parte del catálogo de <strong>{readingBook.fuente_original}</strong> y es de libre distribución bajo licencia de Dominio Público.
+                    </p>
+                  </div>
+                </div>
+
+                {/* BARRA DE NAVEGACIÓN Y PAGINACIÓN DE CAPÍTULOS REAL */}
+                <div className="pt-8 border-t border-white/10 flex items-center justify-between font-sans text-xs font-bold">
+                  <button 
+                    onClick={() => setReaderChapter(Math.max(0, readerChapter - 1))}
+                    disabled={readerChapter === 0}
+                    className={`px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
+                      readerChapter === 0 ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-white/10 hover:bg-white/20 text-white'
+                    }`}
+                  >
+                    <ChevronLeft size={16} /> Capítulo Anterior
+                  </button>
+
+                  <span className="font-mono text-center">
+                    Capítulo {readerChapter + 1} de {currentChapters.length} • Página {(readerChapter + 1) * 15} de {readingBook.paginas_aprox || '210 págs'}
+                  </span>
+
+                  <button 
+                    onClick={() => setReaderChapter(Math.min(currentChapters.length - 1, readerChapter + 1))}
+                    disabled={readerChapter === currentChapters.length - 1}
+                    className={`px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 ${
+                      readerChapter === currentChapters.length - 1 ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-[#F3E5AB] text-black hover:bg-white'
+                    }`}
+                  >
+                    Capítulo Siguiente <ChevronRight size={16} />
+                  </button>
                 </div>
               </div>
-
-              <div className="pt-8 border-t border-white/10 flex items-center justify-between font-sans text-xs font-bold">
-                <button className="px-4 py-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all">← Capítulo Anterior</button>
-                <span className="font-mono">Página 1 de {readingBook.paginas_aprox || '210 págs'}</span>
-                <button className="px-4 py-2 bg-[#F3E5AB] text-black rounded-xl hover:bg-white transition-all">Capítulo Siguiente →</button>
+            ) : (
+              /* VISTA 2: LECTOR EMBEBIDO INTERACTIVO (GUTENBERG / INTERNET ARCHIVE IFRAME) */
+              <div className="w-full h-[75vh] bg-black relative">
+                <iframe
+                  src={
+                    readingBook.enlaces_descarga?.html ||
+                    (readingBook.url_fuente ? readingBook.url_fuente.replace('gutenberg.org/ebooks/', 'gutenberg.org/files/') + '.html' : null) ||
+                    readingBook.url_fuente
+                  }
+                  title={readingBook.titulo}
+                  className="w-full h-full border-0"
+                  sandbox="allow-same-origin allow-scripts allow-popups"
+                />
               </div>
-            </div>
+            )}
 
           </div>
         </div>
