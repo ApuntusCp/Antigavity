@@ -7,7 +7,7 @@ import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserChec
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { useSearchParams, useRouter } from 'next/navigation';
-import PaymentMethodsBadge from '../../components/PaymentMethodsBadge';
+import NewsTrustBadge from '../../components/NewsTrustBadge';
 
 // COMPONENTE BARRAS DE SESGO IDEOLÓGICO DISCRETO Y ELEGANTE (TEMA AZUL CUERO NOCTURNO)
 function PoliticalBiasBar({ biasScore, biasLabel }) {
@@ -668,7 +668,8 @@ function NoticiasContent() {
           </div>
         )}
 
-        <PaymentMethodsBadge />
+        {/* GARANTÍA EDITORIAL DE HEMEROTECA Y FUENTES 100% VERÍDICAS (REEMPLAZA EL BADGE COMERCIAL DE PAGOS Y ENVÍOS) */}
+        <NewsTrustBadge />
       </div>
     </div>
   );
