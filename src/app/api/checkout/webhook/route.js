@@ -11,7 +11,6 @@ export async function POST(request) {
       return new Response("Invalid JSON", { status: 400 });
     }
 
-    // Extraemos los datos de Bold. Usualmente envían event_type, payment.reference, payment.status
     const orderId = data?.payment?.reference || data?.reference;
     const status = data?.payment?.status || data?.status;
 
@@ -20,7 +19,21 @@ export async function POST(request) {
     }
 
     if (status !== 'APPROVED') {
-      return new Response("Pago no aprobado, ignorado", { status: 200 });
+      // Registrar notificación de fallo o rechazo de pago en GC Admin
+      try {
+        await adminDb.collection('notifications').add({
+          title: '⚠️ Pago Rechazado o Cancelado',
+          message: `El pago para la Orden #${orderId} no fue aprobado. Estado de la pasarela: ${status || 'REJECTED'}.`,
+          type: 'payment_error',
+          orderId: orderId,
+          read: false,
+          timestamp: new Date()
+        });
+      } catch (e) {
+        console.warn("Could not write rejection notification:", e);
+      }
+
+      return new Response("Pago no aprobado, notificación enviada a GC Admin", { status: 200 });
     }
 
     // 1. Obtener la orden
@@ -50,11 +63,27 @@ export async function POST(request) {
       status: 'paid'
     }).catch(e => console.warn("Error al actualizar carrito:", e));
 
-    // 4. DESCONTAR INVENTARIO (Solución al fraude de Overselling)
+    // 4. Registrar notificación de venta exitosa en GC Admin
+    try {
+      await adminDb.collection('notifications').add({
+        title: '🎉 ¡Nueva Venta Aprobada!',
+        message: `El pago para la Orden #${orderId} fue APROBADO exitosamente por Bold por un valor de $${(orderData.total || 0).toLocaleString()} COP.`,
+        type: 'payment_success',
+        orderId: orderId,
+        amount: orderData.total,
+        customerName: orderData.customer?.name || 'Cliente',
+        customerEmail: orderData.customer?.email || '',
+        read: false,
+        timestamp: new Date()
+      });
+    } catch (e) {
+      console.warn("Could not write success notification:", e);
+    }
+
+    // 5. DESCONTAR INVENTARIO
     if (Array.isArray(orderData.items) && orderData.items.length > 0) {
       const batch = adminDb.batch();
       for (const item of orderData.items) {
-        // En tu DB, los IDs de producto suelen ser el SKU o el doc ID
         const productRef = adminDb.collection('products').doc(item.id || item.sku);
         batch.update(productRef, {
            stock: FieldValue.increment(-item.quantity)
@@ -64,13 +93,12 @@ export async function POST(request) {
         await batch.commit();
         console.log(`Inventario descontado exitosamente para la orden ${orderId}`);
       } catch (e) {
-        console.error("Fallo al descontar el inventario (¿Producto no existe?):", e);
+        console.error("Fallo al descontar el inventario:", e);
       }
     }
 
-    // 5. Enviar notificación a Telegram AHORA SÍ, DESDE EL BACKEND SEGURO
+    // 6. Enviar notificación a Telegram
     try {
-      // Necesitamos la URL absoluta para el fetch en SSR
       const baseUrl = request.headers.get('origin') || `https://${request.headers.get('host')}`;
       await fetch(`${baseUrl}/api/notify/order`, {
         method: 'POST',
@@ -85,7 +113,7 @@ export async function POST(request) {
       console.warn("Fallo la notificación de Telegram:", e);
     }
 
-    return new Response("Webhook procesado exitosamente", { status: 200 });
+    return new Response("Webhook procesado exitosamente con notificación en GC Admin", { status: 200 });
   } catch (error) {
     console.error("Error crítico en Webhook:", error);
     return new Response("Error interno del servidor", { status: 500 });
