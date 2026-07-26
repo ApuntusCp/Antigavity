@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Bookmark, ArrowRight, Star } from 'lucide-react';
+import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award } from 'lucide-react';
 import PaymentMethodsBadge from '../../components/PaymentMethodsBadge';
 
 export const metadata = {
@@ -14,27 +14,27 @@ export default function LibrosPage() {
       title: "El Poder Sanador de las Abejas",
       subtitle: "Manual completo de Apitoxina y Apiterapia Moderna",
       author: "GranColinos Editorial",
-      cover: "🐝",
+      icon: <Award size={36} className="text-[#F3E5AB]" />,
       pages: "180 págs",
-      rating: "5.0 ★★★★★"
+      rating: "5.0 / 5.0"
     },
     {
       id: 2,
       title: "Compendio Botánico Andino",
       subtitle: "Plantas medicinales de la Cordillera Central de Colombia",
       author: "Investigación APONTE",
-      cover: "🌱",
+      icon: <FileText size={36} className="text-[#F3E5AB]" />,
       pages: "240 págs",
-      rating: "4.9 ★★★★★"
+      rating: "4.9 / 5.0"
     },
     {
       id: 3,
       title: "Filosofía del Lujo Puro",
       subtitle: "Ingredientes sagrados y la búsqueda de la longevidad",
       author: "Club GranColinos",
-      cover: "📜",
+      icon: <Book size={36} className="text-[#F3E5AB]" />,
       pages: "150 págs",
-      rating: "5.0 ★★★★★"
+      rating: "5.0 / 5.0"
     }
   ];
 
@@ -59,8 +59,8 @@ export default function LibrosPage() {
         {/* Featured Book Hero */}
         <div className="bg-black/50 border border-[#F3E5AB]/40 rounded-3xl p-8 md:p-12 backdrop-blur-xl shadow-2xl mb-16 glow-libros">
           <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="w-36 h-48 rounded-2xl bg-gradient-to-br from-[#F3E5AB]/20 to-black border border-[#F3E5AB]/40 flex items-center justify-center text-5xl shadow-2xl shrink-0">
-              📖
+            <div className="w-36 h-48 rounded-2xl bg-gradient-to-br from-[#F3E5AB]/20 to-black border border-[#F3E5AB]/40 flex items-center justify-center text-[#F3E5AB] shadow-2xl shrink-0">
+              <BookOpen size={56} />
             </div>
             
             <div className="space-y-4">
@@ -87,8 +87,8 @@ export default function LibrosPage() {
           {books.map((book) => (
             <div key={book.id} className="bg-black/40 border border-[#F3E5AB]/20 hover:border-[#F3E5AB]/60 rounded-2xl p-6 backdrop-blur-xl shadow-xl transition-all duration-300 flex flex-col justify-between">
               <div>
-                <div className="w-full h-40 rounded-xl bg-[#F3E5AB]/10 border border-[#F3E5AB]/20 flex items-center justify-center text-4xl mb-6">
-                  {book.cover}
+                <div className="w-full h-40 rounded-xl bg-[#F3E5AB]/10 border border-[#F3E5AB]/20 flex items-center justify-center mb-6">
+                  {book.icon}
                 </div>
                 <span className="text-[#F3E5AB] text-[10px] font-bold tracking-widest uppercase block mb-1">
                   {book.author}

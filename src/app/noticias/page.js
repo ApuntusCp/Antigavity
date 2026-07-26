@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, Share2, BookOpen } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Microscope, Flame } from 'lucide-react';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import PaymentMethodsBadge from '../../components/PaymentMethodsBadge';
@@ -18,18 +18,18 @@ function NoticiasContent() {
   const [realtimeArticles, setRealtimeArticles] = useState([]);
   const [loadingFeed, setLoadingFeed] = useState(true);
 
-  // Country Options for Dropdown
+  // Country Options for Dropdown (100% SIN EMOJIS - Estilo Elegante y Corporativo)
   const countries = [
-    { id: 'global', name: '🌎 Cobertura Global (Todas)', flag: '🌎' },
-    { id: 'co', name: '🇨🇴 Colombia (Nacional y Regiones)', flag: '🇨🇴' },
-    { id: 'mx', name: '🇲🇽 México', flag: '🇲🇽' },
-    { id: 'ar', name: '🇦🇷 Argentina', flag: '🇦🇷' },
-    { id: 'es', name: '🇪🇸 España', code: 'ES', flag: '🇪🇸' },
-    { id: 'us', name: '🇺🇸 Estados Unidos e Internacional', flag: '🇺🇸' },
-    { id: 'salud', name: '🔬 Botánica, Apitoxina & Ciencia', flag: '🔬' }
+    { id: 'global', name: 'Cobertura Global (Todas las regiones)', code: 'GLOBAL' },
+    { id: 'co', name: 'Colombia (Nacional y Regiones)', code: 'CO' },
+    { id: 'mx', name: 'México', code: 'MX' },
+    { id: 'ar', name: 'Argentina', code: 'AR' },
+    { id: 'es', name: 'España', code: 'ES' },
+    { id: 'us', name: 'Estados Unidos e Internacional', code: 'US' },
+    { id: 'salud', name: 'Botánica, Apitoxina & Ciencia', code: 'SCIENCE' }
   ];
 
-  // Editorial Featured Articles (Option B: Preserved Brand Content)
+  // Editorial Featured Articles (Option B: Preserved Brand Content - SIN EMOJIS)
   const brandFeaturedArticles = [
     {
       id: "brand-1",
@@ -41,7 +41,7 @@ function NoticiasContent() {
       category: "Regulación & Salud",
       readTime: "4 min de lectura",
       image: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=1000&q=80",
-      sourceLogo: "🇨🇴 GranColinos Editorial",
+      sourceLogo: "GranColinos Editorial",
       sourceName: "GranColinos Journal",
       views: 12450
     },
@@ -55,7 +55,7 @@ function NoticiasContent() {
       category: "Investigación",
       readTime: "6 min de lectura",
       image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000&q=80",
-      sourceLogo: "🐝 Laboratorio GranColinos",
+      sourceLogo: "Laboratorio GranColinos",
       sourceName: "GranColinos Science",
       views: 18920
     },
@@ -69,13 +69,13 @@ function NoticiasContent() {
       category: "Comunidad & Origen",
       readTime: "5 min de lectura",
       image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80",
-      sourceLogo: "🌱 Red Agrícola GC",
+      sourceLogo: "Red Agrícola GC",
       sourceName: "GranColinos Agrosostenible",
       views: 9400
     }
   ];
 
-  // Fallback Realtime Dataset from Gran Noticias Network (con Imágenes, Autores y Contenido Completo para Lectura Interna)
+  // Fallback Realtime Dataset from Gran Noticias Network (100% SIN EMOJIS)
   const fallbackGlobalNews = [
     {
       id: 'news-1',
@@ -84,7 +84,7 @@ function NoticiasContent() {
       fullContent: `Un equipo interdisciplinario de investigadores suizos y alemanes ha publicado los resultados de un ensayo clínico de tres años sobre los efectos de la melitina y adolapina en la regeneración de tejidos conectivos.\n\nLos hallazgos revelan que los componentes del veneno apícola puro estimulan la producción endógena de cortisol natural en las glándulas suprarrenales, reduciendo el dolor articular crónico sin los efectos secundarios de los antiinflamatorios sintéticos.\n\nEl estudio concluye que las formulaciones estandarizadas de apitoxina representan una de las fronteras más prometedoras en la medicina natural del siglo XXI.`,
       author: "Dr. Michael Harrison",
       sourceName: "ScienceDaily",
-      sourceLogo: "🔬 ScienceDaily",
+      sourceLogo: "ScienceDaily",
       image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1000&q=80",
       country: "us",
       publishedAt: "Hace 10 min",
@@ -97,7 +97,7 @@ function NoticiasContent() {
       fullContent: `El Ministerio de Comercio Exterior y la Cancillería colombiana firmaron esta mañana el decreto de fomento a las exportaciones de alto valor agregado en el sector botánico.\n\nLa normativa simplifica los trámites aduaneros para laboratorios que cuenten con certificación INVIMA RS y trazabilidad molecular de lotes. Esto permitirá a empresas nacionales exportar gotas y bálsamos a mercados exigentes en Europa y Norteamérica.`,
       author: "Juliana Restrepo",
       sourceName: "El Tiempo",
-      sourceLogo: "📰 El Tiempo",
+      sourceLogo: "El Tiempo",
       image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=80",
       country: "co",
       publishedAt: "Hace 25 min",
@@ -110,7 +110,7 @@ function NoticiasContent() {
       fullContent: `Representantes de 14 países latinoamericanos concluyeron la Cumbre de Regulación Botánica en Ciudad de México, acordando un catálogo unificado de plantas autóctonas reconocidas por su valor fitoterapéutico.\n\nEl acuerdo promoverá el intercambio comercial transparente y sancionará severamente las falsificaciones de productos naturales que atenten contra la salud pública.`,
       author: "Carlos Mendoza",
       sourceName: "Agencia EFE",
-      sourceLogo: "🌐 Agencia EFE",
+      sourceLogo: "Agencia EFE",
       image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&w=1000&q=80",
       country: "mx",
       publishedAt: "Hace 45 min",
@@ -123,7 +123,7 @@ function NoticiasContent() {
       fullContent: `La Conferencia de las Naciones Unidas sobre Agricultura Sostenible abrió sus sesiones en Ginebra con un llamado urgente a descarbonizar la producción agrícola mundial.\n\nLos ponentes destacaron el éxito de los modelos biodinámicos andinos, donde la apicultura integrada y los abonos biológicos aumentan los rendimientos hasta en un 35% mientras restauran los acuíferos subterráneos.`,
       author: "Sarah Jenkins",
       sourceName: "Reuters World",
-      sourceLogo: "📡 Reuters",
+      sourceLogo: "Reuters World",
       image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1000&q=80",
       country: "global",
       publishedAt: "Hace 1 hora",
@@ -136,7 +136,7 @@ function NoticiasContent() {
       fullContent: `Un informe publicado por el Oxford Wellbeing Institute reveló que los profesionales que incorporan soluciones naturales de manejo de estrés reportan un incremento significativo en la concentración y una reducción del 40% en licencias médicas por 'burnout'.\n\nEl estudio resalta que los consumidores buscan cada vez más productos con respaldo científico y sellos legales transparentes.`,
       author: "David Vance",
       sourceName: "Financial Times",
-      sourceLogo: "📈 Financial Times",
+      sourceLogo: "Financial Times",
       image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80",
       country: "us",
       publishedAt: "Hace 2 horas",
@@ -149,7 +149,7 @@ function NoticiasContent() {
       fullContent: `La Universidad Nacional de La Plata inauguró hoy su Centro de Biotecnología Apícola, dedicado a analizar la pureza cromatográfica de mieles, extractos de polen y melitina purificada.\n\nEl objetivo de la institución es crear patentes públicas para tratamientos dermocosméticos y parches antiinflamatorios de origen natural.`,
       author: "Gonzalo Peralta",
       sourceName: "La Nación",
-      sourceLogo: "🇦🇷 La Nación",
+      sourceLogo: "La Nación",
       image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1000&q=80",
       country: "ar",
       publishedAt: "Hace 3 horas",
@@ -188,7 +188,7 @@ function NoticiasContent() {
               fullContent: data.fullContent || data.content || data.summary || 'Contenido detallado en desarrollo.',
               author: data.author || data.byline || 'Redacción Gran Noticias',
               sourceName: data.sourceName || 'Agencia Periodística',
-              sourceLogo: data.sourceLogo || `📰 ${data.sourceName || 'Medio Verificado'}`,
+              sourceLogo: (data.sourceLogo || data.sourceName || 'Medio Verificado').replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim(),
               image: data.image || data.thumbnail || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1000&q=80",
               country: (data.country || 'global').toLowerCase(),
               publishedAt: pubTime,
@@ -224,7 +224,7 @@ function NoticiasContent() {
     })
     .sort((a, b) => {
       if (activeSort === 'populares') return (b.views || 0) - (a.views || 0);
-      return 0; // default order by date
+      return 0;
     });
 
   return (
@@ -245,13 +245,13 @@ function NoticiasContent() {
           </p>
         </div>
 
-        {/* FRANJA EDITORIAL DESTACADA GRANCOLINOS (OPCIÓN B) */}
+        {/* FRANJA EDITORIAL DESTACADA GRANCOLINOS (100% SIN EMOJIS) */}
         <div className="mb-16">
           <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-3">
             <h2 className="text-xs font-bold text-[#E2E8F0] uppercase tracking-[0.25em] flex items-center gap-2">
               <Sparkles size={16} /> DESTACADOS Y REGULACIÓN GRANCOLINOS
             </h2>
-            <span className="text-[10px] text-gray-400 font-mono">EDICIÓN INSTITUCIONAL</span>
+            <span className="text-[10px] text-gray-400 font-mono uppercase tracking-widest">Edición Institucional</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -319,7 +319,7 @@ function NoticiasContent() {
               </div>
             </div>
 
-            {/* Selector Desplegable de País / Región + Botón Más Populares (SIN NINGUNA BARRA DE SCROLL NATIVA) */}
+            {/* Selector Desplegable de País / Región + Botón Más Populares (SIN EMOJIS & SIN SCROLLBARS) */}
             <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
               
               {/* Botón de Ordenamiento: Más Populares vs Recientes */}
@@ -332,7 +332,7 @@ function NoticiasContent() {
                 }`}
               >
                 <TrendingUp size={14} />
-                {activeSort === 'populares' ? '🔥 MÁS POPULARES' : '⏱️ MÁS RECIENTES'}
+                {activeSort === 'populares' ? 'MÁS POPULARES' : 'MÁS RECIENTES'}
               </button>
 
               {/* Selector Desplegable de País / Región */}
@@ -345,7 +345,7 @@ function NoticiasContent() {
                     if (val === 'global') router.push('/noticias', { scroll: false });
                     else router.push(`/noticias?pais=${val}`, { scroll: false });
                   }}
-                  className="w-full lg:w-64 bg-black/80 text-[#E2E8F0] text-xs font-bold py-2 px-4 pr-8 rounded-xl border border-[#E2E8F0]/40 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-md cursor-pointer"
+                  className="w-full lg:w-64 bg-black/80 text-[#E2E8F0] text-xs font-bold py-2.5 px-4 pr-8 rounded-xl border border-[#E2E8F0]/40 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-md cursor-pointer"
                 >
                   {countries.map((c) => (
                     <option key={c.id} value={c.id} className="bg-[#0A0D0B] text-white py-1">
@@ -353,13 +353,13 @@ function NoticiasContent() {
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-2.5 text-[#E2E8F0] pointer-events-none" size={16} />
+                <ChevronDown className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={16} />
               </div>
 
             </div>
           </div>
 
-          {/* Feed Content Grid (Al hacer clic SE ABRE LA VENTANA LECTORA INTERNA MODAL) */}
+          {/* Feed Content Grid */}
           {loadingFeed ? (
             <div className="flex flex-col items-center justify-center py-20 text-gray-400">
               <RefreshCw className="animate-spin text-[#E2E8F0] mb-4" size={32} />
@@ -397,7 +397,7 @@ function NoticiasContent() {
                       {/* Views Count Badge */}
                       {item.views && (
                         <span className="absolute bottom-3 right-3 px-2 py-0.5 bg-black/70 backdrop-blur-md text-gray-300 text-[9px] font-mono rounded flex items-center gap-1 border border-white/10">
-                          🔥 {(item.views / 1000).toFixed(1)}k vistas
+                          <Flame size={10} className="text-[#E2E8F0]" /> {(item.views / 1000).toFixed(1)}k lecturas
                         </span>
                       )}
                     </div>
@@ -436,7 +436,7 @@ function NoticiasContent() {
         <PaymentMethodsBadge />
       </div>
 
-      {/* VENTANA LECTORA INTERNA MODAL (LECTURA DENTRO DE GRANCOLINOS SIN NINGUNA REDIRECCIÓN A GOOGLE NOTICIAS) */}
+      {/* VENTANA LECTORA INTERNA MODAL (100% SIN EMOJIS) */}
       {selectedArticle && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-xl animate-in fade-in duration-200">
           <div className="bg-[#090E0B] border border-[#E2E8F0]/40 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar shadow-[0_0_60px_rgba(0,0,0,0.95)] relative flex flex-col">
