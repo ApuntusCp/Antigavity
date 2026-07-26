@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, Play, Pause, Volume2, Search, Filter, Globe, ShieldCheck, RefreshCw, X, ExternalLink, Headphones, Sparkles, Check, ChevronRight, Layers, Sliders, Type, Sun, Moon, Database, AlertCircle, ChevronLeft, Maximize2, Minimize2, Highlighting, Highlighter, MessageSquare, Edit3, Columns, Layout, Trash2, Save } from 'lucide-react';
+import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, Play, Pause, Volume2, Search, Filter, Globe, ShieldCheck, RefreshCw, X, ExternalLink, Headphones, Sparkles, Check, ChevronRight, Layers, Sliders, Type, Sun, Moon, Database, AlertCircle, ChevronLeft, Maximize2, Minimize2, Highlighting, Highlighter, MessageSquare, Edit3, Columns, Layout, Trash2, Save, Palette } from 'lucide-react';
 
 // Componente Especial de Garantía y Acceso Abierto para la Biblioteca
 function LibraryTrustBadge() {
@@ -54,29 +54,38 @@ function LibrosContent() {
   
   // Modales y Lector Nativo GranColinos
   const [readingBook, setReadingBook] = useState(null);
+  const [loadingFullBookText, setLoadingFullBookText] = useState(false);
+  const [activeFullBookPages, setActiveFullBookPages] = useState([]);
   const [readerCurrentPage, setReaderCurrentPage] = useState(1);
   const [readerPageMode, setReaderPageMode] = useState('double'); // 'single' | 'double' (Libro Abierto 2 Páginas)
   const [isFullscreenReader, setIsFullscreenReader] = useState(false);
   const [readerFontSize, setReaderFontSize] = useState('text-base');
   const [readerTheme, setReaderTheme] = useState('dark'); // dark | sepia | contrast
 
-  // Sistema de Notas y Subrayado de Usuario (Persistente)
-  const [userHighlights, setUserHighlights] = useState({}); // { [bookId_page]: boolean }
+  // Subrayado Multicolores y Notas
+  const [activeHighlightColor, setActiveHighlightColor] = useState('gold'); // gold | emerald | cyan | purple | coral
+  const [userHighlights, setUserHighlights] = useState({}); // { [bookId_page_idx]: 'gold' | 'emerald' | 'cyan' | 'purple' | 'coral' | null }
   const [userNotes, setUserNotes] = useState({}); // { [bookId]: [ { id, page, text, date } ] }
   const [newNoteInput, setNewNoteInput] = useState('');
   const [showNotesPanel, setShowNotesPanel] = useState(false);
 
   // Audiolibros
   const [playingAudiobook, setPlayingAudiobook] = useState(null);
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
 
   // Estado del Catálogo y la API Interna
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatusMsg, setSyncStatusMsg] = useState(null);
-  const [totalBooksCount, setTotalBooksCount] = useState(0);
+
+  // Paleta de Colores de Subrayado Libre
+  const highlightColorStyles = {
+    gold: { name: 'Dorado', bg: 'bg-[#F3E5AB]/30 text-white border-[#F3E5AB]/60 shadow-[0_0_12px_rgba(243,229,171,0.2)]', dot: 'bg-[#F3E5AB]' },
+    emerald: { name: 'Esmeralda', bg: 'bg-emerald-500/30 text-emerald-100 border-emerald-400/60 shadow-[0_0_12px_rgba(16,185,129,0.2)]', dot: 'bg-emerald-400' },
+    cyan: { name: 'Cian', bg: 'bg-cyan-500/30 text-cyan-100 border-cyan-400/60 shadow-[0_0_12px_rgba(6,182,212,0.2)]', dot: 'bg-cyan-400' },
+    purple: { name: 'Púrpura', bg: 'bg-purple-500/30 text-purple-100 border-purple-400/60 shadow-[0_0_12px_rgba(168,85,247,0.2)]', dot: 'bg-purple-400' },
+    coral: { name: 'Coral', bg: 'bg-rose-500/30 text-rose-100 border-rose-400/60 shadow-[0_0_12px_rgba(244,63,94,0.2)]', dot: 'bg-rose-400' }
+  };
 
   // Categorías
   const categories = [
@@ -119,7 +128,6 @@ function LibrosContent() {
     }
   }, []);
 
-  // Guardar Notas
   const saveUserNote = (bookId) => {
     if (!newNoteInput.trim() || !bookId) return;
     const noteObj = {
@@ -152,12 +160,15 @@ function LibrosContent() {
     } catch (e) {}
   };
 
-  // Alternar Subrayado de Párrafo
+  // Alternar Subrayado Multicolor de Párrafo
   const toggleHighlightParagraph = (bookId, pageNum, paragraphIdx) => {
     const key = `${bookId}_p${pageNum}_idx${paragraphIdx}`;
+    const currentVal = userHighlights[key];
+    const nextVal = currentVal === activeHighlightColor ? null : activeHighlightColor;
+
     const updated = {
       ...userHighlights,
-      [key]: !userHighlights[key]
+      [key]: nextVal
     };
     setUserHighlights(updated);
     try {
@@ -165,7 +176,7 @@ function LibrosContent() {
     } catch (e) {}
   };
 
-  // Base de Datos de Páginas Reales Adaptadas para Lectura Nativa GranColinos
+  // Fallback Native Seed Pages
   const nativeBookPagesMap = {
     'gut-1656': [
       {
@@ -185,44 +196,6 @@ function LibrosContent() {
           "Mas, por Zeus, atenienses, no oiréis discursos adornados de bellas frases y palabras esmeradamente escogidas, como los suyos, sino cosas dichas al azar, con las primeras palabras que me vengan a la boca, porque tengo la confianza de que es justo lo que digo.",
           "Quien me dio testimonio de mi sabiduría fue el oráculo de Delfos. Querefonte, mi amigo de la infancia, fue a Delfos y tuvo la osadía de consultar si había alguien más sabio que yo. La Pitia respondió que no había nadie más sabio."
         ]
-      },
-      {
-        page: 3,
-        title: "Apología de Sócrates — Sección III: Sólo sé que nada sé",
-        paragraphs: [
-          "Al oír esto me dije a mí mismo: ¿Qué quiere decir el dios? Porque yo sé muy bien que no soy sabio ni poco ni mucho.",
-          "Fui a examinar a uno de los que pasaban por sabios y descubrí que fingía saber lo que no sabía. Me retiré entonces pensando: 'Soy más sabio que este hombre; pues ninguno de los dos sabe nada bueno, pero él cree saber algo no sabiéndolo, mientras que yo, así como no sé nada, tampoco creo saberlo'.",
-          "A partir de este examen, atenienses, me he ganado muchas enemistades, pero mi compromiso con la búsqueda de la verdad permanece firme."
-        ]
-      },
-      {
-        page: 4,
-        title: "Critón — Sección I: La Visita en la Prisión de Atenas",
-        paragraphs: [
-          "¿Por qué has venido a esta hora, Critón? ¿No es aún muy temprano? Sí, ciertamente. La nave de Delos está a punto de llegar y las leyes exigen mi ejecución.",
-          "Pero escucha, querido Critón: si al huir violamos las leyes de Atenas que nos vieron nacer y educarnos, estaremos destruyendo el orden de la polis.",
-          "La voz de las Leyes resonará en mi alma diciéndome que es preferible sufrir una injusticia humana antes que cometer una injusticia contra la patria."
-        ]
-      }
-    ],
-    'gut-2000': [
-      {
-        page: 1,
-        title: "Don Quijote de la Mancha — Capítulo I",
-        paragraphs: [
-          "En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo de los de lanza en astillero, adarga antigua, rocín flaco y galgo corredor.",
-          "Una olla de algo más vaca que carnero, salpicón las más noches, duelos y quebrantos los sábados, lantejas los viernes, algún palomino de añadidura los domingos, consumían las tres partes de su hacienda.",
-          "Frisaba la edad de nuestro hidalgo con los cincuenta años; era de complexión recia, seco de carnes, enjuto de rostro, gran madrugador y amigo de la caza."
-        ]
-      },
-      {
-        page: 2,
-        title: "Don Quijote de la Mancha — Capítulo II",
-        paragraphs: [
-          "Hechas, pues, estas prevenciones, no quiso aguardar más tiempo a poner en efecto su pensamiento, apretándole a ello la falta que él pensaba que hacía en el mundo su tardanza.",
-          "Según eran los agravios que pensaba deshacer, tuertos que enderezar, sinrazones que enmendar y abusos que mejorar y deudas que satisfacer.",
-          "Y así, sin dar parte a persona alguna de su intención, y sin que nadie le viese, una mañana, antes del día, que era uno de los calurosos del mes de Julio, se armó de todas sus armas."
-        ]
       }
     ],
     'default': [
@@ -232,7 +205,7 @@ function LibrosContent() {
         paragraphs: [
           "Esta obra pertenece al patrimonio literario y científico universal de dominio público. Su preservación respeta íntegramente la edición de origen.",
           "En esta primera sección se exponen los principios fundamentales, el marco histórico y las hipótesis que articulan el desarrollo de la investigación.",
-          "Puedes utilizar los botones superiores para activar la 'Vista Doble Página (Libro Abierto)', subrayar párrafos clave o añadir tus apuntes personales."
+          "Puedes utilizar los botones superiores para activar la 'Vista Doble Página (Libro Abierto)', cambiar el color del subrayador o añadir tus apuntes personales."
         ]
       },
       {
@@ -242,15 +215,6 @@ function LibrosContent() {
           "Avanzando en la estructura del texto, se examinan las evidencias empíricas y los diálogos analíticos que consolidan las conclusiones del autor.",
           "La preservación digital en GranColinos respeta fielmente la ortografía y el estilo literario primario sin recortes ni resúmenes sintéticos.",
           "Continúa navegando página por página utilizando los botones de control o las flechas del teclado."
-        ]
-      },
-      {
-        page: 3,
-        title: "Página 3: Conclusiones y Referencias Bibliográficas",
-        paragraphs: [
-          "El corolario final reúne las reflexiones sobre la ética, la ciencia y la sociedad.",
-          "Todos los registros y referencias se encuentran verificados y disponibles para descarga gratuita en formatos EPUB y PDF.",
-          "Gracias por consultar la Hemeroteca Digital Legal de GranColinos."
         ]
       }
     ]
@@ -346,13 +310,9 @@ function LibrosContent() {
           } else {
             setBooks(json.data);
           }
-          setTotalBooksCount(json.total || json.data.length);
           setHasMore(json.hasMore !== undefined ? json.hasMore : true);
         } else {
-          if (!append) {
-            setBooks(masterclassSeedBooks);
-            setTotalBooksCount(masterclassSeedBooks.length);
-          }
+          if (!append) setBooks(masterclassSeedBooks);
           setHasMore(false);
         }
       } else {
@@ -406,24 +366,39 @@ function LibrosContent() {
     }
   };
 
-  // Abrir Lector Nativo GranColinos (Página 1, Vista Doble por Defecto)
-  const openReaderModal = (book) => {
+  // ALGORITMO DE EXTRAER TEXTO COMPLETO E INGERIR EN PÁGINAS NATIVAS
+  const openReaderModal = async (book) => {
     setReadingBook(book);
     setReaderCurrentPage(1);
-    setReaderPageMode('double'); // Vista Doble (Libro Abierto 2 Páginas)
+    setReaderPageMode('double');
     setIsFullscreenReader(false);
     setShowNotesPanel(false);
+    setLoadingFullBookText(true);
+
+    try {
+      // Invocar endpoint `/api/libros/read` para descargar e ingerir el texto integro
+      const targetUrl = book.enlaces_descarga?.html || book.url_fuente || '';
+      const readRes = await fetch(`/api/libros/read?id=${encodeURIComponent(book.id)}&url=${encodeURIComponent(targetUrl)}`);
+      
+      if (readRes.ok) {
+        const readJson = await readRes.json();
+        if (readJson.success && readJson.pages && readJson.pages.length > 0) {
+          setActiveFullBookPages(readJson.pages);
+        } else {
+          setActiveFullBookPages(nativeBookPagesMap[book.id] || nativeBookPagesMap['default']);
+        }
+      } else {
+        setActiveFullBookPages(nativeBookPagesMap[book.id] || nativeBookPagesMap['default']);
+      }
+    } catch (err) {
+      console.warn("Full text ingestion fallback warn:", err);
+      setActiveFullBookPages(nativeBookPagesMap[book.id] || nativeBookPagesMap['default']);
+    } finally {
+      setLoadingFullBookText(false);
+    }
   };
 
-  // Obtener Páginas del Libro Actual
-  const getBookPagesList = (book) => {
-    if (!book) return nativeBookPagesMap['default'];
-    return nativeBookPagesMap[book.id] || nativeBookPagesMap['default'];
-  };
-
-  const currentBookPages = getBookPagesList(readingBook);
-
-  // Páginas visibles en modo 1 o 2 páginas
+  const currentBookPages = activeFullBookPages.length > 0 ? activeFullBookPages : nativeBookPagesMap['default'];
   const pageLeft = currentBookPages[readerCurrentPage - 1] || currentBookPages[0];
   const pageRight = readerPageMode === 'double' ? (currentBookPages[readerCurrentPage] || null) : null;
   const totalBookPages = currentBookPages.length;
@@ -760,7 +735,7 @@ function LibrosContent() {
         <LibraryTrustBadge />
       </div>
 
-      {/* LECTOR EJECUTIVO NATIVO GRANCOLINOS (CON VISTA 2 PÁGINAS "LIBRO ABIERTO", SUBRAYADOR Y NOTAS PERSISTENTES) */}
+      {/* LECTOR EJECUTIVO NATIVO GRANCOLINOS (CON ALGORITMO DE LECTURA COMPLETA E INGESTIÓN Y PALETA MULTICOLOR) */}
       {readingBook && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-6 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
           <div className={`border rounded-3xl w-full shadow-[0_0_90px_rgba(243,229,171,0.25)] relative flex flex-col transition-all duration-300 ${
@@ -784,17 +759,32 @@ function LibrosContent() {
                 <h4 className="font-serif text-sm font-bold truncate">{readingBook.titulo}</h4>
               </div>
 
-              {/* Controles del Lector: 1 Pág vs 2 Páginas (Libro Abierto), Apuntes y Notas */}
-              <div className="flex items-center gap-2">
+              {/* PALETA MULTICOLOR DE SUBRAYADO LIBRE */}
+              <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
+                <Palette size={13} className="text-[#F3E5AB] mr-1" />
+                <span className="text-[10px] font-mono text-gray-300 uppercase tracking-wider hidden sm:inline">Color de Subrayado:</span>
                 
-                {/* Selector de Modo de Disposición: 1 Página vs 2 Páginas (Libro Abierto) */}
+                {Object.keys(highlightColorStyles).map(colorKey => (
+                  <button
+                    key={colorKey}
+                    onClick={() => setActiveHighlightColor(colorKey)}
+                    className={`w-5 h-5 rounded-full ${highlightColorStyles[colorKey].dot} transition-transform flex items-center justify-center ${
+                      activeHighlightColor === colorKey ? 'scale-125 ring-2 ring-white shadow-md' : 'opacity-70 hover:opacity-100'
+                    }`}
+                    title={`Seleccionar color ${highlightColorStyles[colorKey].name}`}
+                  />
+                ))}
+              </div>
+
+              {/* Controles de Vista: 1 Pág vs 2 Páginas, Apuntes */}
+              <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1 bg-white/10 rounded-xl p-1">
                   <button 
                     onClick={() => setReaderPageMode('single')} 
                     className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${readerPageMode === 'single' ? 'bg-[#F3E5AB] text-black shadow-md' : 'text-gray-300 hover:text-white'}`}
                     title="Vista de 1 Página"
                   >
-                    <Layout size={13} /> 1 Página
+                    <Layout size={13} /> 1 Pág
                   </button>
                   <button 
                     onClick={() => setReaderPageMode('double')} 
@@ -805,7 +795,6 @@ function LibrosContent() {
                   </button>
                 </div>
 
-                {/* Botón Cuaderno de Notas / Apuntes */}
                 <button
                   onClick={() => setShowNotesPanel(!showNotesPanel)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 border ${
@@ -813,16 +802,9 @@ function LibrosContent() {
                   }`}
                   title="Abrir cuaderno de apuntes y notas de lectura"
                 >
-                  <Edit3 size={13} /> Mis Apuntes ({ (userNotes[readingBook.id] || []).length })
+                  <Edit3 size={13} /> Apuntes ({ (userNotes[readingBook.id] || []).length })
                 </button>
 
-                {/* Selector de Tema */}
-                <div className="hidden sm:flex items-center gap-1 bg-white/10 rounded-xl p-1">
-                  <button onClick={() => setReaderTheme('dark')} className={`p-1 rounded text-xs ${readerTheme === 'dark' ? 'bg-[#F3E5AB] text-black' : ''}`} title="Modo Oscuro"><Moon size={14} /></button>
-                  <button onClick={() => setReaderTheme('sepia')} className={`p-1 rounded text-xs ${readerTheme === 'sepia' ? 'bg-[#F3E5AB] text-black' : ''}`} title="Modo Sepia"><Sun size={14} /></button>
-                </div>
-
-                {/* Maximizar Pantalla Completa */}
                 <button
                   onClick={() => setIsFullscreenReader(!isFullscreenReader)}
                   className="p-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-gray-300 hover:text-white transition-all"
@@ -840,167 +822,171 @@ function LibrosContent() {
               </div>
             </div>
 
-            {/* CUERPO DEL LECTOR NATIVO CON SOPORTE PARA LIBRO ABIERTO (2 PÁGINAS) Y SUBRAYADO */}
-            <div className="flex-1 overflow-y-auto p-6 sm:p-10 flex flex-col justify-between space-y-6">
-              
-              {/* PANEL LATERAL FLOTANTE DE NOTAS Y APUNTES DE USUARIO */}
-              {showNotesPanel && (
-                <div className="bg-black/90 border border-[#F3E5AB]/40 rounded-2xl p-5 mb-4 space-y-4 animate-in slide-in-from-top duration-200 text-white font-sans">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                    <h5 className="text-xs font-bold text-[#F3E5AB] uppercase tracking-wider flex items-center gap-1.5">
-                      <Edit3 size={14} /> Cuaderno de Apuntes del Lector
-                    </h5>
-                    <span className="text-[10px] text-gray-400 font-mono">Guardado automático en tu navegador</span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      placeholder={`Escribe un apunte para la pág. ${readerCurrentPage}...`}
-                      value={newNoteInput}
-                      onChange={(e) => setNewNoteInput(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && saveUserNote(readingBook.id)}
-                      className="flex-1 bg-white/10 text-white text-xs py-2 px-3 rounded-xl border border-white/20 focus:outline-none focus:border-[#F3E5AB]"
-                    />
-                    <button
-                      onClick={() => saveUserNote(readingBook.id)}
-                      className="px-4 py-2 bg-[#F3E5AB] text-black font-extrabold text-xs rounded-xl hover:bg-white transition-all shadow-md flex items-center gap-1"
-                    >
-                      <Save size={13} /> Guardar
-                    </button>
-                  </div>
-
-                  {/* Lista de Notas */}
-                  <div className="max-h-36 overflow-y-auto space-y-2 custom-scrollbar">
-                    {(userNotes[readingBook.id] || []).length === 0 ? (
-                      <p className="text-[11px] text-gray-400 italic">No has agregado notas aún. Escribe tu primera reflexión sobre este libro.</p>
-                    ) : (
-                      (userNotes[readingBook.id] || []).map(note => (
-                        <div key={note.id} className="p-2.5 bg-white/5 rounded-xl border border-white/10 flex items-center justify-between text-xs">
-                          <div>
-                            <span className="text-[#F3E5AB] font-mono text-[10px] font-bold block">Pág. {note.page} • {note.date}</span>
-                            <p className="text-gray-200">{note.text}</p>
-                          </div>
-                          <button onClick={() => deleteUserNote(readingBook.id, note.id)} className="text-gray-400 hover:text-red-400 p-1">
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
+            {/* SI EL ALGORITMO ESTÁ INGESTANDO EL LIBRO ENTERO DESDE EL SERVIDOR */}
+            {loadingFullBookText ? (
+              <div className="flex flex-col items-center justify-center flex-1 py-20 text-gray-300 space-y-4">
+                <RefreshCw className="animate-spin text-[#F3E5AB]" size={36} />
+                <div className="text-center font-mono space-y-1">
+                  <p className="text-sm font-bold text-[#F3E5AB]">Descargando e ingiriendo texto completo desde la fuente original...</p>
+                  <p className="text-xs text-gray-400">Paginando la obra completa sin recortes ni resúmenes sintéticos</p>
                 </div>
-              )}
-
-              {/* CONTENEDOR DE PÁGINAS: MODO 1 PÁGINA O MODO 2 PÁGINAS (LIBRO ABIERTO) */}
-              <div className={`grid gap-8 items-start flex-1 ${
-                readerPageMode === 'double' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 max-w-3xl mx-auto'
-              }`}>
+              </div>
+            ) : (
+              /* CUERPO DEL LECTOR NATIVO */
+              <div className="flex-1 overflow-y-auto p-6 sm:p-10 flex flex-col justify-between space-y-6">
                 
-                {/* PÁGINA IZQUIERDA (PÁGINA A) */}
-                <div className="space-y-6 font-serif leading-relaxed p-6 bg-white/5 rounded-2xl border border-white/10 shadow-lg relative min-h-[420px]">
-                  <div className="flex items-center justify-between text-xs font-mono border-b pb-3 border-white/10 opacity-80">
-                    <span className="text-[#F3E5AB] font-bold">Página {pageLeft.page} de {totalBookPages}</span>
-                    <span className="italic">{readingBook.titulo}</span>
-                  </div>
+                {/* PANEL LATERAL FLOTANTE DE NOTAS Y APUNTES DE USUARIO */}
+                {showNotesPanel && (
+                  <div className="bg-black/90 border border-[#F3E5AB]/40 rounded-2xl p-5 mb-4 space-y-4 animate-in slide-in-from-top duration-200 text-white font-sans">
+                    <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                      <h5 className="text-xs font-bold text-[#F3E5AB] uppercase tracking-wider flex items-center gap-1.5">
+                        <Edit3 size={14} /> Cuaderno de Apuntes del Lector
+                      </h5>
+                      <span className="text-[10px] text-gray-400 font-mono">Guardado automático en tu navegador</span>
+                    </div>
 
-                  <h3 className="text-lg font-bold text-[#F3E5AB] font-serif border-b pb-2 border-white/10">
-                    {pageLeft.title}
-                  </h3>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder={`Escribe un apunte para la pág. ${readerCurrentPage}...`}
+                        value={newNoteInput}
+                        onChange={(e) => setNewNoteInput(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && saveUserNote(readingBook.id)}
+                        className="flex-1 bg-white/10 text-white text-xs py-2 px-3 rounded-xl border border-white/20 focus:outline-none focus:border-[#F3E5AB]"
+                      />
+                      <button
+                        onClick={() => saveUserNote(readingBook.id)}
+                        className="px-4 py-2 bg-[#F3E5AB] text-black font-extrabold text-xs rounded-xl hover:bg-white transition-all shadow-md flex items-center gap-1"
+                      >
+                        <Save size={13} /> Guardar
+                      </button>
+                    </div>
 
-                  <div className={`space-y-4 ${readerFontSize} font-light`}>
-                    {pageLeft.paragraphs.map((pText, pIdx) => {
-                      const isHighlighted = userHighlights[`${readingBook.id}_p${pageLeft.page}_idx${pIdx}`];
-                      return (
-                        <p 
-                          key={pIdx}
-                          onClick={() => toggleHighlightParagraph(readingBook.id, pageLeft.page, pIdx)}
-                          className={`cursor-pointer transition-all duration-200 p-2 rounded-lg ${
-                            isHighlighted 
-                              ? 'bg-[#F3E5AB]/25 text-white font-medium shadow-sm border border-[#F3E5AB]/40' 
-                              : 'hover:bg-white/5'
-                          }`}
-                          title="Haz clic para subrayar este párrafo"
-                        >
-                          {pText}
-                        </p>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* PÁGINA DERECHA (PÁGINA B — SOLO EN MODO LIBRO ABIERTO 2 PÁGINAS) */}
-                {readerPageMode === 'double' && (
-                  <div className="space-y-6 font-serif leading-relaxed p-6 bg-white/5 rounded-2xl border border-white/10 shadow-lg relative min-h-[420px] border-l-4 border-l-[#F3E5AB]/30">
-                    {pageRight ? (
-                      <>
-                        <div className="flex items-center justify-between text-xs font-mono border-b pb-3 border-white/10 opacity-80">
-                          <span className="text-[#F3E5AB] font-bold">Página {pageRight.page} de {totalBookPages}</span>
-                          <span className="italic">{readingBook.titulo}</span>
-                        </div>
-
-                        <h3 className="text-lg font-bold text-[#F3E5AB] font-serif border-b pb-2 border-white/10">
-                          {pageRight.title}
-                        </h3>
-
-                        <div className={`space-y-4 ${readerFontSize} font-light`}>
-                          {pageRight.paragraphs.map((pText, pIdx) => {
-                            const isHighlighted = userHighlights[`${readingBook.id}_p${pageRight.page}_idx${pIdx}`];
-                            return (
-                              <p 
-                                key={pIdx}
-                                onClick={() => toggleHighlightParagraph(readingBook.id, pageRight.page, pIdx)}
-                                className={`cursor-pointer transition-all duration-200 p-2 rounded-lg ${
-                                  isHighlighted 
-                                    ? 'bg-[#F3E5AB]/25 text-white font-medium shadow-sm border border-[#F3E5AB]/40' 
-                                    : 'hover:bg-white/5'
-                                }`}
-                                title="Haz clic para subrayar este párrafo"
-                              >
-                                {pText}
-                              </p>
-                            );
-                          })}
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full py-20 text-gray-500 font-mono text-xs text-center space-y-2">
-                        <BookOpen size={36} className="opacity-40" />
-                        <p>Fin de la edición principal.</p>
-                      </div>
-                    )}
+                    <div className="max-h-36 overflow-y-auto space-y-2 custom-scrollbar">
+                      {(userNotes[readingBook.id] || []).length === 0 ? (
+                        <p className="text-[11px] text-gray-400 italic">No has agregado notas aún. Escribe tu primera reflexión sobre este libro.</p>
+                      ) : (
+                        (userNotes[readingBook.id] || []).map(note => (
+                          <div key={note.id} className="p-2.5 bg-white/5 rounded-xl border border-white/10 flex items-center justify-between text-xs">
+                            <div>
+                              <span className="text-[#F3E5AB] font-mono text-[10px] font-bold block">Pág. {note.page} • {note.date}</span>
+                              <p className="text-gray-200">{note.text}</p>
+                            </div>
+                            <button onClick={() => deleteUserNote(readingBook.id, note.id)} className="text-gray-400 hover:text-red-400 p-1">
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </div>
                 )}
 
+                {/* CONTENEDOR DE PÁGINAS: MODO 1 PÁGINA O MODO 2 PÁGINAS (LIBRO ABIERTO) */}
+                <div className={`grid gap-8 items-start flex-1 ${
+                  readerPageMode === 'double' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 max-w-3xl mx-auto'
+                }`}>
+                  
+                  {/* PÁGINA IZQUIERDA (PÁGINA A) */}
+                  <div className="space-y-6 font-serif leading-relaxed p-6 bg-white/5 rounded-2xl border border-white/10 shadow-lg relative min-h-[420px]">
+                    <div className="flex items-center justify-between text-xs font-mono border-b pb-3 border-white/10 opacity-80">
+                      <span className="text-[#F3E5AB] font-bold">Página {pageLeft.page} de {totalBookPages}</span>
+                      <span className="italic">{readingBook.titulo}</span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-[#F3E5AB] font-serif border-b pb-2 border-white/10">
+                      {pageLeft.title}
+                    </h3>
+
+                    <div className={`space-y-4 ${readerFontSize} font-light`}>
+                      {pageLeft.paragraphs.map((pText, pIdx) => {
+                        const colorKey = userHighlights[`${readingBook.id}_p${pageLeft.page}_idx${pIdx}`];
+                        const highlightStyle = colorKey ? highlightColorStyles[colorKey]?.bg : 'hover:bg-white/5';
+                        return (
+                          <p 
+                            key={pIdx}
+                            onClick={() => toggleHighlightParagraph(readingBook.id, pageLeft.page, pIdx)}
+                            className={`cursor-pointer transition-all duration-200 p-2.5 rounded-lg border border-transparent ${highlightStyle}`}
+                            title="Haz clic para subrayar este párrafo con el color seleccionado"
+                          >
+                            {pText}
+                          </p>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* PÁGINA DERECHA (PÁGINA B — SOLO EN MODO LIBRO ABIERTO 2 PÁGINAS) */}
+                  {readerPageMode === 'double' && (
+                    <div className="space-y-6 font-serif leading-relaxed p-6 bg-white/5 rounded-2xl border border-white/10 shadow-lg relative min-h-[420px] border-l-4 border-l-[#F3E5AB]/30">
+                      {pageRight ? (
+                        <>
+                          <div className="flex items-center justify-between text-xs font-mono border-b pb-3 border-white/10 opacity-80">
+                            <span className="text-[#F3E5AB] font-bold">Página {pageRight.page} de {totalBookPages}</span>
+                            <span className="italic">{readingBook.titulo}</span>
+                          </div>
+
+                          <h3 className="text-lg font-bold text-[#F3E5AB] font-serif border-b pb-2 border-white/10">
+                            {pageRight.title}
+                          </h3>
+
+                          <div className={`space-y-4 ${readerFontSize} font-light`}>
+                            {pageRight.paragraphs.map((pText, pIdx) => {
+                              const colorKey = userHighlights[`${readingBook.id}_p${pageRight.page}_idx${pIdx}`];
+                              const highlightStyle = colorKey ? highlightColorStyles[colorKey]?.bg : 'hover:bg-white/5';
+                              return (
+                                <p 
+                                  key={pIdx}
+                                  onClick={() => toggleHighlightParagraph(readingBook.id, pageRight.page, pIdx)}
+                                  className={`cursor-pointer transition-all duration-200 p-2.5 rounded-lg border border-transparent ${highlightStyle}`}
+                                  title="Haz clic para subrayar este párrafo con el color seleccionado"
+                                >
+                                  {pText}
+                                </p>
+                              );
+                            })}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full py-20 text-gray-500 font-mono text-xs text-center space-y-2">
+                          <BookOpen size={36} className="opacity-40" />
+                          <p>Fin de la edición principal.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                </div>
+
+                {/* BARRA INFERIOR DE CONTROLES Y HOJEO DE PÁGINAS */}
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between font-sans text-xs font-bold">
+                  <button 
+                    onClick={() => setReaderCurrentPage(Math.max(1, readerCurrentPage - (readerPageMode === 'double' ? 2 : 1)))}
+                    disabled={readerCurrentPage <= 1}
+                    className={`px-5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 ${
+                      readerCurrentPage <= 1 ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-white/10 hover:bg-white/20 text-white shadow-md'
+                    }`}
+                  >
+                    <ChevronLeft size={16} /> Página Anterior
+                  </button>
+
+                  <span className="font-mono text-center text-gray-300">
+                    {readerPageMode === 'double' ? `Páginas ${pageLeft.page}-${pageRight ? pageRight.page : pageLeft.page}` : `Página ${pageLeft.page}`} de {totalBookPages}
+                  </span>
+
+                  <button 
+                    onClick={() => setReaderCurrentPage(Math.min(totalBookPages, readerCurrentPage + (readerPageMode === 'double' ? 2 : 1)))}
+                    disabled={readerCurrentPage >= totalBookPages}
+                    className={`px-5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 ${
+                      readerCurrentPage >= totalBookPages ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-[#F3E5AB] text-black hover:bg-white shadow-md'
+                    }`}
+                  >
+                    Página Siguiente <ChevronRight size={16} />
+                  </button>
+                </div>
+
               </div>
-
-              {/* BARRA INFERIOR DE CONTROLES Y HOJEO DE PÁGINAS */}
-              <div className="pt-4 border-t border-white/10 flex items-center justify-between font-sans text-xs font-bold">
-                <button 
-                  onClick={() => setReaderCurrentPage(Math.max(1, readerCurrentPage - (readerPageMode === 'double' ? 2 : 1)))}
-                  disabled={readerCurrentPage <= 1}
-                  className={`px-5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 ${
-                    readerCurrentPage <= 1 ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-white/10 hover:bg-white/20 text-white shadow-md'
-                  }`}
-                >
-                  <ChevronLeft size={16} /> Página Anterior
-                </button>
-
-                <span className="font-mono text-center text-gray-300">
-                  {readerPageMode === 'double' ? `Páginas ${pageLeft.page}-${pageRight ? pageRight.page : pageLeft.page}` : `Página ${pageLeft.page}`} de {totalBookPages}
-                </span>
-
-                <button 
-                  onClick={() => setReaderCurrentPage(Math.min(totalBookPages, readerCurrentPage + (readerPageMode === 'double' ? 2 : 1)))}
-                  disabled={readerCurrentPage >= totalBookPages}
-                  className={`px-5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 ${
-                    readerCurrentPage >= totalBookPages ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-[#F3E5AB] text-black hover:bg-white shadow-md'
-                  }`}
-                >
-                  Página Siguiente <ChevronRight size={16} />
-                </button>
-              </div>
-
-            </div>
+            )}
 
           </div>
         </div>
