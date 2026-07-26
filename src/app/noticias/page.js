@@ -45,29 +45,31 @@ function NewsTrustBadge() {
   );
 }
 
-// Componente Visual de la Barra de Sesgo Ideológico (Algoritmo Gran Noticias - Sin Emojis)
+// Componente Visual de la Barra de Sesgo Ideológico (Diseño ultra-limpio sin solapamientos)
 function PoliticalBiasBar({ biasScore, biasLabel }) {
   const score = Math.max(5, Math.min(95, biasScore || 50));
 
   return (
-    <div className="w-full space-y-1.5 my-3">
-      <div className="flex items-center justify-between text-[10px] font-mono text-gray-300">
-        <span className="flex items-center gap-1 font-bold text-[#E2E8F0]">
-          <Scale size={11} /> Sesgo Editorial: <strong className="text-white">{biasLabel || 'Neutral / Centro'}</strong>
+    <div className="w-full space-y-2 mt-4 pt-3 border-t border-white/10">
+      <div className="flex items-center justify-between text-[11px] font-sans text-gray-300">
+        <span className="flex items-center gap-1.5 font-medium text-[#E2E8F0] truncate">
+          <Scale size={13} className="shrink-0" />
+          <span>Sesgo:</span>
+          <strong className="text-white font-semibold truncate">{biasLabel || 'Neutral / Centro'}</strong>
         </span>
-        <span className="text-gray-400">{score}%</span>
+        <span className="text-gray-400 font-mono text-[10px] shrink-0 ml-2">{score}%</span>
       </div>
 
       {/* Gradiente de Sesgo Ideológico */}
-      <div className="relative w-full h-2 rounded-full bg-white/10 overflow-hidden border border-white/20">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-emerald-400 via-amber-400 to-rose-500 opacity-80"></div>
+      <div className="relative w-full h-2 rounded-full bg-white/10 overflow-hidden border border-white/15">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-emerald-400 via-amber-400 to-rose-500 opacity-85"></div>
         <div 
           className="absolute top-0 bottom-0 w-2.5 bg-white border border-black shadow-[0_0_8px_rgba(255,255,255,0.9)] rounded-full -translate-x-1/2 transition-all duration-500"
           style={{ left: `${score}%` }}
         ></div>
       </div>
 
-      <div className="flex items-center justify-between text-[8px] font-mono text-gray-400 uppercase tracking-widest px-0.5">
+      <div className="flex items-center justify-between text-[9px] font-sans text-gray-400 tracking-wider uppercase px-0.5">
         <span>Izquierda</span>
         <span>Centro</span>
         <span>Derecha</span>
@@ -83,61 +85,61 @@ function NoticiasContent() {
   const initialCountry = searchParams.get('pais') || 'global';
   const [activeCountry, setActiveCountry] = useState(initialCountry);
   const [activeRegion, setActiveRegion] = useState('todas');
-  const [activeSort, setActiveSort] = useState('populares'); // 'populares' | 'recientes'
-  const [activeMonth, setActiveMonth] = useState('julio-2026'); // Month filter state
-  const [selectedArticle, setSelectedArticle] = useState(null); // Article Reader Modal State
-  const [selectedAuthor, setSelectedAuthor] = useState(null); // Author Profile Modal State
+  const [activeSort, setActiveSort] = useState('populares');
+  const [activeMonth, setActiveMonth] = useState('julio-2026');
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [selectedAuthor, setSelectedAuthor] = useState(null);
   const [realtimeArticles, setRealtimeArticles] = useState([]);
   const [loadingFeed, setLoadingFeed] = useState(true);
 
-  // Country Options for Dropdown (100% SIN EMOJIS)
+  // Country Options con etiquetas concisas
   const countries = [
-    { id: 'global', name: 'Cobertura Global (Todas las regiones)', code: 'GLOBAL' },
-    { id: 'co', name: 'Colombia (Nacional y Regiones)', code: 'CO' },
-    { id: 'mx', name: 'México', code: 'MX' },
-    { id: 'ar', name: 'Argentina', code: 'AR' },
-    { id: 'es', name: 'España', code: 'ES' },
-    { id: 'us', name: 'Estados Unidos e Internacional', code: 'US' },
-    { id: 'salud', name: 'Botánica, Apitoxina & Ciencia', code: 'SCIENCE' }
+    { id: 'global', name: 'Cobertura Global' },
+    { id: 'co', name: 'Colombia' },
+    { id: 'mx', name: 'México' },
+    { id: 'ar', name: 'Argentina' },
+    { id: 'es', name: 'España' },
+    { id: 'us', name: 'Estados Unidos' },
+    { id: 'salud', name: 'Botánica & Ciencia' }
   ];
 
-  // Sub-region Options depending on Country Selected (100% SIN EMOJIS)
+  // Sub-region Options con etiquetas concisas
   const regionsByCountry = {
     co: [
-      { id: 'todas', name: 'Todas las Regiones de Colombia' },
-      { id: 'bogota', name: 'Bogotá D.C. y Cundinamarca' },
-      { id: 'antioquia', name: 'Antioquia y Valle de Aburrá' },
-      { id: 'valle', name: 'Valle del Cauca y Pacífico' },
-      { id: 'eje', name: 'Eje Cafetero y Cordillera Central' },
-      { id: 'caribe', name: 'Costa Caribe y Barranquilla' },
-      { id: 'santanderes', name: 'Santanderes y Nororiente' }
+      { id: 'todas', name: 'Todas las Regiones' },
+      { id: 'bogota', name: 'Bogotá D.C. & Cundinamarca' },
+      { id: 'antioquia', name: 'Antioquia & Medellín' },
+      { id: 'valle', name: 'Valle del Cauca & Cali' },
+      { id: 'eje', name: 'Eje Cafetero & Cordillera' },
+      { id: 'caribe', name: 'Costa Caribe & Barranquilla' },
+      { id: 'santanderes', name: 'Santanderes & Nororiente' }
     ],
     mx: [
-      { id: 'todas', name: 'Todas las Regiones de México' },
+      { id: 'todas', name: 'Todas las Regiones' },
       { id: 'cdmx', name: 'Ciudad de México (CDMX)' },
-      { id: 'jalisco', name: 'Jalisco y Occidente' },
-      { id: 'nuevo-leon', name: 'Nuevo León y Norte' }
+      { id: 'jalisco', name: 'Jalisco & Occidente' },
+      { id: 'nuevo-leon', name: 'Nuevo León & Norte' }
     ],
     ar: [
-      { id: 'todas', name: 'Todas las Regiones de Argentina' },
+      { id: 'todas', name: 'Todas las Regiones' },
       { id: 'buenos-aires', name: 'Buenos Aires (AMBA)' },
-      { id: 'cordoba', name: 'Córdoba y Centro' },
-      { id: 'santa-fe', name: 'Santa Fe y Litoral' }
+      { id: 'cordoba', name: 'Córdoba & Centro' },
+      { id: 'santa-fe', name: 'Santa Fe & Litoral' }
     ],
     global: [
       { id: 'todas', name: 'Todas las Regiones Globales' },
       { id: 'america-latina', name: 'América Latina' },
       { id: 'norteamerica', name: 'Norteamérica' },
-      { id: 'europa', name: 'Europa y Asia' }
+      { id: 'europa', name: 'Europa & Asia' }
     ]
   };
 
-  // Month / Historical Period Options for Dropdown (100% SIN EMOJIS)
+  // Month / Historical Period Options
   const monthFilters = [
-    { id: 'julio-2026', name: 'Julio 2026 (Mes Actual)' },
+    { id: 'julio-2026', name: 'Julio 2026' },
     { id: 'junio-2026', name: 'Junio 2026' },
     { id: 'mayo-2026', name: 'Mayo 2026' },
-    { id: 'todos-meses', name: 'Archivo Histórico Completo' }
+    { id: 'todos-meses', name: 'Archivo Completo' }
   ];
 
   // Base de Datos de Atribución Periodística Real
@@ -200,7 +202,6 @@ function NoticiasContent() {
     }
   };
 
-  // Helper para abrir la ficha oficial de autoría
   const openAuthorProfile = (e, authorName, sourceName = 'Medio Internacional') => {
     e.stopPropagation();
     const profile = authorProfiles[authorName] || {
@@ -214,7 +215,7 @@ function NoticiasContent() {
     setSelectedAuthor(profile);
   };
 
-  // Editorial Featured Articles (Option B: Preserved Brand Content)
+  // Editorial Featured Articles
   const brandFeaturedArticles = [
     {
       id: "brand-1",
@@ -266,7 +267,7 @@ function NoticiasContent() {
     }
   ];
 
-  // Global News Feed Dataset (Con Sesgo Ideológico de Gran Noticias & Regiones - 100% SIN EMOJIS)
+  // Global News Feed Dataset
   const fallbackGlobalNews = [
     {
       id: 'news-co-1',
@@ -306,7 +307,7 @@ function NoticiasContent() {
       id: 'news-co-3',
       title: "Nuevas normativas de trazabilidad molecular para cosmética vegetal en Bogotá",
       summary: "La Secretaría de Salud de Bogotá establece exigencias de pruebas de metales pesados en cosméticos derivados de plantas.",
-      fullContent: `Las autoridades sanitarias de la capital colombiana implementaron controles estrictos a laboratorios cosméticos para garantizar que todos los bálsamos y gotas estén 100% libres de contaminantes sintéticos.`,
+      fullContent: `Las autoridades sanitarias de la capital colombiana implementaron controles strictly a laboratorios cosméticos para garantizar que todos los bálsamos y gotas estén 100% libres de contaminantes sintéticos.`,
       author: "Juliana Restrepo",
       sourceName: "Caracol Radio",
       sourceLogo: "Caracol Radio",
@@ -423,7 +424,7 @@ function NoticiasContent() {
     }
   ];
 
-  // Realtime Firestore Listener to Gran Noticias Feed
+  // Realtime Firestore Listener
   useEffect(() => {
     setLoadingFeed(true);
     let unsubscribe = () => {};
@@ -485,7 +486,6 @@ function NoticiasContent() {
     return () => unsubscribe();
   }, []);
 
-  // Reset activeRegion to 'todas' when Country changes
   const handleCountryChange = (countryId) => {
     setActiveCountry(countryId);
     setActiveRegion('todas');
@@ -493,18 +493,13 @@ function NoticiasContent() {
     else router.push(`/noticias?pais=${countryId}`, { scroll: false });
   };
 
-  // Filtered & Sorted News Items (País + Región/Municipio + Mes)
   const filteredNews = realtimeArticles
     .filter(item => {
-      // Country Filter
       const matchCountry = (activeCountry === 'global') || 
                            (activeCountry === 'salud' && (item.summary.toLowerCase().includes('apitoxina') || item.summary.toLowerCase().includes('botánic') || item.summary.toLowerCase().includes('salud'))) ||
                            (item.country === activeCountry || item.country === 'global');
       
-      // Sub-region Filter
       const matchRegion = (activeRegion === 'todas') || (item.region === activeRegion) || (!item.region);
-
-      // Month Filter
       const matchMonth = (activeMonth === 'todos-meses') || (item.monthPeriod === activeMonth) || (!item.monthPeriod);
 
       return matchCountry && matchRegion && matchMonth;
@@ -514,16 +509,15 @@ function NoticiasContent() {
       return 0;
     });
 
-  // Current regions list available based on selected country
   const currentRegionList = regionsByCountry[activeCountry] || regionsByCountry['global'];
 
   return (
     <div className="min-h-screen theme-noticias text-white pt-32 pb-24 px-4 sm:px-6 relative overflow-hidden select-none">
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-10 space-y-12">
         
         {/* Main Header */}
-        <div className="text-center mb-12 fade-in">
-          <span className="text-[#E2E8F0] text-xs font-bold tracking-[0.3em] uppercase mb-3 block flex items-center justify-center gap-2">
+        <div className="text-center fade-in">
+          <span className="text-[#E2E8F0] text-xs font-bold tracking-[0.3em] uppercase mb-3 inline-flex items-center gap-2">
             <Newspaper size={16} className="text-[#E2E8F0]" /> PORTAL DE NOTICIAS GLOBALES EN TIEMPO REAL
           </span>
           <h1 className="font-serif text-4xl md:text-6xl text-[#E2E8F0] mb-6 drop-shadow-md">
@@ -535,8 +529,8 @@ function NoticiasContent() {
           </p>
         </div>
 
-        {/* FRANJA EDITORIAL DESTACADA GRANCOLINOS (OPCIÓN B) */}
-        <div className="mb-16">
+        {/* FRANJA EDITORIAL DESTACADA GRANCOLINOS */}
+        <div>
           <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-3">
             <h2 className="text-xs font-bold text-[#E2E8F0] uppercase tracking-[0.25em] flex items-center gap-2">
               <Sparkles size={16} /> DESTACADOS Y REGULACIÓN GRANCOLINOS
@@ -552,7 +546,7 @@ function NoticiasContent() {
                 className="bg-black/40 border border-[#E2E8F0]/30 hover:border-[#E2E8F0]/80 rounded-2xl overflow-hidden backdrop-blur-xl shadow-xl transition-all duration-300 flex flex-col justify-between group cursor-pointer hover:-translate-y-1"
               >
                 <div>
-                  {/* Original Image */}
+                  {/* Header Image */}
                   <div className="relative h-48 w-full overflow-hidden">
                     <img 
                       src={article.image} 
@@ -565,32 +559,33 @@ function NoticiasContent() {
                     </span>
                   </div>
 
-                  <div className="p-6">
-                    {/* Media Badge & Author */}
-                    <div className="flex items-center justify-between text-[11px] font-mono text-gray-400 mb-2">
-                      <span className="text-[#E2E8F0] font-bold">{article.sourceLogo}</span>
+                  <div className="p-6 space-y-3">
+                    {/* Media Badge & Author en una sola línea ordenada */}
+                    <div className="flex items-center justify-between text-[11px] font-sans text-gray-400 border-b border-white/10 pb-2.5">
+                      <span className="text-[#E2E8F0] font-semibold truncate max-w-[50%]">{article.sourceLogo}</span>
                       <button 
                         onClick={(e) => openAuthorProfile(e, article.author, article.sourceName)}
-                        className="flex items-center gap-1 text-[#E2E8F0] hover:underline font-bold transition-colors"
+                        className="flex items-center gap-1 text-[#E2E8F0] hover:underline font-medium truncate max-w-[48%] justify-end"
                         title="Ver ficha de autoría oficial"
                       >
-                        <UserCheck size={12} /> {article.author}
+                        <UserCheck size={12} className="shrink-0" />
+                        <span className="truncate">{article.author}</span>
                       </button>
                     </div>
 
-                    <h3 className="font-serif text-lg font-bold text-white mb-2 group-hover:text-[#E2E8F0] transition-colors leading-snug">
+                    <h3 className="font-serif text-lg font-bold text-white group-hover:text-[#E2E8F0] transition-colors leading-snug">
                       {article.title}
                     </h3>
-                    <p className="text-gray-300 text-xs leading-relaxed mb-4 font-light">
+                    <p className="text-gray-300 text-xs leading-relaxed font-light line-clamp-3">
                       {article.summary}
                     </p>
 
-                    {/* Medidor de Sesgo Ideológico (Gran Noticias System - Sin Emojis) */}
+                    {/* Medidor de Sesgo Ideológico */}
                     <PoliticalBiasBar biasScore={article.biasScore} biasLabel={article.biasLabel} />
                   </div>
                 </div>
 
-                <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs text-gray-400 font-mono">
+                <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs text-gray-400 font-sans">
                   <span>{article.date}</span>
                   <span className="text-[#E2E8F0] flex items-center gap-1 font-bold group-hover:underline">
                     Leer Informe Completo <BookOpen size={13} />
@@ -601,88 +596,92 @@ function NoticiasContent() {
           </div>
         </div>
 
-        {/* FEED GLOBAL EN TIEMPO REAL CON CONTROL DE PAÍS + SUB-REGIÓN + MES + MEDIDOR DE SESGO (100% SIN EMOJIS) */}
-        <div className="bg-black/50 border border-[#E2E8F0]/30 rounded-3xl p-6 md:p-10 backdrop-blur-xl shadow-2xl mb-16 glow-noticias">
+        {/* FEED GLOBAL EN TIEMPO REAL - LAYOUT DE CONTROLES ORGANIZADO EN 2 FILAS LIMPIAS */}
+        <div className="bg-black/50 border border-[#E2E8F0]/30 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl glow-noticias space-y-8">
           
-          {/* Header & Menús Desplegables / Controles de Filtros Completo */}
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 border-b border-[#E2E8F0]/20 pb-6 mb-8">
+          {/* Fila 1: Título e Indicador En Tiempo Real */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E2E8F0]/20 pb-5">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#E2E8F0]/15 border border-[#E2E8F0]/30 flex items-center justify-center text-[#E2E8F0] shrink-0">
                 <Rss size={20} className="animate-pulse" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  FEED EN VIVO DE GRAN NOTICIAS <span className="px-2.5 py-0.5 bg-[#E2E8F0]/20 text-[#E2E8F0] text-[9px] font-mono rounded border border-[#E2E8F0]/30">EN TIEMPO REAL</span>
+                  FEED EN VIVO DE GRAN NOTICIAS
                 </h3>
                 <p className="text-xs text-gray-300">Medición de sesgo político y cobertura por departamentos y regiones</p>
               </div>
             </div>
 
-            {/* Selector Desplegable de País + Sub-región + Mes + Botón Populares */}
-            <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-              
-              {/* Botón MÁS POPULARES vs MÁS RECIENTES */}
-              <button
-                onClick={() => setActiveSort(activeSort === 'populares' ? 'recientes' : 'populares')}
-                className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border ${
-                  activeSort === 'populares'
-                    ? 'bg-[#E2E8F0] text-black border-[#E2E8F0] shadow-[0_0_15px_rgba(226,232,240,0.4)]'
-                    : 'bg-black/60 text-gray-300 border-white/10 hover:text-white hover:bg-white/10'
-                }`}
+            <span className="px-3 py-1 bg-[#E2E8F0]/15 text-[#E2E8F0] text-[10px] font-mono font-bold tracking-widest rounded-lg border border-[#E2E8F0]/30 shrink-0">
+              EN TIEMPO REAL
+            </span>
+          </div>
+
+          {/* Fila 2: Bar de Filtros Perfectamente Espaciados (4 Controles Limpios) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            
+            {/* Control 1: Ordenamiento */}
+            <button
+              onClick={() => setActiveSort(activeSort === 'populares' ? 'recientes' : 'populares')}
+              className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 border ${
+                activeSort === 'populares'
+                  ? 'bg-[#E2E8F0] text-black border-[#E2E8F0] shadow-[0_0_15px_rgba(226,232,240,0.4)]'
+                  : 'bg-black/60 text-gray-300 border-white/15 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <TrendingUp size={14} />
+              <span>{activeSort === 'populares' ? 'Más Populares' : 'Más Recientes'}</span>
+            </button>
+
+            {/* Control 2: Selector de Mes */}
+            <div className="relative w-full">
+              <select
+                value={activeMonth}
+                onChange={(e) => setActiveMonth(e.target.value)}
+                className="w-full bg-black/80 text-[#E2E8F0] text-xs font-semibold py-2.5 px-4 pr-9 rounded-xl border border-[#E2E8F0]/35 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
               >
-                <TrendingUp size={14} />
-                {activeSort === 'populares' ? 'MÁS POPULARES' : 'MÁS RECIENTES'}
-              </button>
-
-              {/* Selector Desplegable de Mes / Archivo Histórico */}
-              <div className="relative flex-1 lg:flex-none">
-                <select
-                  value={activeMonth}
-                  onChange={(e) => setActiveMonth(e.target.value)}
-                  className="w-full lg:w-48 bg-black/80 text-[#E2E8F0] text-xs font-bold py-2.5 px-4 pr-8 rounded-xl border border-[#E2E8F0]/40 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-md cursor-pointer"
-                >
-                  {monthFilters.map((m) => (
-                    <option key={m.id} value={m.id} className="bg-[#0A0D0B] text-white py-1">
-                      {m.name}
-                    </option>
-                  ))}
-                </select>
-                <Calendar className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={15} />
-              </div>
-
-              {/* Selector Desplegable de País / Región Principal */}
-              <div className="relative flex-1 lg:flex-none">
-                <select
-                  value={activeCountry}
-                  onChange={(e) => handleCountryChange(e.target.value)}
-                  className="w-full lg:w-56 bg-black/80 text-[#E2E8F0] text-xs font-bold py-2.5 px-4 pr-8 rounded-xl border border-[#E2E8F0]/40 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-md cursor-pointer"
-                >
-                  {countries.map((c) => (
-                    <option key={c.id} value={c.id} className="bg-[#0A0D0B] text-white py-1">
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={16} />
-              </div>
-
-              {/* Selector Desplegable de Sub-región / Departamento / Municipio (100% SIN EMOJIS) */}
-              <div className="relative flex-1 lg:flex-none">
-                <select
-                  value={activeRegion}
-                  onChange={(e) => setActiveRegion(e.target.value)}
-                  className="w-full lg:w-56 bg-[#0E1511] text-[#E2E8F0] text-xs font-bold py-2.5 px-4 pr-8 rounded-xl border border-[#E2E8F0]/50 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-md cursor-pointer"
-                >
-                  {currentRegionList.map((r) => (
-                    <option key={r.id} value={r.id} className="bg-[#0A0D0B] text-white py-1">
-                      {r.name}
-                    </option>
-                  ))}
-                </select>
-                <MapPin className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={15} />
-              </div>
-
+                {monthFilters.map((m) => (
+                  <option key={m.id} value={m.id} className="bg-[#0A0D0B] text-white py-1">
+                    {m.name}
+                  </option>
+                ))}
+              </select>
+              <Calendar className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={15} />
             </div>
+
+            {/* Control 3: Selector de País */}
+            <div className="relative w-full">
+              <select
+                value={activeCountry}
+                onChange={(e) => handleCountryChange(e.target.value)}
+                className="w-full bg-black/80 text-[#E2E8F0] text-xs font-semibold py-2.5 px-4 pr-9 rounded-xl border border-[#E2E8F0]/35 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
+              >
+                {countries.map((c) => (
+                  <option key={c.id} value={c.id} className="bg-[#0A0D0B] text-white py-1">
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={16} />
+            </div>
+
+            {/* Control 4: Selector de Sub-región / Departamento */}
+            <div className="relative w-full">
+              <select
+                value={activeRegion}
+                onChange={(e) => setActiveRegion(e.target.value)}
+                className="w-full bg-[#0E1511] text-[#E2E8F0] text-xs font-semibold py-2.5 px-4 pr-9 rounded-xl border border-[#E2E8F0]/45 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
+              >
+                {currentRegionList.map((r) => (
+                  <option key={r.id} value={r.id} className="bg-[#0A0D0B] text-white py-1">
+                    {r.name}
+                  </option>
+                ))}
+              </select>
+              <MapPin className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={15} />
+            </div>
+
           </div>
 
           {/* Feed Content Grid */}
@@ -728,30 +727,31 @@ function NoticiasContent() {
                       )}
                     </div>
 
-                    <div className="p-6">
-                      {/* Author & Time Info */}
-                      <div className="flex items-center justify-between text-[11px] font-mono text-gray-400 mb-3">
+                    <div className="p-6 space-y-3">
+                      {/* Author & Time Info en una sola línea ordenada */}
+                      <div className="flex items-center justify-between text-[11px] font-sans text-gray-400 border-b border-white/10 pb-2.5">
                         <button 
                           onClick={(e) => openAuthorProfile(e, item.author, item.sourceName)}
-                          className="flex items-center gap-1 text-[#E2E8F0] hover:underline font-bold transition-colors"
+                          className="flex items-center gap-1 text-[#E2E8F0] hover:underline font-medium truncate max-w-[60%]"
                           title="Ver ficha de atribución de autoría"
                         >
-                          <UserCheck size={12} /> {item.author || 'Redacción'}
+                          <UserCheck size={12} className="shrink-0" />
+                          <span className="truncate">{item.author || 'Redacción'}</span>
                         </button>
-                        <span className="flex items-center gap-1 text-gray-400">
+                        <span className="flex items-center gap-1 text-gray-400 shrink-0 ml-2">
                           <Clock size={12} /> {item.publishedAt}
                         </span>
                       </div>
 
-                      <h4 className="font-serif text-lg font-bold text-white mb-3 group-hover:text-[#E2E8F0] transition-colors leading-snug">
+                      <h4 className="font-serif text-lg font-bold text-white group-hover:text-[#E2E8F0] transition-colors leading-snug">
                         {item.title}
                       </h4>
 
-                      <p className="text-gray-300 text-xs font-light leading-relaxed mb-4 line-clamp-3">
+                      <p className="text-gray-300 text-xs font-light leading-relaxed line-clamp-3">
                         {item.summary}
                       </p>
 
-                      {/* Medidor de Sesgo Ideológico Politico (Algoritmo Gran Noticias - Sin Emojis) */}
+                      {/* Medidor de Sesgo Ideológico Politico */}
                       <PoliticalBiasBar biasScore={item.biasScore} biasLabel={item.biasLabel} />
                     </div>
                   </div>
@@ -804,10 +804,10 @@ function NoticiasContent() {
 
             {/* Contenido del Artículo */}
             <div className="p-6 sm:p-10 space-y-6">
-              <div className="flex items-center justify-between text-xs font-mono text-[#E2E8F0]">
+              <div className="flex items-center justify-between text-xs font-sans text-[#E2E8F0]">
                 <button 
                   onClick={(e) => openAuthorProfile(e, selectedArticle.author, selectedArticle.sourceName)}
-                  className="flex items-center gap-1.5 font-bold hover:underline bg-[#E2E8F0]/10 px-3 py-1 rounded-lg border border-[#E2E8F0]/30"
+                  className="flex items-center gap-1.5 font-semibold hover:underline bg-[#E2E8F0]/10 px-3 py-1.5 rounded-lg border border-[#E2E8F0]/30"
                 >
                   <UserCheck size={14} /> Autor: <strong>{selectedArticle.author}</strong> (Ver Ficha Periodística)
                 </button>
@@ -832,7 +832,7 @@ function NoticiasContent() {
                 {selectedArticle.fullContent}
               </div>
 
-              {/* COMPARATIVA EDITORIAL: MEDIOS CON DIFERENTES SESGOS POLÍTICOS SOBRE EL MISMO TEMA */}
+              {/* COMPARATIVA EDITORIAL */}
               <div className="pt-8 border-t border-white/15 space-y-4">
                 <h4 className="text-xs font-bold text-[#E2E8F0] uppercase tracking-widest flex items-center gap-2">
                   <BarChart3 size={16} /> COMPARATIVA EDITORIAL & OTRAS PERSPECTIVAS POLÍTICAS
@@ -872,7 +872,7 @@ function NoticiasContent() {
         </div>
       )}
 
-      {/* MODAL FICHA DE ATRIBUCIÓN PERIODÍSTICA CON FOTO / INSIGNIA EDITORIAL VERÍDICA */}
+      {/* MODAL FICHA DE ATRIBUCIÓN PERIODÍSTICA */}
       {selectedAuthor && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-200">
           <div className="bg-[#0A0F0D] border border-[#E2E8F0]/40 rounded-3xl max-w-lg w-full overflow-hidden shadow-[0_0_80px_rgba(226,232,240,0.2)] relative">
@@ -887,7 +887,6 @@ function NoticiasContent() {
                 <X size={16} />
               </button>
 
-              {/* Foto Real de Atribución / Insignia Oficial del Medio */}
               <div className="w-24 h-24 rounded-2xl border-2 border-[#E2E8F0] p-1 mx-auto mb-4 shadow-2xl overflow-hidden bg-black/80">
                 <img 
                   src={selectedAuthor.mediaBadgeUrl} 
