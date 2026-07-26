@@ -304,12 +304,12 @@ function NoticiasContent() {
             </div>
 
             {/* Country Selector Chips Bar (SIN BARRAS DE SCROLL NATIVAS) */}
-            <div className="flex items-center gap-2 overflow-x-auto w-full lg:w-auto pb-1 lg:pb-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div className="flex flex-wrap items-center gap-2 max-w-full overflow-hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {countryFilters.map((filter) => (
                 <button
                   key={filter.id}
                   onClick={() => handleCountryChange(filter.id)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap border shrink-0 ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap border shrink-0 ${
                     activeCountry === filter.id
                       ? 'bg-[#E2E8F0] text-black border-[#E2E8F0] shadow-[0_0_15px_rgba(226,232,240,0.4)]'
                       : 'bg-white/5 text-gray-300 border-white/10 hover:text-white hover:bg-white/10'
