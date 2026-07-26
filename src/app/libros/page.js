@@ -222,42 +222,17 @@ function LibrosContent() {
     { id: 'copyright_externo', name: 'Tienda Externa Licenciada' }
   ];
 
-  // ALGORITMO CON BUSCADOR DUCKDUCKGO Y DESCARGA AUTOMÁTICA DE PDF ABIERTO
+  // DESCARGA AUTOMÁTICA DIRECTA DE PDF SIN REDIRECCIONES EXTERNAS NI PESTAÑAS
   const handleDownloadAcademicPdf = (book) => {
     if (!book) return;
+    const authorStr = (book.autores || []).join(', ');
+    const targetUrl = book.enlaces_descarga?.pdf || '';
 
-    // 1. Si la obra dispone de descarga directa de PDF
-    if (book.enlaces_descarga && book.enlaces_descarga.pdf) {
-      const a = document.createElement('a');
-      a.href = book.enlaces_descarga.pdf;
-      a.download = `${book.titulo}.pdf`;
-      a.target = '_blank';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      return;
-    }
-
-    if (book.id && book.id.startsWith('gut-')) {
-      const gutId = book.id.replace('gut-', '');
-      const directPdf = `https://www.gutenberg.org/files/${gutId}/${gutId}-pdf.pdf`;
-      const a = document.createElement('a');
-      a.href = directPdf;
-      a.download = `${book.titulo}.pdf`;
-      a.target = '_blank';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      return;
-    }
-
-    // 2. Búsqueda hemerográfica optimizada en DuckDuckGo (Sin comillas rígidas que rompan resultados)
-    const authorName = (book.autores && book.autores[0]) || '';
-    const cleanTitle = (book.titulo || '').replace(/[^a-zA-Z0-9\s]/g, '').trim();
-    const ddgQuery = `${cleanTitle} ${authorName} pdf download libre`;
-    const duckDuckGoUrl = `https://duckduckgo.com/?q=${encodeURIComponent(ddgQuery)}`;
+    // Disparar la API de descarga directa que sirve el buffer del archivo .PDF al ordenador del usuario
+    const downloadApiUrl = `/api/libros/download?id=${encodeURIComponent(book.id)}&title=${encodeURIComponent(book.titulo)}&author=${encodeURIComponent(authorStr)}&url=${encodeURIComponent(targetUrl)}`;
     
-    window.open(duckDuckGoUrl, '_blank');
+    // Iniciar descarga automática transparente en navegador
+    window.location.href = downloadApiUrl;
   };
 
   // Cargar Notas Guardadas en LocalStorage
@@ -841,10 +816,10 @@ function LibrosContent() {
                           <button
                             onClick={() => handleDownloadAcademicPdf(book)}
                             className="w-full py-2 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 font-bold text-[10px] uppercase tracking-wider rounded-xl hover:bg-emerald-900 transition-all flex items-center justify-center gap-1 cursor-pointer"
-                            title="Buscar y descargar copia abierta PDF en DuckDuckGo para estudiantes"
+                            title="Descargar libro en formato PDF directamente al ordenador"
                           >
-                            <GraduationCap size={13} />
-                            <span>Descargar PDF Abierto (DuckDuckGo)</span>
+                            <Download size={13} />
+                            <span>Descargar Libro PDF (Directo)</span>
                           </button>
                         </div>
                       ) : (
@@ -857,24 +832,20 @@ function LibrosContent() {
                               <BookOpen size={13} /> Leer Libro Completo
                             </button>
 
-                            {book.enlaces_descarga && (book.enlaces_descarga.epub || book.enlaces_descarga.pdf) && (
-                              <a
-                                href={book.enlaces_descarga.epub || book.enlaces_descarga.pdf || '#'}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="py-2.5 px-3 bg-black/80 text-[#F3E5AB] border border-[#F3E5AB]/40 font-bold text-[11px] rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-1"
-                                title="Descargar EPUB / PDF desde fuente original"
-                              >
-                                <Download size={14} />
-                              </a>
-                            )}
+                            <button
+                              onClick={() => handleDownloadAcademicPdf(book)}
+                              className="py-2.5 px-3 bg-[#F3E5AB]/20 text-[#F3E5AB] border border-[#F3E5AB]/40 font-bold text-[11px] rounded-xl hover:bg-white hover:text-black transition-all flex items-center justify-center gap-1"
+                              title="Descargar archivo PDF directamente al ordenador"
+                            >
+                              <Download size={14} />
+                            </button>
                           </div>
 
                           <button
                             onClick={() => handleDownloadAcademicPdf(book)}
                             className="w-full py-1.5 bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 font-semibold text-[10px] uppercase tracking-wider rounded-xl hover:bg-emerald-900 transition-all flex items-center justify-center gap-1 cursor-pointer"
                           >
-                            <GraduationCap size={12} /> Descargar PDF Abierto (DuckDuckGo)
+                            <Download size={12} /> Descargar Libro PDF (Directo)
                           </button>
                         </>
                       )}
@@ -908,7 +879,7 @@ function LibrosContent() {
         <LibraryTrustBadge />
       </div>
 
-      {/* LECTOR EJECUTIVO NATIVO GRANCOLINOS (CON HERRAMIENTA DE LÁPIZ LIBRE Y BOTÓN DE DESCARGA PDF EN DUCKDUCKGO) */}
+      {/* LECTOR EJECUTIVO NATIVO GRANCOLINOS (CON HERRAMIENTA DE LÁPIZ LIBRE Y BOTÓN DE DESCARGA DIRECTA AUTOMÁTICA EN DISPOSITIVO) */}
       {readingBook && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-6 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
           <div className={`border rounded-3xl w-full shadow-[0_0_90px_rgba(243,229,171,0.25)] relative flex flex-col transition-all duration-300 ${
@@ -1020,7 +991,7 @@ function LibrosContent() {
                 </div>
               </div>
             ) : isBookCopyrighted ? (
-              /* CASO OBRA COMERCIAL CON BÚSQUEDA AUTOMÁTICA EN DUCKDUCKGO */
+              /* CASO OBRA COMERCIAL CON DESCARGA DIRECTA TRANSPARENTE AL ORDENADOR */
               <div className="flex flex-col items-center justify-center flex-1 p-8 sm:p-12 text-center max-w-3xl mx-auto space-y-6">
                 <div className="w-16 h-16 rounded-3xl bg-[#F3E5AB]/10 border border-[#F3E5AB]/40 flex items-center justify-center text-[#F3E5AB] shadow-2xl">
                   <Lock size={32} />
@@ -1047,7 +1018,7 @@ function LibrosContent() {
                   </p>
                 </div>
 
-                {/* BOTONES DUALES: ADQUIRIR EDICIÓN OFICIAL + DESCARGAR PDF VÍA DUCKDUCKGO */}
+                {/* BOTONES DUALES: ADQUIRIR EDICIÓN OFICIAL + DESCARGAR PDF DIRECTO AL DISPOSITIVO */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-2">
                   <a
                     href={readingBook.url_fuente || 'https://www.amazon.com'}
@@ -1062,10 +1033,10 @@ function LibrosContent() {
                   <button
                     onClick={() => handleDownloadAcademicPdf(readingBook)}
                     className="flex-1 py-4 px-6 bg-emerald-950 text-emerald-300 border border-emerald-500/50 font-extrabold text-xs uppercase tracking-widest rounded-2xl hover:bg-emerald-900 transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
-                    title="Búsqueda y descarga automática de copia PDF abierta en DuckDuckGo para estudiantes"
+                    title="Descargar archivo PDF directamente al ordenador sin páginas intermedias"
                   >
-                    <GraduationCap size={16} />
-                    <span>Descargar PDF Abierto (DuckDuckGo)</span>
+                    <Download size={16} />
+                    <span>Descargar Libro PDF (Directo)</span>
                   </button>
                 </div>
               </div>
