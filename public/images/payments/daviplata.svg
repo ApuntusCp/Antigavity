@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 60" width="170" height="60">
+  <rect width="170" height="60" rx="8" fill="#ED1C24"/>
+  <g transform="translate(14, 13)">
+    <path d="M16 4L32 18H0L16 4Z" fill="#FFFFFF"/>
+    <rect x="5" y="18" width="22" height="14" fill="#FFFFFF"/>
+    <rect x="12" y="22" width="8" height="10" fill="#ED1C24"/>
+    <text x="36" y="24" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="22" fill="#FFFFFF">DaviPlata</text>
+  </g>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 60" width="160" height="60">
+  <rect width="160" height="60" rx="8" fill="#F4BD00"/>
+  <g transform="translate(24, 15)">
+    <path d="M6 3H20C24.5 3 27 5.5 27 9C27 11.5 25.2 13.2 23 13.8C26 14.5 28 17 28 20.8C28 25 24.5 27 19.5 27H6V3ZM12.5 11H17.5C18.8 11 19.8 10.3 19.8 9.2C19.8 8.1 18.8 7.5 17.5 7.5H12.5V11ZM12.5 22.5H18C19.5 22.5 20.8 21.6 20.8 20.2C20.8 18.8 19.5 18 18 18H12.5V22.5Z" fill="#000000"/>
+    <text x="36" y="22" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="20" fill="#000000" letter-spacing="1">BOLD</text>
+  </g>
+</svg>
