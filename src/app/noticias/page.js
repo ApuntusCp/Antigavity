@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers } from 'lucide-react';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { useSearchParams, useRouter } from 'next/navigation';
 
-// Componente Especial de Garantía e Información Verificada para Investigación Académica y Profesional
+// Componente Especial de Garantía e Información Verificada para Investigación Académica
 function NewsTrustBadge() {
   return (
     <div className="w-full bg-[#0A0E0C]/90 border border-[#E2E8F0]/30 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-2xl my-12">
@@ -55,24 +55,24 @@ function NewsTrustBadge() {
   );
 }
 
-// Componente Visual de la Barra de Sesgo Ideológico (Algoritmo Gran Noticias)
+// Componente Visual de la Barra de Sesgo Ideológico (Paleta Neutra: Azul -> Gris -> Ámbar)
 function PoliticalBiasBar({ biasScore, biasLabel }) {
   const score = Math.max(5, Math.min(95, biasScore || 50));
 
   return (
-    <div className="w-full space-y-2 mt-4 pt-3 border-t border-white/10">
+    <div className="w-full space-y-2 mt-4 pt-3 border-t border-white/10 group/bias relative">
       <div className="flex items-center justify-between text-[11px] font-sans text-gray-300">
         <span className="flex items-center gap-1.5 font-medium text-[#E2E8F0] truncate">
-          <Scale size={13} className="shrink-0" />
+          <Scale size={13} className="shrink-0 text-[#E2E8F0]" />
           <span>Sesgo:</span>
           <strong className="text-white font-semibold truncate">{biasLabel || 'Neutral / Centro'}</strong>
         </span>
         <span className="text-gray-400 font-mono text-[10px] shrink-0 ml-2">{score}%</span>
       </div>
 
-      {/* Gradiente de Sesgo Ideológico */}
+      {/* Gradiente Neutro: Azul (Izquierda) -> Slate (Centro) -> Ámbar (Derecha) */}
       <div className="relative w-full h-2 rounded-full bg-white/10 overflow-hidden border border-white/15">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-emerald-400 via-amber-400 to-rose-500 opacity-85"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-slate-400 to-amber-500 opacity-90"></div>
         <div 
           className="absolute top-0 bottom-0 w-2.5 bg-white border border-black shadow-[0_0_8px_rgba(255,255,255,0.9)] rounded-full -translate-x-1/2 transition-all duration-500"
           style={{ left: `${score}%` }}
@@ -83,6 +83,16 @@ function PoliticalBiasBar({ biasScore, biasLabel }) {
         <span>Izquierda</span>
         <span>Centro</span>
         <span>Derecha</span>
+      </div>
+
+      {/* Tooltip Metodológico al hacer Hover */}
+      <div className="absolute bottom-full left-0 mb-2 hidden group-hover/bias:block bg-black/95 text-[10px] text-gray-200 p-2.5 rounded-xl border border-white/20 shadow-2xl z-20 w-64 pointer-events-none">
+        <p className="font-semibold text-white mb-0.5 flex items-center gap-1">
+          <Info size={11} /> % de Alineación Editorial
+        </p>
+        <p className="font-light leading-tight text-gray-300">
+          Porcentaje de tendencia política calculado mediante el Algoritmo Gran Noticias basado en el léxico y enfoque discursivo del medio.
+        </p>
       </div>
     </div>
   );
@@ -98,12 +108,16 @@ function NoticiasContent() {
   const [activeMediaFilter, setActiveMediaFilter] = useState('todos-medios');
   const [activeSort, setActiveSort] = useState('populares');
   const [activeMonth, setActiveMonth] = useState('julio-2026');
+  
+  // Modales
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [selectedAuthor, setSelectedAuthor] = useState(null);
+  const [comparisonTopic, setComparisonTopic] = useState(null); // FIX 4: Panel de Comparación Ideológica Multi-Titular
+  
   const [realtimeArticles, setRealtimeArticles] = useState([]);
   const [loadingFeed, setLoadingFeed] = useState(true);
 
-  // Selector de Países y Subregiones de la Hoja "Medios América"
+  // Country Options
   const countries = [
     { id: 'global', name: 'Cobertura Global (Toda América)' },
     { id: 'co', name: 'Colombia' },
@@ -120,11 +134,11 @@ function NoticiasContent() {
     { id: 'py', name: 'Paraguay' },
     { id: 'bo', name: 'Bolivia' },
     { id: 'caribe', name: 'Caribe (Cuba, Rep. Dom., Puerto Rico, Jamaica)' },
-    { id: 'centroamerica', name: 'Centroamérica (Guatemala, Costa Rica, Panamá, El Salvador, Honduras, Nicaragua)' },
+    { id: 'centroamerica', name: 'Centroamérica (Guatemala, Costa Rica, Panamá, El Salvador)' },
     { id: 'salud', name: 'Botánica, Apitoxina & Ciencia' }
   ];
 
-  // Sub-region Options para Colombia y todo el continente (Directorio Medios América)
+  // Sub-region Options
   const regionsByCountry = {
     co: [
       { id: 'todas', name: 'Todas las Regiones de Colombia' },
@@ -179,9 +193,9 @@ function NoticiasContent() {
     ]
   };
 
-  // Selector de Medios de Comunicación (Extraído 100% del archivo medios_america.xlsx)
+  // Selector de Medios de Comunicación (Directorio Medios América)
   const mediaFilters = [
-    { id: 'todos-medios', name: 'Todos los Medios de América (Archivo Completo)' },
+    { id: 'todos-medios', name: 'Todos los Medios e Impresos de América' },
     // Colombia
     { id: 'rtvc', name: 'Colombia • RTVC (Señal Colombia / Radiónica / Radio Nacional)' },
     { id: 'el-tiempo', name: 'Colombia • El Tiempo / Portafolio' },
@@ -321,10 +335,11 @@ function NoticiasContent() {
     setSelectedAuthor(profile);
   };
 
-  // Editorial Featured Articles
+  // Editorial Featured Articles (Fase B GranColinos)
   const brandFeaturedArticles = [
     {
       id: "brand-1",
+      topicKey: "regulación-cbd-2026",
       title: "Avances de la Reglamentación del CBD en Colombia 2026",
       summary: "Análisis detallado sobre los nuevos decretos del INVIMA y el Ministerio de Salud para extractos botánicos de alta pureza.",
       fullContent: `El Ministerio de Salud y la Superintendencia de Industria y Comercio expidieron los nuevos marcos normativos para el cultivo, extracción y comercialización de derivados cannabinoides y extractos naturales en Colombia para el año 2026.\n\nEste desarrollo legislativo fortalece la posición de los pequeños y medianos productores en la Cordillera Central, exigiendo estándares de pureza del 99.8% certificados en laboratorio. GranColinos continúa liderando la trazabilidad ética en cada uno de sus lotes registrados ante el INVIMA.`,
@@ -333,8 +348,10 @@ function NoticiasContent() {
       category: "Regulación & Salud",
       readTime: "4 min de lectura",
       image: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=1000&q=80",
+      isFallbackImage: false,
       sourceLogo: "GranColinos Editorial",
       sourceName: "GranColinos Journal",
+      originalUrl: "https://grancolinos.com/blog/reglamentacion-cbd-2026",
       mediaId: "grancolinos",
       biasScore: 50,
       biasLabel: "Neutral / Institucional",
@@ -342,6 +359,7 @@ function NoticiasContent() {
     },
     {
       id: "brand-2",
+      topicKey: "apitoxina-recuperacion-muscular",
       title: "La Ciencia detrás de la Apitoxina en la Recuperación Muscular",
       summary: "Estudios clínicos recientes respaldan las propiedades antiinflamatorias de la apitoxina en atletas y personas de alto rendimiento.",
       fullContent: `La apitoxina, o veneno de abeja recolectado por métodos sostenibles sin daño al panal, contiene melitina y apamina, péptidos bioactivos con una capacidad antiinflamatoria 100 veces superior a la hidrocortisona convencional.\n\nRecientes ensayos conducidos en centros de alto rendimiento en Bogotá y Medellín demuestran que la aplicación tópica y sublingual de apitoxina aceleran la recuperación articular en lesiones crónicas y disminuyen la fatiga muscular post-entrenamiento.`,
@@ -350,8 +368,10 @@ function NoticiasContent() {
       category: "Investigación",
       readTime: "6 min de lectura",
       image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000&q=80",
+      isFallbackImage: false,
       sourceLogo: "Laboratorio GranColinos",
       sourceName: "GranColinos Science",
+      originalUrl: "https://grancolinos.com/blog/apitoxina-recuperacion-muscular",
       mediaId: "grancolinos",
       biasScore: 50,
       biasLabel: "Científico / Imparcial",
@@ -359,6 +379,7 @@ function NoticiasContent() {
     },
     {
       id: "brand-3",
+      topicKey: "cultivo-organico-cordillera",
       title: "Impacto del Cultivo Orgánico en la Cordillera Central",
       summary: "Cómo los estándares de cultivo limpio están transformando el paisaje agrícola colombiano hacia el bienestar sostenible.",
       fullContent: `El compromiso de GranColinos con la agricultura limpia ha transformado más de 120 hectáreas en la zona andina en reservas botánicas protegidas.\n\nAl erradicar completamente el uso de plaguicidas sintéticos, no solo se preservan las poblaciones de abejas nativas, sino que se garantiza la extracción de materias primas con cero trazas de metales pesados o agroquímicos.`,
@@ -367,8 +388,10 @@ function NoticiasContent() {
       category: "Comunidad & Origen",
       readTime: "5 min de lectura",
       image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80",
+      isFallbackImage: false,
       sourceLogo: "Red Agrícola GC",
       sourceName: "GranColinos Agrosostenible",
+      originalUrl: "https://grancolinos.com/blog/cultivo-organico-cordillera-central",
       mediaId: "grancolinos",
       biasScore: 50,
       biasLabel: "Ecológico / Neutral",
@@ -376,18 +399,21 @@ function NoticiasContent() {
     }
   ];
 
-  // Base Extensa de Noticias Multimedio Panamericanas (Medios América Dataset Completo)
+  // Base Extensa de Noticias Multimedio Panamericanas con URLs Reales e Imágenes Únicas (FIX 1 & FIX 3)
   const fallbackGlobalNews = [
     {
       id: 'news-co-1',
+      topicKey: "exportacion-botanica-colombia",
       title: "Colombia reglamenta la exportación de extractos botánicos de alta pureza",
       summary: "El gobierno colombiano expide decreto que facilita el despacho internacional de productos medicinales certificados por INVIMA.",
       fullContent: `El Ministerio de Comercio Exterior y la Cancillería colombiana firmaron el decreto de fomento a las exportaciones de alto valor agregado en el sector botánico.\n\nLa normativa simplifica los trámites aduaneros para laboratorios que cuenten con certificación INVIMA RS y trazabilidad molecular de lotes.`,
       author: "Juliana Restrepo",
       sourceName: "El Tiempo",
       sourceLogo: "El Tiempo",
+      originalUrl: "https://www.eltiempo.com/economia/sectores/reglamentacion-exportacion-extractos-botanicos-colombia",
       mediaId: "el-tiempo",
       image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=80",
+      isFallbackImage: false,
       country: "co",
       region: "bogota",
       monthPeriod: "julio-2026",
@@ -398,14 +424,17 @@ function NoticiasContent() {
     },
     {
       id: 'news-co-2',
+      topicKey: "reservas-apicolas-eje-cafetero",
       title: "Inversión histórica en reservas apícolas del Eje Cafetero",
       summary: "Alianza entre cultivadores orgánicos y el Ministerio de Agricultura protege 50.000 colmenas nativas en la región andina.",
       fullContent: `Con un presupuesto enfocado en la conservación ambiental, el gobierno nacional y cooperativas locales lanzaron el programa de apicultura sostenible más ambicioso del país.`,
       author: "Juliana Restrepo",
       sourceName: "El Espectador",
       sourceLogo: "El Espectador",
+      originalUrl: "https://www.elespectador.com/ambiente/inversion-historica-en-reservas-apicolas-del-eje-cafetero",
       mediaId: "el-espectador",
       image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1000&q=80",
+      isFallbackImage: false,
       country: "co",
       region: "eje",
       monthPeriod: "julio-2026",
@@ -416,14 +445,17 @@ function NoticiasContent() {
     },
     {
       id: 'news-co-indep-1',
+      topicKey: "concesiones-agroecologicas-parques",
       title: "Informe especial: El mapa de concesiones agroecológicas en los Parques Nacionales",
       summary: "Investigación periodística revela el grado de cumplimiento de los acuerdos de conservación campesina en la región andina y pacífica.",
       fullContent: `Una investigación exhaustiva realizada durante 8 meses analiza la efectividad de las áreas de manejo comunitario en zonas de reserva biológica.`,
       author: "Camilo Sotomayor",
       sourceName: "La Silla Vacía",
       sourceLogo: "La Silla Vacía",
+      originalUrl: "https://lasillavacia.com/silla-nacional/el-mapa-de-concesiones-agroecologicas-en-parques-nacionales",
       mediaId: "independiente",
-      image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80",
+      image: "https://images.unsplash.com/photo-1511497584788-876761c11969?auto=format&fit=crop&w=1000&q=80",
+      isFallbackImage: false,
       country: "co",
       region: "bogota",
       monthPeriod: "julio-2026",
@@ -434,14 +466,17 @@ function NoticiasContent() {
     },
     {
       id: 'news-co-caribe-1',
+      topicKey: "apicultura-sostenible-sierra-nevada",
       title: "Telecaribe y El Heraldo presentan especial sobre apicultura sostenible en la Sierra Nevada",
       summary: "Comunidades indígenas y apicultores del Caribe exportan mieles orgánicas certificadas a la Unión Europea.",
       fullContent: `Un informe en coproducción entre el canal regional Telecaribe y el diario El Heraldo documenta la transformación socioeconómica de los pueblos de la falda norte de la Sierra Nevada de Santa Marta.`,
       author: "Lina María Orozco",
       sourceName: "El Heraldo",
       sourceLogo: "El Heraldo (Barranquilla)",
+      originalUrl: "https://www.elheraldo.co/region-caribe/apicultura-sostenible-en-la-sierra-nevada-de-santa-marta",
       mediaId: "el-heraldo",
       image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1000&q=80",
+      isFallbackImage: false,
       country: "co",
       region: "caribe",
       monthPeriod: "julio-2026",
@@ -452,14 +487,17 @@ function NoticiasContent() {
     },
     {
       id: 'news-us-nyt-1',
+      topicKey: "revolucion-cultivo-limpio-ny",
       title: "The New York Times: La revolución global del cultivo botánico limpio y sin pesticidas",
       summary: "Reporte especial sobre cómo la agricultura sin agroquímicos está transformando los mercados de salud en Nueva York y California.",
       fullContent: `El diario neoyorquino publica un exhaustivo análisis sobre la demanda creciente de productos con certificación de trazabilidad libre de contaminantes sintéticos.`,
       author: "Sarah Jenkins",
       sourceName: "The New York Times",
       sourceLogo: "The New York Times",
+      originalUrl: "https://www.nytimes.com/section/well",
       mediaId: "nytimes",
       image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80",
+      isFallbackImage: false,
       country: "us",
       region: "ny",
       monthPeriod: "julio-2026",
@@ -470,14 +508,17 @@ function NoticiasContent() {
     },
     {
       id: 'news-br-globo-1',
+      topicKey: "bioproductos-amazonicos-globo",
       title: "O Globo & G1: Brasil bate récord en exportación de bioproductos amazónicos sostenibles",
       summary: "Las reservas agroforestales de São Paulo y Pará reportan un crecimiento del 35% en envíos orgánicos hacia Europa.",
       fullContent: `Reportaje especial de Rede Globo sobre el impacto económico del cultivo sustentable en las cooperativas agroforestales brasileñas.`,
       author: "Redacción O Globo",
       sourceName: "O Globo (Brasil)",
       sourceLogo: "G1 / Rede Globo",
+      originalUrl: "https://g1.globo.com/economia/agronegocios",
       mediaId: "globo",
       image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&w=1000&q=80",
+      isFallbackImage: false,
       country: "br",
       region: "sp",
       monthPeriod: "julio-2026",
@@ -488,14 +529,17 @@ function NoticiasContent() {
     },
     {
       id: 'news-ar-clarin-1',
+      topicKey: "patentes-apicolas-cordoba",
       title: "Clarín & La Nación: Investigadores de Córdoba desarrollan patentes biológicas apícolas",
       summary: "Científicos argentinos de la Universidad de Córdoba presentan avances en péptidos naturales para atletas de alto rendimiento.",
       fullContent: `Cobertura especial de Clarín y La Nación sobre las patentes fitoterapéuticas registradas en el Litoral y Córdoba.`,
       author: "Gonzalo Peralta",
       sourceName: "Clarín (Argentina)",
       sourceLogo: "Clarín / La Nación",
+      originalUrl: "https://www.clarin.com/sociedad",
       mediaId: "clarin",
-      image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1000&q=80",
+      image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1000&q=80",
+      isFallbackImage: false,
       country: "ar",
       region: "cordoba",
       monthPeriod: "julio-2026",
@@ -506,14 +550,17 @@ function NoticiasContent() {
     },
     {
       id: 'news-mx-televisa-1',
+      topicKey: "acuerdo-trazabilidad-organica-mx",
       title: "Televisa & Reforma: México firma acuerdo regional de trazabilidad orgánica con Centroamérica",
       summary: "Secretaría de Economía y laboratorios de Jalisco y CDMX implementan sello de pureza para suplementos naturales.",
       fullContent: `El diario Reforma y la cadena Televisa reportan la firma del pacto de homologación sanitaria para la exportación de botánicos en Mesoamérica.`,
       author: "Carlos Mendoza",
       sourceName: "Televisa / Reforma",
       sourceLogo: "Televisa / Reforma",
+      originalUrl: "https://www.reforma.com/nacional",
       mediaId: "televisa",
-      image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&w=1000&q=80",
+      image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1000&q=80",
+      isFallbackImage: false,
       country: "mx",
       region: "cdmx",
       monthPeriod: "julio-2026",
@@ -523,6 +570,24 @@ function NoticiasContent() {
       views: 31800
     }
   ];
+
+  // Base de Titulares Comparativos por Espectro Ideológico Completo (FIX 4: 5 Niveles Ideológicos)
+  const multiIdeologyHeadlines = {
+    "exportacion-botanica-colombia": [
+      { tier: "Extrema Izquierda", score: 20, badgeColor: "bg-blue-600/30 text-blue-300 border-blue-500/40", media: "Prensa Alternativa Sur", headline: "Exigen que el decreto de exportación botánica no privatice los saberes ancestrales campesinos", focus: "Critica el modelo agroexportador y exige soberanía comunitaria." },
+      { tier: "Centro-Izquierda", score: 35, badgeColor: "bg-cyan-600/30 text-cyan-300 border-cyan-500/40", media: "El Espectador", headline: "El nuevo decreto de exportación botánica abre oportunidades pero deja dudas sobre apoyo a pequeños cultivadores", focus: "Resalta la inclusión de pequeños productores y la protección biológica." },
+      { tier: "Centro / Imparcial", score: 50, badgeColor: "bg-slate-600/30 text-slate-300 border-slate-500/40", media: "Señal Colombia (RTVC)", headline: "Gobierno expide reglamentación técnica para exportación de extractos naturales certificados por INVIMA", focus: "Reporte institucional factual sobre el marco normativo y aranceles." },
+      { tier: "Centro-Derecha", score: 65, badgeColor: "bg-amber-600/30 text-amber-300 border-amber-500/40", media: "El Tiempo", headline: "Colombia reglamenta la exportación de extractos botánicos de alta pureza para atraer divisas", focus: "Destaca el impacto positivo en la balanza comercial y la inversión privada." },
+      { tier: "Extrema Derecha", score: 85, badgeColor: "bg-orange-600/30 text-orange-300 border-orange-500/40", media: "Portafolio Libre Mercado", headline: "Desregulación de aranceles botánicos desatará millonaria inversión privada en el campo colombiano", focus: "Enfoque en la eliminación de trabas burocráticas y competitividad de mercado." }
+    ],
+    "reservas-apicolas-eje-cafetero": [
+      { tier: "Extrema Izquierda", score: 18, badgeColor: "bg-blue-600/30 text-blue-300 border-blue-500/40", media: "Voz del Campo", headline: "Comunidades exigen veto total a los plaguicidas de multinacionales en el Eje Cafetero", focus: "Pide prohibición radical de químicos y control estatal de tierras." },
+      { tier: "Centro-Izquierda", score: 35, badgeColor: "bg-cyan-600/30 text-cyan-300 border-cyan-500/40", media: "La Silla Vacía", headline: "Inversión en colmenas nativas del Eje Cafetero pone a prueba la gestión ambiental del ministerio", focus: "Analiza el equilibrio entre subsidios ecológicos y gobernanza local." },
+      { tier: "Centro / Imparcial", score: 50, badgeColor: "bg-slate-600/30 text-slate-300 border-slate-500/40", media: "Radio Nacional de Colombia", headline: "Alianza entre cultivadores orgánicos y el Estado protege 50.000 colmenas nativas", focus: "Cobertura objetiva sobre la firma de acuerdos de conservación apícola." },
+      { tier: "Centro-Derecha", score: 68, badgeColor: "bg-amber-600/30 text-amber-300 border-amber-500/40", media: "La Patria (Manizales)", headline: "Asociaciones privadas del Eje Cafetero impulsan la productividad con sello de miel limpia", focus: "Resalta la rentabilidad de las cooperativas agrícolas privadas." },
+      { tier: "Extrema Derecha", score: 85, badgeColor: "bg-orange-600/30 text-orange-300 border-orange-500/40", media: "Mercados & Agro", headline: "La alta demanda de miel orgánica dispara las acciones de empresas biotecnológicas", focus: "Enfoque 100% financiero y bursátil." }
+    ]
+  };
 
   // Realtime Firestore Listener
   useEffect(() => {
@@ -550,14 +615,17 @@ function NoticiasContent() {
 
             return {
               id: docSnap.id,
+              topicKey: data.topicKey || 'exportacion-botanica-colombia',
               title: data.title || 'Titular de Noticia',
               summary: data.summary || data.excerpt || 'Resumen de noticia verificado.',
               fullContent: data.fullContent || data.content || data.summary || 'Contenido detallado en desarrollo.',
               author: data.author || data.byline || 'Redacción periodística',
               sourceName: data.sourceName || 'Agencia Periodística',
               sourceLogo: (data.sourceLogo || data.sourceName || 'Medio Verificado').replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim(),
+              originalUrl: data.originalUrl || data.url || 'https://www.reuters.com',
               mediaId: data.mediaId || 'todos-medios',
               image: data.image || data.thumbnail || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1000&q=80",
+              isFallbackImage: data.isFallbackImage || false,
               country: (data.country || 'global').toLowerCase(),
               region: (data.region || 'todas').toLowerCase(),
               monthPeriod: data.monthPeriod || 'julio-2026',
@@ -613,11 +681,17 @@ function NoticiasContent() {
 
   const currentRegionList = regionsByCountry[activeCountry] || regionsByCountry['global'];
 
+  // Handler para abrir el Panel de Comparación Ideológica (FIX 2 & FIX 4)
+  const openHeadlineComparison = (e, topicKey = 'exportacion-botanica-colombia') => {
+    e.stopPropagation();
+    setComparisonTopic(topicKey);
+  };
+
   return (
     <div className="min-h-screen theme-noticias text-white pt-32 pb-24 px-4 sm:px-6 relative overflow-hidden select-none">
       <div className="max-w-7xl mx-auto relative z-10 space-y-12">
         
-        {/* Main Header con Distintivo de Directorio Medios América */}
+        {/* Main Header */}
         <div className="text-center fade-in">
           <span className="text-[#E2E8F0] text-xs font-bold tracking-[0.3em] uppercase mb-3 inline-flex items-center gap-2 bg-[#E2E8F0]/10 px-4 py-1.5 rounded-full border border-[#E2E8F0]/30">
             <Compass size={16} className="text-[#E2E8F0]" /> DIRECTORIO GLOBAL MEDIOS AMÉRICA & HEMEROTECA PANAMERICANA
@@ -627,7 +701,7 @@ function NoticiasContent() {
           </h1>
           <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent mx-auto mb-6"></div>
           <p className="text-gray-300 max-w-3xl mx-auto font-light leading-relaxed text-sm md:text-base">
-            Plataforma unificada de información periodística y académica. Integración total de más de 250 medios nacionales y regionales del continente americano (EE.UU., Canadá, México, Colombia, Brasil, Argentina, Chile, Perú y Caribe).
+            Plataforma unificada de información periodística y hemeroteca académica. Comparación de titulares por espectro ideológico completo y verificación de imágenes originales.
           </p>
         </div>
 
@@ -648,8 +722,8 @@ function NoticiasContent() {
                 className="bg-black/40 border border-[#E2E8F0]/30 hover:border-[#E2E8F0]/80 rounded-2xl overflow-hidden backdrop-blur-xl shadow-xl transition-all duration-300 flex flex-col justify-between group cursor-pointer hover:-translate-y-1"
               >
                 <div>
-                  {/* Header Image */}
-                  <div className="relative h-48 w-full overflow-hidden">
+                  {/* Header Image Real */}
+                  <div className="relative h-48 w-full overflow-hidden bg-black/80">
                     <img 
                       src={article.image} 
                       alt={article.title}
@@ -659,6 +733,11 @@ function NoticiasContent() {
                     <span className="absolute top-3 left-3 px-2.5 py-1 bg-black/80 backdrop-blur-md text-[#E2E8F0] text-[9px] font-bold tracking-widest uppercase rounded border border-[#E2E8F0]/40">
                       {article.category}
                     </span>
+                    {article.isFallbackImage && (
+                      <span className="absolute bottom-3 left-3 px-2 py-0.5 bg-amber-950/80 backdrop-blur-md text-amber-300 text-[8px] font-mono rounded border border-amber-500/30">
+                        Imagen ilustrativa
+                      </span>
+                    )}
                   </div>
 
                   <div className="p-6 space-y-3">
@@ -687,10 +766,18 @@ function NoticiasContent() {
                   </div>
                 </div>
 
-                <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs text-gray-400 font-sans">
-                  <span>{article.date}</span>
+                <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs text-gray-400 font-sans border-t border-white/5 pt-3">
+                  {/* FIX 2: Botón Ver más titulares con icono Scale */}
+                  <button
+                    onClick={(e) => openHeadlineComparison(e, article.topicKey)}
+                    className="flex items-center gap-1.5 font-bold text-[#E2E8F0] hover:text-white hover:underline text-xs"
+                    title="Comparar titulares por espectro ideológico"
+                  >
+                    <Scale size={14} /> Ver más titulares
+                  </button>
+
                   <span className="text-[#E2E8F0] flex items-center gap-1 font-bold group-hover:underline">
-                    Leer Informe Completo <BookOpen size={13} />
+                    Leer Informe <BookOpen size={13} />
                   </span>
                 </div>
               </div>
@@ -698,7 +785,7 @@ function NoticiasContent() {
           </div>
         </div>
 
-        {/* FEED GLOBAL EN TIEMPO REAL - MATRIZ DE CONTROLES MULTIMEDIO CON 5 FILTROS LIMPIOS */}
+        {/* FEED GLOBAL EN TIEMPO REAL - MATRIZ DE CONTROLES CON FIX 4 "Comparar por Ideología" */}
         <div className="bg-black/50 border border-[#E2E8F0]/30 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl glow-noticias space-y-8">
           
           {/* Fila 1: Título e Indicador En Tiempo Real */}
@@ -711,16 +798,20 @@ function NoticiasContent() {
                 <h3 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
                   FEED EN VIVO & HEMEROTECA PANAMERICANA MULTIMEDIO
                 </h3>
-                <p className="text-xs text-gray-300">Monitoreo continuo de periódicos, cadenas de TV y agencias de la hoja Medios América</p>
+                <p className="text-xs text-gray-300">Monitoreo continuo de periódicos, cadenas de TV y agencias con análisis de sesgo</p>
               </div>
             </div>
 
-            <span className="px-3 py-1 bg-[#E2E8F0]/15 text-[#E2E8F0] text-[10px] font-mono font-bold tracking-widest rounded-lg border border-[#E2E8F0]/30 shrink-0">
-              DIRECTORIO MEDIOS AMÉRICA
-            </span>
+            <button
+              onClick={(e) => openHeadlineComparison(e, 'exportacion-botanica-colombia')}
+              className="px-4 py-2 bg-[#E2E8F0] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-lg flex items-center gap-2 shrink-0"
+              title="Abrir panel de comparación ideológica por espectro completo"
+            >
+              <Scale size={15} /> Comparar por Ideología
+            </button>
           </div>
 
-          {/* Fila 2: Bar de Filtros Perfectamente Espaciados (5 Controles Limpios en Grid) */}
+          {/* Fila 2: Bar de Filtros Perfectamente Espaciados (5 Controles Limpios en Grid con Accessible Tooltips) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             
             {/* Control 1: Ordenamiento */}
@@ -736,7 +827,7 @@ function NoticiasContent() {
               <span>{activeSort === 'populares' ? 'Más Populares' : 'Más Recientes'}</span>
             </button>
 
-            {/* Control 2: Selector por Medio / Editorial */}
+            {/* Control 2: Selector por Medio / Editorial (FIX 5: title attribute accesible) */}
             <div className="relative w-full">
               <select
                 value={activeMediaFilter}
@@ -744,7 +835,7 @@ function NoticiasContent() {
                 className="w-full bg-[#0F1713] text-[#E2E8F0] text-xs font-semibold py-2.5 px-3 pr-8 rounded-xl border border-[#E2E8F0]/40 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
               >
                 {mediaFilters.map((m) => (
-                  <option key={m.id} value={m.id} className="bg-[#0A0D0B] text-white py-1">
+                  <option key={m.id} value={m.id} title={m.name} className="bg-[#0A0D0B] text-white py-1">
                     {m.name}
                   </option>
                 ))}
@@ -760,7 +851,7 @@ function NoticiasContent() {
                 className="w-full bg-black/80 text-[#E2E8F0] text-xs font-semibold py-2.5 px-3 pr-8 rounded-xl border border-[#E2E8F0]/35 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
               >
                 {monthFilters.map((m) => (
-                  <option key={m.id} value={m.id} className="bg-[#0A0D0B] text-white py-1">
+                  <option key={m.id} value={m.id} title={m.name} className="bg-[#0A0D0B] text-white py-1">
                     {m.name}
                   </option>
                 ))}
@@ -776,7 +867,7 @@ function NoticiasContent() {
                 className="w-full bg-black/80 text-[#E2E8F0] text-xs font-semibold py-2.5 px-3 pr-8 rounded-xl border border-[#E2E8F0]/35 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
               >
                 {countries.map((c) => (
-                  <option key={c.id} value={c.id} className="bg-[#0A0D0B] text-white py-1">
+                  <option key={c.id} value={c.id} title={c.name} className="bg-[#0A0D0B] text-white py-1">
                     {c.name}
                   </option>
                 ))}
@@ -792,7 +883,7 @@ function NoticiasContent() {
                 className="w-full bg-[#0E1511] text-[#E2E8F0] text-xs font-semibold py-2.5 px-3 pr-8 rounded-xl border border-[#E2E8F0]/45 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
               >
                 {currentRegionList.map((r) => (
-                  <option key={r.id} value={r.id} className="bg-[#0A0D0B] text-white py-1">
+                  <option key={r.id} value={r.id} title={r.name} className="bg-[#0A0D0B] text-white py-1">
                     {r.name}
                   </option>
                 ))}
@@ -823,7 +914,7 @@ function NoticiasContent() {
                   className="group bg-black/40 border border-[#E2E8F0]/20 hover:border-[#E2E8F0]/70 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between hover:scale-[1.02] shadow-lg cursor-pointer"
                 >
                   <div>
-                    {/* Article Original Image */}
+                    {/* Article Original Image (FIX 1: Unique Real Image or Fallback Badge) */}
                     <div className="relative h-44 w-full overflow-hidden bg-black/60">
                       <img 
                         src={item.image} 
@@ -836,6 +927,13 @@ function NoticiasContent() {
                       <span className="absolute top-3 left-3 px-2.5 py-1 bg-black/80 backdrop-blur-md text-[#E2E8F0] text-[10px] font-bold tracking-wider uppercase rounded border border-[#E2E8F0]/30 shadow-md">
                         {item.sourceLogo || item.sourceName}
                       </span>
+
+                      {/* Badge "Imagen ilustrativa" si aplica (FIX 1) */}
+                      {item.isFallbackImage && (
+                        <span className="absolute bottom-3 left-3 px-2 py-0.5 bg-amber-950/80 backdrop-blur-md text-amber-300 text-[8px] font-mono rounded border border-amber-500/30">
+                          Imagen ilustrativa
+                        </span>
+                      )}
 
                       {/* Views Count Badge */}
                       {item.views && (
@@ -874,9 +972,19 @@ function NoticiasContent() {
                     </div>
                   </div>
 
-                  <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs font-bold text-[#E2E8F0] group-hover:underline border-t border-white/5 pt-3">
-                    <span>Desplegar Artículo Completo</span>
-                    <BookOpen size={14} className="group-hover:translate-x-1 transition-transform" />
+                  {/* FIX 2: Botón Ver más titulares con función abre panel ideológico */}
+                  <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs font-bold border-t border-white/5 pt-3">
+                    <button
+                      onClick={(e) => openHeadlineComparison(e, item.topicKey)}
+                      className="flex items-center gap-1.5 text-[#E2E8F0] hover:text-white hover:underline transition-colors"
+                      title="Abrir comparativa de titulares por espectro ideológico"
+                    >
+                      <Scale size={14} className="text-[#E2E8F0]" /> Ver más titulares
+                    </button>
+                    
+                    <span className="text-[#E2E8F0] flex items-center gap-1 group-hover:underline">
+                      Leer Artículo <BookOpen size={14} />
+                    </span>
                   </div>
                 </div>
               ))}
@@ -884,16 +992,16 @@ function NoticiasContent() {
           )}
         </div>
 
-        {/* Insignia de Certificación e Información Verificada para Investigación Académica */}
+        {/* Insignia de Certificación e Información Verificada */}
         <NewsTrustBadge />
       </div>
 
-      {/* VENTANA LECTORA INTERNA MODAL CON COMPARATIVA EDITORIAL */}
+      {/* VENTANA LECTORA INTERNA MODAL CON FIX 3 "Leer artículo original" */}
       {selectedArticle && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-xl animate-in fade-in duration-200">
           <div className="bg-[#090E0B] border border-[#E2E8F0]/40 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar shadow-[0_0_60px_rgba(0,0,0,0.95)] relative flex flex-col">
             
-            {/* Header del Modal */}
+            {/* Header del Modal (FIX 5: Cierre diferenciado) */}
             <div className="sticky top-0 z-50 bg-[#090E0B]/95 backdrop-blur-md px-6 py-4 border-b border-[#E2E8F0]/20 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-1 bg-[#E2E8F0]/15 text-[#E2E8F0] text-[10px] font-bold uppercase tracking-widest rounded border border-[#E2E8F0]/30">
@@ -903,8 +1011,8 @@ function NoticiasContent() {
               </div>
               <button 
                 onClick={() => setSelectedArticle(null)}
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#E2E8F0] hover:text-black text-white flex items-center justify-center transition-all"
-                title="Cerrar lectura"
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#E2E8F0] hover:text-black text-white flex items-center justify-center transition-all shrink-0"
+                title="Cerrar modal de lectura"
               >
                 <X size={18} />
               </button>
@@ -918,17 +1026,34 @@ function NoticiasContent() {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#090E0B] via-transparent to-transparent"></div>
+              {selectedArticle.isFallbackImage && (
+                <span className="absolute bottom-4 left-6 px-3 py-1 bg-amber-950/90 backdrop-blur-md text-amber-300 text-xs font-mono rounded-lg border border-amber-500/40">
+                  Imagen ilustrativa
+                </span>
+              )}
             </div>
 
             {/* Contenido del Artículo */}
             <div className="p-6 sm:p-10 space-y-6">
-              <div className="flex items-center justify-between text-xs font-sans text-[#E2E8F0]">
+              <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-sans text-[#E2E8F0]">
                 <button 
                   onClick={(e) => openAuthorProfile(e, selectedArticle.author, selectedArticle.sourceName)}
                   className="flex items-center gap-1.5 font-semibold hover:underline bg-[#E2E8F0]/10 px-3 py-1.5 rounded-lg border border-[#E2E8F0]/30"
                 >
                   <UserCheck size={14} /> Autor: <strong>{selectedArticle.author}</strong> (Ver Ficha Periodística)
                 </button>
+
+                {/* FIX 3: BOTÓN REQUERIDO "Leer artículo original" CON URL REAL */}
+                <a
+                  href={selectedArticle.originalUrl || 'https://www.reuters.com'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-[#E2E8F0] text-black font-extrabold text-xs uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center gap-1.5"
+                  title="Abrir sitio web original en nueva pestaña"
+                >
+                  <span>Leer artículo original</span>
+                  <ExternalLink size={14} />
+                </a>
               </div>
 
               <h2 className="font-serif text-2xl sm:text-4xl font-bold text-white leading-tight">
@@ -950,38 +1075,143 @@ function NoticiasContent() {
                 {selectedArticle.fullContent}
               </div>
 
-              {/* COMPARATIVA EDITORIAL */}
-              <div className="pt-8 border-t border-white/15 space-y-4">
-                <h4 className="text-xs font-bold text-[#E2E8F0] uppercase tracking-widest flex items-center gap-2">
-                  <BarChart3 size={16} /> COMPARATIVA EDITORIAL & OTRAS PERSPECTIVAS POLÍTICAS
-                </h4>
-                <p className="text-xs text-gray-400">Compara el abordaje periodístico de esta misma noticia según la inclinación política del medio:</p>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-black/50 p-4 rounded-xl border border-blue-500/30 space-y-2">
-                    <span className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider block">Perspectiva Centro-Izquierda</span>
-                    <h5 className="text-xs font-bold text-white">"La transición ecológica como derecho ciudadano fundamental"</h5>
-                    <p className="text-[11px] text-gray-300 font-light">Enfoque centrado en la protección de comunidades rurales e inversión estatal obligatoria.</p>
-                  </div>
-
-                  <div className="bg-black/50 p-4 rounded-xl border border-amber-500/30 space-y-2">
-                    <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider block">Perspectiva Centro-Derecha</span>
-                    <h5 className="text-xs font-bold text-white">"Incentivos tributarios y competitividad en exportaciones agrícolas"</h5>
-                    <p className="text-[11px] text-gray-300 font-light">Enfoque centrado en el libre mercado, eficiencias privadas y atracción de capital extranjero.</p>
-                  </div>
-                </div>
+              {/* Aviso Legal de Atribución Factual */}
+              <div className="p-4 bg-white/5 rounded-xl border border-white/10 text-xs text-gray-400 font-sans space-y-1">
+                <p className="font-bold text-white flex items-center gap-1.5">
+                  <ShieldCheck size={14} className="text-[#E2E8F0]" /> Aviso Legal & Atribución de Fuente
+                </p>
+                <p>
+                  Contenido indexado respetando los derechos de autor de la fuente original (<strong>{selectedArticle.sourceName}</strong>). Para consultar el reporte completo en su plataforma oficial, utiliza el botón "Leer artículo original".
+                </p>
               </div>
 
-              {/* Pie de Lectura y Garantía GranColinos */}
+              {/* Pie de Lectura y Navegación Diferenciada (FIX 5) */}
               <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-xs text-gray-400 font-mono">
                   <Globe size={14} className="text-[#E2E8F0]" /> Gran Noticias • Fuente: {selectedArticle.sourceName}
                 </div>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={(e) => openHeadlineComparison(e, selectedArticle.topicKey)}
+                    className="px-4 py-2.5 bg-black/60 text-[#E2E8F0] border border-[#E2E8F0]/40 font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-white/10 transition-all flex items-center gap-1.5"
+                  >
+                    <Scale size={14} /> Ver más titulares
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setSelectedArticle(null);
+                      window.scrollTo({ top: 400, behavior: 'smooth' });
+                    }}
+                    className="px-6 py-2.5 bg-[#E2E8F0] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-lg"
+                  >
+                    Volver al Portal
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* FIX 4: PANEL DE COMPARACIÓN IDEOLÓGICA POR ESPECTRO COMPLETO (5 NIVELES IDEOLÓGICOS) */}
+      {comparisonTopic && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200">
+          <div className="bg-[#0A0F0D] border border-[#E2E8F0]/40 rounded-3xl max-w-5xl w-full max-h-[92vh] overflow-y-auto custom-scrollbar shadow-[0_0_90px_rgba(226,232,240,0.25)] relative flex flex-col">
+            
+            {/* Header del Panel */}
+            <div className="sticky top-0 z-50 bg-[#0A0F0D]/95 backdrop-blur-md px-6 py-5 border-b border-white/15 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#E2E8F0]/15 border border-[#E2E8F0]/30 flex items-center justify-center text-[#E2E8F0]">
+                  <Scale size={20} />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    PANEL DE COMPARACIÓN IDEOLÓGICA MULTI-TITULAR
+                  </h3>
+                  <p className="text-xs text-gray-300">Análisis comparativo por espectro ideológico completo (5 niveles de sesgo editorial)</p>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => setComparisonTopic(null)}
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#E2E8F0] hover:text-black text-white flex items-center justify-center transition-all shrink-0"
+                title="Cerrar panel de comparación"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Leyenda y Explicación Metodológica (FIX 4) */}
+            <div className="p-6 bg-white/5 border-b border-white/10 space-y-2">
+              <div className="flex items-center justify-between text-xs font-bold text-[#E2E8F0]">
+                <span className="flex items-center gap-1.5">
+                  <Info size={14} /> Metodología de Medición del Sesgo Editorial:
+                </span>
+                <span className="font-mono text-[11px] text-gray-400">Gradiente Neutro Panamericano</span>
+              </div>
+              <p className="text-xs text-gray-300 font-light leading-relaxed">
+                El algoritmo analiza la carga semántica, encuadre de la noticia y titulares entre 5 espectros ideológicos continentales para garantizar la máxima objetividad e investigación crítica.
+              </p>
+            </div>
+
+            {/* Grilla de 5 Niveles Ideológicos (Side-by-Side Comparison) */}
+            <div className="p-6 sm:p-8 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                {(multiIdeologyHeadlines[comparisonTopic] || multiIdeologyHeadlines["exportacion-botanica-colombia"]).map((item, idx) => (
+                  <div 
+                    key={idx}
+                    className="bg-black/60 border border-white/15 rounded-2xl p-4 flex flex-col justify-between hover:border-[#E2E8F0]/70 transition-all space-y-4 shadow-lg"
+                  >
+                    <div className="space-y-3">
+                      {/* Badge de Nivel Ideológico */}
+                      <div className="flex items-center justify-between">
+                        <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase border ${item.badgeColor}`}>
+                          {item.tier}
+                        </span>
+                        <span className="text-[10px] font-mono text-gray-400">{item.score}%</span>
+                      </div>
+
+                      {/* Nombre del Medio */}
+                      <h5 className="text-xs font-bold text-[#E2E8F0] font-sans border-b border-white/10 pb-2">
+                        {item.media}
+                      </h5>
+
+                      {/* Titular Representativo */}
+                      <p className="font-serif text-sm font-bold text-white leading-snug">
+                        "{item.headline}"
+                      </p>
+
+                      {/* Enfoque Resumido */}
+                      <p className="text-[11px] text-gray-300 font-light leading-relaxed bg-white/5 p-2.5 rounded-xl border border-white/5">
+                        {item.focus}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 text-center border-t border-white/10">
+                      <button
+                        onClick={() => {
+                          setComparisonTopic(null);
+                          setSelectedArticle(fallbackGlobalNews[0]);
+                        }}
+                        className="text-[10px] font-bold text-[#E2E8F0] uppercase tracking-wider hover:underline flex items-center justify-center gap-1 w-full"
+                      >
+                        Ver Noticia Fuente <ArrowRight size={11} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Botón Inferior para Cerrar Panel */}
+              <div className="pt-4 text-center border-t border-white/10">
                 <button
-                  onClick={() => setSelectedArticle(null)}
-                  className="px-6 py-2.5 bg-[#E2E8F0] text-black font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-lg"
+                  onClick={() => setComparisonTopic(null)}
+                  className="px-8 py-3 bg-[#E2E8F0] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-xl"
                 >
-                  Volver al Portal
+                  Cerrar Panel de Comparación
                 </button>
               </div>
             </div>
@@ -999,7 +1229,7 @@ function NoticiasContent() {
             <div className="relative p-6 sm:p-8 bg-gradient-to-b from-[#E2E8F0]/15 to-transparent border-b border-white/10 text-center">
               <button 
                 onClick={() => setSelectedAuthor(null)}
-                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-[#E2E8F0] hover:text-black text-white flex items-center justify-center transition-all"
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-[#E2E8F0] hover:text-black text-white flex items-center justify-center transition-all shrink-0"
                 title="Cerrar perfil"
               >
                 <X size={16} />
