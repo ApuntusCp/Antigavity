@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { collection, getDocs, query, orderBy, limit as firestoreLimit } from 'firebase/firestore';
 import { db } from '../../../utils/firebase';
-import { fetchGutendexCatalog, fetchOpenLibraryCatalog, syncBooksToFirestore } from '../../../utils/librosEtl';
+import { fetchAll20OpenSources, syncBooksToFirestore } from '../../../utils/librosEtl';
 
 export async function GET(request) {
   try {
@@ -13,9 +13,9 @@ export async function GET(request) {
     const page = parseInt(searchParams.get('page') || '1', 10);
     const pageSize = parseInt(searchParams.get('limit') || '18', 10);
 
-    // 1. Consulta Firestore en primera instancia
+    // 1. Consulta Firestore
     const catalogRef = collection(db, 'gran_libros_catalog');
-    const qSnap = await getDocs(query(catalogRef, orderBy('createdAt', 'desc'), firestoreLimit(300)));
+    const qSnap = await getDocs(query(catalogRef, orderBy('createdAt', 'desc'), firestoreLimit(400)));
 
     let books = qSnap.docs.map(docSnap => ({
       id: docSnap.id,
@@ -51,17 +51,14 @@ export async function GET(request) {
       });
     }
 
-    // 2. SI EL USUARIO BUSCÓ ALGO (ej. "socrates") Y FIRESTORE TIENE MENOS DE 3 RESULTADOS,
-    // CONSULTAMOS DIRECTAMENTE LAS APIS DE GUTENDEX Y OPEN LIBRARY EN TIEMPO REAL
+    // 2. SI SE BUSCÓ UN TÉRMINO Y FIRESTORE TIENE POCOS RESULTADOS (< 3),
+    // DISPARAR EN TIEMPO REAL LA CONSULTA A LAS 20 FUENTES ABIERTAS
     if (searchQuery && filteredBooks.length < 3) {
-      console.log(`Live API fallback triggering for search: "${searchQuery}"...`);
+      console.log(`20-Source Live API fallback triggering for search: "${searchQuery}"...`);
       try {
-        const liveGutenberg = await fetchGutendexCatalog(searchQuery, 1);
-        const liveOpenLibrary = await fetchOpenLibraryCatalog(searchQuery, 10);
-        const liveUnified = [...liveGutenberg, ...liveOpenLibrary];
+        const liveUnified = await fetchAll20OpenSources(searchQuery);
 
         if (liveUnified.length > 0) {
-          // Combinar y remover duplicados
           const existingIds = new Set(filteredBooks.map(b => b.id));
           const newLiveBooks = liveUnified.filter(b => !existingIds.has(b.id));
           filteredBooks = [...filteredBooks, ...newLiveBooks];

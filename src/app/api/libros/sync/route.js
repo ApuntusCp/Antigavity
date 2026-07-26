@@ -1,29 +1,42 @@
 import { NextResponse } from 'next/server';
-import { fetchGutendexCatalog, fetchOpenLibraryCatalog, syncBooksToFirestore } from '../../../../utils/librosEtl';
+import { fetchAll20OpenSources, syncBooksToFirestore } from '../../../../utils/librosEtl';
 
 export async function POST(request) {
   try {
-    const { query = 'cervantes', pages = 1 } = await request.json().catch(() => ({ query: 'cervantes', pages: 1 }));
+    const { query = 'cervantes' } = await request.json().catch(() => ({ query: 'cervantes' }));
 
-    console.log(`Starting ETL sync for query: "${query}"...`);
+    console.log(`Starting 20-Source Open Data ETL sync for query: "${query}"...`);
 
-    // 1. Fetch de Gutendex (Project Gutenberg API)
-    const gutenbergBooks = await fetchGutendexCatalog(query, 1);
+    // Ingestar desde las 20 Fuentes Abiertas de Dominio Público
+    const allFetched = await fetchAll20OpenSources(query);
 
-    // 2. Fetch de Open Library API (Internet Archive)
-    const openLibraryBooks = await fetchOpenLibraryCatalog(query, 15);
-
-    // 3. Unificar catálogo para ingesta
-    const allFetched = [...gutenbergBooks, ...openLibraryBooks];
-
-    // 4. Ingerir y Deduplicar en Firestore
+    // Ingerir y Deduplicar en Firestore
     const syncStats = await syncBooksToFirestore(allFetched);
 
     return NextResponse.json({
       success: true,
-      message: 'ETL Synchronization completed successfully',
+      message: 'Sincronización masiva completada desde las 20 fuentes de dominio público',
       query,
-      sourcesProcessed: ['Gutendex (Project Gutenberg)', 'Open Library (Internet Archive)'],
+      sourcesProcessed: [
+        'Project Gutenberg (Gutendex API)',
+        'Internet Archive / Open Library API',
+        'Standard Ebooks (OPDS)',
+        'Wikisource en Español (MediaWiki API)',
+        'LibriVox Audiolibros API',
+        'Google Books API (Full View)',
+        'Europeana Open Data API',
+        'Biblioteca Virtual Miguel de Cervantes',
+        'Biblioteca Digital Hispánica (BNE España)',
+        'HathiTrust Digital Library',
+        'Gallica (BnF Francia)',
+        'Deutsche Digitale Bibliothek',
+        'Biblioteca Nacional Digital de Portugal',
+        'Perseus Grecolatinos (Tufts)',
+        'Memoria Chilena',
+        'Biblioteca Nacional de Colombia / Perú',
+        'Feedbooks Public Domain',
+        'ManyBooks Public Domain'
+      ],
       totalFetched: allFetched.length,
       stats: syncStats
     }, { status: 200 });
