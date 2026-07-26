@@ -20,26 +20,75 @@ export default function PaymentMethodsBadge() {
           </div>
         </div>
 
-        {/* Logos Oficiales Originales de Bancos y Medios de Pago en Colombia */}
-        <div className="flex flex-wrap items-center gap-3 justify-center">
-          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-md" title="PSE - Pagos Seguros en Línea">
-            <Image src="/images/payments/pse.svg" alt="PSE Logo Oficial" width={110} height={42} className="h-9 w-auto object-contain rounded-lg" />
+        {/* Logos Oficiales Originales de Bancos y Medios de Pago en Colombia (Enviados por el cliente) */}
+        <div className="flex flex-wrap items-center gap-3.5 justify-center">
+          
+          {/* PSE Logo Oficial (Circular azul con red de circuitos dorados) */}
+          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-lg" title="PSE - Pagos Seguros en Línea">
+            <Image 
+              src="/images/payments/pse_official.png" 
+              alt="PSE Logo Oficial" 
+              width={50} 
+              height={50} 
+              className="h-11 w-11 object-contain rounded-full border border-[#D4AF37]/40 shadow-md" 
+            />
           </div>
-          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-md" title="Nequi Colombia">
-            <Image src="/images/payments/nequi.svg" alt="Nequi Logo Oficial" width={110} height={42} className="h-9 w-auto object-contain rounded-lg" />
+
+          {/* Nequi Logo Oficial (Fondo blanco con punto magenta y palabra Nequi) */}
+          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-lg" title="Nequi Colombia">
+            <Image 
+              src="/images/payments/nequi_official.png" 
+              alt="Nequi Logo Oficial" 
+              width={120} 
+              height={44} 
+              className="h-11 w-auto object-contain bg-white px-2.5 py-1 rounded-xl border border-white/20 shadow-md" 
+            />
           </div>
-          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-md" title="DaviPlata">
-            <Image src="/images/payments/daviplata.svg" alt="DaviPlata Logo Oficial" width={115} height={42} className="h-9 w-auto object-contain rounded-lg" />
+
+          {/* DaviPlata Logo Oficial */}
+          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-lg" title="DaviPlata">
+            <Image 
+              src="/images/payments/daviplata.svg" 
+              alt="DaviPlata Logo Oficial" 
+              width={120} 
+              height={44} 
+              className="h-11 w-auto object-contain rounded-xl shadow-md" 
+            />
           </div>
-          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-md" title="Visa Card">
-            <Image src="/images/payments/visa.svg" alt="Visa Logo Oficial" width={95} height={42} className="h-9 w-auto object-contain rounded-lg" />
+
+          {/* Visa Logo Oficial */}
+          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-lg" title="Visa Card">
+            <Image 
+              src="/images/payments/visa.svg" 
+              alt="Visa Logo Oficial" 
+              width={100} 
+              height={44} 
+              className="h-11 w-auto object-contain rounded-xl shadow-md" 
+            />
           </div>
-          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-md" title="Mastercard">
-            <Image src="/images/payments/mastercard.svg" alt="Mastercard Logo Oficial" width={95} height={42} className="h-9 w-auto object-contain rounded-lg" />
+
+          {/* Mastercard Logo Oficial */}
+          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-lg" title="Mastercard">
+            <Image 
+              src="/images/payments/mastercard.svg" 
+              alt="Mastercard Logo Oficial" 
+              width={100} 
+              height={44} 
+              className="h-11 w-auto object-contain rounded-xl shadow-md" 
+            />
           </div>
-          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-[0_0_12px_rgba(212,175,55,0.4)]" title="Bold Pasarela de Pagos">
-            <Image src="/images/payments/bold.svg" alt="Bold Logo Oficial" width={110} height={42} className="h-9 w-auto object-contain rounded-lg" />
+
+          {/* Bold Logo Oficial (Gradiente azul-rojo con palabra bold original) */}
+          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]" title="Bold Pasarela de Pagos">
+            <Image 
+              src="/images/payments/bold_official.png" 
+              alt="Bold Logo Oficial" 
+              width={50} 
+              height={50} 
+              className="h-11 w-11 object-cover rounded-xl border border-[#D4AF37]/50 shadow-md" 
+            />
           </div>
+
         </div>
       </div>
 
