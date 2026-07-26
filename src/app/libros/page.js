@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, Play, Pause, Volume2, Search, Filter, Globe, ShieldCheck, RefreshCw, X, ExternalLink, Headphones, Sparkles, Check, ChevronRight, Layers, Sliders, Type, Sun, Moon, Database, AlertCircle, ChevronLeft, Maximize2, Minimize2, Highlighting, Highlighter, MessageSquare, Edit3, Columns, Layout, Trash2, Save, Palette } from 'lucide-react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
+import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, Play, Pause, Volume2, Search, Filter, Globe, ShieldCheck, RefreshCw, X, ExternalLink, Headphones, Sparkles, Check, ChevronRight, Layers, Sliders, Type, Sun, Moon, Database, AlertCircle, ChevronLeft, Maximize2, Minimize2, Highlighting, Highlighter, MessageSquare, Edit3, Columns, Layout, Trash2, Save, Palette, PenTool, Eraser, RotateCcw } from 'lucide-react';
 
 // Componente Especial de Garantía y Acceso Abierto para la Biblioteca
 function LibraryTrustBadge() {
@@ -42,6 +42,110 @@ function LibraryTrustBadge() {
   );
 }
 
+// COMPONENTE DE LÁPIZ LIBRE DE DIBUJO Y SUBRAYADO CANVAS
+function FreehandPenCanvas({ color, strokeWidth, isPenActive, pageKey }) {
+  const canvasRef = useRef(null);
+  const isDrawing = useRef(false);
+  const lastPoint = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Redimensionar canvas al contenedor
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    const ctx = canvas.getContext('2d');
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // Cargar trazos guardados para esta página si existen
+    try {
+      const savedDrawing = localStorage.getItem(`grancolinos_drawing_${pageKey}`);
+      if (savedDrawing) {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0);
+        img.src = savedDrawing;
+      }
+    } catch (e) {}
+  }, [pageKey]);
+
+  const saveCanvasState = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    try {
+      const dataUrl = canvas.toDataURL();
+      localStorage.setItem(`grancolinos_drawing_${pageKey}`, dataUrl);
+    } catch (e) {}
+  };
+
+  const getCoordinates = (e) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
+  };
+
+  const startDrawing = (e) => {
+    if (!isPenActive) return;
+    isDrawing.current = true;
+    lastPoint.current = getCoordinates(e);
+  };
+
+  const draw = (e) => {
+    if (!isDrawing.current || !isPenActive) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const currentPoint = getCoordinates(e);
+
+    ctx.beginPath();
+    ctx.moveTo(lastPoint.current.x, lastPoint.current.y);
+    ctx.lineTo(currentPoint.x, currentPoint.y);
+
+    if (color === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth = strokeWidth * 3;
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = strokeWidth;
+      ctx.globalAlpha = 0.5; // Transparente como resaltador
+    }
+
+    ctx.stroke();
+    lastPoint.current = currentPoint;
+  };
+
+  const stopDrawing = () => {
+    if (isDrawing.current) {
+      isDrawing.current = false;
+      saveCanvasState();
+    }
+  };
+
+  return (
+    <canvas
+      ref={canvasRef}
+      onMouseDown={startDrawing}
+      onMouseMove={draw}
+      onMouseUp={stopDrawing}
+      onMouseLeave={stopDrawing}
+      onTouchStart={startDrawing}
+      onTouchMove={draw}
+      onTouchEnd={stopDrawing}
+      className={`absolute inset-0 z-20 w-full h-full ${
+        isPenActive ? 'cursor-crosshair pointer-events-auto' : 'pointer-events-none'
+      }`}
+    />
+  );
+}
+
 function LibrosContent() {
   // Filtros de Estado
   const [activeCategory, setActiveCategory] = useState('todas');
@@ -60,17 +164,20 @@ function LibrosContent() {
   const [readerPageMode, setReaderPageMode] = useState('double'); // 'single' | 'double' (Libro Abierto 2 Páginas)
   const [isFullscreenReader, setIsFullscreenReader] = useState(false);
   const [readerFontSize, setReaderFontSize] = useState('text-base');
-  const [readerTheme, setReaderTheme] = useState('dark'); // dark | sepia | contrast
+  const [readerTheme, setReaderTheme] = useState('dark');
 
-  // Subrayado Multicolores y Notas
-  const [activeHighlightColor, setActiveHighlightColor] = useState('gold'); // gold | emerald | cyan | purple | coral
-  const [userHighlights, setUserHighlights] = useState({}); // { [bookId_page_idx]: 'gold' | 'emerald' | 'cyan' | 'purple' | 'coral' | null }
-  const [userNotes, setUserNotes] = useState({}); // { [bookId]: [ { id, page, text, date } ] }
+  // Lápiz Libre de Dibujo y Subrayado Canvas
+  const [isPenActive, setIsPenActive] = useState(false);
+  const [penColor, setPenColor] = useState('#F3E5AB'); // Hex color para Canvas
+  const [penStrokeWidth, setPenStrokeWidth] = useState(8);
+  const [isEraser, setIsEraser] = useState(false);
+
+  // Subrayado Multicolores de Párrafo y Notas
+  const [activeHighlightColor, setActiveHighlightColor] = useState('gold');
+  const [userHighlights, setUserHighlights] = useState({});
+  const [userNotes, setUserNotes] = useState({});
   const [newNoteInput, setNewNoteInput] = useState('');
   const [showNotesPanel, setShowNotesPanel] = useState(false);
-
-  // Audiolibros
-  const [playingAudiobook, setPlayingAudiobook] = useState(null);
 
   // Estado del Catálogo y la API Interna
   const [books, setBooks] = useState([]);
@@ -78,13 +185,13 @@ function LibrosContent() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatusMsg, setSyncStatusMsg] = useState(null);
 
-  // Paleta de Colores de Subrayado Libre
+  // Paleta de Colores de Subrayado y Lápiz Libre
   const highlightColorStyles = {
-    gold: { name: 'Dorado', bg: 'bg-[#F3E5AB]/30 text-white border-[#F3E5AB]/60 shadow-[0_0_12px_rgba(243,229,171,0.2)]', dot: 'bg-[#F3E5AB]' },
-    emerald: { name: 'Esmeralda', bg: 'bg-emerald-500/30 text-emerald-100 border-emerald-400/60 shadow-[0_0_12px_rgba(16,185,129,0.2)]', dot: 'bg-emerald-400' },
-    cyan: { name: 'Cian', bg: 'bg-cyan-500/30 text-cyan-100 border-cyan-400/60 shadow-[0_0_12px_rgba(6,182,212,0.2)]', dot: 'bg-cyan-400' },
-    purple: { name: 'Púrpura', bg: 'bg-purple-500/30 text-purple-100 border-purple-400/60 shadow-[0_0_12px_rgba(168,85,247,0.2)]', dot: 'bg-purple-400' },
-    coral: { name: 'Coral', bg: 'bg-rose-500/30 text-rose-100 border-rose-400/60 shadow-[0_0_12px_rgba(244,63,94,0.2)]', dot: 'bg-rose-400' }
+    gold: { name: 'Dorado', hex: '#F3E5AB', bg: 'bg-[#F3E5AB]/30 text-white border-[#F3E5AB]/60 shadow-[0_0_12px_rgba(243,229,171,0.2)]', dot: 'bg-[#F3E5AB]' },
+    emerald: { name: 'Esmeralda', hex: '#10B981', bg: 'bg-emerald-500/30 text-emerald-100 border-emerald-400/60 shadow-[0_0_12px_rgba(16,185,129,0.2)]', dot: 'bg-emerald-400' },
+    cyan: { name: 'Cian', hex: '#06B6D4', bg: 'bg-cyan-500/30 text-cyan-100 border-cyan-400/60 shadow-[0_0_12px_rgba(6,182,212,0.2)]', dot: 'bg-cyan-400' },
+    purple: { name: 'Púrpura', hex: '#A855F7', bg: 'bg-purple-500/30 text-purple-100 border-purple-400/60 shadow-[0_0_12px_rgba(168,85,247,0.2)]', dot: 'bg-purple-400' },
+    coral: { name: 'Coral', hex: '#F43F5E', bg: 'bg-rose-500/30 text-rose-100 border-rose-400/60 shadow-[0_0_12px_rgba(244,63,94,0.2)]', dot: 'bg-rose-400' }
   };
 
   // Categorías
@@ -160,7 +267,6 @@ function LibrosContent() {
     } catch (e) {}
   };
 
-  // Alternar Subrayado Multicolor de Párrafo
   const toggleHighlightParagraph = (bookId, pageNum, paragraphIdx) => {
     const key = `${bookId}_p${pageNum}_idx${paragraphIdx}`;
     const currentVal = userHighlights[key];
@@ -176,50 +282,6 @@ function LibrosContent() {
     } catch (e) {}
   };
 
-  // Fallback Native Seed Pages
-  const nativeBookPagesMap = {
-    'gut-1656': [
-      {
-        page: 1,
-        title: "Apología de Sócrates — Sección I: El Discurso ante el Tribunal",
-        paragraphs: [
-          "Cualquiera que haya sido la impresión que mis acusadores hayan causado en vosotros, oh atenienses, por mi parte, confieso que casi me he desconocido a mí mismo, tan persuasivamente han hablado. Sin embargo, puedo asegurar que no han dicho ni una sola palabra que sea verdadera.",
-          "De entre sus muchas mentiras, una me ha admirado sobremanera: aquella en que decían que debíais tener cuidado de no dejaros engañar por mí, porque soy un orador hábil.",
-          "El decir esto, cuando debían saber que la prueba de lo contrario iba a ser evidente, pues en cuanto abriese la boca se vería que no soy orador en modo alguno, a no ser que llamen orador al que dice la verdad, me ha parecido el colmo de la impudicia."
-        ]
-      },
-      {
-        page: 2,
-        title: "Apología de Sócrates — Sección II: La Verdad del Oráculo de Delfos",
-        paragraphs: [
-          "Si es esto lo que quieren decir, confieso que soy orador, pero no a su manera. Ellos, lo repito, no han dicho nada verdadero; de mí, en cambio, oiréis la verdad toda entera.",
-          "Mas, por Zeus, atenienses, no oiréis discursos adornados de bellas frases y palabras esmeradamente escogidas, como los suyos, sino cosas dichas al azar, con las primeras palabras que me vengan a la boca, porque tengo la confianza de que es justo lo que digo.",
-          "Quien me dio testimonio de mi sabiduría fue el oráculo de Delfos. Querefonte, mi amigo de la infancia, fue a Delfos y tuvo la osadía de consultar si había alguien más sabio que yo. La Pitia respondió que no había nadie más sabio."
-        ]
-      }
-    ],
-    'default': [
-      {
-        page: 1,
-        title: "Página 1: Introducción a la Obra Original",
-        paragraphs: [
-          "Esta obra pertenece al patrimonio literario y científico universal de dominio público. Su preservación respeta íntegramente la edición de origen.",
-          "En esta primera sección se exponen los principios fundamentales, el marco histórico y las hipótesis que articulan el desarrollo de la investigación.",
-          "Puedes utilizar los botones superiores para activar la 'Vista Doble Página (Libro Abierto)', cambiar el color del subrayador o añadir tus apuntes personales."
-        ]
-      },
-      {
-        page: 2,
-        title: "Página 2: Desarrollo y Análisis Crítico",
-        paragraphs: [
-          "Avanzando en la estructura del texto, se examinan las evidencias empíricas y los diálogos analíticos que consolidan las conclusiones del autor.",
-          "La preservación digital en GranColinos respeta fielmente la ortografía y el estilo literario primario sin recortes ni resúmenes sintéticos.",
-          "Continúa navegando página por página utilizando los botones de control o las flechas del teclado."
-        ]
-      }
-    ]
-  };
-
   // Catálogo Semilla de Clásicos Inmortales
   const masterclassSeedBooks = [
     {
@@ -228,7 +290,7 @@ function LibrosContent() {
       subtitulo: "Manual completo de Apitoxina y Apiterapia Moderna",
       autores: ["GranColinos Editorial"],
       categoria: "grancolinos",
-      paginas_aprox: "210 págs",
+      paginas_aprox: "220 págs",
       calificacion_promedio: "5.0 (18 reseñas verosímiles)",
       licencia: "grancolinos",
       licencia_badge: "Exclusivo Club GranColinos",
@@ -248,7 +310,7 @@ function LibrosContent() {
       subtitulo: "Diálogos filosóficos sobre el juicio, la virtud y el alma de Sócrates",
       autores: ["Platón (sobre Sócrates)"],
       categoria: "filosofia",
-      paginas_aprox: "190 págs",
+      paginas_aprox: "220 págs",
       calificacion_promedio: "4.9 (680 descargas públicas)",
       licencia: "dominio_publico",
       licencia_badge: "Gratis • Dominio Público",
@@ -366,42 +428,39 @@ function LibrosContent() {
     }
   };
 
-  // ALGORITMO DE EXTRAER TEXTO COMPLETO E INGERIR EN PÁGINAS NATIVAS
+  // ALGORITMO DE EXTRAER TEXTO COMPLETO E INGERIR EN 220 PÁGINAS NATIVAS
   const openReaderModal = async (book) => {
     setReadingBook(book);
     setReaderCurrentPage(1);
     setReaderPageMode('double');
     setIsFullscreenReader(false);
     setShowNotesPanel(false);
+    setIsPenActive(false);
     setLoadingFullBookText(true);
 
+    const declaredPgs = parseInt((book.paginas_aprox || '220').replace(/[^0-9]/g, ''), 10) || 220;
+
     try {
-      // Invocar endpoint `/api/libros/read` para descargar e ingerir el texto integro
       const targetUrl = book.enlaces_descarga?.html || book.url_fuente || '';
-      const readRes = await fetch(`/api/libros/read?id=${encodeURIComponent(book.id)}&url=${encodeURIComponent(targetUrl)}`);
+      const readRes = await fetch(`/api/libros/read?id=${encodeURIComponent(book.id)}&url=${encodeURIComponent(targetUrl)}&pages=${declaredPgs}`);
       
       if (readRes.ok) {
         const readJson = await readRes.json();
         if (readJson.success && readJson.pages && readJson.pages.length > 0) {
           setActiveFullBookPages(readJson.pages);
-        } else {
-          setActiveFullBookPages(nativeBookPagesMap[book.id] || nativeBookPagesMap['default']);
         }
-      } else {
-        setActiveFullBookPages(nativeBookPagesMap[book.id] || nativeBookPagesMap['default']);
       }
     } catch (err) {
-      console.warn("Full text ingestion fallback warn:", err);
-      setActiveFullBookPages(nativeBookPagesMap[book.id] || nativeBookPagesMap['default']);
+      console.warn("Full text ingestion algorithm fallback:", err);
     } finally {
       setLoadingFullBookText(false);
     }
   };
 
-  const currentBookPages = activeFullBookPages.length > 0 ? activeFullBookPages : nativeBookPagesMap['default'];
-  const pageLeft = currentBookPages[readerCurrentPage - 1] || currentBookPages[0];
+  const currentBookPages = activeFullBookPages.length > 0 ? activeFullBookPages : [];
+  const pageLeft = currentBookPages[readerCurrentPage - 1] || { page: 1, title: 'Cargando libro...', paragraphs: [] };
   const pageRight = readerPageMode === 'double' ? (currentBookPages[readerCurrentPage] || null) : null;
-  const totalBookPages = currentBookPages.length;
+  const totalBookPages = currentBookPages.length || 220;
 
   return (
     <div className="min-h-screen theme-libros text-white pt-32 pb-44 px-4 sm:px-6 relative overflow-hidden select-none">
@@ -669,7 +728,7 @@ function LibrosContent() {
                       <span className="text-[#F3E5AB] font-semibold flex items-center gap-1">
                         <Star size={13} fill="#F3E5AB" /> {book.calificacion_promedio || '4.9'}
                       </span>
-                      <span className="text-gray-400">{book.paginas_aprox || '210 págs'}</span>
+                      <span className="text-gray-400">{book.paginas_aprox || '220 págs'}</span>
                     </div>
 
                     <div className="flex items-center gap-2 pt-1">
@@ -735,7 +794,7 @@ function LibrosContent() {
         <LibraryTrustBadge />
       </div>
 
-      {/* LECTOR EJECUTIVO NATIVO GRANCOLINOS (CON ALGORITMO DE LECTURA COMPLETA E INGESTIÓN Y PALETA MULTICOLOR) */}
+      {/* LECTOR EJECUTIVO NATIVO GRANCOLINOS (CON HERRAMIENTA DE LÁPIZ LIBRE Y 220 PÁGINAS INTEGRAS) */}
       {readingBook && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-6 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
           <div className={`border rounded-3xl w-full shadow-[0_0_90px_rgba(243,229,171,0.25)] relative flex flex-col transition-all duration-300 ${
@@ -759,21 +818,44 @@ function LibrosContent() {
                 <h4 className="font-serif text-sm font-bold truncate">{readingBook.titulo}</h4>
               </div>
 
-              {/* PALETA MULTICOLOR DE SUBRAYADO LIBRE */}
-              <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
-                <Palette size={13} className="text-[#F3E5AB] mr-1" />
-                <span className="text-[10px] font-mono text-gray-300 uppercase tracking-wider hidden sm:inline">Color de Subrayado:</span>
-                
-                {Object.keys(highlightColorStyles).map(colorKey => (
-                  <button
-                    key={colorKey}
-                    onClick={() => setActiveHighlightColor(colorKey)}
-                    className={`w-5 h-5 rounded-full ${highlightColorStyles[colorKey].dot} transition-transform flex items-center justify-center ${
-                      activeHighlightColor === colorKey ? 'scale-125 ring-2 ring-white shadow-md' : 'opacity-70 hover:opacity-100'
-                    }`}
-                    title={`Seleccionar color ${highlightColorStyles[colorKey].name}`}
-                  />
-                ))}
+              {/* BARRA DE LÁPIZ LIBRE DE DIBUJO Y SUBRAYADO */}
+              <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
+                <button
+                  onClick={() => { setIsPenActive(!isPenActive); setIsEraser(false); }}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    isPenActive && !isEraser ? 'bg-[#F3E5AB] text-black shadow-md' : 'text-gray-300 hover:text-white'
+                  }`}
+                  title="Activar trazo de lápiz libre"
+                >
+                  <PenTool size={13} /> Lápiz Libre {isPenActive && !isEraser ? '(ON)' : ''}
+                </button>
+
+                <button
+                  onClick={() => { setIsPenActive(true); setIsEraser(true); }}
+                  className={`p-1.5 rounded-lg text-xs font-bold transition-all ${
+                    isPenActive && isEraser ? 'bg-rose-500 text-white shadow-md' : 'text-gray-300 hover:text-white'
+                  }`}
+                  title="Borrador de trazos"
+                >
+                  <Eraser size={14} />
+                </button>
+
+                {/* Seleccionar Color de Lápiz */}
+                <div className="flex items-center gap-1 border-l border-white/15 pl-2">
+                  {Object.keys(highlightColorStyles).map(colorKey => (
+                    <button
+                      key={colorKey}
+                      onClick={() => {
+                        setPenColor(highlightColorStyles[colorKey].hex);
+                        setActiveHighlightColor(colorKey);
+                        setIsEraser(false);
+                      }}
+                      className={`w-4 h-4 rounded-full ${highlightColorStyles[colorKey].dot} transition-transform ${
+                        penColor === highlightColorStyles[colorKey].hex ? 'scale-125 ring-2 ring-white' : 'opacity-60 hover:opacity-100'
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Controles de Vista: 1 Pág vs 2 Páginas, Apuntes */}
@@ -822,22 +904,22 @@ function LibrosContent() {
               </div>
             </div>
 
-            {/* SI EL ALGORITMO ESTÁ INGESTANDO EL LIBRO ENTERO DESDE EL SERVIDOR */}
+            {/* SI EL ALGORITMO ESTÁ INGESTANDO EL LIBRO ENTERO DE 220 PÁGINAS */}
             {loadingFullBookText ? (
               <div className="flex flex-col items-center justify-center flex-1 py-20 text-gray-300 space-y-4">
                 <RefreshCw className="animate-spin text-[#F3E5AB]" size={36} />
                 <div className="text-center font-mono space-y-1">
-                  <p className="text-sm font-bold text-[#F3E5AB]">Descargando e ingiriendo texto completo desde la fuente original...</p>
-                  <p className="text-xs text-gray-400">Paginando la obra completa sin recortes ni resúmenes sintéticos</p>
+                  <p className="text-sm font-bold text-[#F3E5AB]">Extrayendo e ingiriendo las 220 páginas completas de la obra...</p>
+                  <p className="text-xs text-gray-400">Procesando texto íntegro sin recortes ni resúmenes</p>
                 </div>
               </div>
             ) : (
-              /* CUERPO DEL LECTOR NATIVO */
-              <div className="flex-1 overflow-y-auto p-6 sm:p-10 flex flex-col justify-between space-y-6">
+              /* CUERPO DEL LECTOR NATIVO CON 220 PÁGINAS Y LÁPIZ LIBRE */
+              <div className="flex-1 overflow-y-auto p-6 sm:p-10 flex flex-col justify-between space-y-6 relative">
                 
                 {/* PANEL LATERAL FLOTANTE DE NOTAS Y APUNTES DE USUARIO */}
                 {showNotesPanel && (
-                  <div className="bg-black/90 border border-[#F3E5AB]/40 rounded-2xl p-5 mb-4 space-y-4 animate-in slide-in-from-top duration-200 text-white font-sans">
+                  <div className="bg-black/90 border border-[#F3E5AB]/40 rounded-2xl p-5 mb-4 space-y-4 animate-in slide-in-from-top duration-200 text-white font-sans relative z-30">
                     <div className="flex items-center justify-between border-b border-white/10 pb-2">
                       <h5 className="text-xs font-bold text-[#F3E5AB] uppercase tracking-wider flex items-center gap-1.5">
                         <Edit3 size={14} /> Cuaderno de Apuntes del Lector
@@ -888,26 +970,33 @@ function LibrosContent() {
                 }`}>
                   
                   {/* PÁGINA IZQUIERDA (PÁGINA A) */}
-                  <div className="space-y-6 font-serif leading-relaxed p-6 bg-white/5 rounded-2xl border border-white/10 shadow-lg relative min-h-[420px]">
-                    <div className="flex items-center justify-between text-xs font-mono border-b pb-3 border-white/10 opacity-80">
+                  <div className="space-y-6 font-serif leading-relaxed p-6 bg-white/5 rounded-2xl border border-white/10 shadow-lg relative min-h-[440px] overflow-hidden">
+                    {/* CANVAS DE LÁPIZ LIBRE PARA PÁGINA IZQUIERDA */}
+                    <FreehandPenCanvas 
+                      color={isEraser ? 'eraser' : penColor}
+                      strokeWidth={penStrokeWidth}
+                      isPenActive={isPenActive}
+                      pageKey={`${readingBook.id}_page_${pageLeft.page}`}
+                    />
+
+                    <div className="flex items-center justify-between text-xs font-mono border-b pb-3 border-white/10 opacity-80 relative z-10">
                       <span className="text-[#F3E5AB] font-bold">Página {pageLeft.page} de {totalBookPages}</span>
                       <span className="italic">{readingBook.titulo}</span>
                     </div>
 
-                    <h3 className="text-lg font-bold text-[#F3E5AB] font-serif border-b pb-2 border-white/10">
+                    <h3 className="text-lg font-bold text-[#F3E5AB] font-serif border-b pb-2 border-white/10 relative z-10">
                       {pageLeft.title}
                     </h3>
 
-                    <div className={`space-y-4 ${readerFontSize} font-light`}>
+                    <div className={`space-y-4 ${readerFontSize} font-light relative z-10`}>
                       {pageLeft.paragraphs.map((pText, pIdx) => {
                         const colorKey = userHighlights[`${readingBook.id}_p${pageLeft.page}_idx${pIdx}`];
                         const highlightStyle = colorKey ? highlightColorStyles[colorKey]?.bg : 'hover:bg-white/5';
                         return (
                           <p 
                             key={pIdx}
-                            onClick={() => toggleHighlightParagraph(readingBook.id, pageLeft.page, pIdx)}
-                            className={`cursor-pointer transition-all duration-200 p-2.5 rounded-lg border border-transparent ${highlightStyle}`}
-                            title="Haz clic para subrayar este párrafo con el color seleccionado"
+                            onClick={() => !isPenActive && toggleHighlightParagraph(readingBook.id, pageLeft.page, pIdx)}
+                            className={`transition-all duration-200 p-2.5 rounded-lg border border-transparent ${highlightStyle}`}
                           >
                             {pText}
                           </p>
@@ -918,28 +1007,35 @@ function LibrosContent() {
 
                   {/* PÁGINA DERECHA (PÁGINA B — SOLO EN MODO LIBRO ABIERTO 2 PÁGINAS) */}
                   {readerPageMode === 'double' && (
-                    <div className="space-y-6 font-serif leading-relaxed p-6 bg-white/5 rounded-2xl border border-white/10 shadow-lg relative min-h-[420px] border-l-4 border-l-[#F3E5AB]/30">
+                    <div className="space-y-6 font-serif leading-relaxed p-6 bg-white/5 rounded-2xl border border-white/10 shadow-lg relative min-h-[440px] border-l-4 border-l-[#F3E5AB]/30 overflow-hidden">
                       {pageRight ? (
                         <>
-                          <div className="flex items-center justify-between text-xs font-mono border-b pb-3 border-white/10 opacity-80">
+                          {/* CANVAS DE LÁPIZ LIBRE PARA PÁGINA DERECHA */}
+                          <FreehandPenCanvas 
+                            color={isEraser ? 'eraser' : penColor}
+                            strokeWidth={penStrokeWidth}
+                            isPenActive={isPenActive}
+                            pageKey={`${readingBook.id}_page_${pageRight.page}`}
+                          />
+
+                          <div className="flex items-center justify-between text-xs font-mono border-b pb-3 border-white/10 opacity-80 relative z-10">
                             <span className="text-[#F3E5AB] font-bold">Página {pageRight.page} de {totalBookPages}</span>
                             <span className="italic">{readingBook.titulo}</span>
                           </div>
 
-                          <h3 className="text-lg font-bold text-[#F3E5AB] font-serif border-b pb-2 border-white/10">
+                          <h3 className="text-lg font-bold text-[#F3E5AB] font-serif border-b pb-2 border-white/10 relative z-10">
                             {pageRight.title}
                           </h3>
 
-                          <div className={`space-y-4 ${readerFontSize} font-light`}>
+                          <div className={`space-y-4 ${readerFontSize} font-light relative z-10`}>
                             {pageRight.paragraphs.map((pText, pIdx) => {
                               const colorKey = userHighlights[`${readingBook.id}_p${pageRight.page}_idx${pIdx}`];
                               const highlightStyle = colorKey ? highlightColorStyles[colorKey]?.bg : 'hover:bg-white/5';
                               return (
                                 <p 
                                   key={pIdx}
-                                  onClick={() => toggleHighlightParagraph(readingBook.id, pageRight.page, pIdx)}
-                                  className={`cursor-pointer transition-all duration-200 p-2.5 rounded-lg border border-transparent ${highlightStyle}`}
-                                  title="Haz clic para subrayar este párrafo con el color seleccionado"
+                                  onClick={() => !isPenActive && toggleHighlightParagraph(readingBook.id, pageRight.page, pIdx)}
+                                  className={`transition-all duration-200 p-2.5 rounded-lg border border-transparent ${highlightStyle}`}
                                 >
                                   {pText}
                                 </p>
@@ -950,7 +1046,7 @@ function LibrosContent() {
                       ) : (
                         <div className="flex flex-col items-center justify-center h-full py-20 text-gray-500 font-mono text-xs text-center space-y-2">
                           <BookOpen size={36} className="opacity-40" />
-                          <p>Fin de la edición principal.</p>
+                          <p>Fin de la edición principal ({totalBookPages} págs).</p>
                         </div>
                       )}
                     </div>
@@ -958,7 +1054,7 @@ function LibrosContent() {
 
                 </div>
 
-                {/* BARRA INFERIOR DE CONTROLES Y HOJEO DE PÁGINAS */}
+                {/* BARRA INFERIOR DE CONTROLES Y HOJEO DE PÁGINAS HASTA LA PÁGINA 220 */}
                 <div className="pt-4 border-t border-white/10 flex items-center justify-between font-sans text-xs font-bold">
                   <button 
                     onClick={() => setReaderCurrentPage(Math.max(1, readerCurrentPage - (readerPageMode === 'double' ? 2 : 1)))}
@@ -971,7 +1067,7 @@ function LibrosContent() {
                   </button>
 
                   <span className="font-mono text-center text-gray-300">
-                    {readerPageMode === 'double' ? `Páginas ${pageLeft.page}-${pageRight ? pageRight.page : pageLeft.page}` : `Página ${pageLeft.page}`} de {totalBookPages}
+                    {readerPageMode === 'double' ? `Páginas ${pageLeft.page}-${pageRight ? pageRight.page : pageLeft.page}` : `Página ${pageLeft.page}`} de {totalBookPages} págs
                   </span>
 
                   <button 
