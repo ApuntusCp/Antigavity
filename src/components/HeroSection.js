@@ -10,75 +10,52 @@ const EASE = [0.65, 0, 0.35, 1];
 const TRANSITION       = { duration: 0.7, ease: EASE };
 const PRODUCT_TRANSITION = { duration: 0.7, ease: EASE, delay: 0.05 };
 
-// --- DATOS POR DEFECTO (se sobreescriben con cmsConfig del Editor Visual) ---
+// --- DATOS POR DEFECTO ---
 const DEFAULT_VARIANTS = [
   {
     id: 'gomas',
     name: 'Gomas Orgánicas GC',
     tagline: 'Energía y vitalidad diaria con Jengibre y Cúrcuma',
     price: '$28.500',
-    colorBg: '#361517',
+    colorBg: 'transparent',
     colorAccent: '#D4AF37',
     image: '/Muestras/preview (1).webp',
-    decorations: [
-      { id: 'd1', src: '/Muestras/preview (2).webp', pos: 'top-10 left-[10%]' },
-      { id: 'd2', src: '/Muestras/preview (3).webp', pos: 'bottom-20 right-[15%]' },
-    ],
+    decorations: [],
   },
   {
     id: 'apitoxina',
     name: 'Apitoxina Relajante',
     tagline: 'Alivio muscular profundo y 100% natural',
     price: '$36.700',
-    colorBg: '#2b2311',
+    colorBg: 'transparent',
     colorAccent: '#D4AF37',
     image: '/Muestras/preview (4).webp',
-    decorations: [
-      { id: 'd3', src: '/Muestras/preview (5).webp', pos: 'top-20 right-[10%]' },
-      { id: 'd4', src: '/Muestras/preview (6).webp', pos: 'bottom-10 left-[15%]' },
-    ],
+    decorations: [],
   },
   {
     id: 'nanocbd',
     name: 'Gotas Nano CBD',
     tagline: 'Biodisponibilidad del 100% con Nanotecnología',
     price: '$197.500',
-    colorBg: '#1A2E0A',
+    colorBg: 'transparent',
     colorAccent: '#7BA05B',
     image: '/Muestras/preview.webp',
-    decorations: [
-      { id: 'd5', src: '/Muestras/preview (7).webp', pos: 'top-16 left-[20%]' },
-      { id: 'd6', src: '/Muestras/preview (8).webp', pos: 'bottom-16 right-[20%]' },
-    ],
+    decorations: [],
   },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HeroSection — acepta cmsConfig del Editor Visual de GC Admin y el inventario real.
-// ─────────────────────────────────────────────────────────────────────────────
 export default function HeroSection({ cmsConfig = null, products = [] }) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [dynamicColors, setDynamicColors] = useState({});
 
-  // ── Extraer overrides del Editor Visual ──
   let heroOverride = null;
-  let bannerOverride = null;
 
   if (cmsConfig?.blocks && Array.isArray(cmsConfig.blocks)) {
-    const heroBlock   = cmsConfig.blocks.find(b => b.type === 'hero');
-    const bannerBlock = cmsConfig.blocks.find(b => b.type === 'banner');
-
+    const heroBlock = cmsConfig.blocks.find(b => b.type === 'hero');
     if (heroBlock?.content) {
       heroOverride = {
-        bgImage: heroBlock.content.bgUrl   || null,
-        title:   heroBlock.content.title   || null,
-      };
-    }
-    if (bannerBlock?.content) {
-      bannerOverride = {
-        text:      bannerBlock.content.text      || null,
-        bgColor:   bannerBlock.content.bgColor   || null,
-        textColor: bannerBlock.content.textColor || null,
+        bgImage: heroBlock.content.bgUrl || null,
+        title: heroBlock.content.title || null,
       };
     }
   }
@@ -95,8 +72,8 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
                  : new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price || 0),
         oldPrice: p.discountPrice ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price || 0) : null,
         image: p.images?.[0] || '/Muestras/preview.webp',
-        decorations: [], // Can generate dynamic decorations if needed
-        colorBg: '#0a0a0a',
+        decorations: [],
+        colorBg: 'transparent',
         colorAccent: '#D4AF37'
       }));
     }
@@ -112,240 +89,163 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
             ...prev,
             [v.id]: {
               accent: color.hex,
-              // Create a very dark version of the color for the background
-              bg: `rgba(${Math.floor(color.value[0]*0.15)}, ${Math.floor(color.value[1]*0.15)}, ${Math.floor(color.value[2]*0.15)}, 1)`
+              bg: 'transparent'
             }
           }));
         })
         .catch(e => console.error("Error extracting color", e));
     });
-    return () => fac.destroy();
   }, [VARIANTS]);
 
   const activeVariant = VARIANTS[activeIdx] || VARIANTS[0];
-  const activeDynamicColor = dynamicColors[activeVariant?.id];
-  const currentBgColor = activeDynamicColor?.bg || activeVariant?.colorBg;
-  const currentAccentColor = activeDynamicColor?.accent || activeVariant?.colorAccent;
-
-  const handleNext = () => setActiveIdx(prev => (prev + 1) % VARIANTS.length);
-  const handlePrev = () => setActiveIdx(prev => (prev - 1 + VARIANTS.length) % VARIANTS.length);
+  const currentAccentColor = dynamicColors[activeVariant.id]?.accent || activeVariant.colorAccent;
 
   return (
-    <>
-      {/* ── BANNER PROMO (si existe en el Editor) ── */}
-      {bannerOverride?.text && (
-        <div
-          className="w-full py-3 text-center text-xs font-bold tracking-[0.25em] uppercase"
-          style={{
-            backgroundColor: bannerOverride.bgColor  || '#D4AF37',
-            color:            bannerOverride.textColor || '#050505',
-          }}
-        >
-          {bannerOverride.text}
-        </div>
-      )}
+    <section className="relative w-full h-screen min-h-[650px] overflow-hidden text-white pt-16">
+      
+      {/* Dynamic Ambient Glow overlay with 22% opacity to let leather texture show 100% */}
+      <div 
+        className="absolute inset-0 z-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 backdrop-blur-[2px] transition-all duration-1000"
+      />
 
-      {/* ── HERO PRINCIPAL ── */}
-      <section className="relative w-full h-[90vh] overflow-hidden flex items-center justify-center">
+      {/* Hero Background Glow */}
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-96 blur-[140px] pointer-events-none rounded-full transition-colors duration-1000"
+        style={{ backgroundColor: `${currentAccentColor}22` }}
+      />
 
-        {/* 1. Fondo con imagen del Editor si existe, o color sólido por variante */}
+      {/* Tipografía gigante de fondo */}
+      <div className="absolute inset-0 z-[2] flex items-center justify-center overflow-hidden pointer-events-none select-none opacity-[0.04]">
         <AnimatePresence mode="wait">
-          <motion.div
+          <motion.span
             key={activeVariant.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: EASE }}
-            className="absolute inset-0 z-0"
-            style={{
-              backgroundColor: currentBgColor,
-              ...(heroOverride?.bgImage
-                ? {
-                    backgroundImage: `url('${heroOverride.bgImage}')`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }
-                : {}),
-            }}
-          />
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 100 }}
+            transition={TRANSITION}
+            className="text-[15rem] md:text-[20rem] font-black uppercase whitespace-nowrap text-white font-serif tracking-tighter"
+          >
+            {activeVariant.name.split(' ')[0]}
+          </motion.span>
         </AnimatePresence>
+      </div>
 
-        {/* Overlay de gradiente */}
-        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/60 via-transparent to-black/70 pointer-events-none" />
+      {/* Contenido principal */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 h-full flex flex-col justify-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center h-full pt-12">
 
-        {/* 2. Tipografía gigante de fondo */}
-        <div className="absolute inset-0 z-[2] flex items-center justify-center overflow-hidden pointer-events-none select-none opacity-[0.03]">
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={activeVariant.id}
-              initial={{ opacity: 0, x: -100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 100 }}
-              transition={TRANSITION}
-              className="text-[15rem] md:text-[20rem] font-black uppercase whitespace-nowrap text-white font-serif tracking-tighter"
-            >
-              {activeVariant.name.split(' ')[0]}
-            </motion.span>
-          </AnimatePresence>
-        </div>
-
-        {/* 3. Contenido principal */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 h-full flex flex-col justify-center">
-
-          {/* Sello INVIMA: Flotante superior derecha, sutil pero visible (OCULTO TEMPORALMENTE) */}
-          <div className="hidden absolute top-6 right-6 md:top-10 md:right-10 z-50 items-center gap-3 bg-white/5 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full shadow-2xl">
-            <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)] animate-pulse"></div>
-            <p className="text-[9px] md:text-[10px] tracking-[0.2em] text-white/80 uppercase font-bold">
-              INVIMA <span className="text-brand-gold font-light">RS-2024-12345</span>
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center h-full pt-16">
-
-            {/* Lado Izquierdo */}
-            <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, ...TRANSITION }}>
-                <h1 className="text-5xl md:text-7xl font-serif font-bold text-white leading-tight mb-2">
-                  <span style={{ color: currentAccentColor }} className="transition-colors duration-700">Gran</span>Colinos
-                </h1>
-                <div className="min-h-[4rem] overflow-visible">
-                  <AnimatePresence mode="wait">
-                    <motion.h2
-                      key={activeVariant.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={TRANSITION}
-                      className="text-3xl md:text-5xl font-light italic text-white/90"
-                    >
-                      {/* Título sobreescrito por el Editor si existe */}
-                      {heroOverride?.title || activeVariant.name}
-                    </motion.h2>
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-
-              <div className="h-14 flex items-center mt-2">
+          {/* Lado Izquierdo */}
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, ...TRANSITION }}>
+              <h1 className="text-5xl md:text-7xl font-serif font-bold text-white leading-tight mb-2">
+                <span style={{ color: currentAccentColor }} className="transition-colors duration-700">Gran</span>Colinos
+              </h1>
+              <div className="min-h-[4rem] overflow-visible">
                 <AnimatePresence mode="wait">
-                  <motion.p
+                  <motion.h2
                     key={activeVariant.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
                     transition={TRANSITION}
-                    className="text-lg text-white/70 max-w-md"
+                    className="text-3xl md:text-5xl font-light italic text-white/90"
                   >
-                    {activeVariant.tagline}
-                  </motion.p>
+                    {heroOverride?.title || activeVariant.name}
+                  </motion.h2>
                 </AnimatePresence>
               </div>
+            </motion.div>
 
-              {/* Selector de variante */}
-              <div className="flex flex-col gap-3 mt-8 items-center lg:items-start">
-                <p className="text-[10px] uppercase tracking-widest text-white/40 font-medium">Elige tu presentación</p>
-                <div className="flex flex-wrap justify-center lg:justify-start gap-3">
-                  {VARIANTS.map((v, i) => (
-                    <button
-                      key={v.id}
-                      onClick={() => setActiveIdx(i)}
-                      className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-500 border ${
-                        activeIdx === i
-                          ? 'bg-white text-black border-white shadow-lg'
-                          : 'bg-transparent text-white/70 border-white/20 hover:border-white/50'
-                      }`}
-                    >
-                      {v.name.split(' ')[0]}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Navegación + Precio */}
-              <div className="flex items-center gap-6 mt-10 justify-center lg:justify-start">
-                <div className="flex gap-2">
-                  <button onClick={handlePrev} className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-                  </button>
-                  <button onClick={handleNext} className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                  </button>
-                </div>
-
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeVariant.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={TRANSITION}
-                    className="flex flex-col lg:flex-row items-center gap-4"
-                  >
-                    <div className="flex items-center gap-3">
-                      {activeVariant.oldPrice && (
-                        <span className="text-lg text-white/40 line-through tracking-tight font-light">
-                          {activeVariant.oldPrice}
-                        </span>
-                      )}
-                      <span 
-                        className="text-4xl font-bold tracking-tight transition-colors duration-700"
-                        style={{ color: currentAccentColor }}
-                      >
-                        {activeVariant.price}
-                      </span>
-                    </div>
-                    <Link 
-                      href={`/product/${activeVariant.sku || activeVariant.id}`}
-                      className="px-8 py-2.5 rounded-full text-sm font-bold bg-white text-black hover:scale-105 transition-transform uppercase tracking-widest shadow-xl whitespace-nowrap flex-shrink-0"
-                    >
-                      Comprar Ahora
-                    </Link>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </div>
-
-            {/* Lado Derecho: Render del Producto */}
-            <div className="relative w-full h-[50vh] lg:h-[80vh] flex items-center justify-center pointer-events-none mt-10 lg:mt-0">
-
-              {/* Decorativos flotantes */}
+            <div className="h-14 flex items-center mt-2">
               <AnimatePresence mode="wait">
-                {activeVariant.decorations.map((dec, i) => (
-                  <motion.div
-                    key={`${activeVariant.id}-${dec.id}`}
-                    initial={{ opacity: 0, y: i % 2 === 0 ? 20 : -20 }}
-                    animate={{ opacity: 0.8, y: 0 }}
-                    exit={{ opacity: 0, y: i % 2 === 0 ? -20 : 20 }}
-                    transition={{ ...TRANSITION, delay: 0.1 + i * 0.05 }}
-                    className={`absolute ${dec.pos} w-20 h-20 md:w-32 md:h-32 rounded-full bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl overflow-hidden`}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={dec.src} alt="" className="w-[150%] h-[150%] object-cover opacity-70" />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-
-              {/* Producto principal */}
-              <AnimatePresence mode="wait">
-                <motion.div
+                <motion.p
                   key={activeVariant.id}
-                  initial={{ opacity: 0, scale: 0.85, rotate: -15, x: 120, y: -50, filter: 'blur(12px)' }}
-                  animate={{ opacity: 1, scale: 1,    rotate: 0,   x: 0,   y: 0,   filter: 'blur(0px)' }}
-                  exit={{   opacity: 0, scale: 1.15,  rotate: 15,  x: -120, y: 50,  filter: 'blur(12px)' }}
-                  transition={PRODUCT_TRANSITION}
-                  className="relative z-30 w-72 h-72 md:w-96 md:h-96"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={TRANSITION}
+                  className="text-lg text-white/70 max-w-md"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={activeVariant.image}
-                    alt={activeVariant.name}
-                    className="w-full h-full object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.7)]"
-                  />
-                </motion.div>
+                  {activeVariant.tagline}
+                </motion.p>
               </AnimatePresence>
             </div>
+
+            {/* Selector de variante */}
+            <div className="flex flex-col gap-3 mt-8 items-center lg:items-start">
+              <p className="text-[10px] uppercase tracking-widest text-white/50 font-medium">Elige tu presentación</p>
+              <div className="flex flex-wrap justify-center lg:justify-start gap-3">
+                {VARIANTS.map((v, i) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setActiveIdx(i)}
+                    className={`px-5 py-2 rounded-full text-xs font-bold transition-all duration-300 ${
+                      activeIdx === i
+                        ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.4)] scale-105'
+                        : 'bg-black/40 text-white/70 hover:bg-black/60 border border-white/10'
+                    }`}
+                  >
+                    {v.name.split(' ')[0]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Precios y Botón CTA */}
+            <div className="flex items-center gap-6 mt-10">
+              <div className="flex flex-col">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeVariant.id}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={TRANSITION}
+                    className="flex items-baseline gap-3"
+                  >
+                    {activeVariant.oldPrice && (
+                      <span className="text-gray-400 font-mono text-sm line-through">
+                        {activeVariant.oldPrice}
+                      </span>
+                    )}
+                    <span className="text-3xl font-mono font-bold text-gold-gradient">
+                      {activeVariant.price}
+                    </span>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              <Link
+                href={`/product/${activeVariant.sku || activeVariant.id}`}
+                className="px-8 py-3.5 rounded-full font-bold text-xs uppercase tracking-widest bg-white text-black hover:bg-[#D4AF37] hover:text-black transition-all duration-300 shadow-[0_0_25px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.6)]"
+              >
+                Comprar Ahora
+              </Link>
+            </div>
           </div>
+
+          {/* Lado Derecho: Imagen del Producto */}
+          <div className="relative flex items-center justify-center h-[350px] md:h-[450px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeVariant.id}
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                transition={PRODUCT_TRANSITION}
+                className="relative w-full h-full max-w-lg"
+              >
+                <img
+                  src={activeVariant.image}
+                  alt={activeVariant.name}
+                  className="w-full h-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
+                />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
