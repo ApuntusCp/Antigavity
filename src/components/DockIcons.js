@@ -66,3 +66,24 @@ export function IconMovimiento({ className = "w-5 h-5" }) {
     </svg>
   );
 }
+
+// 7. Servicios (Red Profesional Verificada): Maletín / Red de Profesionales
+export function IconServicios({ className = "w-5 h-5", strokeWidth = 1.5 }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+    </svg>
+  );
+}
+
+// 8. Info (Corporativo & PQR): Círculo de Información & Soporte
+export function IconInfo({ className = "w-5 h-5", strokeWidth = 1.5 }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="16" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12.01" y2="8" />
+    </svg>
+  );
+}
