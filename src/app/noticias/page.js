@@ -6,7 +6,7 @@ import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestor
 import { db } from '../../utils/firebase';
 import { useSearchParams, useRouter } from 'next/navigation';
 
-// Componente Especial de Garantía e Información Verificada para Noticias
+// Componente Especial de Garantía e Información Verificada para Noticias (100% Sin Emojis)
 function NewsTrustBadge() {
   return (
     <div className="w-full bg-[#0A0E0C]/90 border border-[#E2E8F0]/30 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-2xl my-12">
@@ -45,9 +45,8 @@ function NewsTrustBadge() {
   );
 }
 
-// Componente Visual de la Barra de Sesgo Ideológico (Algoritmo Gran Noticias)
+// Componente Visual de la Barra de Sesgo Ideológico (Algoritmo Gran Noticias - Sin Emojis)
 function PoliticalBiasBar({ biasScore, biasLabel }) {
-  // biasScore: 0 (Izquierda extrema) a 100 (Derecha extrema). 50 es Neutral/Centro.
   const score = Math.max(5, Math.min(95, biasScore || 50));
 
   return (
@@ -59,10 +58,9 @@ function PoliticalBiasBar({ biasScore, biasLabel }) {
         <span className="text-gray-400">{score}%</span>
       </div>
 
-      {/* Gradiente de Sesgo Ideológico: Azul (Izquierda) -> Verde (Centro) -> Rojo/Naranja (Derecha) */}
+      {/* Gradiente de Sesgo Ideológico */}
       <div className="relative w-full h-2 rounded-full bg-white/10 overflow-hidden border border-white/20">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-emerald-400 via-amber-400 to-rose-500 opacity-80"></div>
-        {/* Indicador del punto de sesgo */}
         <div 
           className="absolute top-0 bottom-0 w-2.5 bg-white border border-black shadow-[0_0_8px_rgba(255,255,255,0.9)] rounded-full -translate-x-1/2 transition-all duration-500"
           style={{ left: `${score}%` }}
@@ -92,7 +90,7 @@ function NoticiasContent() {
   const [realtimeArticles, setRealtimeArticles] = useState([]);
   const [loadingFeed, setLoadingFeed] = useState(true);
 
-  // Country Options for Dropdown
+  // Country Options for Dropdown (100% SIN EMOJIS)
   const countries = [
     { id: 'global', name: 'Cobertura Global (Todas las regiones)', code: 'GLOBAL' },
     { id: 'co', name: 'Colombia (Nacional y Regiones)', code: 'CO' },
@@ -103,7 +101,7 @@ function NoticiasContent() {
     { id: 'salud', name: 'Botánica, Apitoxina & Ciencia', code: 'SCIENCE' }
   ];
 
-  // Sub-region Options depending on Country Selected
+  // Sub-region Options depending on Country Selected (100% SIN EMOJIS)
   const regionsByCountry = {
     co: [
       { id: 'todas', name: 'Todas las Regiones de Colombia' },
@@ -134,7 +132,7 @@ function NoticiasContent() {
     ]
   };
 
-  // Month / Historical Period Options for Dropdown
+  // Month / Historical Period Options for Dropdown (100% SIN EMOJIS)
   const monthFilters = [
     { id: 'julio-2026', name: 'Julio 2026 (Mes Actual)' },
     { id: 'junio-2026', name: 'Junio 2026' },
@@ -268,7 +266,7 @@ function NoticiasContent() {
     }
   ];
 
-  // Global News Feed Dataset (Con Sesgo Ideológico de Gran Noticias & Regiones)
+  // Global News Feed Dataset (Con Sesgo Ideológico de Gran Noticias & Regiones - 100% SIN EMOJIS)
   const fallbackGlobalNews = [
     {
       id: 'news-co-1',
@@ -587,7 +585,7 @@ function NoticiasContent() {
                       {article.summary}
                     </p>
 
-                    {/* Medidor de Sesgo Ideológico (Gran Noticias System) */}
+                    {/* Medidor de Sesgo Ideológico (Gran Noticias System - Sin Emojis) */}
                     <PoliticalBiasBar biasScore={article.biasScore} biasLabel={article.biasLabel} />
                   </div>
                 </div>
@@ -603,7 +601,7 @@ function NoticiasContent() {
           </div>
         </div>
 
-        {/* FEED GLOBAL EN TIEMPO REAL CON CONTROL DE PAÍS + SUB-REGIÓN + MES + MEDIDOR DE SESGO */}
+        {/* FEED GLOBAL EN TIEMPO REAL CON CONTROL DE PAÍS + SUB-REGIÓN + MES + MEDIDOR DE SESGO (100% SIN EMOJIS) */}
         <div className="bg-black/50 border border-[#E2E8F0]/30 rounded-3xl p-6 md:p-10 backdrop-blur-xl shadow-2xl mb-16 glow-noticias">
           
           {/* Header & Menús Desplegables / Controles de Filtros Completo */}
@@ -668,7 +666,7 @@ function NoticiasContent() {
                 <ChevronDown className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={16} />
               </div>
 
-              {/* Selector Desplegable de Sub-región / Departamento / Municipio */}
+              {/* Selector Desplegable de Sub-región / Departamento / Municipio (100% SIN EMOJIS) */}
               <div className="relative flex-1 lg:flex-none">
                 <select
                   value={activeRegion}
@@ -677,7 +675,7 @@ function NoticiasContent() {
                 >
                   {currentRegionList.map((r) => (
                     <option key={r.id} value={r.id} className="bg-[#0A0D0B] text-white py-1">
-                      📍 {r.name}
+                      {r.name}
                     </option>
                   ))}
                 </select>
@@ -753,7 +751,7 @@ function NoticiasContent() {
                         {item.summary}
                       </p>
 
-                      {/* Medidor de Sesgo Ideológico Politico (Algoritmo Gran Noticias) */}
+                      {/* Medidor de Sesgo Ideológico Politico (Algoritmo Gran Noticias - Sin Emojis) */}
                       <PoliticalBiasBar biasScore={item.biasScore} biasLabel={item.biasLabel} />
                     </div>
                   </div>
