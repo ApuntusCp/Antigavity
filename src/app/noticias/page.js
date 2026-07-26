@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check } from 'lucide-react';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -55,7 +55,7 @@ function NewsTrustBadge() {
   );
 }
 
-// Componente Visual de la Barra de Sesgo Ideológico (Paleta Neutra: Azul -> Gris -> Ámbar)
+// Componente Visual de la Barra de Sesgo Ideológico (Paleta Neutra)
 function PoliticalBiasBar({ biasScore, biasLabel }) {
   const score = Math.max(5, Math.min(95, biasScore || 50));
 
@@ -70,7 +70,7 @@ function PoliticalBiasBar({ biasScore, biasLabel }) {
         <span className="text-gray-400 font-mono text-[10px] shrink-0 ml-2">{score}%</span>
       </div>
 
-      {/* Gradiente Neutro: Azul (Izquierda) -> Slate (Centro) -> Ámbar (Derecha) */}
+      {/* Gradiente Neutro */}
       <div className="relative w-full h-2 rounded-full bg-white/10 overflow-hidden border border-white/15">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-slate-400 to-amber-500 opacity-90"></div>
         <div 
@@ -85,7 +85,7 @@ function PoliticalBiasBar({ biasScore, biasLabel }) {
         <span>Derecha</span>
       </div>
 
-      {/* Tooltip Metodológico al hacer Hover */}
+      {/* Tooltip Metodológico */}
       <div className="absolute bottom-full left-0 mb-2 hidden group-hover/bias:block bg-black/95 text-[10px] text-gray-200 p-2.5 rounded-xl border border-white/20 shadow-2xl z-20 w-64 pointer-events-none">
         <p className="font-semibold text-white mb-0.5 flex items-center gap-1">
           <Info size={11} /> % de Alineación Editorial
@@ -112,7 +112,8 @@ function NoticiasContent() {
   // Modales
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [selectedAuthor, setSelectedAuthor] = useState(null);
-  const [comparisonTopic, setComparisonTopic] = useState(null); // FIX 4: Panel de Comparación Ideológica Multi-Titular
+  const [comparisonTopic, setComparisonTopic] = useState(null); // Panel de Comparación Ideológica
+  const [selectedTierFilter, setSelectedTierFilter] = useState('todos'); // Tab filter inside Panel: 'todos' | 'izquierda' | 'centro' | 'derecha'
   
   const [realtimeArticles, setRealtimeArticles] = useState([]);
   const [loadingFeed, setLoadingFeed] = useState(true);
@@ -193,10 +194,9 @@ function NoticiasContent() {
     ]
   };
 
-  // Selector de Medios de Comunicación (Directorio Medios América)
+  // Selector de Medios de Comunicación
   const mediaFilters = [
     { id: 'todos-medios', name: 'Todos los Medios e Impresos de América' },
-    // Colombia
     { id: 'rtvc', name: 'Colombia • RTVC (Señal Colombia / Radiónica / Radio Nacional)' },
     { id: 'el-tiempo', name: 'Colombia • El Tiempo / Portafolio' },
     { id: 'el-espectador', name: 'Colombia • El Espectador' },
@@ -208,14 +208,11 @@ function NoticiasContent() {
     { id: 'el-pais', name: 'Colombia • El País (Cali / Pacífico)' },
     { id: 'vanguardia', name: 'Colombia • Vanguardia (Bucaramanga / Santander)' },
     { id: 'la-patria', name: 'Colombia • La Patria (Manizales / Eje Cafetero)' },
-    // Estados Unidos
     { id: 'cnn', name: 'EE.UU. • CNN / Fox News / NBC / ABC / CBS / MSNBC' },
     { id: 'nytimes', name: 'EE.UU. • The New York Times / Washington Post / WSJ' },
     { id: 'bloomberg', name: 'EE.UU. • Bloomberg / Politico / AP / NPR' },
-    // México
     { id: 'televisa', name: 'México • Televisa / TV Azteca / Milenio' },
     { id: 'el-universal-mx', name: 'México • El Universal / Reforma / La Jornada / Excelsior / Proceso' },
-    // Argentina & Suramérica
     { id: 'clarin', name: 'Argentina • Clarín / La Nación / Infobae / Página/12 / TN' },
     { id: 'globo', name: 'Brasil • Rede Globo / Folha de S.Paulo / O Globo / G1 / UOL' },
     { id: 'el-mercurio', name: 'Chile • El Mercurio / La Tercera / TVN / BioBioChile' },
@@ -225,7 +222,6 @@ function NoticiasContent() {
     { id: 'el-pais-uy', name: 'Uruguay • El País / El Observador' },
     { id: 'abc-py', name: 'Paraguay • ABC Color / Última Hora' },
     { id: 'el-deber-bo', name: 'Bolivia • El Deber / Página Siete' },
-    // Caribe & Centroamérica
     { id: 'granma', name: 'Caribe • Granma (Cuba) / Listín Diario (RD) / El Nuevo Día (PR)' },
     { id: 'prensa-libre', name: 'Centroamérica • Prensa Libre (Guate) / Teletica (CR) / La Prensa (Panamá)' }
   ];
@@ -399,7 +395,7 @@ function NoticiasContent() {
     }
   ];
 
-  // Base Extensa de Noticias Multimedio Panamericanas con URLs Reales e Imágenes Únicas (FIX 1 & FIX 3)
+  // Base Extensa de Noticias Multimedio Panamericanas
   const fallbackGlobalNews = [
     {
       id: 'news-co-1',
@@ -571,21 +567,21 @@ function NoticiasContent() {
     }
   ];
 
-  // Base de Titulares Comparativos por Espectro Ideológico Completo (FIX 4: 5 Niveles Ideológicos)
+  // Base de Titulares Comparativos por Espectro Ideológico Completo (REDISEÑO DE ALTA GAMA Y ESPACIOS HOLGADOS)
   const multiIdeologyHeadlines = {
     "exportacion-botanica-colombia": [
-      { tier: "Extrema Izquierda", score: 20, badgeColor: "bg-blue-600/30 text-blue-300 border-blue-500/40", media: "Prensa Alternativa Sur", headline: "Exigen que el decreto de exportación botánica no privatice los saberes ancestrales campesinos", focus: "Critica el modelo agroexportador y exige soberanía comunitaria." },
-      { tier: "Centro-Izquierda", score: 35, badgeColor: "bg-cyan-600/30 text-cyan-300 border-cyan-500/40", media: "El Espectador", headline: "El nuevo decreto de exportación botánica abre oportunidades pero deja dudas sobre apoyo a pequeños cultivadores", focus: "Resalta la inclusión de pequeños productores y la protección biológica." },
-      { tier: "Centro / Imparcial", score: 50, badgeColor: "bg-slate-600/30 text-slate-300 border-slate-500/40", media: "Señal Colombia (RTVC)", headline: "Gobierno expide reglamentación técnica para exportación de extractos naturales certificados por INVIMA", focus: "Reporte institucional factual sobre el marco normativo y aranceles." },
-      { tier: "Centro-Derecha", score: 65, badgeColor: "bg-amber-600/30 text-amber-300 border-amber-500/40", media: "El Tiempo", headline: "Colombia reglamenta la exportación de extractos botánicos de alta pureza para atraer divisas", focus: "Destaca el impacto positivo en la balanza comercial y la inversión privada." },
-      { tier: "Extrema Derecha", score: 85, badgeColor: "bg-orange-600/30 text-orange-300 border-orange-500/40", media: "Portafolio Libre Mercado", headline: "Desregulación de aranceles botánicos desatará millonaria inversión privada en el campo colombiano", focus: "Enfoque en la eliminación de trabas burocráticas y competitividad de mercado." }
+      { id: 1, tier: "Extrema Izquierda", tierCategory: "izquierda", score: 20, badgeBg: "bg-blue-950/80 text-blue-300 border-blue-500/40", media: "Prensa Alternativa Sur", headline: "Exigen que el decreto de exportación botánica no privatice los saberes ancestrales campesinos", focus: "Critica el modelo agroexportador y exige soberanía comunitaria de materias primas." },
+      { id: 2, tier: "Centro-Izquierda", tierCategory: "izquierda", score: 35, badgeBg: "bg-cyan-950/80 text-cyan-300 border-cyan-500/40", media: "El Espectador", headline: "El nuevo decreto de exportación botánica abre oportunidades pero deja dudas sobre apoyo a pequeños cultivadores", focus: "Resalta la inclusión de pequeños productores y la protección ambiental biológica." },
+      { id: 3, tier: "Centro / Imparcial", tierCategory: "centro", score: 50, badgeBg: "bg-slate-900/90 text-slate-200 border-slate-400/40", media: "Señal Colombia (RTVC)", headline: "Gobierno expide reglamentación técnica para exportación de extractos naturales certificados por INVIMA", focus: "Reporte institucional factual sobre el marco normativo y aranceles de exportación." },
+      { id: 4, tier: "Centro-Derecha", tierCategory: "derecha", score: 65, badgeBg: "bg-amber-950/80 text-amber-300 border-amber-500/40", media: "El Tiempo", headline: "Colombia reglamenta la exportación de extractos botánicos de alta pureza para atraer divisas", focus: "Destaca el impacto positivo en la balanza comercial y la atracción de capital privado." },
+      { id: 5, tier: "Extrema Derecha", tierCategory: "derecha", score: 85, badgeBg: "bg-orange-950/80 text-orange-300 border-orange-500/40", media: "Portafolio Libre Mercado", headline: "Desregulación de aranceles botánicos desatará millonaria inversión privada en el campo colombiano", focus: "Enfoque centrado en la eliminación de trabas burocráticas y competitividad de mercado." }
     ],
     "reservas-apicolas-eje-cafetero": [
-      { tier: "Extrema Izquierda", score: 18, badgeColor: "bg-blue-600/30 text-blue-300 border-blue-500/40", media: "Voz del Campo", headline: "Comunidades exigen veto total a los plaguicidas de multinacionales en el Eje Cafetero", focus: "Pide prohibición radical de químicos y control estatal de tierras." },
-      { tier: "Centro-Izquierda", score: 35, badgeColor: "bg-cyan-600/30 text-cyan-300 border-cyan-500/40", media: "La Silla Vacía", headline: "Inversión en colmenas nativas del Eje Cafetero pone a prueba la gestión ambiental del ministerio", focus: "Analiza el equilibrio entre subsidios ecológicos y gobernanza local." },
-      { tier: "Centro / Imparcial", score: 50, badgeColor: "bg-slate-600/30 text-slate-300 border-slate-500/40", media: "Radio Nacional de Colombia", headline: "Alianza entre cultivadores orgánicos y el Estado protege 50.000 colmenas nativas", focus: "Cobertura objetiva sobre la firma de acuerdos de conservación apícola." },
-      { tier: "Centro-Derecha", score: 68, badgeColor: "bg-amber-600/30 text-amber-300 border-amber-500/40", media: "La Patria (Manizales)", headline: "Asociaciones privadas del Eje Cafetero impulsan la productividad con sello de miel limpia", focus: "Resalta la rentabilidad de las cooperativas agrícolas privadas." },
-      { tier: "Extrema Derecha", score: 85, badgeColor: "bg-orange-600/30 text-orange-300 border-orange-500/40", media: "Mercados & Agro", headline: "La alta demanda de miel orgánica dispara las acciones de empresas biotecnológicas", focus: "Enfoque 100% financiero y bursátil." }
+      { id: 1, tier: "Extrema Izquierda", tierCategory: "izquierda", score: 18, badgeBg: "bg-blue-950/80 text-blue-300 border-blue-500/40", media: "Voz del Campo", headline: "Comunidades exigen veto total a los plaguicidas de multinacionales en el Eje Cafetero", focus: "Pide prohibición radical de agroquímicos sintéticos y control estatal ambiental." },
+      { id: 2, tier: "Centro-Izquierda", tierCategory: "izquierda", score: 35, badgeBg: "bg-cyan-950/80 text-cyan-300 border-cyan-500/40", media: "La Silla Vacía", headline: "Inversión en colmenas nativas del Eje Cafetero pone a prueba la gestión ambiental del ministerio", focus: "Analiza el equilibrio entre subsidios ecológicos y gobernanza local." },
+      { id: 3, tier: "Centro / Imparcial", tierCategory: "centro", score: 50, badgeBg: "bg-slate-900/90 text-slate-200 border-slate-400/40", media: "Radio Nacional de Colombia", headline: "Alianza entre cultivadores orgánicos y el Estado protege 50.000 colmenas nativas", focus: "Cobertura objetiva sobre la firma de acuerdos de conservación apícola." },
+      { id: 4, tier: "Centro-Derecha", tierCategory: "derecha", score: 68, badgeBg: "bg-amber-950/80 text-amber-300 border-amber-500/40", media: "La Patria (Manizales)", headline: "Asociaciones privadas del Eje Cafetero impulsan la productividad con sello de miel limpia", focus: "Resalta la rentabilidad de las cooperativas agrícolas privadas." },
+      { id: 5, tier: "Extrema Derecha", tierCategory: "derecha", score: 85, badgeBg: "bg-orange-950/80 text-orange-300 border-orange-500/40", media: "Mercados & Agro", headline: "La alta demanda de miel orgánica dispara las acciones de empresas biotecnológicas", focus: "Enfoque 100% financiero y rendimiento bursátil de exportación." }
     ]
   };
 
@@ -621,7 +617,7 @@ function NoticiasContent() {
               fullContent: data.fullContent || data.content || data.summary || 'Contenido detallado en desarrollo.',
               author: data.author || data.byline || 'Redacción periodística',
               sourceName: data.sourceName || 'Agencia Periodística',
-              sourceLogo: (data.sourceLogo || data.sourceName || 'Medio Verificado').replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim(),
+              sourceLogo: (data.sourceLogo || data.sourceName || 'Medio Verificado').replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F800}-\u{1F8FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim(),
               originalUrl: data.originalUrl || data.url || 'https://www.reuters.com',
               mediaId: data.mediaId || 'todos-medios',
               image: data.image || data.thumbnail || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1000&q=80",
@@ -681,11 +677,15 @@ function NoticiasContent() {
 
   const currentRegionList = regionsByCountry[activeCountry] || regionsByCountry['global'];
 
-  // Handler para abrir el Panel de Comparación Ideológica (FIX 2 & FIX 4)
   const openHeadlineComparison = (e, topicKey = 'exportacion-botanica-colombia') => {
     e.stopPropagation();
     setComparisonTopic(topicKey);
+    setSelectedTierFilter('todos');
   };
+
+  // Titulares filtrados dentro del Panel de Comparación
+  const currentComparisonItems = (multiIdeologyHeadlines[comparisonTopic] || multiIdeologyHeadlines["exportacion-botanica-colombia"])
+    .filter(item => selectedTierFilter === 'todos' || item.tierCategory === selectedTierFilter);
 
   return (
     <div className="min-h-screen theme-noticias text-white pt-32 pb-24 px-4 sm:px-6 relative overflow-hidden select-none">
@@ -767,7 +767,6 @@ function NoticiasContent() {
                 </div>
 
                 <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs text-gray-400 font-sans border-t border-white/5 pt-3">
-                  {/* FIX 2: Botón Ver más titulares con icono Scale */}
                   <button
                     onClick={(e) => openHeadlineComparison(e, article.topicKey)}
                     className="flex items-center gap-1.5 font-bold text-[#E2E8F0] hover:text-white hover:underline text-xs"
@@ -785,7 +784,7 @@ function NoticiasContent() {
           </div>
         </div>
 
-        {/* FEED GLOBAL EN TIEMPO REAL - MATRIZ DE CONTROLES CON FIX 4 "Comparar por Ideología" */}
+        {/* FEED GLOBAL EN TIEMPO REAL - MATRIZ DE CONTROLES */}
         <div className="bg-black/50 border border-[#E2E8F0]/30 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl glow-noticias space-y-8">
           
           {/* Fila 1: Título e Indicador En Tiempo Real */}
@@ -811,7 +810,7 @@ function NoticiasContent() {
             </button>
           </div>
 
-          {/* Fila 2: Bar de Filtros Perfectamente Espaciados (5 Controles Limpios en Grid con Accessible Tooltips) */}
+          {/* Fila 2: Bar de Filtros Perfectamente Espaciados */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             
             {/* Control 1: Ordenamiento */}
@@ -827,7 +826,7 @@ function NoticiasContent() {
               <span>{activeSort === 'populares' ? 'Más Populares' : 'Más Recientes'}</span>
             </button>
 
-            {/* Control 2: Selector por Medio / Editorial (FIX 5: title attribute accesible) */}
+            {/* Control 2: Selector por Medio / Editorial */}
             <div className="relative w-full">
               <select
                 value={activeMediaFilter}
@@ -914,7 +913,7 @@ function NoticiasContent() {
                   className="group bg-black/40 border border-[#E2E8F0]/20 hover:border-[#E2E8F0]/70 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between hover:scale-[1.02] shadow-lg cursor-pointer"
                 >
                   <div>
-                    {/* Article Original Image (FIX 1: Unique Real Image or Fallback Badge) */}
+                    {/* Article Original Image */}
                     <div className="relative h-44 w-full overflow-hidden bg-black/60">
                       <img 
                         src={item.image} 
@@ -928,7 +927,7 @@ function NoticiasContent() {
                         {item.sourceLogo || item.sourceName}
                       </span>
 
-                      {/* Badge "Imagen ilustrativa" si aplica (FIX 1) */}
+                      {/* Badge "Imagen ilustrativa" */}
                       {item.isFallbackImage && (
                         <span className="absolute bottom-3 left-3 px-2 py-0.5 bg-amber-950/80 backdrop-blur-md text-amber-300 text-[8px] font-mono rounded border border-amber-500/30">
                           Imagen ilustrativa
@@ -972,7 +971,7 @@ function NoticiasContent() {
                     </div>
                   </div>
 
-                  {/* FIX 2: Botón Ver más titulares con función abre panel ideológico */}
+                  {/* Botón Ver más titulares */}
                   <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs font-bold border-t border-white/5 pt-3">
                     <button
                       onClick={(e) => openHeadlineComparison(e, item.topicKey)}
@@ -996,12 +995,12 @@ function NoticiasContent() {
         <NewsTrustBadge />
       </div>
 
-      {/* VENTANA LECTORA INTERNA MODAL CON FIX 3 "Leer artículo original" */}
+      {/* VENTANA LECTORA INTERNA MODAL */}
       {selectedArticle && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-xl animate-in fade-in duration-200">
           <div className="bg-[#090E0B] border border-[#E2E8F0]/40 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar shadow-[0_0_60px_rgba(0,0,0,0.95)] relative flex flex-col">
             
-            {/* Header del Modal (FIX 5: Cierre diferenciado) */}
+            {/* Header del Modal */}
             <div className="sticky top-0 z-50 bg-[#090E0B]/95 backdrop-blur-md px-6 py-4 border-b border-[#E2E8F0]/20 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-1 bg-[#E2E8F0]/15 text-[#E2E8F0] text-[10px] font-bold uppercase tracking-widest rounded border border-[#E2E8F0]/30">
@@ -1043,7 +1042,7 @@ function NoticiasContent() {
                   <UserCheck size={14} /> Autor: <strong>{selectedArticle.author}</strong> (Ver Ficha Periodística)
                 </button>
 
-                {/* FIX 3: BOTÓN REQUERIDO "Leer artículo original" CON URL REAL */}
+                {/* BOTÓN REQUERIDO "Leer artículo original" CON URL REAL */}
                 <a
                   href={selectedArticle.originalUrl || 'https://www.reuters.com'}
                   target="_blank"
@@ -1085,7 +1084,7 @@ function NoticiasContent() {
                 </p>
               </div>
 
-              {/* Pie de Lectura y Navegación Diferenciada (FIX 5) */}
+              {/* Pie de Lectura */}
               <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-xs text-gray-400 font-mono">
                   <Globe size={14} className="text-[#E2E8F0]" /> Gran Noticias • Fuente: {selectedArticle.sourceName}
@@ -1116,89 +1115,166 @@ function NoticiasContent() {
         </div>
       )}
 
-      {/* FIX 4: PANEL DE COMPARACIÓN IDEOLÓGICA POR ESPECTRO COMPLETO (5 NIVELES IDEOLÓGICOS) */}
+      {/* REDISEÑO COMPLETO DE ALTA GAMA: PANEL DE COMPARACIÓN IDEOLÓGICA MULTI-TITULAR (ESPACIOS HOLGADOS & TIPOGRAFÍA EJECUTIVA) */}
       {comparisonTopic && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200">
-          <div className="bg-[#0A0F0D] border border-[#E2E8F0]/40 rounded-3xl max-w-5xl w-full max-h-[92vh] overflow-y-auto custom-scrollbar shadow-[0_0_90px_rgba(226,232,240,0.25)] relative flex flex-col">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-300">
+          <div className="bg-[#090E0B] border border-[#E2E8F0]/40 rounded-3xl max-w-6xl w-full max-h-[92vh] overflow-y-auto custom-scrollbar shadow-[0_0_90px_rgba(226,232,240,0.25)] relative flex flex-col">
             
-            {/* Header del Panel */}
-            <div className="sticky top-0 z-50 bg-[#0A0F0D]/95 backdrop-blur-md px-6 py-5 border-b border-white/15 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#E2E8F0]/15 border border-[#E2E8F0]/30 flex items-center justify-center text-[#E2E8F0]">
-                  <Scale size={20} />
+            {/* Header del Panel de Lujo */}
+            <div className="sticky top-0 z-50 bg-[#090E0B]/95 backdrop-blur-md px-6 sm:px-10 py-6 border-b border-[#E2E8F0]/20 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#E2E8F0]/15 border border-[#E2E8F0]/40 flex items-center justify-center text-[#E2E8F0] shrink-0 shadow-lg">
+                  <Scale size={24} />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
                     PANEL DE COMPARACIÓN IDEOLÓGICA MULTI-TITULAR
                   </h3>
-                  <p className="text-xs text-gray-300">Análisis comparativo por espectro ideológico completo (5 niveles de sesgo editorial)</p>
+                  <p className="text-xs text-gray-300">Análisis comparativo del tratamiento periodístico por espectro ideológico completo</p>
                 </div>
               </div>
 
               <button 
                 onClick={() => setComparisonTopic(null)}
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-[#E2E8F0] hover:text-black text-white flex items-center justify-center transition-all shrink-0"
+                className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#E2E8F0] hover:text-black text-white flex items-center justify-center transition-all shrink-0"
                 title="Cerrar panel de comparación"
               >
-                <X size={18} />
+                <X size={20} />
               </button>
             </div>
 
-            {/* Leyenda y Explicación Metodológica (FIX 4) */}
-            <div className="p-6 bg-white/5 border-b border-white/10 space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold text-[#E2E8F0]">
-                <span className="flex items-center gap-1.5">
-                  <Info size={14} /> Metodología de Medición del Sesgo Editorial:
+            {/* Controles de Filtrado por Tendencia Ideológica & Leyenda Metodológica */}
+            <div className="p-6 sm:p-8 bg-black/40 border-b border-white/10 space-y-6">
+              
+              {/* Tabs de Filtro de Espectro Politico */}
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-bold text-[#E2E8F0] uppercase tracking-widest mr-2 flex items-center gap-1.5">
+                    <Sliders size={14} /> Filtrar Espectro:
+                  </span>
+                  
+                  <button
+                    onClick={() => setSelectedTierFilter('todos')}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                      selectedTierFilter === 'todos'
+                        ? 'bg-[#E2E8F0] text-black border-[#E2E8F0] shadow-md'
+                        : 'bg-black/60 text-gray-300 border-white/15 hover:text-white'
+                    }`}
+                  >
+                    Ver Todos (5 Niveles)
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedTierFilter('izquierda')}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                      selectedTierFilter === 'izquierda'
+                        ? 'bg-blue-600 text-white border-blue-500 shadow-md'
+                        : 'bg-blue-950/40 text-blue-300 border-blue-500/30 hover:bg-blue-900/50'
+                    }`}
+                  >
+                    Tendencia Izquierda
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedTierFilter('centro')}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                      selectedTierFilter === 'centro'
+                        ? 'bg-slate-200 text-black border-slate-100 shadow-md'
+                        : 'bg-slate-900/40 text-slate-300 border-slate-500/30 hover:bg-slate-800/50'
+                    }`}
+                  >
+                    Centro / Neutral
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedTierFilter('derecha')}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                      selectedTierFilter === 'derecha'
+                        ? 'bg-amber-600 text-white border-amber-500 shadow-md'
+                        : 'bg-amber-950/40 text-amber-300 border-amber-500/30 hover:bg-amber-900/50'
+                    }`}
+                  >
+                    Tendencia Derecha
+                  </button>
+                </div>
+
+                <span className="text-xs text-gray-400 font-mono">
+                  {currentComparisonItems.length} titulares comparados
                 </span>
-                <span className="font-mono text-[11px] text-gray-400">Gradiente Neutro Panamericano</span>
               </div>
-              <p className="text-xs text-gray-300 font-light leading-relaxed">
-                El algoritmo analiza la carga semántica, encuadre de la noticia y titulares entre 5 espectros ideológicos continentales para garantizar la máxima objetividad e investigación crítica.
-              </p>
+
+              {/* Leyenda Metodológica Limpia */}
+              <div className="bg-white/5 p-4 rounded-2xl border border-white/10 flex items-start gap-3">
+                <Info size={18} className="text-[#E2E8F0] shrink-0 mt-0.5" />
+                <div className="text-xs text-gray-300 space-y-1">
+                  <p className="font-bold text-white">Metodología del Algoritmo Gran Noticias:</p>
+                  <p className="font-light leading-relaxed">
+                    Cada titular y enfoque editorial es procesado mediante análisis sintáctico-discursivo para calcular su porcentaje de alineación política (% de sesgo), permitiendo contrastar la diversidad de opiniones y enfoques continentales sin sesgos inducidos.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Grilla de 5 Niveles Ideológicos (Side-by-Side Comparison) */}
-            <div className="p-6 sm:p-8 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                {(multiIdeologyHeadlines[comparisonTopic] || multiIdeologyHeadlines["exportacion-botanica-colombia"]).map((item, idx) => (
+            {/* Contenedor Holgado de Tarjetas Comparativas (Rediseño de Alta Gama en Tarjetas Espaciosas) */}
+            <div className="p-6 sm:p-10 space-y-6">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {currentComparisonItems.map((item) => (
                   <div 
-                    key={idx}
-                    className="bg-black/60 border border-white/15 rounded-2xl p-4 flex flex-col justify-between hover:border-[#E2E8F0]/70 transition-all space-y-4 shadow-lg"
+                    key={item.id}
+                    className="bg-black/50 border border-white/15 hover:border-[#E2E8F0]/80 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 shadow-xl group hover:-translate-y-1 space-y-6"
                   >
-                    <div className="space-y-3">
-                      {/* Badge de Nivel Ideológico */}
-                      <div className="flex items-center justify-between">
-                        <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase border ${item.badgeColor}`}>
+                    <div className="space-y-4">
+                      
+                      {/* Fila Superior: Badge Nivel Ideológico + % Alineación */}
+                      <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
+                        <span className={`px-3 py-1 rounded-lg text-xs font-mono font-bold uppercase tracking-wider border shadow-sm ${item.badgeBg}`}>
                           {item.tier}
                         </span>
-                        <span className="text-[10px] font-mono text-gray-400">{item.score}%</span>
+                        
+                        <div className="text-right">
+                          <span className="text-xs font-bold text-white font-mono">{item.score}%</span>
+                          <span className="block text-[9px] text-gray-400 font-mono uppercase">Alineación</span>
+                        </div>
                       </div>
 
-                      {/* Nombre del Medio */}
-                      <h5 className="text-xs font-bold text-[#E2E8F0] font-sans border-b border-white/10 pb-2">
-                        {item.media}
-                      </h5>
+                      {/* Nombre del Medio de Comunicación */}
+                      <div>
+                        <span className="text-[10px] text-gray-400 font-mono uppercase tracking-widest block mb-1">Medio Editorial</span>
+                        <h4 className="text-base font-bold text-white font-sans group-hover:text-[#E2E8F0] transition-colors">
+                          {item.media}
+                        </h4>
+                      </div>
 
-                      {/* Titular Representativo */}
-                      <p className="font-serif text-sm font-bold text-white leading-snug">
-                        "{item.headline}"
-                      </p>
+                      {/* Titular Real o Representativo Holgado */}
+                      <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                        <span className="text-[10px] text-gray-400 font-mono uppercase tracking-widest block mb-1.5">Titular Publicado</span>
+                        <h5 className="font-serif text-base sm:text-lg font-bold text-white leading-snug">
+                          "{item.headline}"
+                        </h5>
+                      </div>
 
                       {/* Enfoque Resumido */}
-                      <p className="text-[11px] text-gray-300 font-light leading-relaxed bg-white/5 p-2.5 rounded-xl border border-white/5">
-                        {item.focus}
-                      </p>
+                      <div>
+                        <span className="text-[10px] text-gray-400 font-mono uppercase tracking-widest block mb-1">Enfoque Periodístico</span>
+                        <p className="text-xs text-gray-300 font-light leading-relaxed">
+                          {item.focus}
+                        </p>
+                      </div>
+
                     </div>
 
-                    <div className="pt-2 text-center border-t border-white/10">
+                    {/* Botón de Acción Ver Noticia Fuente */}
+                    <div className="pt-4 border-t border-white/10">
                       <button
                         onClick={() => {
                           setComparisonTopic(null);
                           setSelectedArticle(fallbackGlobalNews[0]);
                         }}
-                        className="text-[10px] font-bold text-[#E2E8F0] uppercase tracking-wider hover:underline flex items-center justify-center gap-1 w-full"
+                        className="w-full py-2.5 bg-white/10 hover:bg-[#E2E8F0] hover:text-black text-[#E2E8F0] font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 border border-white/10"
                       >
-                        Ver Noticia Fuente <ArrowRight size={11} />
+                        <span>Ver Noticia Fuente</span>
+                        <ChevronRight size={14} />
                       </button>
                     </div>
                   </div>
@@ -1206,14 +1282,15 @@ function NoticiasContent() {
               </div>
 
               {/* Botón Inferior para Cerrar Panel */}
-              <div className="pt-4 text-center border-t border-white/10">
+              <div className="pt-6 text-center border-t border-white/10">
                 <button
                   onClick={() => setComparisonTopic(null)}
-                  className="px-8 py-3 bg-[#E2E8F0] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-xl"
+                  className="px-10 py-3.5 bg-[#E2E8F0] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-2xl"
                 >
                   Cerrar Panel de Comparación
                 </button>
               </div>
+
             </div>
 
           </div>
