@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass } from 'lucide-react';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -16,8 +16,8 @@ function NewsTrustBadge() {
             <GraduationCap size={22} />
           </div>
           <div>
-            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Hemeroteca Académica</h5>
-            <p className="text-[11px] text-gray-300">Base de datos estructurada para estudiantes, docentes e investigadores</p>
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Directorio Hemerográfico de América</h5>
+            <p className="text-[11px] text-gray-300">Base de datos unificada del archivo Medios América (Norte, Centro, Caribe y Suramérica)</p>
           </div>
         </div>
 
@@ -26,8 +26,8 @@ function NewsTrustBadge() {
             <Building2 size={22} />
           </div>
           <div>
-            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Registro MinTIC & CRC</h5>
-            <p className="text-[11px] text-gray-300">Indexación oficial de medios nacionales, regionales y comunitarios</p>
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Registros MinTIC, CRC & ANDIARIOS</h5>
+            <p className="text-[11px] text-gray-300">Indexación oficial de televisión, radio, prensa e independientes</p>
           </div>
         </div>
 
@@ -37,7 +37,7 @@ function NewsTrustBadge() {
           </div>
           <div>
             <h5 className="text-xs font-bold text-white uppercase tracking-wider">Algoritmo de Sesgo Ideológico</h5>
-            <p className="text-[11px] text-gray-300">Medición neutral de la tendencia política de cada medio</p>
+            <p className="text-[11px] text-gray-300">Medición neutral de la tendencia política de cada medio continental</p>
           </div>
         </div>
 
@@ -55,7 +55,7 @@ function NewsTrustBadge() {
   );
 }
 
-// Componente Visual de la Barra de Sesgo Ideológico
+// Componente Visual de la Barra de Sesgo Ideológico (Algoritmo Gran Noticias)
 function PoliticalBiasBar({ biasScore, biasLabel }) {
   const score = Math.max(5, Math.min(95, biasScore || 50));
 
@@ -103,66 +103,117 @@ function NoticiasContent() {
   const [realtimeArticles, setRealtimeArticles] = useState([]);
   const [loadingFeed, setLoadingFeed] = useState(true);
 
-  // Country Options
+  // Selector de Países y Subregiones de la Hoja "Medios América"
   const countries = [
-    { id: 'global', name: 'Cobertura Global' },
+    { id: 'global', name: 'Cobertura Global (Toda América)' },
     { id: 'co', name: 'Colombia' },
+    { id: 'us', name: 'Estados Unidos' },
     { id: 'mx', name: 'México' },
     { id: 'ar', name: 'Argentina' },
-    { id: 'es', name: 'España' },
-    { id: 'us', name: 'Estados Unidos' },
-    { id: 'salud', name: 'Botánica & Ciencia' }
+    { id: 'br', name: 'Brasil' },
+    { id: 'ca', name: 'Canadá' },
+    { id: 'cl', name: 'Chile' },
+    { id: 'pe', name: 'Perú' },
+    { id: 'ec', name: 'Ecuador' },
+    { id: 've', name: 'Venezuela' },
+    { id: 'uy', name: 'Uruguay' },
+    { id: 'py', name: 'Paraguay' },
+    { id: 'bo', name: 'Bolivia' },
+    { id: 'caribe', name: 'Caribe (Cuba, Rep. Dom., Puerto Rico, Jamaica)' },
+    { id: 'centroamerica', name: 'Centroamérica (Guatemala, Costa Rica, Panamá, El Salvador, Honduras, Nicaragua)' },
+    { id: 'salud', name: 'Botánica, Apitoxina & Ciencia' }
   ];
 
-  // Sub-region Options para Colombia y demás países (Registros MinTIC & ANDIARIOS)
+  // Sub-region Options para Colombia y todo el continente (Directorio Medios América)
   const regionsByCountry = {
     co: [
       { id: 'todas', name: 'Todas las Regiones de Colombia' },
-      { id: 'bogota', name: 'Bogotá D.C. & Cundinamarca (Canal Capital / El Tiempo)' },
-      { id: 'caribe', name: 'Región Caribe (Barranquilla / Cartagena / Santa Marta / Telecaribe)' },
-      { id: 'antioquia', name: 'Antioquia & Medellín (El Colombiano / Teleantioquia)' },
-      { id: 'pacifico', name: 'Región Pacífico (Cali / Popayán / Pasto / Chocó / Telepacífico)' },
-      { id: 'eje', name: 'Eje Cafetero (Manizales / Pereira / Armenia / Telecafé)' },
-      { id: 'santanderes', name: 'Santanderes (Bucaramanga / Cúcuta / Canal TRO)' },
-      { id: 'orinoquia', name: 'Región Orinoquía (Meta / Casanare / Arauca / Radio MinTIC)' },
-      { id: 'amazonia', name: 'Región Amazonía (Caquetá / Putumayo / Amazonas / Emisoras MinTIC)' }
+      { id: 'bogota', name: 'Bogotá D.C. & Cundinamarca (Canal Capital / El Tiempo / El Espectador)' },
+      { id: 'caribe', name: 'Región Caribe (El Heraldo / El Universal / El Informador / Telecaribe)' },
+      { id: 'antioquia', name: 'Antioquia & Medellín (El Colombiano / Teleantioquia / Minuto30)' },
+      { id: 'pacifico', name: 'Región Pacífico (El País Cali / Telepacífico / Diario del Sur)' },
+      { id: 'eje', name: 'Eje Cafetero (La Patria / Diario del Otún / Telecafé)' },
+      { id: 'santanderes', name: 'Santanderes (Vanguardia Bucaramanga / La Opinión Cúcuta / Canal TRO)' },
+      { id: 'orinoquia', name: 'Región Orinoquía (Diario del Llano / Radio MinTIC)' },
+      { id: 'amazonia', name: 'Región Amazonía (Caquetá / Putumayo / Emisoras MinTIC)' }
+    ],
+    us: [
+      { id: 'todas', name: 'Todas las Regiones de Estados Unidos' },
+      { id: 'ny', name: 'Nueva York (NYT / Wall Street Journal / NY1)' },
+      { id: 'dc', name: 'Washington D.C. (Washington Post / Politico / The Hill)' },
+      { id: 'ca', name: 'California (Los Angeles Times / San Francisco Chronicle / KTLA)' },
+      { id: 'fl', name: 'Florida (Miami Herald / Tampa Bay Times)' },
+      { id: 'tx', name: 'Texas (Houston Chronicle / Dallas Morning News)' },
+      { id: 'il', name: 'Illinois (Chicago Tribune / Sun-Times)' }
     ],
     mx: [
       { id: 'todas', name: 'Todas las Regiones de México' },
-      { id: 'cdmx', name: 'Ciudad de México (CDMX)' },
-      { id: 'jalisco', name: 'Jalisco & Occidente' },
-      { id: 'nuevo-leon', name: 'Nuevo León & Norte' }
+      { id: 'cdmx', name: 'Ciudad de México (Televisa / TV Azteca / Reforma / La Jornada)' },
+      { id: 'jalisco', name: 'Jalisco (El Informador Guadalajara)' },
+      { id: 'nuevo-leon', name: 'Nuevo León (El Norte Monterrey)' },
+      { id: 'puebla', name: 'Puebla (El Sol de Puebla)' },
+      { id: 'yucatan', name: 'Yucatán (Diario de Yucatán)' },
+      { id: 'baja', name: 'Baja California (El Mexicano Tijuana)' }
     ],
     ar: [
       { id: 'todas', name: 'Todas las Regiones de Argentina' },
-      { id: 'buenos-aires', name: 'Buenos Aires (AMBA)' },
-      { id: 'cordoba', name: 'Córdoba & Centro' },
-      { id: 'santa-fe', name: 'Santa Fe & Litoral' }
+      { id: 'buenos-aires', name: 'Buenos Aires (Clarín / La Nación / Infobae / Página/12 / TN)' },
+      { id: 'cordoba', name: 'Córdoba (La Voz del Interior)' },
+      { id: 'santa-fe', name: 'Santa Fe (El Litoral)' },
+      { id: 'mendoza', name: 'Mendoza (Los Andes)' },
+      { id: 'tucuman', name: 'Tucumán (La Gaceta)' }
+    ],
+    br: [
+      { id: 'todas', name: 'Todas las Regiones de Brasil' },
+      { id: 'sp', name: 'São Paulo (Folha de S.Paulo / Estadão / G1 / UOL / SBT)' },
+      { id: 'rj', name: 'Rio de Janeiro (Rede Globo / O Globo / O Dia)' },
+      { id: 'mg', name: 'Minas Gerais (Estado de Minas)' },
+      { id: 'rs', name: 'Rio Grande do Sul (Zero Hora GaúchaZH)' },
+      { id: 'ba', name: 'Bahia (Correio)' }
     ],
     global: [
-      { id: 'todas', name: 'Todas las Regiones Globales' },
-      { id: 'america-latina', name: 'América Latina' },
-      { id: 'norteamerica', name: 'Norteamérica' },
-      { id: 'europa', name: 'Europa & Asia' }
+      { id: 'todas', name: 'Todas las Regiones de América' },
+      { id: 'norteamerica', name: 'América del Norte (EE.UU., Canadá, México)' },
+      { id: 'centroamerica', name: 'Centroamérica & Caribe' },
+      { id: 'sudamerica', name: 'América del Sur (Colombia, Argentina, Brasil, Perú, Chile)' }
     ]
   };
 
-  // Selector de Medios de Comunicación (Indexación Registros MinTIC, ANDIARIOS, ASOMEDIOS)
+  // Selector de Medios de Comunicación (Extraído 100% del archivo medios_america.xlsx)
   const mediaFilters = [
-    { id: 'todos-medios', name: 'Todos los Medios e Impresos' },
-    { id: 'rtvc', name: 'RTVC (Señal Colombia / Radiónica / Radio Nacional)' },
-    { id: 'el-tiempo', name: 'El Tiempo / Portafolio' },
-    { id: 'el-espectador', name: 'El Espectador' },
-    { id: 'caracol', name: 'Caracol Televisión / Caracol Radio / Blu Radio' },
-    { id: 'rcn', name: 'RCN Televisión / RCN Radio / La FM' },
-    { id: 'independiente', name: 'Periodismo Independiente (La Silla Vacía / Vorágine / Cuestión Pública)' },
-    { id: 'el-heraldo', name: 'El Heraldo (Caribe / Barranquilla)' },
-    { id: 'el-colombiano', name: 'El Colombiano / Teleantioquia' },
-    { id: 'el-pais', name: 'El País / Telepacífico (Cali / Pacífico)' },
-    { id: 'vanguardia', name: 'Vanguardia / Canal TRO (Santanderes)' },
-    { id: 'la-patria', name: 'La Patria / Telecafé (Eje Cafetero)' },
-    { id: 'reuters', name: 'Reuters World / Internacional' },
-    { id: 'sciencedaily', name: 'ScienceDaily / Investigación Botánica' }
+    { id: 'todos-medios', name: 'Todos los Medios de América (Archivo Completo)' },
+    // Colombia
+    { id: 'rtvc', name: 'Colombia • RTVC (Señal Colombia / Radiónica / Radio Nacional)' },
+    { id: 'el-tiempo', name: 'Colombia • El Tiempo / Portafolio' },
+    { id: 'el-espectador', name: 'Colombia • El Espectador' },
+    { id: 'caracol', name: 'Colombia • Caracol Televisión / Caracol Radio / Blu Radio' },
+    { id: 'rcn', name: 'Colombia • RCN Televisión / RCN Radio / La FM' },
+    { id: 'independiente', name: 'Colombia • Periodismo Independiente (La Silla Vacía / Vorágine / Cuestión Pública)' },
+    { id: 'el-heraldo', name: 'Colombia • El Heraldo (Barranquilla / Caribe)' },
+    { id: 'el-colombiano', name: 'Colombia • El Colombiano (Medellín / Antioquia)' },
+    { id: 'el-pais', name: 'Colombia • El País (Cali / Pacífico)' },
+    { id: 'vanguardia', name: 'Colombia • Vanguardia (Bucaramanga / Santander)' },
+    { id: 'la-patria', name: 'Colombia • La Patria (Manizales / Eje Cafetero)' },
+    // Estados Unidos
+    { id: 'cnn', name: 'EE.UU. • CNN / Fox News / NBC / ABC / CBS / MSNBC' },
+    { id: 'nytimes', name: 'EE.UU. • The New York Times / Washington Post / WSJ' },
+    { id: 'bloomberg', name: 'EE.UU. • Bloomberg / Politico / AP / NPR' },
+    // México
+    { id: 'televisa', name: 'México • Televisa / TV Azteca / Milenio' },
+    { id: 'el-universal-mx', name: 'México • El Universal / Reforma / La Jornada / Excelsior / Proceso' },
+    // Argentina & Suramérica
+    { id: 'clarin', name: 'Argentina • Clarín / La Nación / Infobae / Página/12 / TN' },
+    { id: 'globo', name: 'Brasil • Rede Globo / Folha de S.Paulo / O Globo / G1 / UOL' },
+    { id: 'el-mercurio', name: 'Chile • El Mercurio / La Tercera / TVN / BioBioChile' },
+    { id: 'el-comercio-pe', name: 'Perú • El Comercio / La República / RPP Noticias' },
+    { id: 'el-universo-ec', name: 'Ecuador • El Universo / El Comercio / Ecuavisa' },
+    { id: 'vtv-ve', name: 'Venezuela • Globovisión / El Nacional / VTV' },
+    { id: 'el-pais-uy', name: 'Uruguay • El País / El Observador' },
+    { id: 'abc-py', name: 'Paraguay • ABC Color / Última Hora' },
+    { id: 'el-deber-bo', name: 'Bolivia • El Deber / Página Siete' },
+    // Caribe & Centroamérica
+    { id: 'granma', name: 'Caribe • Granma (Cuba) / Listín Diario (RD) / El Nuevo Día (PR)' },
+    { id: 'prensa-libre', name: 'Centroamérica • Prensa Libre (Guate) / Teletica (CR) / La Prensa (Panamá)' }
   ];
 
   // Month / Historical Period Options
@@ -325,7 +376,7 @@ function NoticiasContent() {
     }
   ];
 
-  // Base Extensa de Noticias Multimedio Colombianas (MinTIC, ANDIARIOS, ASOMEDIOS)
+  // Base Extensa de Noticias Multimedio Panamericanas (Medios América Dataset Completo)
   const fallbackGlobalNews = [
     {
       id: 'news-co-1',
@@ -400,76 +451,76 @@ function NoticiasContent() {
       views: 34100
     },
     {
-      id: 'news-co-antioquia-1',
-      title: "Teleantioquia & El Colombiano destacan laboratorio de biotecnología en el Oriente Antioqueño",
-      summary: "Inauguran centro de investigación para la refinación de péptidos apícolas y bioinsumos agrícolas en Rionegro.",
-      fullContent: `El gobernador de Antioquia y directivos universitarios cortaron la cinta del centro biotecnológico más moderno de la región andina.`,
-      author: "Santiago Gaviria",
-      sourceName: "El Colombiano",
-      sourceLogo: "El Colombiano",
-      mediaId: "el-colombiano",
-      image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000&q=80",
-      country: "co",
-      region: "antioquia",
+      id: 'news-us-nyt-1',
+      title: "The New York Times: La revolución global del cultivo botánico limpio y sin pesticidas",
+      summary: "Reporte especial sobre cómo la agricultura sin agroquímicos está transformando los mercados de salud en Nueva York y California.",
+      fullContent: `El diario neoyorquino publica un exhaustivo análisis sobre la demanda creciente de productos con certificación de trazabilidad libre de contaminantes sintéticos.`,
+      author: "Sarah Jenkins",
+      sourceName: "The New York Times",
+      sourceLogo: "The New York Times",
+      mediaId: "nytimes",
+      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80",
+      country: "us",
+      region: "ny",
       monthPeriod: "julio-2026",
-      publishedAt: "Hace 4 horas",
-      biasScore: 60,
-      biasLabel: "Centro-Derecha Regional",
-      views: 29800
+      publishedAt: "Hace 40 min",
+      biasScore: 40,
+      biasLabel: "Centro-Izquierda EE.UU.",
+      views: 45200
     },
     {
-      id: 'news-co-rtvc-1',
-      title: "Señal Colombia y Radio Nacional transmiten el Congreso de Bioeconomía Andina",
-      summary: "El Sistema de Medios Públicos RTVC cubre los debates sobre soberanía alimentaria y fitoterapia de uso popular.",
-      fullContent: `A través de las 68 frecuencias de la Radio Nacional de Colombia y la pantalla de Señal Colombia, el país sigue en directo las deliberaciones de más de 80 delegaciones agroecológicas.`,
-      author: "Redacción RTVC",
-      sourceName: "Señal Colombia (RTVC)",
-      sourceLogo: "RTVC Públicos",
-      mediaId: "rtvc",
-      image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1000&q=80",
-      country: "co",
-      region: "bogota",
+      id: 'news-br-globo-1',
+      title: "O Globo & G1: Brasil bate récord en exportación de bioproductos amazónicos sostenibles",
+      summary: "Las reservas agroforestales de São Paulo y Pará reportan un crecimiento del 35% en envíos orgánicos hacia Europa.",
+      fullContent: `Reportaje especial de Rede Globo sobre el impacto económico del cultivo sustentable en las cooperativas agroforestales brasileñas.`,
+      author: "Redacción O Globo",
+      sourceName: "O Globo (Brasil)",
+      sourceLogo: "G1 / Rede Globo",
+      mediaId: "globo",
+      image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&w=1000&q=80",
+      country: "br",
+      region: "sp",
       monthPeriod: "julio-2026",
-      publishedAt: "Hace 30 min",
-      biasScore: 45,
-      biasLabel: "Público Institucional",
+      publishedAt: "Hace 1.5 horas",
+      biasScore: 50,
+      biasLabel: "Imparcial Brasil",
       views: 38900
     },
     {
-      id: 'news-global-1',
-      title: "Cumbre de Sostenibilidad Agrícola 2026: La transición ecológica global",
-      summary: "Expertos internacionales debaten el uso de microbiomas de suelo y biopesticidas orgánicos para reemplazar agroquímicos.",
-      fullContent: `La Conferencia de las Naciones Unidas sobre Agricultura Sostenible abrió sus sesiones en Ginebra con un llamado urgente a descarbonizar la producción agrícola mundial.`,
-      author: "Sarah Jenkins",
-      sourceName: "Reuters World",
-      sourceLogo: "Reuters World",
-      mediaId: "reuters",
-      image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1000&q=80",
-      country: "global",
-      region: "todas",
+      id: 'news-ar-clarin-1',
+      title: "Clarín & La Nación: Investigadores de Córdoba desarrollan patentes biológicas apícolas",
+      summary: "Científicos argentinos de la Universidad de Córdoba presentan avances en péptidos naturales para atletas de alto rendimiento.",
+      fullContent: `Cobertura especial de Clarín y La Nación sobre las patentes fitoterapéuticas registradas en el Litoral y Córdoba.`,
+      author: "Gonzalo Peralta",
+      sourceName: "Clarín (Argentina)",
+      sourceLogo: "Clarín / La Nación",
+      mediaId: "clarin",
+      image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1000&q=80",
+      country: "ar",
+      region: "cordoba",
       monthPeriod: "julio-2026",
-      publishedAt: "Hace 1 hora",
-      biasScore: 50,
-      biasLabel: "Global Imparcial",
-      views: 42100
+      publishedAt: "Hace 2 horas",
+      biasScore: 65,
+      biasLabel: "Centro-Derecha Argentina",
+      views: 29400
     },
     {
-      id: 'news-us-1',
-      title: "Científicos descubren nuevas propiedades terapéuticas en péptidos apícolas",
-      summary: "Investigaciones en laboratorios europeos confirman la alta eficacia de la apitoxina natural en procesos de inflamación articular y muscular.",
-      fullContent: `Un equipo interdisciplinario de investigadores suizos y alemanes ha publicado los resultados de un ensayo clínico sobre los efectos de la melitina en la regeneración de tejidos conectivos.`,
-      author: "Dr. Michael Harrison",
-      sourceName: "ScienceDaily",
-      sourceLogo: "ScienceDaily",
-      mediaId: "sciencedaily",
-      image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1000&q=80",
-      country: "us",
-      region: "todas",
+      id: 'news-mx-televisa-1',
+      title: "Televisa & Reforma: México firma acuerdo regional de trazabilidad orgánica con Centroamérica",
+      summary: "Secretaría de Economía y laboratorios de Jalisco y CDMX implementan sello de pureza para suplementos naturales.",
+      fullContent: `El diario Reforma y la cadena Televisa reportan la firma del pacto de homologación sanitaria para la exportación de botánicos en Mesoamérica.`,
+      author: "Carlos Mendoza",
+      sourceName: "Televisa / Reforma",
+      sourceLogo: "Televisa / Reforma",
+      mediaId: "televisa",
+      image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&w=1000&q=80",
+      country: "mx",
+      region: "cdmx",
       monthPeriod: "julio-2026",
-      publishedAt: "Hace 10 min",
-      biasScore: 50,
-      biasLabel: "Científico Neutral",
-      views: 24500
+      publishedAt: "Hace 50 min",
+      biasScore: 55,
+      biasLabel: "Centro México",
+      views: 31800
     }
   ];
 
@@ -482,7 +533,7 @@ function NoticiasContent() {
       const q = query(
         collection(db, 'gran_noticias_articles'),
         orderBy('publishedAt', 'desc'),
-        limit(80)
+        limit(100)
       );
 
       unsubscribe = onSnapshot(q, (snapshot) => {
@@ -566,17 +617,17 @@ function NoticiasContent() {
     <div className="min-h-screen theme-noticias text-white pt-32 pb-24 px-4 sm:px-6 relative overflow-hidden select-none">
       <div className="max-w-7xl mx-auto relative z-10 space-y-12">
         
-        {/* Main Header con Distintivo de Hemeroteca e Investigación Académica */}
+        {/* Main Header con Distintivo de Directorio Medios América */}
         <div className="text-center fade-in">
           <span className="text-[#E2E8F0] text-xs font-bold tracking-[0.3em] uppercase mb-3 inline-flex items-center gap-2 bg-[#E2E8F0]/10 px-4 py-1.5 rounded-full border border-[#E2E8F0]/30">
-            <GraduationCap size={16} className="text-[#E2E8F0]" /> HEMEROTECA GLOBAL & INVESTIGACIÓN EN TIEMPO REAL
+            <Compass size={16} className="text-[#E2E8F0]" /> DIRECTORIO GLOBAL MEDIOS AMÉRICA & HEMEROTECA PANAMERICANA
           </span>
           <h1 className="font-serif text-4xl md:text-6xl text-[#E2E8F0] mb-6 drop-shadow-md">
             Gran Noticias Global
           </h1>
           <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent mx-auto mb-6"></div>
           <p className="text-gray-300 max-w-3xl mx-auto font-light leading-relaxed text-sm md:text-base">
-            Plataforma unificada de información periodística y académica. Monitoreo exhaustivo de medios nacionales (RTVC, El Tiempo, El Espectador, Caracol, RCN, Silla Vacía) y regionales de Colombia (MinTIC, ANDIARIOS, ASOMEDIOS).
+            Plataforma unificada de información periodística y académica. Integración total de más de 250 medios nacionales y regionales del continente americano (EE.UU., Canadá, México, Colombia, Brasil, Argentina, Chile, Perú y Caribe).
           </p>
         </div>
 
@@ -658,14 +709,14 @@ function NoticiasContent() {
               </div>
               <div>
                 <h3 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  FEED EN VIVO & HEMEROTECA PERIODÍSTICA MULTIMEDIO
+                  FEED EN VIVO & HEMEROTECA PANAMERICANA MULTIMEDIO
                 </h3>
-                <p className="text-xs text-gray-300">Filtra por medio de comunicación (RTVC, El Tiempo, El Espectador, Silla Vacía), región o mes</p>
+                <p className="text-xs text-gray-300">Monitoreo continuo de periódicos, cadenas de TV y agencias de la hoja Medios América</p>
               </div>
             </div>
 
             <span className="px-3 py-1 bg-[#E2E8F0]/15 text-[#E2E8F0] text-[10px] font-mono font-bold tracking-widest rounded-lg border border-[#E2E8F0]/30 shrink-0">
-              MEDIOS OFICIALES MINTIC & CRC
+              DIRECTORIO MEDIOS AMÉRICA
             </span>
           </div>
 
@@ -717,7 +768,7 @@ function NoticiasContent() {
               <Calendar className="absolute right-2.5 top-3 text-[#E2E8F0] pointer-events-none" size={14} />
             </div>
 
-            {/* Control 4: Selector de País */}
+            {/* Control 4: Selector de País / Subregión Panamericana */}
             <div className="relative w-full">
               <select
                 value={activeCountry}
@@ -755,13 +806,13 @@ function NoticiasContent() {
           {loadingFeed ? (
             <div className="flex flex-col items-center justify-center py-20 text-gray-400">
               <RefreshCw className="animate-spin text-[#E2E8F0] mb-4" size={32} />
-              <p className="text-xs font-mono uppercase tracking-widest">Indexando registros de medios MinTIC y midiendo sesgo editorial...</p>
+              <p className="text-xs font-mono uppercase tracking-widest">Indexando archivo Medios América y midiendo sesgo editorial...</p>
             </div>
           ) : filteredNews.length === 0 ? (
             <div className="text-center py-16 bg-white/5 rounded-2xl border border-white/5">
               <Globe className="text-gray-500 mx-auto mb-3" size={36} />
               <h4 className="text-sm font-bold text-white mb-1">Sin noticias archivadas para los filtros seleccionados</h4>
-              <p className="text-xs text-gray-400">Selecciona "Todos los Medios" y "Todas las Regiones" para consultar el catálogo completo.</p>
+              <p className="text-xs text-gray-400">Selecciona "Todos los Medios de América" y "Cobertura Global" para consultar el catálogo completo.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
