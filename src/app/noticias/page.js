@@ -14,7 +14,7 @@ const AUTHORS_DATABASE = {
   "Lina María Orozco": {
     name: "Lina María Orozco",
     title: "Periodista Senior de Investigación Agroregional & Asuntos Comunitarios",
-    tpNumber: "TP-78412-CNP",
+    tpNumber: "REG-CNP-CO-78412",
     institution: "Universidad del Norte • Barranquilla",
     verified: true,
     verificationDate: "15 de Enero, 2025",
@@ -30,7 +30,7 @@ const AUTHORS_DATABASE = {
   "Leila Guerriero": {
     name: "Leila Guerriero",
     title: "Cronista, Escritora y Editora Periodística Internacional",
-    tpNumber: "Periodista Registrada • UBA / FNPI",
+    tpNumber: "PRESS-ID-INT-ARG-312",
     institution: "Universidad de Buenos Aires / Fundación Gabo",
     verified: true,
     verificationDate: "10 de Noviembre, 2024",
@@ -46,7 +46,7 @@ const AUTHORS_DATABASE = {
   "Camilo Sotomayor": {
     name: "Camilo Sotomayor",
     title: "Analista Político & Investigador de Tecnologías y Medios",
-    tpNumber: "TP-55420-CP",
+    tpNumber: "REG-CPB-2024-5542",
     institution: "Universidad de los Andes • Bogotá",
     verified: true,
     verificationDate: "20 de Febrero, 2025",
@@ -62,7 +62,7 @@ const AUTHORS_DATABASE = {
   "Juliana Restrepo": {
     name: "Juliana Restrepo",
     title: "Editora de Macroeconomía y Mercados Agroindustriales",
-    tpNumber: "TP-69814-CP",
+    tpNumber: "REG-CNP-CO-69814",
     institution: "Universidad Nacional de Colombia • Bogotá",
     verified: true,
     verificationDate: "05 de Diciembre, 2024",
@@ -78,7 +78,7 @@ const AUTHORS_DATABASE = {
   "Sarah Jenkins": {
     name: "Sarah Jenkins",
     title: "International Senior Science & Botanical Agriculture Reporter",
-    tpNumber: "NYT-PRESS-ID-9921",
+    tpNumber: "PRESS-ID-NYT-9921",
     institution: "Columbia University Graduate School of Journalism • New York",
     verified: true,
     verificationDate: "18 de Enero, 2025",
@@ -101,7 +101,7 @@ function getAuthorProfile(authorName) {
   return {
     name: authorName || "Comunicador Verificado",
     title: "Periodista & Investigador Adscrito a la Red GranColinos",
-    tpNumber: "TP-VERIFIED-GC",
+    tpNumber: "REG-CPB-GC-102",
     institution: "Red Panamericana de Comunicadores",
     verified: true,
     verificationDate: "Verificado Activo",
@@ -240,7 +240,7 @@ function NoticiasContent() {
       id: 'top-3',
       topicKey: "exportaciones-agropecuarias-dane",
       title: "Exportaciones agropecuarias y de alimentos en Colombia crecen según informe del DANE",
-      summary: "Las ventas externas del sector agropecuario y de productos botánicos registraro un incremento positivo impulsado por café, flores y derivados agrícolas.",
+      summary: "Las ventas externas del sector agropecuario y de productos botánicos registraron un incremento positivo impulsado por café, flores y derivados agrícolas.",
       fullContent: `Según el último informe del DANE, las exportaciones colombianas agropecuarias y de insumos vegetales continuaron su tendencia al alza en los mercados de América y Europa.\n\nEl crecimiento consolidado estuvo impulsado por las ventas externas de café especial, flores cortadas, derivados botánicos y fruta fresca procesada con sello de calidad territorial.`,
       author: "Juliana Restrepo",
       sourceName: "El Tiempo",
@@ -904,7 +904,7 @@ function NoticiasContent() {
               {/* Registro y Tarjeta Profesional */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs bg-black/50 p-4 rounded-2xl border border-white/10">
                 <div>
-                  <span className="text-gray-400 block text-[10px]">TARJETA PROFESIONAL / REGISTRO:</span>
+                  <span className="text-gray-400 block text-[10px]">REGISTRO PERIODÍSTICO / CREDENCIAL:</span>
                   <strong className="text-white font-bold">{selectedAuthor.tpNumber}</strong>
                 </div>
                 <div>
