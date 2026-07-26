@@ -85,12 +85,12 @@ function NoticiasContent() {
       topicKey: "asociaciones-indigenas-cordoba",
       title: "En Córdoba fortalecen 14 asociaciones indígenas con maquinaria y herramientas agrícolas",
       summary: "La Gobernación de Córdoba entregó motoazadas, guadañadoras y equipos a 14 asociaciones indígenas para impulsar la productividad de 350 familias.",
-      fullContent: `La Gobernación de Córdoba entregó motoazadas, guadañadoras y fumigadoras de motor a 14 asociaciones indígenas en el marco del Proyecto de Unidades Productivas Agropecuarias (UPA).\n\nEsta iniciativa beneficia directamente a 350 familias de productores dedicados al cultivo de maíz, yuca y ñame en zonas rurales del departamento de Córdoba.`,
+      fullContent: `La Gobernación de Córdoba entregó motoazadas, guadañadoras y fumigadoras de motor a 14 asociaciones indígenas en el marco del Proyecto de Unidades Productivas Agropecuarias (UPA).\n\nEsta iniciativa beneficia directamente a 350 familias de productores dedicados al cultivo de maíz, yuca y ñame en zonas rurales del departamento de Córdoba, mecanizando el trabajo agrícola y acelerando la productividad en la región.`,
       author: "Lina María Orozco",
       sourceName: "El Heraldo",
       sourceLogo: "El Heraldo",
       originalUrl: "https://www.elheraldo.co/cordoba/en-cordoba-fortalecen-14-asociaciones-indigenas-con-maquinaria-y-herramientas-agricolas-1111666",
-      image: "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=1200&q=85", // Fotografía real de agricultores e insumos de maquinaria en el campo colombiano
+      image: "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=1200&q=85",
       category: "Colombia",
       country: "co",
       publishedAt: "Hace 30 min",
@@ -103,12 +103,12 @@ function NoticiasContent() {
       topicKey: "leila-guerriero-periodismo-ia",
       title: "Leila Guerriero: 'Hay más preocupación con la IA que trabajo para ser mejor que ella'",
       summary: "Reflexión crítica sobre el periodismo narrativo, la investigación en terreno y la ética frente a las tecnologías generativas.",
-      fullContent: `En diálogo con La Silla Vacía en el Festival Gabo, la célebre escritora y periodista Leila Guerriero aborda el rigor del trabajo de campo y la exigencia narrativa frente al contenido sintético.`,
+      fullContent: `En diálogo con La Silla Vacía en el Festival Gabo, la célebre escritora y periodista Leila Guerriero aborda el rigor del trabajo de campo y la exigencia narrativa frente al contenido sintético.\n\n"Hay más preocupación por lo que la IA puede reemplazar que un trabajo disciplinado en las redacciones para elevar la calidad narrativa y la verificación empírica en terreno", afirmó Guerriero.`,
       author: "Camilo Sotomayor",
       sourceName: "La Silla Vacía",
       sourceLogo: "La Silla Vacía",
       originalUrl: "https://www.lasillavacia.com/silla-nacional/",
-      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Leila_Guerriero_en_2019.jpg/800px-Leila_Guerriero_en_2019.jpg", // Retrato oficial fotográfico real de Leila Guerriero
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Leila_Guerriero_en_2019.jpg/800px-Leila_Guerriero_en_2019.jpg",
       category: "Cultura",
       country: "co",
       publishedAt: "Hace 1 hora",
@@ -121,12 +121,12 @@ function NoticiasContent() {
       topicKey: "exportaciones-agropecuarias-dane",
       title: "Exportaciones agropecuarias y de alimentos en Colombia crecen según informe del DANE",
       summary: "Las ventas externas del sector agropecuario y de productos botánicos registraron un incremento positivo impulsado por café, flores y derivados agrícolas.",
-      fullContent: `Según el último informe del DANE, las exportaciones colombianas agropecuarias y de insumos vegetales continuaron su tendencia al alza en los mercados de América y Europa.`,
+      fullContent: `Según el último informe del DANE, las exportaciones colombianas agropecuarias y de insumos vegetales continuaron su tendencia al alza en los mercados de América y Europa.\n\nEl crecimiento consolidado estuvo impulsado por las ventas externas de café especial, flores cortadas, derivados botánicos y fruta fresca procesada con sello de calidad territorial.`,
       author: "Juliana Restrepo",
       sourceName: "El Tiempo",
       sourceLogo: "El Tiempo",
       originalUrl: "https://www.eltiempo.com/economia/sectores",
-      image: "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=1200&q=85", // Fotografía prensa de carga de café de exportación y agro colombiano
+      image: "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=1200&q=85",
       category: "Economía",
       country: "co",
       publishedAt: "Hace 2 horas",
@@ -139,12 +139,12 @@ function NoticiasContent() {
       topicKey: "revolucion-cultivo-limpio-ny",
       title: "The Global Shift Toward Organic Cultivation and Clean Botanical Standards",
       summary: "An in-depth analysis on how non-synthetic farming techniques and botanical purity certifications are reshaping health markets.",
-      fullContent: `International markets report growing demand for fully traceable botanical derivatives certified free of synthetic pesticides and heavy metals.`,
+      fullContent: `International markets report growing demand for fully traceable botanical derivatives certified free of synthetic pesticides and heavy metals.\n\nLeading agricultural research institutions highlight the long-term economic and environmental viability of clean soil cultivation practices across the Americas.`,
       author: "Sarah Jenkins",
       sourceName: "The New York Times",
       sourceLogo: "NY Times",
       originalUrl: "https://www.nytimes.com/section/well",
-      image: "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=1200&q=85", // Fotografía prensa de laboratorios botánicos e invernaderos orgánicos NYT
+      image: "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=1200&q=85",
       category: "Ciencia y Salud",
       country: "us",
       publishedAt: "Hace 3 horas",
@@ -157,12 +157,12 @@ function NoticiasContent() {
       topicKey: "bioproductos-amazonicos-globo",
       title: "Brasil avança na exportação sustentável de produtos bioagrícolas e botânicos",
       summary: "Cooperativas agroforestais reportam aumento significativo no envio de insumos orgânicos com certificação ambiental internacional.",
-      fullContent: `Reportagem especial sobre o crescimento do setor bioagrícola nas regiões do Sudeste e Norte do Brasil.`,
+      fullContent: `Reportagem especial sobre o crescimento do setor bioagrícola nas regiões do Sudeste e Norte do Brasil.\n\nAs cooperativas agroflorestais destacam o impacto positivo na geração de renda local e na conservação da biodiversidade da Amazônia.`,
       author: "Redacción O Globo",
       sourceName: "O Globo",
       sourceLogo: "O Globo",
       originalUrl: "https://g1.globo.com/economia/",
-      image: "https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?auto=format&fit=crop&w=1200&q=85", // Fotografía prensa de cultivos agroforestales en la Amazonía brasilera
+      image: "https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?auto=format&fit=crop&w=1200&q=85",
       category: "Mundo",
       country: "br",
       publishedAt: "Hace 4 horas",
@@ -609,59 +609,84 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA COMPLETA DE NOTICIA EN TEMA AZUL CUERO NOCTURNO */}
+        {/* MODAL LECTURA COMPLETA DE NOTICIA (APERTURA CORRECTA SIN TRUNCADO DE HEADER FIX Z-[99999]) */}
         {selectedArticle && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in">
-            <div className="leather-canvas-blue text-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-8 space-y-6 relative shadow-[0_0_90px_rgba(0,0,0,0.95)]">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 bg-black/95 backdrop-blur-2xl animate-in fade-in overflow-y-auto">
+            <div className="leather-canvas-blue text-white rounded-3xl max-w-4xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_100px_rgba(212,175,55,0.4)] border border-[#D4AF37]/60 my-auto">
+              
+              {/* Botón de Cierre Superior Flotante Visibilidad Garantizada */}
               <button
                 onClick={() => setSelectedArticle(null)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-white w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold"
+                className="sticky top-0 float-right z-50 text-gray-300 hover:text-white bg-black/80 hover:bg-[#D4AF37] hover:text-black w-9 h-9 rounded-full border border-white/20 flex items-center justify-center font-bold transition-all shadow-lg"
+                title="Cerrar Lectura"
               >
                 ✕
               </button>
 
-              <div className="space-y-2 border-b border-white/15 pb-4">
-                <div className="flex items-center gap-2 font-mono text-xs text-[#D4AF37] font-bold uppercase">
-                  <span>{selectedArticle.sourceName}</span>
+              {/* Header del Artículo */}
+              <div className="space-y-3 border-b border-[#D4AF37]/30 pb-4 clear-both">
+                <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-[#D4AF37] font-extrabold uppercase tracking-wider">
+                  <span className="px-2.5 py-1 bg-[#D4AF37]/20 rounded-md border border-[#D4AF37]/40">{selectedArticle.sourceName}</span>
                   <span>•</span>
-                  <span>{selectedArticle.category}</span>
+                  <span className="text-white">{selectedArticle.category}</span>
                 </div>
-                <h2 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-snug">
+
+                <h2 className="font-serif text-2xl md:text-4xl font-extrabold text-white leading-tight drop-shadow-md">
                   {selectedArticle.title}
                 </h2>
-                <div className="flex items-center justify-between text-xs font-mono text-gray-400">
-                  <span>Autor: {selectedArticle.author}</span>
-                  <span>{selectedArticle.publishedAt}</span>
+
+                <div className="flex flex-wrap items-center justify-between text-xs font-mono text-gray-300 pt-1">
+                  <span className="flex items-center gap-1.5">
+                    <User size={14} className="text-[#D4AF37]" /> Autor: <strong className="text-white">{selectedArticle.author}</strong>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Clock size={14} className="text-[#D4AF37]" /> {selectedArticle.publishedAt}
+                  </span>
                 </div>
               </div>
 
-              <div className="relative h-64 w-full rounded-2xl overflow-hidden bg-black/50 border border-white/10">
-                <img src={selectedArticle.image} alt={selectedArticle.title} className="w-full h-full object-cover" />
+              {/* Imagen Destacada del Artículo */}
+              <div className="relative h-64 md:h-96 w-full rounded-2xl overflow-hidden bg-black/60 border border-white/15 shadow-2xl">
+                <img 
+                  src={selectedArticle.image} 
+                  alt={selectedArticle.title} 
+                  className="w-full h-full object-cover" 
+                />
               </div>
 
+              {/* Resumen Objetivo e Resumen Umma */}
               <div className="space-y-4 font-sans text-sm text-gray-200 leading-relaxed font-light">
-                <p className="font-semibold text-base italic bg-black/50 p-4 rounded-2xl border-l-4 border-[#D4AF37]">
-                  "{selectedArticle.summary}"
-                </p>
-                <p className="whitespace-pre-line">{selectedArticle.fullContent}</p>
+                <div className="bg-black/60 p-5 rounded-2xl border-l-4 border-[#D4AF37] shadow-inner space-y-2">
+                  <span className="text-[10px] font-mono text-[#D4AF37] uppercase font-bold tracking-widest block">
+                    Resumen Objetivo & Síntesis de Prensa:
+                  </span>
+                  <p className="font-serif text-base italic text-white leading-relaxed">
+                    "{selectedArticle.summary}"
+                  </p>
+                </div>
+
+                <div className="space-y-3 pt-2 text-base leading-relaxed text-gray-100 font-sans">
+                  <p className="whitespace-pre-line leading-relaxed">{selectedArticle.fullContent}</p>
+                </div>
               </div>
 
-              <div className="pt-4 border-t border-white/15 flex items-center justify-between">
+              {/* Footer de Acciones y Enlace a Fuente Oficial */}
+              <div className="pt-6 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
                 <a
                   href={selectedArticle.originalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-6 py-2.5 bg-[#D4AF37] text-black font-mono font-bold text-xs uppercase rounded-xl hover:bg-white transition-all shadow-md flex items-center gap-2"
+                  className="w-full sm:w-auto px-6 py-3 bg-[#D4AF37] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_25px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2"
                 >
-                  <span>Ver en Fuente Oficial ({selectedArticle.sourceName})</span>
-                  <ExternalLink size={14} />
+                  <span>Leer en Fuente Oficial ({selectedArticle.sourceName})</span>
+                  <ExternalLink size={15} />
                 </a>
 
                 <button
                   onClick={() => setSelectedArticle(null)}
-                  className="px-4 py-2 bg-white/10 text-white font-mono font-bold text-xs uppercase rounded-xl"
+                  className="w-full sm:w-auto px-6 py-3 bg-white/10 text-white hover:bg-white/20 font-bold text-xs uppercase rounded-xl transition-all border border-white/20"
                 >
-                  Cerrar
+                  Cerrar Lectura
                 </button>
               </div>
             </div>
