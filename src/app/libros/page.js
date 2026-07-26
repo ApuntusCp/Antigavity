@@ -160,7 +160,7 @@ function LibrosContent() {
   const [activeFullBookPages, setActiveFullBookPages] = useState([]);
   const [isBookCopyrighted, setIsBookCopyrighted] = useState(false);
   const [readerCurrentPage, setReaderCurrentPage] = useState(1);
-  const [readerPageMode, setReaderPageMode] = useState('double'); // 'single' | 'double' (Libro Abierto 2 Páginas)
+  const [readerPageMode, setReaderPageMode] = useState('double');
   const [isFullscreenReader, setIsFullscreenReader] = useState(false);
   const [readerFontSize, setReaderFontSize] = useState('text-base');
   const [readerTheme, setReaderTheme] = useState('dark');
@@ -184,7 +184,7 @@ function LibrosContent() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatusMsg, setSyncStatusMsg] = useState(null);
 
-  // Paleta de Colores de Subrayado y Lápiz Libre
+  // Paleta de Colores
   const highlightColorStyles = {
     gold: { name: 'Dorado', hex: '#F3E5AB', bg: 'bg-[#F3E5AB]/30 text-white border-[#F3E5AB]/60 shadow-[0_0_12px_rgba(243,229,171,0.2)]', dot: 'bg-[#F3E5AB]' },
     emerald: { name: 'Esmeralda', hex: '#10B981', bg: 'bg-emerald-500/30 text-emerald-100 border-emerald-400/60 shadow-[0_0_12px_rgba(16,185,129,0.2)]', dot: 'bg-emerald-400' },
@@ -222,27 +222,42 @@ function LibrosContent() {
     { id: 'copyright_externo', name: 'Tienda Externa Licenciada' }
   ];
 
-  // Algoritmo de Búsqueda y Descarga Directa de PDF Abierto para Estudiantes
+  // ALGORITMO CON BUSCADOR DUCKDUCKGO Y DESCARGA AUTOMÁTICA DE PDF ABIERTO
   const handleDownloadAcademicPdf = (book) => {
     if (!book) return;
 
-    // 1. Si la obra cuenta con archivo PDF directo registrado
+    // 1. Si la obra dispone de descarga directa de PDF
     if (book.enlaces_descarga && book.enlaces_descarga.pdf) {
-      window.open(book.enlaces_descarga.pdf, '_blank');
+      const a = document.createElement('a');
+      a.href = book.enlaces_descarga.pdf;
+      a.download = `${book.titulo}.pdf`;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
       return;
     }
 
     if (book.id && book.id.startsWith('gut-')) {
       const gutId = book.id.replace('gut-', '');
-      window.open(`https://www.gutenberg.org/files/${gutId}/${gutId}-pdf.pdf`, '_blank');
+      const directPdf = `https://www.gutenberg.org/files/${gutId}/${gutId}-pdf.pdf`;
+      const a = document.createElement('a');
+      a.href = directPdf;
+      a.download = `${book.titulo}.pdf`;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
       return;
     }
 
-    // 2. Búsqueda hemerográfica automatizada de archivos PDF abiertos para estudio
-    const authorsStr = (book.autores || []).join(' ');
-    const query = `filetype:pdf "${book.titulo}" ${authorsStr}`;
-    const googlePdfSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-    window.open(googlePdfSearchUrl, '_blank');
+    // 2. Búsqueda hemerográfica optimizada en DuckDuckGo (Sin comillas rígidas que rompan resultados)
+    const authorName = (book.autores && book.autores[0]) || '';
+    const cleanTitle = (book.titulo || '').replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    const ddgQuery = `${cleanTitle} ${authorName} pdf download libre`;
+    const duckDuckGoUrl = `https://duckduckgo.com/?q=${encodeURIComponent(ddgQuery)}`;
+    
+    window.open(duckDuckGoUrl, '_blank');
   };
 
   // Cargar Notas Guardadas en LocalStorage
@@ -304,7 +319,7 @@ function LibrosContent() {
     } catch (e) {}
   };
 
-  // Base de Datos de Obras Clásicas Semilla en Texto Íntegro Real
+  // Base de Datos de Obras Clásicas Semilla
   const seedRealBookPages = {
     'gut-1656': [
       {
@@ -825,11 +840,11 @@ function LibrosContent() {
 
                           <button
                             onClick={() => handleDownloadAcademicPdf(book)}
-                            className="w-full py-2 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 font-bold text-[10px] uppercase tracking-wider rounded-xl hover:bg-emerald-900 transition-all flex items-center justify-center gap-1"
-                            title="Buscar copia abierta PDF de libre consulta académica para estudiantes"
+                            className="w-full py-2 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 font-bold text-[10px] uppercase tracking-wider rounded-xl hover:bg-emerald-900 transition-all flex items-center justify-center gap-1 cursor-pointer"
+                            title="Buscar y descargar copia abierta PDF en DuckDuckGo para estudiantes"
                           >
                             <GraduationCap size={13} />
-                            <span>Descargar Copia Abierta PDF (Estudiantes)</span>
+                            <span>Descargar PDF Abierto (DuckDuckGo)</span>
                           </button>
                         </div>
                       ) : (
@@ -857,9 +872,9 @@ function LibrosContent() {
 
                           <button
                             onClick={() => handleDownloadAcademicPdf(book)}
-                            className="w-full py-1.5 bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 font-semibold text-[10px] uppercase tracking-wider rounded-xl hover:bg-emerald-900 transition-all flex items-center justify-center gap-1"
+                            className="w-full py-1.5 bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 font-semibold text-[10px] uppercase tracking-wider rounded-xl hover:bg-emerald-900 transition-all flex items-center justify-center gap-1 cursor-pointer"
                           >
-                            <GraduationCap size={12} /> Descargar PDF Abierto (Estudiantes)
+                            <GraduationCap size={12} /> Descargar PDF Abierto (DuckDuckGo)
                           </button>
                         </>
                       )}
@@ -893,7 +908,7 @@ function LibrosContent() {
         <LibraryTrustBadge />
       </div>
 
-      {/* LECTOR EJECUTIVO NATIVO GRANCOLINOS (CON HERRAMIENTA DE LÁPIZ LIBRE Y BOTÓN DE DESCARGA PDF ABIERTO PARA ESTUDIANTES) */}
+      {/* LECTOR EJECUTIVO NATIVO GRANCOLINOS (CON HERRAMIENTA DE LÁPIZ LIBRE Y BOTÓN DE DESCARGA PDF EN DUCKDUCKGO) */}
       {readingBook && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-6 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
           <div className={`border rounded-3xl w-full shadow-[0_0_90px_rgba(243,229,171,0.25)] relative flex flex-col transition-all duration-300 ${
@@ -1005,7 +1020,7 @@ function LibrosContent() {
                 </div>
               </div>
             ) : isBookCopyrighted ? (
-              /* CASO OBRA COMERCIAL (Ej. "A sombra de Hipócrates", "The 48 Laws of Power") CON OPCIÓN DE PDF ABIERTO PARA ESTUDIANTES */
+              /* CASO OBRA COMERCIAL CON BÚSQUEDA AUTOMÁTICA EN DUCKDUCKGO */
               <div className="flex flex-col items-center justify-center flex-1 p-8 sm:p-12 text-center max-w-3xl mx-auto space-y-6">
                 <div className="w-16 h-16 rounded-3xl bg-[#F3E5AB]/10 border border-[#F3E5AB]/40 flex items-center justify-center text-[#F3E5AB] shadow-2xl">
                   <Lock size={32} />
@@ -1032,7 +1047,7 @@ function LibrosContent() {
                   </p>
                 </div>
 
-                {/* BOTONES DUALES: ADQUIRIR EDICIÓN OFICIAL + BUSCAR PDF ABIERTO PARA ESTUDIANTES */}
+                {/* BOTONES DUALES: ADQUIRIR EDICIÓN OFICIAL + DESCARGAR PDF VÍA DUCKDUCKGO */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-2">
                   <a
                     href={readingBook.url_fuente || 'https://www.amazon.com'}
@@ -1044,14 +1059,13 @@ function LibrosContent() {
                     <ExternalLink size={15} />
                   </a>
 
-                  {/* NUEVO BOTÓN REQUERIDO: BÚSQUEDA Y DESCARGA DE COPIA ABIERTA EN PDF PARA ESTUDIANTES */}
                   <button
                     onClick={() => handleDownloadAcademicPdf(readingBook)}
                     className="flex-1 py-4 px-6 bg-emerald-950 text-emerald-300 border border-emerald-500/50 font-extrabold text-xs uppercase tracking-widest rounded-2xl hover:bg-emerald-900 transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
-                    title="Buscar y descargar copia de estudio abierta en formato .PDF"
+                    title="Búsqueda y descarga automática de copia PDF abierta en DuckDuckGo para estudiantes"
                   >
                     <GraduationCap size={16} />
-                    <span>Descargar PDF Abierto (Estudiantes)</span>
+                    <span>Descargar PDF Abierto (DuckDuckGo)</span>
                   </button>
                 </div>
               </div>
