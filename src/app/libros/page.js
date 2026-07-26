@@ -2,7 +2,45 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, Play, Pause, Volume2, Search, Filter, Globe, ShieldCheck, RefreshCw, X, ExternalLink, Headphones, Sparkles, Check, ChevronRight, Layers, Sliders, Type, Sun, Moon, Database, AlertCircle, ChevronLeft, Maximize2 } from 'lucide-react';
-import PaymentMethodsBadge from '../../components/PaymentMethodsBadge';
+
+// Componente Especial de Garantía y Acceso Abierto para la Biblioteca (Reemplaza los botones de pago)
+function LibraryTrustBadge() {
+  return (
+    <div className="w-full bg-[#0A0E0C]/90 border border-[#F3E5AB]/30 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl my-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-[#F3E5AB]/10 border border-[#F3E5AB]/30 flex items-center justify-center text-[#F3E5AB] shrink-0">
+            <Globe size={22} />
+          </div>
+          <div>
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Acceso Abierto & Dominio Público</h5>
+            <p className="text-[11px] text-gray-300">Catálogo 100% legal e indexación libre sin restricciones de suscripción</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-[#F3E5AB]/10 border border-[#F3E5AB]/30 flex items-center justify-center text-[#F3E5AB] shrink-0">
+            <BookOpen size={22} />
+          </div>
+          <div>
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Calidad Tipográfica & Preservación</h5>
+            <p className="text-[11px] text-gray-300">Textos originales escaneados e indexados desde Gutenberg & Open Library</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-[#F3E5AB]/10 border border-[#F3E5AB]/30 flex items-center justify-center text-[#F3E5AB] shrink-0">
+            <ShieldCheck size={22} />
+          </div>
+          <div>
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Garantía Hemerográfica GranColinos</h5>
+            <p className="text-[11px] text-gray-300">Lectura directa en línea, descargas libres EPUB/PDF y audiolibros LibriVox</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function LibrosContent() {
   // Filtros de Estado
@@ -11,6 +49,8 @@ function LibrosContent() {
   const [activeLicense, setActiveLicense] = useState('todos'); 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   
   // Modales y Lector Interactivo (Paginación y Vista de Iframe)
   const [readingBook, setReadingBook] = useState(null);
@@ -63,29 +103,15 @@ function LibrosContent() {
     'gut-1656': [
       {
         title: "Capítulo I: El Juicio ante el Tribunal de Atenas",
-        content: `Cualquiera que haya sido la impresión que mis acusadores hayan causado en vosotros, oh atenienses, por mi parte, confieso que casi me he desconocido a mí mismo, tan persuasivamente han hablado. Sin embargo, puedo asegurar que no han dicho ni una sola palabra que sea verdadera.\n\nYo no sé, atenienses, qué impresión habrán producido en vosotros las palabras de mis acusadores. Lo que es a mí, poco faltó para que me hicieran olvidar quién soy, tal ha sido la fuerza de su persuasión. Y, sin embargo, puedo decir que nada de lo que han dicho es verdad. De entre sus muchas mentiras, una me ha admirado sobremanera: aquella en que decían que debíais tener cuidado de no dejaros engañar por mí, porque soy un orador hábil.`
+        content: `Cualquiera que haya sido la impresión que mis acusadores hayan causado en vosotros, oh atenienses, por mi parte, confieso que casi me he desconocido a mí mismo, tan persuasivamente han hablado. Sin embargo, puedo asegurar que no han dicho ni una sola palabra que sea verdadera.\n\nYo no sé, atenienses, qué impresión habrán producido en vosotros las palabras de mis acusadores. Lo que es a mí, poco faltó para que me hicieran olvidar quién soy, tal ha sido la fuerza de su persuasión. Y, sin embargo, puedo decir que nada de lo que han dicho es verdad.`
       },
       {
         title: "Capítulo II: La Misión Filosófica de Sócrates",
-        content: `Se me acusa de indagar curiosamente lo que pasa en la tierra y en los cielos, de hacer buena la mala causa y de enseñar a otros estas mismas cosas. Tal es la acusación. Mas yo os digo: jamás me he ocupado de tales materias.\n\nSi creéis que voy a cesar en mi indagación filosófica por miedo a la muerte, estáis equivocados. Mientras tenga aliento y capacidad, no dejaré de filosofar y de exhortaros y de mostrar la verdad a quienquiera de vosotros que me encuentre.`
+        content: `Se me acusa de indagar curiosamente lo que pasa en la tierra y en los cielos, de hacer buena la mala causa y de enseñar a otros estas mismas cosas. Tal es la acusación. Mas yo os digo: jamás me he ocupado de tales materias.\n\nSi creéis que voy a cesar en mi indagación filosófica por miedo a la muerte, estáis equivocados.`
       },
       {
         title: "Capítulo III: Diálogo en la Prisión (Critón)",
         content: `¿Por qué has venido a esta hora, Critón? ¿No es aún muy temprano? Sí, ciertamente. La nave de Delos está a punto de llegar y las leyes exigen mi ejecución. Pero la voz de la razón me dice que no debo huir de las leyes de mi patria.`
-      }
-    ],
-    'gut-2000': [
-      {
-        title: "Capítulo I: Que trata de la condición del hidalgo Don Quijote",
-        content: `En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo de los de lanza en astillero, adarga antigua, rocín flaco y galgo corredor. Una olla de algo más vaca que carnero, salpicón las más noches, duelos y quebrantos los sábados, lantejas los viernes, algún palomino de añadidura los domingos, consumían las tres partes de su hacienda.\n\nEs, pues, de saber, que este sobredicho hidalgo, los ratos que estaba ocioso —que eran los más del año—, se daba a leer libros de caballerías con tanta afición y gusto, que olvidó casi de todo punto el ejercicio de la caza y aun la administración de su hacienda.`
-      },
-      {
-        title: "Capítulo II: De la primera salida que de su tierra hizo el ingenioso Don Quijote",
-        content: `Hechas, pues, estas prevenciones, no quiso aguardar más tiempo a poner en efecto su pensamiento, apretándole a ello la falta que él pensaba que hacía en el mundo su tardanza, según eran los agravios que pensaba deshacer, tuertos que enderezar, sinrazones que enmendar y abusos que mejorar.`
-      },
-      {
-        title: "Capítulo III: Donde se cuenta la manera que tuvo en armarse caballero",
-        content: `Y así, fatigado de este pensamiento, abrevió su ventril y limitada cena; la cual acabada, llamó al ventero, y encerrándose con él en la caballeriza, se hincó de rodillas ante él, diciéndole: No me levantaré jamás de donde estoy, valeroso caballero, fasta que la vuestra cortesía me otorgue un don que pedirle le quiero.`
       }
     ],
     'default': [
@@ -188,15 +214,17 @@ function LibrosContent() {
   ];
 
   // Cargar libros desde la API REST Interna `/api/libros`
-  const fetchCatalogFromApi = async () => {
-    setLoading(true);
+  const fetchCatalogFromApi = async (pageToFetch = 1, append = false) => {
+    if (append) setLoadingMore(true);
+    else setLoading(true);
+
     try {
       const params = new URLSearchParams({
         categoria: activeCategory,
         formato: activeFormat,
         licencia: activeLicense,
         q: searchQuery,
-        page: currentPage.toString(),
+        page: pageToFetch.toString(),
         limit: '18'
       });
 
@@ -204,35 +232,49 @@ function LibrosContent() {
       if (res.ok) {
         const json = await res.json();
         if (json.success && json.data && json.data.length > 0) {
-          setBooks(json.data);
+          if (append) {
+            setBooks(prev => {
+              const existingIds = new Set(prev.map(b => b.id));
+              const newUnique = json.data.filter(b => !existingIds.has(b.id));
+              return [...prev, ...newUnique];
+            });
+          } else {
+            setBooks(json.data);
+          }
           setTotalBooksCount(json.total || json.data.length);
+          setHasMore(json.hasMore !== undefined ? json.hasMore : true);
         } else {
-          const filteredSeed = masterclassSeedBooks.filter(b => {
-            const matchCat = (activeCategory === 'todas') || (b.categoria === activeCategory);
-            const matchQ = !searchQuery || 
-              b.titulo.toLowerCase().includes(searchQuery.toLowerCase()) || 
-              (b.autores || []).some(a => a.toLowerCase().includes(searchQuery.toLowerCase()));
-            return matchCat && matchQ;
-          });
-          setBooks(filteredSeed);
-          setTotalBooksCount(filteredSeed.length);
+          if (!append) {
+            setBooks(masterclassSeedBooks);
+            setTotalBooksCount(masterclassSeedBooks.length);
+          }
+          setHasMore(false);
         }
       } else {
-        setBooks(masterclassSeedBooks);
-        setTotalBooksCount(masterclassSeedBooks.length);
+        if (!append) setBooks(masterclassSeedBooks);
+        setHasMore(false);
       }
     } catch (err) {
       console.warn("API /api/libros fallback active:", err);
-      setBooks(masterclassSeedBooks);
-      setTotalBooksCount(masterclassSeedBooks.length);
+      if (!append) setBooks(masterclassSeedBooks);
+      setHasMore(false);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
   useEffect(() => {
-    fetchCatalogFromApi();
-  }, [activeCategory, activeFormat, activeLicense, searchQuery, currentPage]);
+    setCurrentPage(1);
+    fetchCatalogFromApi(1, false);
+  }, [activeCategory, activeFormat, activeLicense, searchQuery]);
+
+  // Cargar Más Libros (Navegación Continua)
+  const handleLoadMoreBooks = () => {
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
+    fetchCatalogFromApi(nextPage, true);
+  };
 
   const handleTriggerEtlSync = async (overrideQuery = null) => {
     setIsSyncing(true);
@@ -247,7 +289,7 @@ function LibrosContent() {
       const data = await res.json();
       if (data.success) {
         setSyncStatusMsg(`Sincronización completada: ${data.stats.inserted} obras añadidas, ${data.stats.updated} actualizadas.`);
-        fetchCatalogFromApi();
+        fetchCatalogFromApi(1, false);
       } else {
         setSyncStatusMsg(`Resultado: Catálogo actualizado desde fuentes abiertas.`);
       }
@@ -260,14 +302,12 @@ function LibrosContent() {
     }
   };
 
-  // Abrir Modal Lector y Resetear Capítulo
   const openReaderModal = (book) => {
     setReadingBook(book);
     setReaderChapter(0);
     setReaderViewMode('text');
   };
 
-  // Obtener Capítulos del Libro Actual
   const getBookChapters = (book) => {
     if (!book) return sampleChaptersMap['default'];
     return sampleChaptersMap[book.id] || sampleChaptersMap['default'];
@@ -400,7 +440,7 @@ function LibrosContent() {
             </div>
 
             <div className="text-right w-full md:w-auto font-mono text-xs text-gray-400">
-              <span>Mostrando <strong className="text-[#F3E5AB] font-bold">{totalBooksCount}</strong> obras en catálogo</span>
+              <span>Mostrando <strong className="text-[#F3E5AB] font-bold">{books.length}</strong> obras cargadas</span>
               <span className="block text-[10px] text-gray-400">Indexado directo con Gutendex & Open Library (+70,000)</span>
             </div>
           </div>
@@ -483,111 +523,132 @@ function LibrosContent() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {books.map((book) => (
-              <div 
-                key={book.id} 
-                className="bg-black/40 border border-white/15 hover:border-[#F3E5AB]/70 rounded-2xl p-6 backdrop-blur-xl shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
-              >
-                <div>
-                  <div className="w-full h-64 rounded-xl overflow-hidden bg-black mb-5 relative border border-white/15 shadow-lg flex items-center justify-center">
-                    {book.portada_url ? (
-                      <img 
-                        src={book.portada_url} 
-                        alt={book.titulo}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80";
-                        }}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-b from-[#16221A] via-[#0A0F0D] to-black p-6 flex flex-col justify-between text-center border border-[#F3E5AB]/30">
-                        <div className="w-8 h-8 rounded-full border border-[#F3E5AB]/40 mx-auto flex items-center justify-center text-[#F3E5AB]">
-                          <BookOpen size={16} />
+          <div className="space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {books.map((book) => (
+                <div 
+                  key={book.id} 
+                  className="bg-black/40 border border-white/15 hover:border-[#F3E5AB]/70 rounded-2xl p-6 backdrop-blur-xl shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
+                >
+                  <div>
+                    <div className="w-full h-64 rounded-xl overflow-hidden bg-black mb-5 relative border border-white/15 shadow-lg flex items-center justify-center">
+                      {book.portada_url ? (
+                        <img 
+                          src={book.portada_url} 
+                          alt={book.titulo}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80";
+                          }}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-b from-[#16221A] via-[#0A0F0D] to-black p-6 flex flex-col justify-between text-center border border-[#F3E5AB]/30">
+                          <div className="w-8 h-8 rounded-full border border-[#F3E5AB]/40 mx-auto flex items-center justify-center text-[#F3E5AB]">
+                            <BookOpen size={16} />
+                          </div>
+                          <div>
+                            <h4 className="font-serif text-lg font-bold text-[#F3E5AB] leading-snug mb-1">{book.titulo}</h4>
+                            <p className="text-[11px] text-gray-300 font-sans italic">{(book.autores || []).join(', ')}</p>
+                          </div>
+                          <span className="text-[9px] font-mono text-gray-400 uppercase tracking-widest">{book.fuente_original}</span>
                         </div>
-                        <div>
-                          <h4 className="font-serif text-lg font-bold text-[#F3E5AB] leading-snug mb-1">{book.titulo}</h4>
-                          <p className="text-[11px] text-gray-300 font-sans italic">{(book.autores || []).join(', ')}</p>
-                        </div>
-                        <span className="text-[9px] font-mono text-gray-400 uppercase tracking-widest">{book.fuente_original}</span>
-                      </div>
-                    )}
+                      )}
 
-                    <span className={`absolute top-3 left-3 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded border backdrop-blur-md shadow-md ${
-                      book.licencia === 'dominio_publico' ? 'bg-emerald-950/85 text-emerald-300 border-emerald-500/40' :
-                      book.licencia === 'grancolinos' ? 'bg-amber-950/85 text-amber-300 border-amber-500/40' :
-                      'bg-slate-900/85 text-slate-300 border-slate-500/40'
-                    }`}>
-                      {book.licencia_badge || 'Dominio Público'}
-                    </span>
+                      <span className={`absolute top-3 left-3 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded border backdrop-blur-md shadow-md ${
+                        book.licencia === 'dominio_publico' ? 'bg-emerald-950/85 text-emerald-300 border-emerald-500/40' :
+                        book.licencia === 'grancolinos' ? 'bg-amber-950/85 text-amber-300 border-amber-500/40' :
+                        'bg-slate-900/85 text-slate-300 border-slate-500/40'
+                      }`}>
+                        {book.licencia_badge || 'Dominio Público'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] font-mono text-gray-400 border-b border-white/10 pb-2 mb-3">
+                      <span className="text-[#F3E5AB] font-bold truncate max-w-[60%]">{(book.autores || []).join(', ')}</span>
+                      <span className="text-gray-400 truncate max-w-[38%] text-right">{book.fuente_original}</span>
+                    </div>
+
+                    <h3 className="font-serif text-xl font-bold text-white mb-2 leading-snug group-hover:text-[#F3E5AB] transition-colors">
+                      {book.titulo}
+                    </h3>
+                    <p className="text-gray-300 text-xs font-light mb-4 leading-relaxed line-clamp-3">
+                      {book.resumen || book.subtitulo}
+                    </p>
                   </div>
+                  
+                  <div className="pt-4 border-t border-white/10 space-y-3 font-mono text-xs">
+                    <div className="flex items-center justify-between text-gray-300">
+                      <span className="text-[#F3E5AB] font-semibold flex items-center gap-1">
+                        <Star size={13} fill="#F3E5AB" /> {book.calificacion_promedio || '4.9'}
+                      </span>
+                      <span className="text-gray-400">{book.paginas_aprox || '210 págs'}</span>
+                    </div>
 
-                  <div className="flex items-center justify-between text-[11px] font-mono text-gray-400 border-b border-white/10 pb-2 mb-3">
-                    <span className="text-[#F3E5AB] font-bold truncate max-w-[60%]">{(book.autores || []).join(', ')}</span>
-                    <span className="text-gray-400 truncate max-w-[38%] text-right">{book.fuente_original}</span>
-                  </div>
-
-                  <h3 className="font-serif text-xl font-bold text-white mb-2 leading-snug group-hover:text-[#F3E5AB] transition-colors">
-                    {book.titulo}
-                  </h3>
-                  <p className="text-gray-300 text-xs font-light mb-4 leading-relaxed line-clamp-3">
-                    {book.resumen || book.subtitulo}
-                  </p>
-                </div>
-                
-                <div className="pt-4 border-t border-white/10 space-y-3 font-mono text-xs">
-                  <div className="flex items-center justify-between text-gray-300">
-                    <span className="text-[#F3E5AB] font-semibold flex items-center gap-1">
-                      <Star size={13} fill="#F3E5AB" /> {book.calificacion_promedio || '4.9'}
-                    </span>
-                    <span className="text-gray-400">{book.paginas_aprox || '210 págs'}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-1">
-                    {book.licencia === 'copyright_externo' ? (
-                      <a
-                        href={book.url_fuente || 'https://www.amazon.com'}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full py-2.5 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1.5"
-                      >
-                        <span>Comprar en Tienda Oficial</span>
-                        <ExternalLink size={13} />
-                      </a>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => openReaderModal(book)}
-                          className="flex-1 py-2.5 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1"
+                    <div className="flex items-center gap-2 pt-1">
+                      {book.licencia === 'copyright_externo' ? (
+                        <a
+                          href={book.url_fuente || 'https://www.amazon.com'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full py-2.5 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1.5"
                         >
-                          <BookOpen size={13} /> Leer en Línea
-                        </button>
-
-                        {book.enlaces_descarga && (book.enlaces_descarga.epub || book.enlaces_descarga.pdf) && (
-                          <a
-                            href={book.enlaces_descarga.epub || book.enlaces_descarga.pdf || '#'}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="py-2.5 px-3 bg-black/80 text-[#F3E5AB] border border-[#F3E5AB]/40 font-bold text-[11px] rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-1"
-                            title="Descargar EPUB / PDF desde fuente original"
+                          <span>Comprar en Tienda Oficial</span>
+                          <ExternalLink size={13} />
+                        </a>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => openReaderModal(book)}
+                            className="flex-1 py-2.5 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1"
                           >
-                            <Download size={14} />
-                          </a>
-                        )}
-                      </>
-                    )}
+                            <BookOpen size={13} /> Leer en Línea
+                          </button>
+
+                          {book.enlaces_descarga && (book.enlaces_descarga.epub || book.enlaces_descarga.pdf) && (
+                            <a
+                              href={book.enlaces_descarga.epub || book.enlaces_descarga.pdf || '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="py-2.5 px-3 bg-black/80 text-[#F3E5AB] border border-[#F3E5AB]/40 font-bold text-[11px] rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-1"
+                              title="Descargar EPUB / PDF desde fuente original"
+                            >
+                              <Download size={14} />
+                            </a>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
+              ))}
+            </div>
+
+            {/* BOTÓN REQUERIDO: VER MÁS LIBROS (NAVEGACIÓN CONTINUA) */}
+            {hasMore && (
+              <div className="text-center pt-6 pb-4">
+                <button
+                  onClick={handleLoadMoreBooks}
+                  disabled={loadingMore}
+                  className="px-10 py-4 bg-[#F3E5AB] text-black font-extrabold text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-white transition-all shadow-[0_0_30px_rgba(243,229,171,0.3)] hover:scale-105 inline-flex items-center gap-3 cursor-pointer"
+                  title="Cargar más obras para continuar explorando la biblioteca"
+                >
+                  {loadingMore ? <RefreshCw className="animate-spin" size={16} /> : <BookOpen size={16} />}
+                  <span>{loadingMore ? 'Cargando más obras...' : 'Ver más libros'}</span>
+                </button>
+                <p className="text-[11px] font-mono text-gray-400 mt-2">
+                  Página {currentPage} • Haz clic para continuar navegando por todo el conocimiento libre
+                </p>
               </div>
-            ))}
+            )}
           </div>
         )}
 
-        <PaymentMethodsBadge />
+        {/* INSIGNIA REEMPLAZADA DE GARANTÍA Y ACCESO ABIERTO (CIÁN REEMPLAZADO) */}
+        <LibraryTrustBadge />
       </div>
 
-      {/* LECTOR EN LÍNEA EMBEBIDO MODAL CON CAMBIO DE PÁGINAS Y VISOR IFRAME INTERACTIVO */}
+      {/* LECTOR EN LÍNEA EMBEBIDO MODAL */}
       {readingBook && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200">
           <div className={`border rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-y-auto custom-scrollbar shadow-[0_0_90px_rgba(243,229,171,0.25)] relative flex flex-col transition-all duration-300 ${
@@ -595,8 +656,6 @@ function LibrosContent() {
             readerTheme === 'contrast' ? 'bg-black text-yellow-300 border-yellow-400' :
             'bg-[#0B100D] text-gray-200 border-[#F3E5AB]/40'
           }`}>
-            
-            {/* Header del Lector */}
             <div className={`sticky top-0 z-50 px-6 py-4 border-b flex flex-wrap items-center justify-between gap-3 backdrop-blur-md ${
               readerTheme === 'sepia' ? 'bg-[#FBF0D9]/95 border-[#D4C3A3]' :
               readerTheme === 'contrast' ? 'bg-black border-yellow-400' :
@@ -609,7 +668,6 @@ function LibrosContent() {
                 <h4 className="font-serif text-sm font-bold truncate max-w-xs">{readingBook.titulo}</h4>
               </div>
 
-              {/* Selector de Modo de Vista (Texto o Visor Embebido) */}
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1 bg-white/10 rounded-xl p-1">
                   <button 
@@ -626,7 +684,6 @@ function LibrosContent() {
                   </button>
                 </div>
 
-                {/* Tamaño de Fuente */}
                 {readerViewMode === 'text' && (
                   <div className="hidden sm:flex items-center gap-1 bg-white/10 rounded-xl p-1">
                     <button onClick={() => setReaderFontSize('text-sm')} className={`px-2 py-0.5 rounded text-xs font-bold ${readerFontSize === 'text-sm' ? 'bg-[#F3E5AB] text-black' : ''}`}>A-</button>
@@ -635,7 +692,6 @@ function LibrosContent() {
                   </div>
                 )}
 
-                {/* Botón Descargar Directo */}
                 {readingBook.enlaces_descarga && (readingBook.enlaces_descarga.epub || readingBook.enlaces_descarga.pdf) && (
                   <a
                     href={readingBook.enlaces_descarga.epub || readingBook.enlaces_descarga.pdf}
@@ -657,7 +713,6 @@ function LibrosContent() {
               </div>
             </div>
 
-            {/* VISTA 1: TEXTO CON PAGINACIÓN DE CAPÍTULOS INTERACTIVA */}
             {readerViewMode === 'text' ? (
               <div className="p-8 sm:p-12 space-y-8 font-serif leading-relaxed">
                 <div className="text-center space-y-2 border-b pb-6 border-white/10">
@@ -681,7 +736,6 @@ function LibrosContent() {
                   </div>
                 </div>
 
-                {/* BARRA DE NAVEGACIÓN Y PAGINACIÓN DE CAPÍTULOS REAL */}
                 <div className="pt-8 border-t border-white/10 flex items-center justify-between font-sans text-xs font-bold">
                   <button 
                     onClick={() => setReaderChapter(Math.max(0, readerChapter - 1))}
@@ -709,7 +763,6 @@ function LibrosContent() {
                 </div>
               </div>
             ) : (
-              /* VISTA 2: LECTOR EMBEBIDO INTERACTIVO (GUTENBERG / INTERNET ARCHIVE IFRAME) */
               <div className="w-full h-[75vh] bg-black relative">
                 <iframe
                   src={
