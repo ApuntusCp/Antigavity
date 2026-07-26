@@ -1,23 +1,33 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap } from 'lucide-react';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { useSearchParams, useRouter } from 'next/navigation';
 
-// Componente Especial de Garantía e Información Verificada para Noticias (100% Sin Emojis)
+// Componente Especial de Garantía e Información Verificada para Investigación Académica y Profesional
 function NewsTrustBadge() {
   return (
     <div className="w-full bg-[#0A0E0C]/90 border border-[#E2E8F0]/30 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-2xl my-12">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center md:text-left">
         <div className="flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-xl bg-[#E2E8F0]/10 border border-[#E2E8F0]/30 flex items-center justify-center text-[#E2E8F0] shrink-0">
-            <ShieldCheck size={22} />
+            <GraduationCap size={22} />
           </div>
           <div>
-            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Calidad INVIMA Certificada</h5>
-            <p className="text-[11px] text-gray-300">Registro RS-2024-12345 e información botánica 100% verídica</p>
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Hemeroteca Académica</h5>
+            <p className="text-[11px] text-gray-300">Base de datos estructurada para estudiantes, docentes e investigadores</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-[#E2E8F0]/10 border border-[#E2E8F0]/30 flex items-center justify-center text-[#E2E8F0] shrink-0">
+            <Building2 size={22} />
+          </div>
+          <div>
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Registro MinTIC & CRC</h5>
+            <p className="text-[11px] text-gray-300">Indexación oficial de medios nacionales, regionales y comunitarios</p>
           </div>
         </div>
 
@@ -33,11 +43,11 @@ function NewsTrustBadge() {
 
         <div className="flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-xl bg-[#E2E8F0]/10 border border-[#E2E8F0]/30 flex items-center justify-center text-[#E2E8F0] shrink-0">
-            <Award size={22} />
+            <ShieldCheck size={22} />
           </div>
           <div>
-            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Garantía Editorial GranColinos</h5>
-            <p className="text-[11px] text-gray-300">Transparencia periodística y respeto a los derechos de autor</p>
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Garantía INVIMA RS</h5>
+            <p className="text-[11px] text-gray-300">Trazabilidad científica e información vegetal 100% verídica</p>
           </div>
         </div>
       </div>
@@ -45,7 +55,7 @@ function NewsTrustBadge() {
   );
 }
 
-// Componente Visual de la Barra de Sesgo Ideológico (Diseño ultra-limpio sin solapamientos)
+// Componente Visual de la Barra de Sesgo Ideológico
 function PoliticalBiasBar({ biasScore, biasLabel }) {
   const score = Math.max(5, Math.min(95, biasScore || 50));
 
@@ -85,6 +95,7 @@ function NoticiasContent() {
   const initialCountry = searchParams.get('pais') || 'global';
   const [activeCountry, setActiveCountry] = useState(initialCountry);
   const [activeRegion, setActiveRegion] = useState('todas');
+  const [activeMediaFilter, setActiveMediaFilter] = useState('todos-medios');
   const [activeSort, setActiveSort] = useState('populares');
   const [activeMonth, setActiveMonth] = useState('julio-2026');
   const [selectedArticle, setSelectedArticle] = useState(null);
@@ -92,7 +103,7 @@ function NoticiasContent() {
   const [realtimeArticles, setRealtimeArticles] = useState([]);
   const [loadingFeed, setLoadingFeed] = useState(true);
 
-  // Country Options con etiquetas concisas
+  // Country Options
   const countries = [
     { id: 'global', name: 'Cobertura Global' },
     { id: 'co', name: 'Colombia' },
@@ -103,25 +114,27 @@ function NoticiasContent() {
     { id: 'salud', name: 'Botánica & Ciencia' }
   ];
 
-  // Sub-region Options con etiquetas concisas
+  // Sub-region Options para Colombia y demás países (Registros MinTIC & ANDIARIOS)
   const regionsByCountry = {
     co: [
-      { id: 'todas', name: 'Todas las Regiones' },
-      { id: 'bogota', name: 'Bogotá D.C. & Cundinamarca' },
-      { id: 'antioquia', name: 'Antioquia & Medellín' },
-      { id: 'valle', name: 'Valle del Cauca & Cali' },
-      { id: 'eje', name: 'Eje Cafetero & Cordillera' },
-      { id: 'caribe', name: 'Costa Caribe & Barranquilla' },
-      { id: 'santanderes', name: 'Santanderes & Nororiente' }
+      { id: 'todas', name: 'Todas las Regiones de Colombia' },
+      { id: 'bogota', name: 'Bogotá D.C. & Cundinamarca (Canal Capital / El Tiempo)' },
+      { id: 'caribe', name: 'Región Caribe (Barranquilla / Cartagena / Santa Marta / Telecaribe)' },
+      { id: 'antioquia', name: 'Antioquia & Medellín (El Colombiano / Teleantioquia)' },
+      { id: 'pacifico', name: 'Región Pacífico (Cali / Popayán / Pasto / Chocó / Telepacífico)' },
+      { id: 'eje', name: 'Eje Cafetero (Manizales / Pereira / Armenia / Telecafé)' },
+      { id: 'santanderes', name: 'Santanderes (Bucaramanga / Cúcuta / Canal TRO)' },
+      { id: 'orinoquia', name: 'Región Orinoquía (Meta / Casanare / Arauca / Radio MinTIC)' },
+      { id: 'amazonia', name: 'Región Amazonía (Caquetá / Putumayo / Amazonas / Emisoras MinTIC)' }
     ],
     mx: [
-      { id: 'todas', name: 'Todas las Regiones' },
+      { id: 'todas', name: 'Todas las Regiones de México' },
       { id: 'cdmx', name: 'Ciudad de México (CDMX)' },
       { id: 'jalisco', name: 'Jalisco & Occidente' },
       { id: 'nuevo-leon', name: 'Nuevo León & Norte' }
     ],
     ar: [
-      { id: 'todas', name: 'Todas las Regiones' },
+      { id: 'todas', name: 'Todas las Regiones de Argentina' },
       { id: 'buenos-aires', name: 'Buenos Aires (AMBA)' },
       { id: 'cordoba', name: 'Córdoba & Centro' },
       { id: 'santa-fe', name: 'Santa Fe & Litoral' }
@@ -133,6 +146,24 @@ function NoticiasContent() {
       { id: 'europa', name: 'Europa & Asia' }
     ]
   };
+
+  // Selector de Medios de Comunicación (Indexación Registros MinTIC, ANDIARIOS, ASOMEDIOS)
+  const mediaFilters = [
+    { id: 'todos-medios', name: 'Todos los Medios e Impresos' },
+    { id: 'rtvc', name: 'RTVC (Señal Colombia / Radiónica / Radio Nacional)' },
+    { id: 'el-tiempo', name: 'El Tiempo / Portafolio' },
+    { id: 'el-espectador', name: 'El Espectador' },
+    { id: 'caracol', name: 'Caracol Televisión / Caracol Radio / Blu Radio' },
+    { id: 'rcn', name: 'RCN Televisión / RCN Radio / La FM' },
+    { id: 'independiente', name: 'Periodismo Independiente (La Silla Vacía / Vorágine / Cuestión Pública)' },
+    { id: 'el-heraldo', name: 'El Heraldo (Caribe / Barranquilla)' },
+    { id: 'el-colombiano', name: 'El Colombiano / Teleantioquia' },
+    { id: 'el-pais', name: 'El País / Telepacífico (Cali / Pacífico)' },
+    { id: 'vanguardia', name: 'Vanguardia / Canal TRO (Santanderes)' },
+    { id: 'la-patria', name: 'La Patria / Telecafé (Eje Cafetero)' },
+    { id: 'reuters', name: 'Reuters World / Internacional' },
+    { id: 'sciencedaily', name: 'ScienceDaily / Investigación Botánica' }
+  ];
 
   // Month / Historical Period Options
   const monthFilters = [
@@ -199,6 +230,30 @@ function NoticiasContent() {
       mediaBadgeUrl: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=300&q=80",
       mediaSource: "La Nación Argentina",
       isInternalTeam: false
+    },
+    "Camilo Sotomayor": {
+      name: "Camilo Sotomayor",
+      title: "Periodista Investigativo de La Silla Vacía",
+      bio: "Periodista especializado en análisis de políticas públicas agropecuarias y regulación ambiental en Colombia.",
+      mediaBadgeUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      mediaSource: "La Silla Vacía",
+      isInternalTeam: false
+    },
+    "Lina María Orozco": {
+      name: "Lina María Orozco",
+      title: "Corresponsal Caribe de El Heraldo",
+      bio: "Periodista barranquillera encargada de la cobertura de proyectos apícolas y ambientales en los departamentos del Atlántico, Magdalena y Bolívar.",
+      mediaBadgeUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80",
+      mediaSource: "El Heraldo (Barranquilla)",
+      isInternalTeam: false
+    },
+    "Santiago Gaviria": {
+      name: "Santiago Gaviria",
+      title: "Redactor de El Colombiano",
+      bio: "Periodista antioqueño enfocado en desarrollo biotecnológico y cooperativas agrícolas en el Valle de Aburrá y Oriente Antioqueño.",
+      mediaBadgeUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
+      mediaSource: "El Colombiano (Medellín)",
+      isInternalTeam: false
     }
   };
 
@@ -229,6 +284,7 @@ function NoticiasContent() {
       image: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=1000&q=80",
       sourceLogo: "GranColinos Editorial",
       sourceName: "GranColinos Journal",
+      mediaId: "grancolinos",
       biasScore: 50,
       biasLabel: "Neutral / Institucional",
       views: 12450
@@ -245,6 +301,7 @@ function NoticiasContent() {
       image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000&q=80",
       sourceLogo: "Laboratorio GranColinos",
       sourceName: "GranColinos Science",
+      mediaId: "grancolinos",
       biasScore: 50,
       biasLabel: "Científico / Imparcial",
       views: 18920
@@ -261,13 +318,14 @@ function NoticiasContent() {
       image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80",
       sourceLogo: "Red Agrícola GC",
       sourceName: "GranColinos Agrosostenible",
+      mediaId: "grancolinos",
       biasScore: 50,
       biasLabel: "Ecológico / Neutral",
       views: 9400
     }
   ];
 
-  // Global News Feed Dataset
+  // Base Extensa de Noticias Multimedio Colombianas (MinTIC, ANDIARIOS, ASOMEDIOS)
   const fallbackGlobalNews = [
     {
       id: 'news-co-1',
@@ -277,6 +335,7 @@ function NoticiasContent() {
       author: "Juliana Restrepo",
       sourceName: "El Tiempo",
       sourceLogo: "El Tiempo",
+      mediaId: "el-tiempo",
       image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=80",
       country: "co",
       region: "bogota",
@@ -294,6 +353,7 @@ function NoticiasContent() {
       author: "Juliana Restrepo",
       sourceName: "El Espectador",
       sourceLogo: "El Espectador",
+      mediaId: "el-espectador",
       image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1000&q=80",
       country: "co",
       region: "eje",
@@ -304,38 +364,76 @@ function NoticiasContent() {
       views: 22400
     },
     {
-      id: 'news-co-3',
-      title: "Nuevas normativas de trazabilidad molecular para cosmética vegetal en Bogotá",
-      summary: "La Secretaría de Salud de Bogotá establece exigencias de pruebas de metales pesados en cosméticos derivados de plantas.",
-      fullContent: `Las autoridades sanitarias de la capital colombiana implementaron controles strictly a laboratorios cosméticos para garantizar que todos los bálsamos y gotas estén 100% libres de contaminantes sintéticos.`,
-      author: "Juliana Restrepo",
-      sourceName: "Caracol Radio",
-      sourceLogo: "Caracol Radio",
-      image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&w=1000&q=80",
+      id: 'news-co-indep-1',
+      title: "Informe especial: El mapa de concesiones agroecológicas en los Parques Nacionales",
+      summary: "Investigación periodística revela el grado de cumplimiento de los acuerdos de conservación campesina en la región andina y pacífica.",
+      fullContent: `Una investigación exhaustiva realizada durante 8 meses analiza la efectividad de las áreas de manejo comunitario en zonas de reserva biológica.`,
+      author: "Camilo Sotomayor",
+      sourceName: "La Silla Vacía",
+      sourceLogo: "La Silla Vacía",
+      mediaId: "independiente",
+      image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80",
       country: "co",
       region: "bogota",
       monthPeriod: "julio-2026",
-      publishedAt: "Hace 4 horas",
-      biasScore: 50,
-      biasLabel: "Centro Neutral",
-      views: 18900
+      publishedAt: "Hace 1 hora",
+      biasScore: 40,
+      biasLabel: "Centro-Independiente",
+      views: 26800
     },
     {
-      id: 'news-co-4',
-      title: "Simposio de Fitoterapia Andina en la Universidad Nacional de Medellín",
-      summary: "Investigadores colombianos presentan descubrimientos sobre la sinergia entre fitocannabinoides y melitina apícola.",
-      fullContent: `El auditorio principal de la Universidad Nacional sede Medellín reunió a más de 400 científicos para debatir los avances en apiterapia y extractos botánicos.`,
-      author: "Juliana Restrepo",
-      sourceName: "El Tiempo",
-      sourceLogo: "El Tiempo",
-      image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1000&q=80",
+      id: 'news-co-caribe-1',
+      title: "Telecaribe y El Heraldo presentan especial sobre apicultura sostenible en la Sierra Nevada",
+      summary: "Comunidades indígenas y apicultores del Caribe exportan mieles orgánicas certificadas a la Unión Europea.",
+      fullContent: `Un informe en coproducción entre el canal regional Telecaribe y el diario El Heraldo documenta la transformación socioeconómica de los pueblos de la falda norte de la Sierra Nevada de Santa Marta.`,
+      author: "Lina María Orozco",
+      sourceName: "El Heraldo",
+      sourceLogo: "El Heraldo (Barranquilla)",
+      mediaId: "el-heraldo",
+      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1000&q=80",
+      country: "co",
+      region: "caribe",
+      monthPeriod: "julio-2026",
+      publishedAt: "Hace 3 horas",
+      biasScore: 50,
+      biasLabel: "Regional Imparcial",
+      views: 34100
+    },
+    {
+      id: 'news-co-antioquia-1',
+      title: "Teleantioquia & El Colombiano destacan laboratorio de biotecnología en el Oriente Antioqueño",
+      summary: "Inauguran centro de investigación para la refinación de péptidos apícolas y bioinsumos agrícolas en Rionegro.",
+      fullContent: `El gobernador de Antioquia y directivos universitarios cortaron la cinta del centro biotecnológico más moderno de la región andina.`,
+      author: "Santiago Gaviria",
+      sourceName: "El Colombiano",
+      sourceLogo: "El Colombiano",
+      mediaId: "el-colombiano",
+      image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000&q=80",
       country: "co",
       region: "antioquia",
-      monthPeriod: "junio-2026",
-      publishedAt: "24 Junio 2026",
+      monthPeriod: "julio-2026",
+      publishedAt: "Hace 4 horas",
       biasScore: 60,
-      biasLabel: "Centro-Derecha",
-      views: 29500
+      biasLabel: "Centro-Derecha Regional",
+      views: 29800
+    },
+    {
+      id: 'news-co-rtvc-1',
+      title: "Señal Colombia y Radio Nacional transmiten el Congreso de Bioeconomía Andina",
+      summary: "El Sistema de Medios Públicos RTVC cubre los debates sobre soberanía alimentaria y fitoterapia de uso popular.",
+      fullContent: `A través de las 68 frecuencias de la Radio Nacional de Colombia y la pantalla de Señal Colombia, el país sigue en directo las deliberaciones de más de 80 delegaciones agroecológicas.`,
+      author: "Redacción RTVC",
+      sourceName: "Señal Colombia (RTVC)",
+      sourceLogo: "RTVC Públicos",
+      mediaId: "rtvc",
+      image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1000&q=80",
+      country: "co",
+      region: "bogota",
+      monthPeriod: "julio-2026",
+      publishedAt: "Hace 30 min",
+      biasScore: 45,
+      biasLabel: "Público Institucional",
+      views: 38900
     },
     {
       id: 'news-global-1',
@@ -345,6 +443,7 @@ function NoticiasContent() {
       author: "Sarah Jenkins",
       sourceName: "Reuters World",
       sourceLogo: "Reuters World",
+      mediaId: "reuters",
       image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1000&q=80",
       country: "global",
       region: "todas",
@@ -362,6 +461,7 @@ function NoticiasContent() {
       author: "Dr. Michael Harrison",
       sourceName: "ScienceDaily",
       sourceLogo: "ScienceDaily",
+      mediaId: "sciencedaily",
       image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1000&q=80",
       country: "us",
       region: "todas",
@@ -370,57 +470,6 @@ function NoticiasContent() {
       biasScore: 50,
       biasLabel: "Científico Neutral",
       views: 24500
-    },
-    {
-      id: 'news-mx-1',
-      title: "Avances en la regulación de la medicina vegetal en América Latina",
-      summary: "Foro regional en México establece guías de trazabilidad de origen para plantas medicinales y suplementos orgánicos.",
-      fullContent: `Representantes de 14 países latinoamericanos concluyeron la Cumbre de Regulación Botánica en Ciudad de México, acordando un catálogo unificado de plantas autóctonas.`,
-      author: "Carlos Mendoza",
-      sourceName: "Agencia EFE",
-      sourceLogo: "Agencia EFE",
-      image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&w=1000&q=80",
-      country: "mx",
-      region: "cdmx",
-      monthPeriod: "julio-2026",
-      publishedAt: "Hace 45 min",
-      biasScore: 45,
-      biasLabel: "Centro",
-      views: 15800
-    },
-    {
-      id: 'news-us-2',
-      title: "El impacto del bienestar holístico en la productividad laboral urbana",
-      summary: "Nuevos datos demuestran que el consumo de adaptógenos naturales y nutrición vegetal optimiza el desempeño en entornos exigentes.",
-      fullContent: `Un informe publicado por el Oxford Wellbeing Institute reveló que los profesionales que incorporan soluciones naturales de manejo de estrés reportan un incremento significativo en la concentración.`,
-      author: "David Vance",
-      sourceName: "Financial Times",
-      sourceLogo: "Financial Times",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80",
-      country: "us",
-      region: "todas",
-      monthPeriod: "julio-2026",
-      publishedAt: "Hace 2 horas",
-      biasScore: 75,
-      biasLabel: "Derecha Económica",
-      views: 28900
-    },
-    {
-      id: 'news-ar-1',
-      title: "Argentina impulsa la investigación en productos derivados de apiterapia",
-      summary: "Universidades de Buenos Aires abren laboratorio especializado en caracterización de venenos de abejas y propóleos.",
-      fullContent: `La Universidad Nacional de La Plata inauguró su Centro de Biotecnología Apícola, dedicado a analizar la pureza cromatográfica de mieles y melitina purificada.`,
-      author: "Gonzalo Peralta",
-      sourceName: "La Nación",
-      sourceLogo: "La Nación",
-      image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1000&q=80",
-      country: "ar",
-      region: "buenos-aires",
-      monthPeriod: "julio-2026",
-      publishedAt: "Hace 3 horas",
-      biasScore: 70,
-      biasLabel: "Centro-Derecha",
-      views: 19400
     }
   ];
 
@@ -433,7 +482,7 @@ function NoticiasContent() {
       const q = query(
         collection(db, 'gran_noticias_articles'),
         orderBy('publishedAt', 'desc'),
-        limit(60)
+        limit(80)
       );
 
       unsubscribe = onSnapshot(q, (snapshot) => {
@@ -456,6 +505,7 @@ function NoticiasContent() {
               author: data.author || data.byline || 'Redacción periodística',
               sourceName: data.sourceName || 'Agencia Periodística',
               sourceLogo: (data.sourceLogo || data.sourceName || 'Medio Verificado').replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim(),
+              mediaId: data.mediaId || 'todos-medios',
               image: data.image || data.thumbnail || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1000&q=80",
               country: (data.country || 'global').toLowerCase(),
               region: (data.region || 'todas').toLowerCase(),
@@ -501,8 +551,9 @@ function NoticiasContent() {
       
       const matchRegion = (activeRegion === 'todas') || (item.region === activeRegion) || (!item.region);
       const matchMonth = (activeMonth === 'todos-meses') || (item.monthPeriod === activeMonth) || (!item.monthPeriod);
+      const matchMedia = (activeMediaFilter === 'todos-medios') || (item.mediaId === activeMediaFilter) || (item.sourceName.toLowerCase().includes(activeMediaFilter.replace('-', ' ')));
 
-      return matchCountry && matchRegion && matchMonth;
+      return matchCountry && matchRegion && matchMonth && matchMedia;
     })
     .sort((a, b) => {
       if (activeSort === 'populares') return (b.views || 0) - (a.views || 0);
@@ -515,17 +566,17 @@ function NoticiasContent() {
     <div className="min-h-screen theme-noticias text-white pt-32 pb-24 px-4 sm:px-6 relative overflow-hidden select-none">
       <div className="max-w-7xl mx-auto relative z-10 space-y-12">
         
-        {/* Main Header */}
+        {/* Main Header con Distintivo de Hemeroteca e Investigación Académica */}
         <div className="text-center fade-in">
-          <span className="text-[#E2E8F0] text-xs font-bold tracking-[0.3em] uppercase mb-3 inline-flex items-center gap-2">
-            <Newspaper size={16} className="text-[#E2E8F0]" /> PORTAL DE NOTICIAS GLOBALES EN TIEMPO REAL
+          <span className="text-[#E2E8F0] text-xs font-bold tracking-[0.3em] uppercase mb-3 inline-flex items-center gap-2 bg-[#E2E8F0]/10 px-4 py-1.5 rounded-full border border-[#E2E8F0]/30">
+            <GraduationCap size={16} className="text-[#E2E8F0]" /> HEMEROTECA GLOBAL & INVESTIGACIÓN EN TIEMPO REAL
           </span>
           <h1 className="font-serif text-4xl md:text-6xl text-[#E2E8F0] mb-6 drop-shadow-md">
             Gran Noticias Global
           </h1>
           <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent mx-auto mb-6"></div>
-          <p className="text-gray-300 max-w-2xl mx-auto font-light leading-relaxed text-sm md:text-base">
-            Monitoreo en tiempo real de noticias internacionales, sesgo ideológico verificado y periodismo alternativo impulsado por Gran Noticias.
+          <p className="text-gray-300 max-w-3xl mx-auto font-light leading-relaxed text-sm md:text-base">
+            Plataforma unificada de información periodística y académica. Monitoreo exhaustivo de medios nacionales (RTVC, El Tiempo, El Espectador, Caracol, RCN, Silla Vacía) y regionales de Colombia (MinTIC, ANDIARIOS, ASOMEDIOS).
           </p>
         </div>
 
@@ -560,7 +611,7 @@ function NoticiasContent() {
                   </div>
 
                   <div className="p-6 space-y-3">
-                    {/* Media Badge & Author en una sola línea ordenada */}
+                    {/* Media Badge & Author */}
                     <div className="flex items-center justify-between text-[11px] font-sans text-gray-400 border-b border-white/10 pb-2.5">
                       <span className="text-[#E2E8F0] font-semibold truncate max-w-[50%]">{article.sourceLogo}</span>
                       <button 
@@ -596,7 +647,7 @@ function NoticiasContent() {
           </div>
         </div>
 
-        {/* FEED GLOBAL EN TIEMPO REAL - LAYOUT DE CONTROLES ORGANIZADO EN 2 FILAS LIMPIAS */}
+        {/* FEED GLOBAL EN TIEMPO REAL - MATRIZ DE CONTROLES MULTIMEDIO CON 5 FILTROS LIMPIOS */}
         <div className="bg-black/50 border border-[#E2E8F0]/30 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl glow-noticias space-y-8">
           
           {/* Fila 1: Título e Indicador En Tiempo Real */}
@@ -607,24 +658,24 @@ function NoticiasContent() {
               </div>
               <div>
                 <h3 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  FEED EN VIVO DE GRAN NOTICIAS
+                  FEED EN VIVO & HEMEROTECA PERIODÍSTICA MULTIMEDIO
                 </h3>
-                <p className="text-xs text-gray-300">Medición de sesgo político y cobertura por departamentos y regiones</p>
+                <p className="text-xs text-gray-300">Filtra por medio de comunicación (RTVC, El Tiempo, El Espectador, Silla Vacía), región o mes</p>
               </div>
             </div>
 
             <span className="px-3 py-1 bg-[#E2E8F0]/15 text-[#E2E8F0] text-[10px] font-mono font-bold tracking-widest rounded-lg border border-[#E2E8F0]/30 shrink-0">
-              EN TIEMPO REAL
+              MEDIOS OFICIALES MINTIC & CRC
             </span>
           </div>
 
-          {/* Fila 2: Bar de Filtros Perfectamente Espaciados (4 Controles Limpios) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Fila 2: Bar de Filtros Perfectamente Espaciados (5 Controles Limpios en Grid) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             
             {/* Control 1: Ordenamiento */}
             <button
               onClick={() => setActiveSort(activeSort === 'populares' ? 'recientes' : 'populares')}
-              className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 border ${
+              className={`w-full py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 border ${
                 activeSort === 'populares'
                   ? 'bg-[#E2E8F0] text-black border-[#E2E8F0] shadow-[0_0_15px_rgba(226,232,240,0.4)]'
                   : 'bg-black/60 text-gray-300 border-white/15 hover:text-white hover:bg-white/10'
@@ -634,12 +685,28 @@ function NoticiasContent() {
               <span>{activeSort === 'populares' ? 'Más Populares' : 'Más Recientes'}</span>
             </button>
 
-            {/* Control 2: Selector de Mes */}
+            {/* Control 2: Selector por Medio / Editorial */}
+            <div className="relative w-full">
+              <select
+                value={activeMediaFilter}
+                onChange={(e) => setActiveMediaFilter(e.target.value)}
+                className="w-full bg-[#0F1713] text-[#E2E8F0] text-xs font-semibold py-2.5 px-3 pr-8 rounded-xl border border-[#E2E8F0]/40 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
+              >
+                {mediaFilters.map((m) => (
+                  <option key={m.id} value={m.id} className="bg-[#0A0D0B] text-white py-1">
+                    {m.name}
+                  </option>
+                ))}
+              </select>
+              <Filter className="absolute right-2.5 top-3 text-[#E2E8F0] pointer-events-none" size={14} />
+            </div>
+
+            {/* Control 3: Selector de Mes */}
             <div className="relative w-full">
               <select
                 value={activeMonth}
                 onChange={(e) => setActiveMonth(e.target.value)}
-                className="w-full bg-black/80 text-[#E2E8F0] text-xs font-semibold py-2.5 px-4 pr-9 rounded-xl border border-[#E2E8F0]/35 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
+                className="w-full bg-black/80 text-[#E2E8F0] text-xs font-semibold py-2.5 px-3 pr-8 rounded-xl border border-[#E2E8F0]/35 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
               >
                 {monthFilters.map((m) => (
                   <option key={m.id} value={m.id} className="bg-[#0A0D0B] text-white py-1">
@@ -647,15 +714,15 @@ function NoticiasContent() {
                   </option>
                 ))}
               </select>
-              <Calendar className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={15} />
+              <Calendar className="absolute right-2.5 top-3 text-[#E2E8F0] pointer-events-none" size={14} />
             </div>
 
-            {/* Control 3: Selector de País */}
+            {/* Control 4: Selector de País */}
             <div className="relative w-full">
               <select
                 value={activeCountry}
                 onChange={(e) => handleCountryChange(e.target.value)}
-                className="w-full bg-black/80 text-[#E2E8F0] text-xs font-semibold py-2.5 px-4 pr-9 rounded-xl border border-[#E2E8F0]/35 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
+                className="w-full bg-black/80 text-[#E2E8F0] text-xs font-semibold py-2.5 px-3 pr-8 rounded-xl border border-[#E2E8F0]/35 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
               >
                 {countries.map((c) => (
                   <option key={c.id} value={c.id} className="bg-[#0A0D0B] text-white py-1">
@@ -663,15 +730,15 @@ function NoticiasContent() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={16} />
+              <ChevronDown className="absolute right-2.5 top-3 text-[#E2E8F0] pointer-events-none" size={15} />
             </div>
 
-            {/* Control 4: Selector de Sub-región / Departamento */}
+            {/* Control 5: Selector de Sub-región / Departamento */}
             <div className="relative w-full">
               <select
                 value={activeRegion}
                 onChange={(e) => setActiveRegion(e.target.value)}
-                className="w-full bg-[#0E1511] text-[#E2E8F0] text-xs font-semibold py-2.5 px-4 pr-9 rounded-xl border border-[#E2E8F0]/45 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
+                className="w-full bg-[#0E1511] text-[#E2E8F0] text-xs font-semibold py-2.5 px-3 pr-8 rounded-xl border border-[#E2E8F0]/45 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-sm cursor-pointer truncate"
               >
                 {currentRegionList.map((r) => (
                   <option key={r.id} value={r.id} className="bg-[#0A0D0B] text-white py-1">
@@ -679,7 +746,7 @@ function NoticiasContent() {
                   </option>
                 ))}
               </select>
-              <MapPin className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={15} />
+              <MapPin className="absolute right-2.5 top-3 text-[#E2E8F0] pointer-events-none" size={14} />
             </div>
 
           </div>
@@ -688,13 +755,13 @@ function NoticiasContent() {
           {loadingFeed ? (
             <div className="flex flex-col items-center justify-center py-20 text-gray-400">
               <RefreshCw className="animate-spin text-[#E2E8F0] mb-4" size={32} />
-              <p className="text-xs font-mono uppercase tracking-widest">Sincronizando satélites de información y algoritmo de sesgo...</p>
+              <p className="text-xs font-mono uppercase tracking-widest">Indexando registros de medios MinTIC y midiendo sesgo editorial...</p>
             </div>
           ) : filteredNews.length === 0 ? (
             <div className="text-center py-16 bg-white/5 rounded-2xl border border-white/5">
               <Globe className="text-gray-500 mx-auto mb-3" size={36} />
               <h4 className="text-sm font-bold text-white mb-1">Sin noticias archivadas para los filtros seleccionados</h4>
-              <p className="text-xs text-gray-400">Selecciona "Cobertura Global" y "Todas las Regiones" para consultar el catálogo completo.</p>
+              <p className="text-xs text-gray-400">Selecciona "Todos los Medios" y "Todas las Regiones" para consultar el catálogo completo.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -728,7 +795,7 @@ function NoticiasContent() {
                     </div>
 
                     <div className="p-6 space-y-3">
-                      {/* Author & Time Info en una sola línea ordenada */}
+                      {/* Author & Time Info */}
                       <div className="flex items-center justify-between text-[11px] font-sans text-gray-400 border-b border-white/10 pb-2.5">
                         <button 
                           onClick={(e) => openAuthorProfile(e, item.author, item.sourceName)}
@@ -766,7 +833,7 @@ function NoticiasContent() {
           )}
         </div>
 
-        {/* Insignia de Certificación e Información Verificada para Noticias */}
+        {/* Insignia de Certificación e Información Verificada para Investigación Académica */}
         <NewsTrustBadge />
       </div>
 
