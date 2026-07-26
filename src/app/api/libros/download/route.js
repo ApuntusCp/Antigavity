@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { getStoredBookText } from '@/app/lib/book-texts';
 
 /**
  * Algoritmo de Búsqueda Intensiva en DuckDuckGo para encontrar y descargar el archivo .PDF real de la obra
@@ -22,7 +23,6 @@ async function findAndFetchRealPdfFromDuckDuckGo(title, author) {
 
     if (ddgRes.ok) {
       const html = await ddgRes.text();
-      // Extraer enlaces a archivos .pdf
       const rawMatches = html.match(/href="([^"]+)"/gi) || [];
       const pdfUrls = [];
 
@@ -40,12 +40,8 @@ async function findAndFetchRealPdfFromDuckDuckGo(title, author) {
         }
       }
 
-      console.log(`[DuckDuckGo Crawler] Encontrados ${pdfUrls.length} enlaces .PDF candidatos.`);
-
-      // Probar los enlaces encontrados hasta obtener un PDF binario válido
       for (const targetPdfUrl of pdfUrls.slice(0, 5)) {
         try {
-          console.log(`[DuckDuckGo Crawler] Intentando descarga desde: ${targetPdfUrl}`);
           const pdfFetch = await fetch(targetPdfUrl, {
             headers: {
               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) GranColinosDigitalLibrary/2.0'
@@ -57,30 +53,34 @@ async function findAndFetchRealPdfFromDuckDuckGo(title, author) {
             const arrayBuffer = await pdfFetch.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
 
-            // Verificar que sea un PDF binario real (debe comenzar con %PDF- y tener peso significativo)
-            if (buffer.length > 5000 && (contentType.includes('pdf') || buffer.toString('ascii', 0, 5) === '%PDF-')) {
+            if (buffer.length > 8000 && (contentType.includes('pdf') || buffer.toString('ascii', 0, 5) === '%PDF-')) {
               console.log(`[DuckDuckGo Crawler] ¡PDF Real Descargado Exitosamente! (${buffer.length} bytes)`);
               return buffer;
             }
           }
-        } catch (e) {
-          console.warn(`[DuckDuckGo Crawler] Fallo al descargar de ${targetPdfUrl}:`, e.message);
-        }
+        } catch (e) {}
       }
     }
   } catch (err) {
-    console.error("[DuckDuckGo Crawler] Error en la búsqueda:", err);
+    console.error("[DuckDuckGo Crawler] Error:", err);
   }
   return null;
 }
 
 /**
- * Extractor Multitarea de Texto Completo (Gutenberg, Internet Archive, Wikisource)
+ * Extractor Multitarea de Texto Completo
  */
 async function fetchCleanBookParagraphs(title, author, gutId = null) {
+  // 1. VERIFICAR SI TENEMOS LA BASE HEMEROGRÁFICA INTERNA DISPONIBLE
+  const storedParas = getStoredBookText(title);
+  if (storedParas && storedParas.length > 0) {
+    console.log(`[Hemeroteca Local] Cargado texto íntegro para "${title}" (${storedParas.length} párrafos).`);
+    return storedParas;
+  }
+
   let rawText = '';
 
-  // 1. PROJECT GUTENBERG SI TIENE ID DIRECTO
+  // 2. PROJECT GUTENBERG SI TIENE ID DIRECTO
   if (gutId && gutId.startsWith('gut-')) {
     const cleanGutId = gutId.replace('gut-', '');
     const mirrorUrls = [
@@ -105,7 +105,7 @@ async function fetchCleanBookParagraphs(title, author, gutId = null) {
     }
   }
 
-  // 2. BUSCAR EN GUTENDEX
+  // 3. BUSCAR EN GUTENDEX
   if (!rawText || rawText.length < 2000) {
     try {
       const searchRes = await fetch(`https://gutendex.com/books/?search=${encodeURIComponent(title)}`);
@@ -130,7 +130,7 @@ async function fetchCleanBookParagraphs(title, author, gutId = null) {
     } catch (e) {}
   }
 
-  // 3. BUSCAR EN WIKISOURCE
+  // 4. BUSCAR EN WIKISOURCE PROFUNDO
   if (!rawText || rawText.length < 2000) {
     for (const lang of ['es', 'en']) {
       try {
@@ -159,7 +159,6 @@ async function fetchCleanBookParagraphs(title, author, gutId = null) {
     }
   }
 
-  // Depurar metadatos OCR
   let text = rawText || '';
 
   const startMatch = text.match(/\*\*\*\s*START OF TH(IS|E) PROJECT GUTENBERG EBOOK[\s\S]*?\*\*\*/i);
@@ -331,8 +330,8 @@ export async function GET(request) {
       });
     }
 
-    // PASO 2: Si no se halló PDF binario en DuckDuckGo, extraer el texto integro y compilar el PDF de la obra completa
-    console.log("Compilando texto íntegro completo desde repositorios abiertos...");
+    // PASO 2: Extraer el texto íntegro completo desde la hemeroteca interna o APIs abiertas
+    console.log("Compilando texto íntegro completo desde hemeroteca interna y repositorios...");
     const cleanParagraphs = await fetchCleanBookParagraphs(title, author, id);
     const compiledPdfBuffer = await buildFullBookPdf(title, author, cleanParagraphs);
 
