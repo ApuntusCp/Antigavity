@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, Filter } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale } from 'lucide-react';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -26,8 +26,8 @@ function NewsTrustBadge() {
             <Rss size={22} />
           </div>
           <div>
-            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Fuentes Periodísticas Verificadas</h5>
-            <p className="text-[11px] text-gray-300">Citación directa del medio original sin invención de contenidos</p>
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Algoritmo de Sesgo Ideológico</h5>
+            <p className="text-[11px] text-gray-300">Medición neutral de la tendencia política de cada medio</p>
           </div>
         </div>
 
@@ -37,9 +37,42 @@ function NewsTrustBadge() {
           </div>
           <div>
             <h5 className="text-xs font-bold text-white uppercase tracking-wider">Garantía Editorial GranColinos</h5>
-            <p className="text-[11px] text-gray-300">Transparencia periodística y respeto riguroso a los derechos de autor</p>
+            <p className="text-[11px] text-gray-300">Transparencia periodística y respeto a los derechos de autor</p>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Componente Visual de la Barra de Sesgo Ideológico (Algoritmo Gran Noticias)
+function PoliticalBiasBar({ biasScore, biasLabel }) {
+  // biasScore: 0 (Izquierda extrema) a 100 (Derecha extrema). 50 es Neutral/Centro.
+  const score = Math.max(5, Math.min(95, biasScore || 50));
+
+  return (
+    <div className="w-full space-y-1.5 my-3">
+      <div className="flex items-center justify-between text-[10px] font-mono text-gray-300">
+        <span className="flex items-center gap-1 font-bold text-[#E2E8F0]">
+          <Scale size={11} /> Sesgo Editorial: <strong className="text-white">{biasLabel || 'Neutral / Centro'}</strong>
+        </span>
+        <span className="text-gray-400">{score}%</span>
+      </div>
+
+      {/* Gradiente de Sesgo Ideológico: Azul (Izquierda) -> Verde (Centro) -> Rojo/Naranja (Derecha) */}
+      <div className="relative w-full h-2 rounded-full bg-white/10 overflow-hidden border border-white/20">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-emerald-400 via-amber-400 to-rose-500 opacity-80"></div>
+        {/* Indicador del punto de sesgo */}
+        <div 
+          className="absolute top-0 bottom-0 w-2.5 bg-white border border-black shadow-[0_0_8px_rgba(255,255,255,0.9)] rounded-full -translate-x-1/2 transition-all duration-500"
+          style={{ left: `${score}%` }}
+        ></div>
+      </div>
+
+      <div className="flex items-center justify-between text-[8px] font-mono text-gray-400 uppercase tracking-widest px-0.5">
+        <span>Izquierda</span>
+        <span>Centro</span>
+        <span>Derecha</span>
       </div>
     </div>
   );
@@ -51,6 +84,7 @@ function NoticiasContent() {
 
   const initialCountry = searchParams.get('pais') || 'global';
   const [activeCountry, setActiveCountry] = useState(initialCountry);
+  const [activeRegion, setActiveRegion] = useState('todas');
   const [activeSort, setActiveSort] = useState('populares'); // 'populares' | 'recientes'
   const [activeMonth, setActiveMonth] = useState('julio-2026'); // Month filter state
   const [selectedArticle, setSelectedArticle] = useState(null); // Article Reader Modal State
@@ -69,6 +103,37 @@ function NoticiasContent() {
     { id: 'salud', name: 'Botánica, Apitoxina & Ciencia', code: 'SCIENCE' }
   ];
 
+  // Sub-region Options depending on Country Selected
+  const regionsByCountry = {
+    co: [
+      { id: 'todas', name: 'Todas las Regiones de Colombia' },
+      { id: 'bogota', name: 'Bogotá D.C. y Cundinamarca' },
+      { id: 'antioquia', name: 'Antioquia y Valle de Aburrá' },
+      { id: 'valle', name: 'Valle del Cauca y Pacífico' },
+      { id: 'eje', name: 'Eje Cafetero y Cordillera Central' },
+      { id: 'caribe', name: 'Costa Caribe y Barranquilla' },
+      { id: 'santanderes', name: 'Santanderes y Nororiente' }
+    ],
+    mx: [
+      { id: 'todas', name: 'Todas las Regiones de México' },
+      { id: 'cdmx', name: 'Ciudad de México (CDMX)' },
+      { id: 'jalisco', name: 'Jalisco y Occidente' },
+      { id: 'nuevo-leon', name: 'Nuevo León y Norte' }
+    ],
+    ar: [
+      { id: 'todas', name: 'Todas las Regiones de Argentina' },
+      { id: 'buenos-aires', name: 'Buenos Aires (AMBA)' },
+      { id: 'cordoba', name: 'Córdoba y Centro' },
+      { id: 'santa-fe', name: 'Santa Fe y Litoral' }
+    ],
+    global: [
+      { id: 'todas', name: 'Todas las Regiones Globales' },
+      { id: 'america-latina', name: 'América Latina' },
+      { id: 'norteamerica', name: 'Norteamérica' },
+      { id: 'europa', name: 'Europa y Asia' }
+    ]
+  };
+
   // Month / Historical Period Options for Dropdown
   const monthFilters = [
     { id: 'julio-2026', name: 'Julio 2026 (Mes Actual)' },
@@ -77,7 +142,7 @@ function NoticiasContent() {
     { id: 'todos-meses', name: 'Archivo Histórico Completo' }
   ];
 
-  // Base de Datos de Atribución Periodística Real con Logos e Identidades Oficiales Verificadas
+  // Base de Datos de Atribución Periodística Real
   const authorProfiles = {
     "Equipo Editorial GranColinos": {
       name: "Equipo Editorial GranColinos",
@@ -165,6 +230,8 @@ function NoticiasContent() {
       image: "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=1000&q=80",
       sourceLogo: "GranColinos Editorial",
       sourceName: "GranColinos Journal",
+      biasScore: 50,
+      biasLabel: "Neutral / Institucional",
       views: 12450
     },
     {
@@ -179,6 +246,8 @@ function NoticiasContent() {
       image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000&q=80",
       sourceLogo: "Laboratorio GranColinos",
       sourceName: "GranColinos Science",
+      biasScore: 50,
+      biasLabel: "Científico / Imparcial",
       views: 18920
     },
     {
@@ -193,11 +262,13 @@ function NoticiasContent() {
       image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80",
       sourceLogo: "Red Agrícola GC",
       sourceName: "GranColinos Agrosostenible",
+      biasScore: 50,
+      biasLabel: "Ecológico / Neutral",
       views: 9400
     }
   ];
 
-  // Robust Global News Feed Dataset (Multipaís y Multimes para Cobertura Completa)
+  // Global News Feed Dataset (Con Sesgo Ideológico de Gran Noticias & Regiones)
   const fallbackGlobalNews = [
     {
       id: 'news-co-1',
@@ -209,22 +280,28 @@ function NoticiasContent() {
       sourceLogo: "El Tiempo",
       image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=80",
       country: "co",
+      region: "bogota",
       monthPeriod: "julio-2026",
       publishedAt: "Hace 25 min",
+      biasScore: 65,
+      biasLabel: "Centro-Derecha",
       views: 31200
     },
     {
       id: 'news-co-2',
       title: "Inversión histórica en reservas apícolas del Eje Cafetero",
       summary: "Alianza entre cultivadores orgánicos y el Ministerio de Agricultura protege 50.000 colmenas nativas en la región andina.",
-      fullContent: `Con un presupuesto enfocado en la conservación ambiental, el gobierno nacional y cooperativas locales lanzaron el programa de apicultura sostenible más ambicioso del país.\n\nEl proyecto incluye laboratorios de análisis cromatográfico para asegurar la pureza del propóleo y veneno apícola exportable.`,
+      fullContent: `Con un presupuesto enfocado en la conservación ambiental, el gobierno nacional y cooperativas locales lanzaron el programa de apicultura sostenible más ambicioso del país.`,
       author: "Juliana Restrepo",
       sourceName: "El Espectador",
       sourceLogo: "El Espectador",
       image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1000&q=80",
       country: "co",
+      region: "eje",
       monthPeriod: "julio-2026",
       publishedAt: "Hace 2 horas",
+      biasScore: 35,
+      biasLabel: "Centro-Izquierda",
       views: 22400
     },
     {
@@ -237,22 +314,28 @@ function NoticiasContent() {
       sourceLogo: "Caracol Radio",
       image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&w=1000&q=80",
       country: "co",
+      region: "bogota",
       monthPeriod: "julio-2026",
       publishedAt: "Hace 4 horas",
+      biasScore: 50,
+      biasLabel: "Centro Neutral",
       views: 18900
     },
     {
       id: 'news-co-4',
       title: "Simposio de Fitoterapia Andina en la Universidad Nacional de Medellín",
       summary: "Investigadores colombianos presentan descubrimientos sobre la sinergia entre fitocannabinoides y melitina apícola.",
-      fullContent: `El auditorio principal de la Universidad Nacional sede Medellín reunió a más de 400 científicos para debatir los avances en apiterapia y extractos botánicos de la Cordillera Central.`,
+      fullContent: `El auditorio principal de la Universidad Nacional sede Medellín reunió a más de 400 científicos para debatir los avances en apiterapia y extractos botánicos.`,
       author: "Juliana Restrepo",
       sourceName: "El Tiempo",
       sourceLogo: "El Tiempo",
       image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1000&q=80",
       country: "co",
+      region: "antioquia",
       monthPeriod: "junio-2026",
       publishedAt: "24 Junio 2026",
+      biasScore: 60,
+      biasLabel: "Centro-Derecha",
       views: 29500
     },
     {
@@ -265,8 +348,11 @@ function NoticiasContent() {
       sourceLogo: "Reuters World",
       image: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1000&q=80",
       country: "global",
+      region: "todas",
       monthPeriod: "julio-2026",
       publishedAt: "Hace 1 hora",
+      biasScore: 50,
+      biasLabel: "Global Imparcial",
       views: 42100
     },
     {
@@ -279,8 +365,11 @@ function NoticiasContent() {
       sourceLogo: "ScienceDaily",
       image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1000&q=80",
       country: "us",
+      region: "todas",
       monthPeriod: "julio-2026",
       publishedAt: "Hace 10 min",
+      biasScore: 50,
+      biasLabel: "Científico Neutral",
       views: 24500
     },
     {
@@ -293,8 +382,11 @@ function NoticiasContent() {
       sourceLogo: "Agencia EFE",
       image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&w=1000&q=80",
       country: "mx",
+      region: "cdmx",
       monthPeriod: "julio-2026",
       publishedAt: "Hace 45 min",
+      biasScore: 45,
+      biasLabel: "Centro",
       views: 15800
     },
     {
@@ -307,8 +399,11 @@ function NoticiasContent() {
       sourceLogo: "Financial Times",
       image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80",
       country: "us",
+      region: "todas",
       monthPeriod: "julio-2026",
       publishedAt: "Hace 2 horas",
+      biasScore: 75,
+      biasLabel: "Derecha Económica",
       views: 28900
     },
     {
@@ -321,8 +416,11 @@ function NoticiasContent() {
       sourceLogo: "La Nación",
       image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1000&q=80",
       country: "ar",
+      region: "buenos-aires",
       monthPeriod: "julio-2026",
       publishedAt: "Hace 3 horas",
+      biasScore: 70,
+      biasLabel: "Centro-Derecha",
       views: 19400
     }
   ];
@@ -361,8 +459,11 @@ function NoticiasContent() {
               sourceLogo: (data.sourceLogo || data.sourceName || 'Medio Verificado').replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim(),
               image: data.image || data.thumbnail || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1000&q=80",
               country: (data.country || 'global').toLowerCase(),
+              region: (data.region || 'todas').toLowerCase(),
               monthPeriod: data.monthPeriod || 'julio-2026',
               publishedAt: pubTime,
+              biasScore: data.biasScore || 50,
+              biasLabel: data.biasLabel || 'Neutral / Centro',
               views: data.views || Math.floor(Math.random() * 20000) + 5000
             };
           });
@@ -386,7 +487,15 @@ function NoticiasContent() {
     return () => unsubscribe();
   }, []);
 
-  // Filtered & Sorted News Items (Filtro por País + Filtro por Mes)
+  // Reset activeRegion to 'todas' when Country changes
+  const handleCountryChange = (countryId) => {
+    setActiveCountry(countryId);
+    setActiveRegion('todas');
+    if (countryId === 'global') router.push('/noticias', { scroll: false });
+    else router.push(`/noticias?pais=${countryId}`, { scroll: false });
+  };
+
+  // Filtered & Sorted News Items (País + Región/Municipio + Mes)
   const filteredNews = realtimeArticles
     .filter(item => {
       // Country Filter
@@ -394,15 +503,21 @@ function NoticiasContent() {
                            (activeCountry === 'salud' && (item.summary.toLowerCase().includes('apitoxina') || item.summary.toLowerCase().includes('botánic') || item.summary.toLowerCase().includes('salud'))) ||
                            (item.country === activeCountry || item.country === 'global');
       
+      // Sub-region Filter
+      const matchRegion = (activeRegion === 'todas') || (item.region === activeRegion) || (!item.region);
+
       // Month Filter
       const matchMonth = (activeMonth === 'todos-meses') || (item.monthPeriod === activeMonth) || (!item.monthPeriod);
 
-      return matchCountry && matchMonth;
+      return matchCountry && matchRegion && matchMonth;
     })
     .sort((a, b) => {
       if (activeSort === 'populares') return (b.views || 0) - (a.views || 0);
       return 0;
     });
+
+  // Current regions list available based on selected country
+  const currentRegionList = regionsByCountry[activeCountry] || regionsByCountry['global'];
 
   return (
     <div className="min-h-screen theme-noticias text-white pt-32 pb-24 px-4 sm:px-6 relative overflow-hidden select-none">
@@ -418,7 +533,7 @@ function NoticiasContent() {
           </h1>
           <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent mx-auto mb-6"></div>
           <p className="text-gray-300 max-w-2xl mx-auto font-light leading-relaxed text-sm md:text-base">
-            Monitoreo en tiempo real de noticias internacionales, investigación botánica y economía del bienestar impulsado por la red Gran Noticias.
+            Monitoreo en tiempo real de noticias internacionales, sesgo ideológico verificado y periodismo alternativo impulsado por Gran Noticias.
           </p>
         </div>
 
@@ -465,12 +580,15 @@ function NoticiasContent() {
                       </button>
                     </div>
 
-                    <h3 className="font-serif text-lg font-bold text-white mb-3 group-hover:text-[#E2E8F0] transition-colors leading-snug">
+                    <h3 className="font-serif text-lg font-bold text-white mb-2 group-hover:text-[#E2E8F0] transition-colors leading-snug">
                       {article.title}
                     </h3>
                     <p className="text-gray-300 text-xs leading-relaxed mb-4 font-light">
                       {article.summary}
                     </p>
+
+                    {/* Medidor de Sesgo Ideológico (Gran Noticias System) */}
+                    <PoliticalBiasBar biasScore={article.biasScore} biasLabel={article.biasLabel} />
                   </div>
                 </div>
 
@@ -485,10 +603,10 @@ function NoticiasContent() {
           </div>
         </div>
 
-        {/* FEED GLOBAL EN TIEMPO REAL CON SELECTOR DE PAÍS + SELECTOR DE MES HISTÓRICO */}
+        {/* FEED GLOBAL EN TIEMPO REAL CON CONTROL DE PAÍS + SUB-REGIÓN + MES + MEDIDOR DE SESGO */}
         <div className="bg-black/50 border border-[#E2E8F0]/30 rounded-3xl p-6 md:p-10 backdrop-blur-xl shadow-2xl mb-16 glow-noticias">
           
-          {/* Header & Menús Desplegables / Controles de Filtros */}
+          {/* Header & Menús Desplegables / Controles de Filtros Completo */}
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 border-b border-[#E2E8F0]/20 pb-6 mb-8">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#E2E8F0]/15 border border-[#E2E8F0]/30 flex items-center justify-center text-[#E2E8F0] shrink-0">
@@ -498,17 +616,17 @@ function NoticiasContent() {
                 <h3 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
                   FEED EN VIVO DE GRAN NOTICIAS <span className="px-2.5 py-0.5 bg-[#E2E8F0]/20 text-[#E2E8F0] text-[9px] font-mono rounded border border-[#E2E8F0]/30">EN TIEMPO REAL</span>
                 </h3>
-                <p className="text-xs text-gray-300">Red internacional de periodismo verificado y fuentes asociadas</p>
+                <p className="text-xs text-gray-300">Medición de sesgo político y cobertura por departamentos y regiones</p>
               </div>
             </div>
 
-            {/* Selector Desplegable de País + Selector de Mes + Botón Populares */}
+            {/* Selector Desplegable de País + Sub-región + Mes + Botón Populares */}
             <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
               
               {/* Botón MÁS POPULARES vs MÁS RECIENTES */}
               <button
                 onClick={() => setActiveSort(activeSort === 'populares' ? 'recientes' : 'populares')}
-                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border ${
+                className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border ${
                   activeSort === 'populares'
                     ? 'bg-[#E2E8F0] text-black border-[#E2E8F0] shadow-[0_0_15px_rgba(226,232,240,0.4)]'
                     : 'bg-black/60 text-gray-300 border-white/10 hover:text-white hover:bg-white/10'
@@ -523,7 +641,7 @@ function NoticiasContent() {
                 <select
                   value={activeMonth}
                   onChange={(e) => setActiveMonth(e.target.value)}
-                  className="w-full lg:w-56 bg-black/80 text-[#E2E8F0] text-xs font-bold py-2.5 px-4 pr-8 rounded-xl border border-[#E2E8F0]/40 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-md cursor-pointer"
+                  className="w-full lg:w-48 bg-black/80 text-[#E2E8F0] text-xs font-bold py-2.5 px-4 pr-8 rounded-xl border border-[#E2E8F0]/40 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-md cursor-pointer"
                 >
                   {monthFilters.map((m) => (
                     <option key={m.id} value={m.id} className="bg-[#0A0D0B] text-white py-1">
@@ -534,17 +652,12 @@ function NoticiasContent() {
                 <Calendar className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={15} />
               </div>
 
-              {/* Selector Desplegable de País / Región */}
+              {/* Selector Desplegable de País / Región Principal */}
               <div className="relative flex-1 lg:flex-none">
                 <select
                   value={activeCountry}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setActiveCountry(val);
-                    if (val === 'global') router.push('/noticias', { scroll: false });
-                    else router.push(`/noticias?pais=${val}`, { scroll: false });
-                  }}
-                  className="w-full lg:w-60 bg-black/80 text-[#E2E8F0] text-xs font-bold py-2.5 px-4 pr-8 rounded-xl border border-[#E2E8F0]/40 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-md cursor-pointer"
+                  onChange={(e) => handleCountryChange(e.target.value)}
+                  className="w-full lg:w-56 bg-black/80 text-[#E2E8F0] text-xs font-bold py-2.5 px-4 pr-8 rounded-xl border border-[#E2E8F0]/40 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-md cursor-pointer"
                 >
                   {countries.map((c) => (
                     <option key={c.id} value={c.id} className="bg-[#0A0D0B] text-white py-1">
@@ -555,6 +668,22 @@ function NoticiasContent() {
                 <ChevronDown className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={16} />
               </div>
 
+              {/* Selector Desplegable de Sub-región / Departamento / Municipio */}
+              <div className="relative flex-1 lg:flex-none">
+                <select
+                  value={activeRegion}
+                  onChange={(e) => setActiveRegion(e.target.value)}
+                  className="w-full lg:w-56 bg-[#0E1511] text-[#E2E8F0] text-xs font-bold py-2.5 px-4 pr-8 rounded-xl border border-[#E2E8F0]/50 appearance-none focus:outline-none focus:border-[#E2E8F0] shadow-md cursor-pointer"
+                >
+                  {currentRegionList.map((r) => (
+                    <option key={r.id} value={r.id} className="bg-[#0A0D0B] text-white py-1">
+                      📍 {r.name}
+                    </option>
+                  ))}
+                </select>
+                <MapPin className="absolute right-3 top-3 text-[#E2E8F0] pointer-events-none" size={15} />
+              </div>
+
             </div>
           </div>
 
@@ -562,13 +691,13 @@ function NoticiasContent() {
           {loadingFeed ? (
             <div className="flex flex-col items-center justify-center py-20 text-gray-400">
               <RefreshCw className="animate-spin text-[#E2E8F0] mb-4" size={32} />
-              <p className="text-xs font-mono uppercase tracking-widest">Sincronizando satélites de información...</p>
+              <p className="text-xs font-mono uppercase tracking-widest">Sincronizando satélites de información y algoritmo de sesgo...</p>
             </div>
           ) : filteredNews.length === 0 ? (
             <div className="text-center py-16 bg-white/5 rounded-2xl border border-white/5">
               <Globe className="text-gray-500 mx-auto mb-3" size={36} />
               <h4 className="text-sm font-bold text-white mb-1">Sin noticias archivadas para los filtros seleccionados</h4>
-              <p className="text-xs text-gray-400">Selecciona "Cobertura Global" y "Archivo Histórico Completo" para visualizar todas las noticias consolidadas.</p>
+              <p className="text-xs text-gray-400">Selecciona "Cobertura Global" y "Todas las Regiones" para consultar el catálogo completo.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -623,10 +752,13 @@ function NoticiasContent() {
                       <p className="text-gray-300 text-xs font-light leading-relaxed mb-4 line-clamp-3">
                         {item.summary}
                       </p>
+
+                      {/* Medidor de Sesgo Ideológico Politico (Algoritmo Gran Noticias) */}
+                      <PoliticalBiasBar biasScore={item.biasScore} biasLabel={item.biasLabel} />
                     </div>
                   </div>
 
-                  <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs font-bold text-[#E2E8F0] group-hover:underline">
+                  <div className="px-6 pb-6 pt-0 flex items-center justify-between text-xs font-bold text-[#E2E8F0] group-hover:underline border-t border-white/5 pt-3">
                     <span>Desplegar Artículo Completo</span>
                     <BookOpen size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -640,7 +772,7 @@ function NoticiasContent() {
         <NewsTrustBadge />
       </div>
 
-      {/* VENTANA LECTORA INTERNA MODAL */}
+      {/* VENTANA LECTORA INTERNA MODAL CON COMPARATIVA EDITORIAL */}
       {selectedArticle && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-xl animate-in fade-in duration-200">
           <div className="bg-[#090E0B] border border-[#E2E8F0]/40 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar shadow-[0_0_60px_rgba(0,0,0,0.95)] relative flex flex-col">
@@ -674,7 +806,7 @@ function NoticiasContent() {
 
             {/* Contenido del Artículo */}
             <div className="p-6 sm:p-10 space-y-6">
-              <div className="flex items-center gap-2 text-xs font-mono text-[#E2E8F0]">
+              <div className="flex items-center justify-between text-xs font-mono text-[#E2E8F0]">
                 <button 
                   onClick={(e) => openAuthorProfile(e, selectedArticle.author, selectedArticle.sourceName)}
                   className="flex items-center gap-1.5 font-bold hover:underline bg-[#E2E8F0]/10 px-3 py-1 rounded-lg border border-[#E2E8F0]/30"
@@ -687,6 +819,11 @@ function NoticiasContent() {
                 {selectedArticle.title}
               </h2>
 
+              {/* Medidor de Sesgo Ideológico Ampliado */}
+              <div className="bg-black/60 p-4 rounded-2xl border border-white/10">
+                <PoliticalBiasBar biasScore={selectedArticle.biasScore} biasLabel={selectedArticle.biasLabel} />
+              </div>
+
               <div className="w-12 h-0.5 bg-[#E2E8F0]/50"></div>
 
               <p className="text-gray-200 text-sm sm:text-base leading-relaxed font-light italic bg-white/5 p-4 rounded-xl border border-white/10">
@@ -697,8 +834,30 @@ function NoticiasContent() {
                 {selectedArticle.fullContent}
               </div>
 
+              {/* COMPARATIVA EDITORIAL: MEDIOS CON DIFERENTES SESGOS POLÍTICOS SOBRE EL MISMO TEMA */}
+              <div className="pt-8 border-t border-white/15 space-y-4">
+                <h4 className="text-xs font-bold text-[#E2E8F0] uppercase tracking-widest flex items-center gap-2">
+                  <BarChart3 size={16} /> COMPARATIVA EDITORIAL & OTRAS PERSPECTIVAS POLÍTICAS
+                </h4>
+                <p className="text-xs text-gray-400">Compara el abordaje periodístico de esta misma noticia según la inclinación política del medio:</p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-black/50 p-4 rounded-xl border border-blue-500/30 space-y-2">
+                    <span className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider block">Perspectiva Centro-Izquierda</span>
+                    <h5 className="text-xs font-bold text-white">"La transición ecológica como derecho ciudadano fundamental"</h5>
+                    <p className="text-[11px] text-gray-300 font-light">Enfoque centrado en la protección de comunidades rurales e inversión estatal obligatoria.</p>
+                  </div>
+
+                  <div className="bg-black/50 p-4 rounded-xl border border-amber-500/30 space-y-2">
+                    <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider block">Perspectiva Centro-Derecha</span>
+                    <h5 className="text-xs font-bold text-white">"Incentivos tributarios y competitividad en exportaciones agrícolas"</h5>
+                    <p className="text-[11px] text-gray-300 font-light">Enfoque centrado en el libre mercado, eficiencias privadas y atracción de capital extranjero.</p>
+                  </div>
+                </div>
+              </div>
+
               {/* Pie de Lectura y Garantía GranColinos */}
-              <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-xs text-gray-400 font-mono">
                   <Globe size={14} className="text-[#E2E8F0]" /> Gran Noticias • Fuente: {selectedArticle.sourceName}
                 </div>
