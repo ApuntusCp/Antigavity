@@ -21,6 +21,19 @@
   --gold-brand-constant: #D4AF37;
 }
 
+/* Ocultar Barras de Scroll Nativas de Navegadores (Google / Windows / Edge) */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge antiguo */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+
 body {
   background-color: #040903;
   background-image: 
