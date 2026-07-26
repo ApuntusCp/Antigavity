@@ -401,7 +401,7 @@ function NoticiasContent() {
       id: 'news-co-caribe-1',
       topicKey: "asociaciones-indigenas-cordoba",
       title: "En Córdoba fortalecen 14 asociaciones indígenas con maquinaria y herramientas agrícolas",
-      summary: "La Gobernación de Córdoba fortaleció a 14 asociaciones indígenas mediante la entrega de maquinaria y herramientas agrícolas para tecnificar sus labores y aumentar la productividad de 350 familias de la región.",
+      summary: "La Gobernación de Córdoba entregó motoazadas, guadañadoras y equipos a 14 asociaciones indígenas para impulsar la productividad agrícola de 350 familias.",
       fullContent: `La Gobernación de Córdoba, liderada por el gobernador Erasmo Zuleta Bechara, entregó motoazadas, guadañadoras y fumigadoras de motor a 14 asociaciones indígenas en el marco del Proyecto de Unidades Productivas Agropecuarias (UPA).\n\nEsta iniciativa beneficia directamente a 350 familias de productores dedicados al cultivo de maíz, yuca y ñame en zonas rurales del departamento, permitiendo mecanizar el trabajo agrícola y acelerar la reactivación económica del campo tras emergencias climáticas.`,
       author: "Lina María Orozco",
       sourceName: "El Heraldo",
@@ -419,11 +419,32 @@ function NoticiasContent() {
       views: 34100
     },
     {
+      id: 'news-co-indep-1',
+      topicKey: "leila-guerriero-periodismo-ia",
+      title: "Leila Guerriero: 'Hay más preocupación con la IA que trabajo para ser mejor que ella'",
+      summary: "Entrevista especial con la reconocida periodista y escritora latinoamericana Leila Guerriero sobre la inteligencia artificial, la profesión periodística y la exigencia de calidad en las redacciones.",
+      fullContent: `En diálogo con La Silla Vacía en el marco del Festival Gabo, la célebre cronista argentina Leila Guerriero reflexiona sobre el estado del periodismo narrativo contemporáneo, el impacto de las nuevas tecnologías y la necesidad de mantener el rigor de campo frente al automatismo del contenido sintético.`,
+      author: "Camilo Sotomayor",
+      sourceName: "La Silla Vacía",
+      sourceLogo: "La Silla Vacía",
+      originalUrl: "https://www.lasillavacia.com/silla-nacional/",
+      mediaId: "independiente",
+      image: "https://images.unsplash.com/photo-1511497584788-876761c11969?auto=format&fit=crop&w=1000&q=80",
+      isFallbackImage: false,
+      country: "co",
+      region: "bogota",
+      monthPeriod: "julio-2026",
+      publishedAt: "Hace 1 hora",
+      biasScore: 40,
+      biasLabel: "Centro-Independiente",
+      views: 26800
+    },
+    {
       id: 'news-co-1',
       topicKey: "exportaciones-agropecuarias-dane",
       title: "Exportaciones agropecuarias y de alimentos en Colombia crecen en el reporte oficial del DANE",
       summary: "Las ventas externas del sector agropecuario y de productos botánicos registraron un incremento positivo impulsado por café, flores y derivados agrícolas procesados.",
-      fullContent: `Según el último informe del Departamento Administrativo Nacional de Estadística (DANE), las exportaciones colombianas del grupo de productos agropecuarios, alimentos y extractos vegetales mostraron un desempeño positivo en los mercados internacionales.\n\nEl impulso en la demanda de insumos orgánicos y certificaciones de sostenibilidad ha consolidado a Colombia como proveedor estratégico en la región.`,
+      fullContent: `Según el último informe del DANE, las exportaciones colombianas agropecuarias y de insumos vegetales continuaron su tendencia al alza en los mercados internacionales.`,
       author: "Juliana Restrepo",
       sourceName: "El Tiempo",
       sourceLogo: "El Tiempo",
@@ -444,7 +465,7 @@ function NoticiasContent() {
       topicKey: "restauracion-ecologica-biodiversidad",
       title: "La apuesta por la restauración ecológica y biodiversidad en la región Andina",
       summary: "Proyectos comunitarios e inversión pública protegen ecosistemas de alta montaña y corredores biológicos para la conservación de la flora nativa.",
-      fullContent: `Alianzas entre el Estado, universidades y cooperativas ambientales avanzan en la siembra de especies nativas y protección de cuencas hidrográficas en la Cordillera Central y el Eje Cafetero.`,
+      fullContent: `Alianzas entre el Estado, universidades y cooperativas ambientales avanzan en la siembra de especies nativas y protección de cuencas hidrográficas.`,
       author: "Juliana Restrepo",
       sourceName: "El Espectador",
       sourceLogo: "El Espectador",
@@ -459,27 +480,6 @@ function NoticiasContent() {
       biasScore: 35,
       biasLabel: "Centro-Izquierda",
       views: 22400
-    },
-    {
-      id: 'news-co-indep-1',
-      topicKey: "concesiones-agroecologicas-parques",
-      title: "El mapa de los proyectos agroecológicos y la gestión comunitaria en Parques Nacionales",
-      summary: "Investigación sobre el cumplimiento de acuerdos ambientales entre campesinos y autoridades de conservación ambiental en el territorio nacional.",
-      fullContent: `Una investigación exhaustiva efectuada en reservas protegidas evalúa los resultados de las licencias comunitarias sostenibles para la preservación de bosques nativos.`,
-      author: "Camilo Sotomayor",
-      sourceName: "La Silla Vacía",
-      sourceLogo: "La Silla Vacía",
-      originalUrl: "https://lasillavacia.com/silla-nacional/",
-      mediaId: "independiente",
-      image: "https://images.unsplash.com/photo-1511497584788-876761c11969?auto=format&fit=crop&w=1000&q=80",
-      isFallbackImage: false,
-      country: "co",
-      region: "bogota",
-      monthPeriod: "julio-2026",
-      publishedAt: "Hace 1 hora",
-      biasScore: 40,
-      biasLabel: "Centro-Independiente",
-      views: 26800
     },
     {
       id: 'news-us-nyt-1',
@@ -567,7 +567,7 @@ function NoticiasContent() {
     }
   ];
 
-  // Base de Titulares Comparativos por Espectro Ideológico Completo (CON ENLACES DIRECTOS A LAS NOTICIAS REALES)
+  // Base de Titulares Comparativos por Espectro Ideológico Completo
   const multiIdeologyHeadlines = {
     "asociaciones-indigenas-cordoba": [
       { id: 1, tier: "Extrema Izquierda", tierCategory: "izquierda", score: 20, badgeBg: "bg-blue-950/80 text-blue-300 border-blue-500/40", media: "Prensa Alternativa Sur", headline: "Organizaciones indígenas de Córdoba reciben maquinaria pero reclaman autonomía sobre la tierra", focus: "Critica el modelo de dependencia de subsidios estatales y exige títulos territoriales colectivos.", image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80", originalUrl: "https://lasillavacia.com/silla-nacional/" },
@@ -576,12 +576,12 @@ function NoticiasContent() {
       { id: 4, tier: "Centro-Derecha", tierCategory: "derecha", score: 65, badgeBg: "bg-amber-950/80 text-amber-300 border-amber-500/40", media: "El Tiempo", headline: "Tecnificación del campo en Córdoba: entregan insumos de motor a productores rurales", focus: "Resalta la sustitución del trabajo manual por maquinaria moderna para elevar el rendimiento comercial.", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80", originalUrl: "https://www.eltiempo.com/economia/sectores" },
       { id: 5, tier: "Extrema Derecha", tierCategory: "derecha", score: 85, badgeBg: "bg-orange-950/80 text-orange-300 border-orange-500/40", media: "Portafolio Libre Mercado", headline: "Mecanización agrícola en Córdoba impulsará la rentabilidad de cultivos agroindustriales", focus: "Enfoque centrado en la productividad por hectárea y la competitividad en mercados agropecuarios.", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80", originalUrl: "https://www.portafolio.co/economia" }
     ],
-    "exportaciones-agropecuarias-dane": [
-      { id: 1, tier: "Extrema Izquierda", tierCategory: "izquierda", score: 20, badgeBg: "bg-blue-950/80 text-blue-300 border-blue-500/40", media: "Prensa Alternativa Sur", headline: "Exportaciones del DANE: Crecimiento agropecuario beneficia a grandes grupos exportadores", focus: "Cuestiona la concentración de dividendos de exportación en pocas comerciales agroindustriales.", image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80", originalUrl: "https://lasillavacia.com/silla-nacional/" },
-      { id: 2, tier: "Centro-Izquierda", tierCategory: "izquierda", score: 35, badgeBg: "bg-cyan-950/80 text-cyan-300 border-cyan-500/40", media: "El Espectador", headline: "Ventas agrícolas al exterior crecen pero pequeños productores exigen mayores subsidios de transporte", focus: "Subraya el papel de la agricultura sostenible mientras pide equidad en la cadena de distribución.", image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80", originalUrl: "https://www.elespectador.com/ambiente/" },
-      { id: 3, tier: "Centro / Imparcial", tierCategory: "centro", score: 50, badgeBg: "bg-slate-900/90 text-slate-200 border-slate-400/40", media: "Señal Colombia (RTVC)", headline: "DANE reporta incremento positivo en las exportaciones de productos agropecuarios y alimentos", focus: "Informa los datos porcentuales y estadísticas oficiales divulgadas por el DANE sin juicios de valor.", image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&w=800&q=80", originalUrl: "https://www.senalescolombia.tv/noticias" },
-      { id: 4, tier: "Centro-Derecha", tierCategory: "derecha", score: 65, badgeBg: "bg-amber-950/80 text-amber-300 border-amber-500/40", media: "El Tiempo", headline: "Exportaciones agropecuarias y de alimentos en Colombia crecen en el reporte oficial del DANE", focus: "Enfatiza el dinamismo del comercio exterior y la solidez de las ventas agrícolas en el mercado internacional.", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80", originalUrl: "https://www.eltiempo.com/economia/sectores" },
-      { id: 5, tier: "Extrema Derecha", tierCategory: "derecha", score: 85, badgeBg: "bg-orange-950/80 text-orange-300 border-orange-500/40", media: "Portafolio Libre Mercado", headline: "Dinamismo del agro catapulta las balanzas comerciales y atrae inversión privada internacional", focus: "Destaca la libertad comercial y los retornos de inversión privada en el campo.", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80", originalUrl: "https://www.portafolio.co/economia" }
+    "leila-guerriero-periodismo-ia": [
+      { id: 1, tier: "Extrema Izquierda", tierCategory: "izquierda", score: 20, badgeBg: "bg-blue-950/80 text-blue-300 border-blue-500/40", media: "Prensa Alternativa Sur", headline: "Advierten sobre la precarización laboral del periodismo frente al avance del contenido por IA", focus: "Resalta los riesgos de explotación laboral y pérdida de empleo en agencias de noticias.", image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80", originalUrl: "https://lasillavacia.com/silla-nacional/" },
+      { id: 2, tier: "Centro-Izquierda", tierCategory: "izquierda", score: 35, badgeBg: "bg-cyan-950/80 text-cyan-300 border-cyan-500/40", media: "El Espectador", headline: "Rigor y trabajo de campo: la mirada crítica del periodismo frente al desafío de la inteligencia artificial", focus: "Defiende la ética periodística, el trabajo humano y la verificación directa sobre el terreno.", image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80", originalUrl: "https://www.elespectador.com/ambiente/" },
+      { id: 3, tier: "Centro / Imparcial", tierCategory: "centro", score: 50, badgeBg: "bg-slate-900/90 text-slate-200 border-slate-400/40", media: "La Silla Vacía", headline: "Leila Guerriero: 'Hay más preocupación con la IA que trabajo para ser mejor que ella'", focus: "Entrevista en profundidad sobre calidad narrativa, formación técnica y autoría en medios de comunicación.", image: "https://images.unsplash.com/photo-1511497584788-876761c11969?auto=format&fit=crop&w=800&q=80", originalUrl: "https://www.lasillavacia.com/silla-nacional/" },
+      { id: 4, tier: "Centro-Derecha", tierCategory: "derecha", score: 65, badgeBg: "bg-amber-950/80 text-amber-300 border-amber-500/40", media: "El Tiempo", headline: "La transformación digital del periodismo: tecnología e innovación narrativa en las redacciones", focus: "Destaca la adaptación de los medios de prensa a las herramientas digitales de última generación.", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80", originalUrl: "https://www.eltiempo.com/economia/sectores" },
+      { id: 5, tier: "Extrema Derecha", tierCategory: "derecha", score: 85, badgeBg: "bg-orange-950/80 text-orange-300 border-orange-500/40", media: "Portafolio Libre Mercado", headline: "Productividad y automatización: el nuevo modelo de negocio en las industrias creativas", focus: "Enfoque en eficiencia operativa, reducción de costos y adopción tecnológica en empresas de medios.", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80", originalUrl: "https://www.portafolio.co/economia" }
     ]
   };
 
@@ -722,11 +722,15 @@ function NoticiasContent() {
                 className="bg-black/40 border border-[#E2E8F0]/30 hover:border-[#E2E8F0]/80 rounded-2xl overflow-hidden backdrop-blur-xl shadow-xl transition-all duration-300 flex flex-col justify-between group cursor-pointer hover:-translate-y-1"
               >
                 <div>
-                  {/* Header Image Real */}
+                  {/* Header Image Real con Handler onError */}
                   <div className="relative h-48 w-full overflow-hidden bg-black/80">
                     <img 
                       src={article.image} 
                       alt={article.title}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1000&q=80";
+                      }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent"></div>
@@ -913,11 +917,15 @@ function NoticiasContent() {
                   className="group bg-black/40 border border-[#E2E8F0]/20 hover:border-[#E2E8F0]/70 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between hover:scale-[1.02] shadow-lg cursor-pointer"
                 >
                   <div>
-                    {/* Article Original Image */}
+                    {/* Article Original Image con Handler onError */}
                     <div className="relative h-44 w-full overflow-hidden bg-black/60">
                       <img 
                         src={item.image} 
                         alt={item.title}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1000&q=80";
+                        }}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent"></div>
@@ -1017,11 +1025,15 @@ function NoticiasContent() {
               </button>
             </div>
 
-            {/* Imagen Principal en Grande */}
+            {/* Imagen Principal en Grande con Handler onError */}
             <div className="relative h-64 sm:h-80 w-full bg-black shrink-0">
               <img 
                 src={selectedArticle.image} 
                 alt={selectedArticle.title} 
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1000&q=80";
+                }}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#090E0B] via-transparent to-transparent"></div>
@@ -1223,11 +1235,15 @@ function NoticiasContent() {
                     className="bg-black/50 border border-white/15 hover:border-[#E2E8F0]/80 rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 shadow-xl group hover:-translate-y-1"
                   >
                     <div>
-                      {/* FOTO DE LA NOTICIA ORIGINAL */}
+                      {/* FOTO DE LA NOTICIA ORIGINAL CON HANDLER onError */}
                       <div className="relative h-44 w-full overflow-hidden bg-black/80">
                         <img 
                           src={item.image} 
                           alt={item.headline}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1000&q=80";
+                          }}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent"></div>
@@ -1321,6 +1337,10 @@ function NoticiasContent() {
                 <img 
                   src={selectedAuthor.mediaBadgeUrl} 
                   alt={selectedAuthor.name} 
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=300&q=80";
+                  }}
                   className="w-full h-full object-cover rounded-xl"
                 />
               </div>
