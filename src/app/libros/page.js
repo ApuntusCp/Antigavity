@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, Play, Pause, Volume2, Search, Filter, Globe, ShieldCheck, RefreshCw, X, ExternalLink, Headphones, Sparkles, Check, ChevronRight, Layers, Sliders, Type, Sun, Moon, Database, AlertCircle, ChevronLeft, Maximize2, Minimize2, Highlighting, Highlighter, MessageSquare, Edit3, Columns, Layout, Trash2, Save, Palette, PenTool, Eraser, RotateCcw, Lock } from 'lucide-react';
+import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, Play, Pause, Volume2, Search, Filter, Globe, ShieldCheck, RefreshCw, X, ExternalLink, Headphones, Sparkles, Check, ChevronRight, Layers, Sliders, Type, Sun, Moon, Database, AlertCircle, ChevronLeft, Maximize2, Minimize2, Highlighting, Highlighter, MessageSquare, Edit3, Columns, Layout, Trash2, Save, Palette, PenTool, Eraser, RotateCcw, Lock, GraduationCap } from 'lucide-react';
 
 // Componente Especial de Garantía y Acceso Abierto para la Biblioteca
 function LibraryTrustBadge() {
@@ -222,6 +222,29 @@ function LibrosContent() {
     { id: 'copyright_externo', name: 'Tienda Externa Licenciada' }
   ];
 
+  // Algoritmo de Búsqueda y Descarga Directa de PDF Abierto para Estudiantes
+  const handleDownloadAcademicPdf = (book) => {
+    if (!book) return;
+
+    // 1. Si la obra cuenta con archivo PDF directo registrado
+    if (book.enlaces_descarga && book.enlaces_descarga.pdf) {
+      window.open(book.enlaces_descarga.pdf, '_blank');
+      return;
+    }
+
+    if (book.id && book.id.startsWith('gut-')) {
+      const gutId = book.id.replace('gut-', '');
+      window.open(`https://www.gutenberg.org/files/${gutId}/${gutId}-pdf.pdf`, '_blank');
+      return;
+    }
+
+    // 2. Búsqueda hemerográfica automatizada de archivos PDF abiertos para estudio
+    const authorsStr = (book.autores || []).join(' ');
+    const query = `filetype:pdf "${book.titulo}" ${authorsStr}`;
+    const googlePdfSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+    window.open(googlePdfSearchUrl, '_blank');
+  };
+
   // Cargar Notas Guardadas en LocalStorage
   useEffect(() => {
     try {
@@ -301,14 +324,6 @@ function LibrosContent() {
           "Mas, por Zeus, atenienses, no oiréis discursos adornados de bellas frases y palabras esmeradamente escogidas, como los suyos, sino cosas dichas al azar, con las primeras palabras que me vengan a la boca, porque tengo la confianza de que es justo lo que digo.",
           "Quien me dio testimonio de mi sabiduría fue el oráculo de Delfos. Querefonte, mi amigo de la infancia, fue a Delfos y tuvo la osadía de consultar si había alguien más sabio que yo. La Pitia respondió que no había nadie más sabio."
         ]
-      },
-      {
-        page: 3,
-        title: "Apología de Sócrates — Discurso III: Sólo sé que nada sé",
-        paragraphs: [
-          "Al oír esto me dije a mí mismo: ¿Qué quiere decir el dios? Porque yo sé muy bien que no soy sabio ni poco ni mucho.",
-          "Fui a examinar a uno de los que pasaban por sabios y descubrí que fingía saber lo que no sabía. Me retiré entonces pensando: 'Soy más sabio que este hombre; pues ninguno de los dos sabe nada bueno, pero él cree saber algo no sabiéndolo, mientras que yo, así como no sé nada, tampoco creo saberlo'."
-        ]
       }
     ],
     'gut-2000': [
@@ -319,15 +334,6 @@ function LibrosContent() {
           "En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo de los de lanza en astillero, adarga antigua, rocín flaco y galgo corredor.",
           "Una olla de algo más vaca que carnero, salpicón las más noches, duelos y quebrantos los sábados, lantejas los viernes, algún palomino de añadidura los domingos, consumían las tres partes de su hacienda.",
           "Frisaba la edad de nuestro hidalgo con los cincuenta años; era de complexión recia, seco de carnes, enjuto de rostro, gran madrugador y amigo de la caza."
-        ]
-      },
-      {
-        page: 2,
-        title: "Don Quijote de la Mancha — Capítulo II",
-        paragraphs: [
-          "Hechas, pues, estas prevenciones, no quiso aguardar más tiempo a poner en efecto su pensamiento, apretándole a ello la falta que él pensaba que hacía en el mundo su tardanza.",
-          "Según eran los agravios que pensaba deshacer, tuertos que enderezar, sinrazones que enmendar y abusos que mejorar y deudas que satisfacer.",
-          "Y así, sin dar parte a persona alguna de su intención, y sin que nadie le viese, una mañana, antes del día, que era uno de los calurosos del mes de Julio, se armó de todas sus armas."
         ]
       }
     ]
@@ -479,7 +485,6 @@ function LibrosContent() {
     }
   };
 
-  // EXTRACCIÓN REAL DE TEXTO O DETECCIÓN DE COPYRIGHT VIGENTE
   const openReaderModal = async (book) => {
     setReadingBook(book);
     setReaderCurrentPage(1);
@@ -805,37 +810,57 @@ function LibrosContent() {
                       <span className="text-gray-400">{book.paginas_aprox || '220 págs'}</span>
                     </div>
 
-                    <div className="flex items-center gap-2 pt-1">
+                    <div className="flex flex-col gap-2 pt-1">
                       {book.licencia === 'copyright_externo' ? (
-                        <a
-                          href={book.url_fuente || 'https://www.amazon.com'}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-full py-2.5 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1.5"
-                        >
-                          <span>Comprar en Tienda Oficial</span>
-                          <ExternalLink size={13} />
-                        </a>
+                        <div className="flex flex-col gap-2">
+                          <a
+                            href={book.url_fuente || 'https://www.amazon.com'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full py-2.5 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1.5"
+                          >
+                            <span>Comprar en Tienda Oficial</span>
+                            <ExternalLink size={13} />
+                          </a>
+
+                          <button
+                            onClick={() => handleDownloadAcademicPdf(book)}
+                            className="w-full py-2 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 font-bold text-[10px] uppercase tracking-wider rounded-xl hover:bg-emerald-900 transition-all flex items-center justify-center gap-1"
+                            title="Buscar copia abierta PDF de libre consulta académica para estudiantes"
+                          >
+                            <GraduationCap size={13} />
+                            <span>Descargar Copia Abierta PDF (Estudiantes)</span>
+                          </button>
+                        </div>
                       ) : (
                         <>
-                          <button
-                            onClick={() => openReaderModal(book)}
-                            className="flex-1 py-2.5 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1"
-                          >
-                            <BookOpen size={13} /> Leer Libro Completo
-                          </button>
-
-                          {book.enlaces_descarga && (book.enlaces_descarga.epub || book.enlaces_descarga.pdf) && (
-                            <a
-                              href={book.enlaces_descarga.epub || book.enlaces_descarga.pdf || '#'}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="py-2.5 px-3 bg-black/80 text-[#F3E5AB] border border-[#F3E5AB]/40 font-bold text-[11px] rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-1"
-                              title="Descargar EPUB / PDF desde fuente original"
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => openReaderModal(book)}
+                              className="flex-1 py-2.5 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1"
                             >
-                              <Download size={14} />
-                            </a>
-                          )}
+                              <BookOpen size={13} /> Leer Libro Completo
+                            </button>
+
+                            {book.enlaces_descarga && (book.enlaces_descarga.epub || book.enlaces_descarga.pdf) && (
+                              <a
+                                href={book.enlaces_descarga.epub || book.enlaces_descarga.pdf || '#'}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="py-2.5 px-3 bg-black/80 text-[#F3E5AB] border border-[#F3E5AB]/40 font-bold text-[11px] rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-1"
+                                title="Descargar EPUB / PDF desde fuente original"
+                              >
+                                <Download size={14} />
+                              </a>
+                            )}
+                          </div>
+
+                          <button
+                            onClick={() => handleDownloadAcademicPdf(book)}
+                            className="w-full py-1.5 bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 font-semibold text-[10px] uppercase tracking-wider rounded-xl hover:bg-emerald-900 transition-all flex items-center justify-center gap-1"
+                          >
+                            <GraduationCap size={12} /> Descargar PDF Abierto (Estudiantes)
+                          </button>
                         </>
                       )}
                     </div>
@@ -868,7 +893,7 @@ function LibrosContent() {
         <LibraryTrustBadge />
       </div>
 
-      {/* LECTOR EJECUTIVO NATIVO GRANCOLINOS (CON HERRAMIENTA DE LÁPIZ LIBRE Y MANEJO REAL DE TEXTOS / COPYRIGHT) */}
+      {/* LECTOR EJECUTIVO NATIVO GRANCOLINOS (CON HERRAMIENTA DE LÁPIZ LIBRE Y BOTÓN DE DESCARGA PDF ABIERTO PARA ESTUDIANTES) */}
       {readingBook && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-6 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
           <div className={`border rounded-3xl w-full shadow-[0_0_90px_rgba(243,229,171,0.25)] relative flex flex-col transition-all duration-300 ${
@@ -893,7 +918,6 @@ function LibrosContent() {
               </div>
 
               {!isBookCopyrighted && (
-                /* BARRA DE LÁPIZ LIBRE DE DIBUJO Y SUBRAYADO */
                 <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
                   <button
                     onClick={() => { setIsPenActive(!isPenActive); setIsEraser(false); }}
@@ -981,7 +1005,7 @@ function LibrosContent() {
                 </div>
               </div>
             ) : isBookCopyrighted ? (
-              /* CASO OBRA CON COPYRIGHT VIGENTE / LICENCIA COMERCIAL (Ej. "The 48 Laws of Power") */
+              /* CASO OBRA COMERCIAL (Ej. "A sombra de Hipócrates", "The 48 Laws of Power") CON OPCIÓN DE PDF ABIERTO PARA ESTUDIANTES */
               <div className="flex flex-col items-center justify-center flex-1 p-8 sm:p-12 text-center max-w-3xl mx-auto space-y-6">
                 <div className="w-16 h-16 rounded-3xl bg-[#F3E5AB]/10 border border-[#F3E5AB]/40 flex items-center justify-center text-[#F3E5AB] shadow-2xl">
                   <Lock size={32} />
@@ -1008,21 +1032,33 @@ function LibrosContent() {
                   </p>
                 </div>
 
-                <a
-                  href={readingBook.url_fuente || 'https://www.amazon.com'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-8 py-4 bg-[#F3E5AB] text-black font-extrabold text-xs uppercase tracking-widest rounded-2xl hover:bg-white transition-all shadow-[0_0_30px_rgba(243,229,171,0.3)] flex items-center gap-2 cursor-pointer"
-                >
-                  <span>Adquirir / Leer Edición Oficial Completa</span>
-                  <ExternalLink size={16} />
-                </a>
+                {/* BOTONES DUALES: ADQUIRIR EDICIÓN OFICIAL + BUSCAR PDF ABIERTO PARA ESTUDIANTES */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-2">
+                  <a
+                    href={readingBook.url_fuente || 'https://www.amazon.com'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-4 px-6 bg-[#F3E5AB] text-black font-extrabold text-xs uppercase tracking-widest rounded-2xl hover:bg-white transition-all shadow-xl flex items-center justify-center gap-2"
+                  >
+                    <span>Adquirir / Leer Edición Oficial</span>
+                    <ExternalLink size={15} />
+                  </a>
+
+                  {/* NUEVO BOTÓN REQUERIDO: BÚSQUEDA Y DESCARGA DE COPIA ABIERTA EN PDF PARA ESTUDIANTES */}
+                  <button
+                    onClick={() => handleDownloadAcademicPdf(readingBook)}
+                    className="flex-1 py-4 px-6 bg-emerald-950 text-emerald-300 border border-emerald-500/50 font-extrabold text-xs uppercase tracking-widest rounded-2xl hover:bg-emerald-900 transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
+                    title="Buscar y descargar copia de estudio abierta en formato .PDF"
+                  >
+                    <GraduationCap size={16} />
+                    <span>Descargar PDF Abierto (Estudiantes)</span>
+                  </button>
+                </div>
               </div>
             ) : (
               /* CUERPO DEL LECTOR NATIVO CON PÁGINAS REALES Y LÁPIZ LIBRE */
               <div className="flex-1 overflow-y-auto p-6 sm:p-10 flex flex-col justify-between space-y-6 relative">
                 
-                {/* CONTENEDOR DE PÁGINAS REALES: MODO 1 PÁGINA O MODO 2 PÁGINAS */}
                 <div className={`grid gap-8 items-start flex-1 ${
                   readerPageMode === 'double' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 max-w-3xl mx-auto'
                 }`}>
