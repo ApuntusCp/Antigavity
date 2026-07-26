@@ -13,17 +13,20 @@
 }
 
 :root {
-  --background: #060D05;
+  --background: #040903;
   --foreground: #F9F9F9;
   --gold-accent: #D4AF37;
 }
 
 body {
-  background-color: #060D05;
+  background-color: #040903;
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(45, 80, 22, 0.35) 0%, transparent 70%),
-    radial-gradient(circle at 50% 100%, rgba(212, 175, 55, 0.1) 0%, transparent 60%),
-    linear-gradient(180deg, #091307 0%, #050A04 50%, #030602 100%);
+    radial-gradient(ellipse at 50% 15%, rgba(212, 175, 55, 0.15) 0%, transparent 60%),
+    radial-gradient(circle at 50% 85%, rgba(45, 80, 22, 0.3) 0%, transparent 60%),
+    url('/images/bg_leather.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   background-attachment: fixed;
   color: #F9F9F9;
   font-family: var(--font-sans), sans-serif;
@@ -31,41 +34,44 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Leather texture overlay class */
-.bg-leather-texture {
-  background-color: #070E06;
+/* Global Leather Texture Container */
+.bg-leather-global {
   background-image: 
-    radial-gradient(ellipse at center, rgba(212, 175, 55, 0.12) 0%, transparent 70%),
-    linear-gradient(135deg, rgba(45, 80, 22, 0.4) 0%, rgba(5, 10, 4, 0.95) 100%);
+    radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.18) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(6, 12, 5, 0.75) 0%, rgba(3, 7, 2, 0.88) 100%),
+    url('/images/bg_leather.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 /* Golden Glow Effects */
 .glow-gold {
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
+  box-shadow: 0 0 24px rgba(212, 175, 55, 0.4);
 }
 
 .glow-gold-subtle {
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 14px rgba(212, 175, 55, 0.22);
 }
 
 .glow-gold-hover:hover {
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
-  border-color: rgba(212, 175, 55, 0.8) !important;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.55);
+  border-color: rgba(212, 175, 55, 0.85) !important;
 }
 
 /* Gold Gradient Text */
 .text-gold-gradient {
-  background: linear-gradient(135deg, #FFF0B3 0%, #D4AF37 50%, #AA820A 100%);
+  background: linear-gradient(135deg, #FFF5C0 0%, #D4AF37 55%, #A8810A 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Floating Pill Navigation */
-.nav-pill-floating {
-  background: rgba(10, 18, 9, 0.88);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+/* Bottom Floating Pill Navigation */
+.nav-pill-bottom-floating {
+  background: rgba(8, 15, 7, 0.92);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 -10px 45px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
 }
 
