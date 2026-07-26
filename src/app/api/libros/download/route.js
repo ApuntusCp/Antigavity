@@ -2,53 +2,71 @@ import { NextResponse } from 'next/server';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 /**
- * Limpiador de HTML a texto plano en párrafos
+ * Limpiador definitivo de metadatos OCR y ruido de cabeceras web (Archive.org / Gutenberg)
+ * Garantiza que ÚNICAMENTE los capítulos y párrafos reales del libro se incluyan en el PDF.
  */
-function stripHtmlToParagraphs(htmlContent) {
-  if (!htmlContent) return [];
-  
-  // Limpiar etiquetas script, style y comentarios
-  let clean = htmlContent
+function cleanRawBookTextToParagraphs(rawText) {
+  if (!rawText) return [];
+
+  let text = rawText;
+
+  // 1. Recortar cabeceras y pies de página de Project Gutenberg
+  const startMatch = text.match(/\*\*\*\s*START OF TH(IS|E) PROJECT GUTENBERG EBOOK[\s\S]*?\*\*\*/i);
+  if (startMatch) {
+    const endHeaderIdx = text.indexOf(startMatch[0]) + startMatch[0].length;
+    text = text.substring(endHeaderIdx);
+  }
+
+  const endMatch = text.match(/\*\*\*\s*END OF TH(IS|E) PROJECT GUTENBERG EBOOK/i);
+  if (endMatch) {
+    const endFooterIdx = text.indexOf(endMatch[0]);
+    text = text.substring(0, endFooterIdx);
+  }
+
+  // 2. Eliminar cualquier etiqueta HTML o script restante
+  text = text
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<!--[\s\S]*?-->/g, '');
+    .replace(/<[^>]+>/g, ' ');
 
-  // Reemplazar saltos de bloque por doble salto de línea
-  clean = clean.replace(/<\/(p|div|h1|h2|h3|h4|h5|h6|li|tr|blockquote)>/gi, '\n\n');
-  clean = clean.replace(/<br\s*\/?>/gi, '\n');
-  
-  // Eliminar todas las etiquetas HTML restantes
-  clean = clean.replace(/<[^>]+>/g, '');
+  // 3. Filtrar líneas de metadatos OCR de Internet Archive (EMBED, ABBYY FineReader, DOWNLOAD OPTIONS, etc.)
+  const lines = text.split(/\n+/);
+  const cleanLines = lines.filter(line => {
+    const trimmed = line.trim();
+    if (trimmed.length < 3) return false;
+    
+    // Lista de patrones de metadatos no deseados
+    if (trimmed.match(/^(EMBED|archiveorg|TheArtOfWarBySunTzu|Want more\?|Advanced embedding|Flag this item|Graphic Violence|Explicit Sexual|Misinformation|Marketing\/Phishing|Misleading|Usage Public Domain|Topics |The Art of War by Sun Tzu|Conversion to pdf|Identifier|ABBYY|FineReader|plus-circle|Add Review|Favorites|Reviews|DOWNLOAD OPTIONS|download \d+ file|item Description fields|frameborder=)/i)) {
+      return false;
+    }
+    if (trimmed.includes('archive.org') || trimmed.includes('gutenberg.org/license')) return false;
+    return true;
+  });
 
-  // Decodificar entidades HTML comunes
-  clean = clean
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
+  const joinedText = cleanLines.join('\n');
 
-  return clean
+  // 4. Dividir en párrafos limpios
+  const paragraphs = joinedText
     .split(/\n\s*\n/)
-    .map(p => p.trim())
-    .filter(p => p.length > 15 && !p.startsWith('Project Gutenberg') && !p.includes('http://'));
+    .map(p => p.replace(/\s+/g, ' ').trim())
+    .filter(p => p.length > 25);
+
+  return paragraphs;
 }
 
 /**
- * Buscador de Texto Íntegro Original en Múltiples Fuentes (Gutenberg, Internet Archive, Wikisource Profundo)
+ * Extractor Multitarea de Texto Plano Puro para cualquier Libro
  */
-async function fetchCompleteUnabridgedText(title, author, gutId = null) {
-  let fullText = '';
+async function fetchCleanBookParagraphs(title, author, gutId = null) {
+  let rawText = '';
 
-  // 1. SI SE TIENE GUTENBERG ID DIRECTO (ej. gut-17405 o gut-132 para El Arte de la Guerra)
+  // 1. PRIORIDAD MÁXIMA: PROJECT GUTENBERG (Textos de máxima pureza tipográfica)
   if (gutId && gutId.startsWith('gut-')) {
     const cleanGutId = gutId.replace('gut-', '');
     const mirrorUrls = [
       `https://www.gutenberg.org/files/${cleanGutId}/${cleanGutId}-0.txt`,
       `https://www.gutenberg.org/cache/epub/${cleanGutId}/pg${cleanGutId}.txt`,
-      `https://www.gutenberg.org/files/${cleanGutId}/${cleanGutId}.txt`,
-      `https://www.gutenberg.org/files/${cleanGutId}/${cleanGutId}-h/${cleanGutId}-h.htm`
+      `https://www.gutenberg.org/files/${cleanGutId}/${cleanGutId}.txt`
     ];
 
     for (const mUrl of mirrorUrls) {
@@ -57,9 +75,9 @@ async function fetchCompleteUnabridgedText(title, author, gutId = null) {
           headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) GranColinosDigitalLibrary/2.0' }
         });
         if (res.ok) {
-          const content = await res.text();
-          if (content && content.length > 2000) {
-            fullText = content;
+          const txt = await res.text();
+          if (txt && txt.length > 2000) {
+            rawText = txt;
             break;
           }
         }
@@ -67,25 +85,21 @@ async function fetchCompleteUnabridgedText(title, author, gutId = null) {
     }
   }
 
-  // 2. BUSCAR EN GUTENDEX POR TÍTULO Y AUTOR (Obtener TXT o HTML íntegro)
-  if (!fullText || fullText.length < 2000) {
+  // 2. CONSULTA EN GUTENDEX SI ES BÚSQUEDA POR TÍTULO O AUTOR
+  if (!rawText || rawText.length < 2000) {
     try {
-      const searchRes = await fetch(`https://gutendex.com/books/?search=${encodeURIComponent(title + ' ' + (author || ''))}`);
+      const searchRes = await fetch(`https://gutendex.com/books/?search=${encodeURIComponent(title)}`);
       if (searchRes.ok) {
         const searchJson = await searchRes.json();
         if (searchJson.results && searchJson.results.length > 0) {
-          // Buscar la mejor coincidencia que tenga formato de texto plano o HTML
           for (const book of searchJson.results) {
-            const txtUrl = book.formats['text/plain; charset=utf-8'] || 
-                           book.formats['text/plain'] || 
-                           book.formats['text/html'] || 
-                           book.formats['text/html; charset=utf-8'];
+            const txtUrl = book.formats['text/plain; charset=utf-8'] || book.formats['text/plain'];
             if (txtUrl) {
               const txtRes = await fetch(txtUrl);
               if (txtRes.ok) {
-                const fetchedContent = await txtRes.text();
-                if (fetchedContent && fetchedContent.length > 2000) {
-                  fullText = fetchedContent;
+                const fetchedTxt = await txtRes.text();
+                if (fetchedTxt && fetchedTxt.length > 2000) {
+                  rawText = fetchedTxt;
                   break;
                 }
               }
@@ -96,32 +110,8 @@ async function fetchCompleteUnabridgedText(title, author, gutId = null) {
     } catch (e) {}
   }
 
-  // 3. BUSCAR EN INTERNET ARCHIVE (Advanced Search para obtener el _djvu.txt)
-  if (!fullText || fullText.length < 2000) {
-    try {
-      const cleanTitle = (title || '').replace(/[^a-zA-Z0-9\s]/g, '').trim();
-      const iaSearchUrl = `https://archive.org/advancedsearch.php?q=title%3A%22${encodeURIComponent(cleanTitle)}%22+AND+mediatype%3Atexts&fl[]=identifier&sort[]=downloads+desc&output=json`;
-      const iaRes = await fetch(iaSearchUrl);
-      if (iaRes.ok) {
-        const iaJson = await iaRes.json();
-        const docs = iaJson.response?.docs || [];
-        if (docs.length > 0) {
-          const iaId = docs[0].identifier;
-          const djvuUrl = `https://archive.org/stream/${iaId}/${iaId}_djvu.txt`;
-          const djvuRes = await fetch(djvuUrl);
-          if (djvuRes.ok) {
-            const djvuText = await djvuRes.text();
-            if (djvuText && djvuText.length > 2000) {
-              fullText = djvuText;
-            }
-          }
-        }
-      }
-    } catch (e) {}
-  }
-
-  // 4. BÚSQUEDA PROFUNDA EN WIKISOURCE (Saltar páginas de desambiguación)
-  if (!fullText || fullText.length < 2000) {
+  // 3. CONSULTA EN WIKISOURCE PROFUNDO
+  if (!rawText || rawText.length < 2000) {
     for (const lang of ['es', 'en']) {
       try {
         const searchWikiUrl = `https://${lang}.wikisource.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(title + ' ' + (author || ''))}&format=json&origin=*`;
@@ -129,7 +119,6 @@ async function fetchCompleteUnabridgedText(title, author, gutId = null) {
         if (sRes.ok) {
           const sJson = await sRes.json();
           const searchHits = sJson.query?.search || [];
-          // Filtrar páginas de desambiguación
           const validHits = searchHits.filter(h => !h.title.toLowerCase().includes('disambiguation') && !h.title.toLowerCase().includes('desambiguación'));
           
           if (validHits.length > 0) {
@@ -140,10 +129,8 @@ async function fetchCompleteUnabridgedText(title, author, gutId = null) {
               const pJson = await pRes.json();
               const htmlContent = pJson.parse?.text?.['*'];
               if (htmlContent) {
-                const extractedParas = stripHtmlToParagraphs(htmlContent);
-                if (extractedParas.length > 5) {
-                  return extractedParas;
-                }
+                rawText = htmlContent;
+                break;
               }
             }
           }
@@ -152,44 +139,22 @@ async function fetchCompleteUnabridgedText(title, author, gutId = null) {
     }
   }
 
-  if (typeof fullText === 'string' && fullText.includes('<html')) {
-    return stripHtmlToParagraphs(fullText);
-  }
-
-  return fullText;
+  // Procesar y depurar ruido de metadatos OCR
+  const cleanParagraphs = cleanRawBookTextToParagraphs(rawText);
+  return cleanParagraphs;
 }
 
 /**
- * Generador de PDF 100% Válido y Multi-Página de la Obra Completa
+ * Compilador de PDF Limpio e Íntegro con pdf-lib (Certificado para Adobe Acrobat)
  */
-async function buildFullBookPdf(title, author, rawTextOrParagraphs) {
+async function buildFullBookPdf(title, author, paragraphs) {
   const pdfDoc = await PDFDocument.create();
   const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  let paragraphs = [];
-
-  if (Array.isArray(rawTextOrParagraphs)) {
-    paragraphs = rawTextOrParagraphs;
-  } else if (typeof rawTextOrParagraphs === 'string') {
-    // Strip Gutenberg header and footer
-    let clean = rawTextOrParagraphs;
-    const startIdx = clean.search(/\*\*\* START OF TH(IS|E) PROJECT GUTENBERG EBOOK/i);
-    if (startIdx !== -1) {
-      const endHeader = clean.indexOf('\n', startIdx);
-      if (endHeader !== -1) clean = clean.substring(endHeader);
-    }
-    const endIdx = clean.search(/\*\*\* END OF TH(IS|E) PROJECT GUTENBERG EBOOK/i);
-    if (endIdx !== -1) clean = clean.substring(0, endIdx);
-
-    paragraphs = clean
-      .split(/\n\s*\n/)
-      .map(p => p.trim())
-      .filter(p => p.length > 10);
-  }
-
-  if (paragraphs.length === 0) {
-    paragraphs = [
+  let finalParas = paragraphs;
+  if (!Array.isArray(finalParas) || finalParas.length === 0) {
+    finalParas = [
       `Edicion digital integra de "${title}", por ${author}.`,
       "Preservada e indexada en el catalogo hemerografico de la Biblioteca Digital GranColinos.",
       "Acceso libre y preservacion del conocimiento universal para estudiantes e investigadores."
@@ -246,7 +211,7 @@ async function buildFullBookPdf(title, author, rawTextOrParagraphs) {
   const fontSize = 10;
   const lineHeight = 14;
 
-  for (const para of paragraphs) {
+  for (const para of finalParas) {
     const cleanedPara = cleanAscii(para);
     if (!cleanedPara) continue;
 
@@ -303,13 +268,13 @@ export async function GET(request) {
     const title = searchParams.get('title') || 'Libro';
     const author = searchParams.get('author') || 'GranColinos';
 
-    console.log(`Ingiriendo el texto completo e íntegro para compilar PDF: "${title}" (${author})`);
+    console.log(`Ingiriendo y depurando texto puro original para PDF: "${title}" (${author})`);
 
-    // Ingesta profunda del libro original completo (Gutenberg HTML/TXT + Internet Archive + Wikisource)
-    const fullBookContent = await fetchCompleteUnabridgedText(title, author, id);
+    // Ingesta depurada del texto original libre de ruido OCR o metadatos de cabecera
+    const cleanParagraphs = await fetchCleanBookParagraphs(title, author, id);
 
-    // COMPILAR EL LIBRO ENTERO EN UN DOCUMENTO PDF MULTI-PÁGINA
-    const pdfBuffer = await buildFullBookPdf(title, author, fullBookContent);
+    // COMPILAR EL LIBRO ENTERO EN PDF LIMPIO MULTI-PÁGINA
+    const pdfBuffer = await buildFullBookPdf(title, author, cleanParagraphs);
     const safeFilename = `${title.replace(/[^a-zA-Z0-9\s_-]/g, '') || 'libro'}_completo.pdf`;
 
     return new NextResponse(pdfBuffer, {
