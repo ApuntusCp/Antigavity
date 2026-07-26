@@ -14,6 +14,7 @@ function GlobalAcademicRepositoryContent() {
   const [activeQuery, setActiveQuery] = useState('');
   const [activeDiscipline, setActiveDiscipline] = useState('todas');
   const [activeDocType, setActiveDocType] = useState('todos');
+  const [activeLanguage, setActiveLanguage] = useState('todos');
   const [yearStart, setYearStart] = useState('2018');
   const [yearEnd, setYearEnd] = useState('2026');
   
@@ -59,6 +60,25 @@ function GlobalAcademicRepositoryContent() {
     { id: 'Preprint', name: 'Preprint / Conferencia (arXiv/PMC)' }
   ];
 
+  // Catálogo de Idiomas Globales e Históricos
+  const languages = [
+    { id: 'todos', name: 'Todos los Idiomas (Universal)' },
+    { id: 'es', name: 'Español (Castellano)' },
+    { id: 'en', name: 'English (Inglés)' },
+    { id: 'la', name: 'Latín Clásico & Filosófico (Latinus)' },
+    { id: 'he', name: 'Hebreo & Fuentes Talmúdicas (עברית)' },
+    { id: 'el', name: 'Griego Clásico & Moderno (Ελληνικά)' },
+    { id: 'fr', name: 'Francés (Français)' },
+    { id: 'de', name: 'Alemán (Deutsch)' },
+    { id: 'pt', name: 'Portugués (Português)' },
+    { id: 'zh', name: 'Chino Tradicional & Simplificado (中文)' },
+    { id: 'ru', name: 'Ruso (Русский)' },
+    { id: 'ar', name: 'Árabe (العربية)' },
+    { id: 'sa', name: 'Sánscrito (संस्कृतम्)' },
+    { id: 'ja', name: 'Japonés (日本語)' },
+    { id: 'it', name: 'Italiano (Italiano)' }
+  ];
+
   // Cargar Carpetas Guardadas en LocalStorage
   useEffect(() => {
     try {
@@ -85,8 +105,13 @@ function GlobalAcademicRepositoryContent() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  // Ejecutar Consulta a la API de Búsqueda Académica Dinámica
-  const executeAcademicSearch = async (queryToSearch, disciplineToSearch = activeDiscipline, docTypeToSearch = activeDocType) => {
+  // Ejecutar Consulta a la API de Búsqueda Académica Dinámica Multilingüe
+  const executeAcademicSearch = async (
+    queryToSearch, 
+    disciplineToSearch = activeDiscipline, 
+    docTypeToSearch = activeDocType,
+    languageToSearch = activeLanguage
+  ) => {
     setLoading(true);
     try {
       let finalQuery = queryToSearch !== undefined ? queryToSearch : searchQuery;
@@ -99,7 +124,8 @@ function GlobalAcademicRepositoryContent() {
       const params = new URLSearchParams({
         q: finalQuery || '',
         disciplina: disciplineToSearch,
-        tipo: docTypeToSearch
+        tipo: docTypeToSearch,
+        idioma: languageToSearch
       });
 
       const res = await fetch(`/api/academic/search?${params.toString()}`);
@@ -123,17 +149,22 @@ function GlobalAcademicRepositoryContent() {
   };
 
   useEffect(() => {
-    executeAcademicSearch(searchQuery, activeDiscipline, activeDocType);
+    executeAcademicSearch(searchQuery, activeDiscipline, activeDocType, activeLanguage);
   }, []);
 
   const handleDisciplineChange = (newDiscipline) => {
     setActiveDiscipline(newDiscipline);
-    executeAcademicSearch(searchQuery, newDiscipline, activeDocType);
+    executeAcademicSearch(searchQuery, newDiscipline, activeDocType, activeLanguage);
   };
 
   const handleDocTypeChange = (newDocType) => {
     setActiveDocType(newDocType);
-    executeAcademicSearch(searchQuery, activeDiscipline, newDocType);
+    executeAcademicSearch(searchQuery, activeDiscipline, newDocType, activeLanguage);
+  };
+
+  const handleLanguageChange = (newLanguage) => {
+    setActiveLanguage(newLanguage);
+    executeAcademicSearch(searchQuery, activeDiscipline, activeDocType, newLanguage);
   };
 
   const handleSearchSubmit = (e) => {
@@ -405,8 +436,8 @@ function GlobalAcademicRepositoryContent() {
             )}
           </form>
 
-          {/* MATRIZ DE FILTROS SECUNDARIOS (FASE 2) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/10 pt-4">
+          {/* MATRIZ DE FILTROS SECUNDARIOS (FASE 2 & IDIOMAS MULTILINGÜES) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-white/10 pt-4">
             <div className="space-y-1.5">
               <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider block flex items-center gap-1">
                 <Filter size={12} className="text-[#00F0FF]" /> Filtrar por Disciplina
@@ -418,6 +449,21 @@ function GlobalAcademicRepositoryContent() {
               >
                 {disciplines.map(d => (
                   <option key={d.id} value={d.id} className="bg-[#050A12] text-white">{d.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider block flex items-center gap-1">
+                <Globe size={12} className="text-[#00F0FF]" /> Idioma de la Fuente (Históricos & Modernos)
+              </label>
+              <select
+                value={activeLanguage}
+                onChange={(e) => handleLanguageChange(e.target.value)}
+                className="w-full bg-[#050A12] text-[#00F0FF] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#00F0FF] cursor-pointer"
+              >
+                {languages.map(l => (
+                  <option key={l.id} value={l.id} className="bg-[#050A12] text-white">{l.name}</option>
                 ))}
               </select>
             </div>
