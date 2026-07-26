@@ -609,10 +609,17 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA COMPLETA DE NOTICIA (APERTURA CORRECTA SIN TRUNCADO DE HEADER FIX Z-[99999]) */}
+        {/* MODAL LECTURA COMPLETA DE NOTICIA CON FONDO TRANSPARENTE 22% Y BLUR GLASSMORPISM ELEGANTE */}
         {selectedArticle && (
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 bg-black/95 backdrop-blur-2xl animate-in fade-in overflow-y-auto">
-            <div className="leather-canvas-blue text-white rounded-3xl max-w-4xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_100px_rgba(212,175,55,0.4)] border border-[#D4AF37]/60 my-auto">
+          <div 
+            className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.22)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)'
+            }}
+          >
+            <div className="leather-canvas-blue text-white rounded-3xl max-w-4xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_100px_rgba(212,175,55,0.45)] border border-[#D4AF37]/60 my-auto">
               
               {/* Botón de Cierre Superior Flotante Visibilidad Garantizada */}
               <button
