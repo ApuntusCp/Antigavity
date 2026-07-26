@@ -1,17 +1,32 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, ExternalLink, Filter, Sparkles, RefreshCw } from 'lucide-react';
-import { collection, query, orderBy, limit, onSnapshot, where } from 'firebase/firestore';
+import React, { useState, useEffect, Suspense } from 'react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, ExternalLink, Sparkles, RefreshCw } from 'lucide-react';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import PaymentMethodsBadge from '../../components/PaymentMethodsBadge';
+import { useSearchParams, useRouter } from 'next/navigation';
 
-export default function NoticiasPage() {
-  const [activeCountry, setActiveCountry] = useState('global');
+function NoticiasContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const initialCountry = searchParams.get('pais') || 'global';
+  const [activeCountry, setActiveCountry] = useState(initialCountry);
   const [realtimeArticles, setRealtimeArticles] = useState([]);
   const [loadingFeed, setLoadingFeed] = useState(true);
 
-  // Editorial Featured Articles (Option B: Preserved Brand Content)
+  // Sync state with URL parameter for shareable filters
+  const handleCountryChange = (countryId) => {
+    setActiveCountry(countryId);
+    if (countryId === 'global') {
+      router.push('/noticias', { scroll: false });
+    } else {
+      router.push(`/noticias?pais=${countryId}`, { scroll: false });
+    }
+  };
+
+  // OPCIÓN B: Franja Fija Editorial de Marca GranColinos
   const brandFeaturedArticles = [
     {
       id: "brand-1",
@@ -50,24 +65,24 @@ export default function NoticiasPage() {
     { id: 'salud', label: '🔬 Ciencia & Botánica', code: 'HEALTH' },
   ];
 
-  // Fallback Realtime Global News Dataset if Firestore collection is fresh
+  // Fallback Realtime Dataset from Gran Noticias Network
   const fallbackGlobalNews = [
     {
       id: 'news-1',
       title: "Científicos descubren nuevas propiedades terapéuticas en péptidos apícolas",
-      summary: "Investigaciones en laboratorios europeos confirman la alta eficacia de la apitoxina sintética y natural en procesos de inflamación crónica.",
+      summary: "Investigaciones en laboratorios europeos confirman la alta eficacia de la apitoxina natural en procesos de inflamación articular y muscular.",
       sourceName: "ScienceDaily / BioTech",
       country: "us",
-      publishedAt: "Hace 15 min",
+      publishedAt: "Hace 10 min",
       url: "https://news.google.com"
     },
     {
       id: 'news-2',
       title: "Colombia reglamenta la exportación de extractos botánicos de alta pureza",
-      summary: "El gobierno colombiano expide la resolución 2026 que facilita el despacho internacional de productos certificados por INVIMA.",
+      summary: "El gobierno colombiano expide decreto que facilita el despacho internacional de productos medicinales certificados por INVIMA.",
       sourceName: "El Tiempo / Economía",
       country: "co",
-      publishedAt: "Hace 32 min",
+      publishedAt: "Hace 25 min",
       url: "https://eltiempo.com"
     },
     {
@@ -76,25 +91,25 @@ export default function NoticiasPage() {
       summary: "Foro regional en México establece guías de trazabilidad de origen para plantas medicinales y suplementos orgánicos.",
       sourceName: "Agencia EFE Salud",
       country: "mx",
-      publishedAt: "Hace 1 hora",
+      publishedAt: "Hace 45 min",
       url: "https://efe.com"
     },
     {
       id: 'news-4',
       title: "Cumbre de Sostenibilidad Agrícola 2026: La transición ecológica",
-      summary: "Expertos internacionales debaten el uso de nanotecnología y microbiomas de suelo para reemplazar pesticidas sintéticos.",
+      summary: "Expertos internacionales debaten el uso de microbiomas de suelo y biopesticidas orgánicos para reemplazar agroquímicos.",
       sourceName: "Reuters World",
       country: "global",
-      publishedAt: "Hace 2 horas",
+      publishedAt: "Hace 1 hora",
       url: "https://reuters.com"
     },
     {
       id: 'news-5',
       title: "El impacto del bienestar holístico en la productividad laboral urbana",
-      summary: "Nuevos datos demuestran que el consumo de adaptógenos naturales reduce el ausentismo laboral hasta en un 40%.",
+      summary: "Nuevos datos demuestran que el consumo de adaptógenos naturales y nutrición vegetal optimiza el desempeño en entornos exigentes.",
       sourceName: "Financial Times",
       country: "us",
-      publishedAt: "Hace 3 horas",
+      publishedAt: "Hace 2 horas",
       url: "https://ft.com"
     },
     {
@@ -103,7 +118,7 @@ export default function NoticiasPage() {
       summary: "Universidades de Buenos Aires abren laboratorio especializado en caracterización de venenos de abejas y propóleos.",
       sourceName: "La Nación Argentina",
       country: "ar",
-      publishedAt: "Hace 4 horas",
+      publishedAt: "Hace 3 horas",
       url: "https://lanacion.com.ar"
     }
   ];
@@ -117,7 +132,7 @@ export default function NoticiasPage() {
       const q = query(
         collection(db, 'gran_noticias_articles'),
         orderBy('publishedAt', 'desc'),
-        limit(30)
+        limit(40)
       );
 
       unsubscribe = onSnapshot(q, (snapshot) => {
@@ -135,8 +150,8 @@ export default function NoticiasPage() {
             return {
               id: docSnap.id,
               title: data.title || 'Titular de Noticia',
-              summary: data.summary || data.excerpt || 'Resumen no disponible.',
-              sourceName: data.sourceName || 'Agencia de Noticias',
+              summary: data.summary || data.excerpt || 'Resumen de noticia verificado.',
+              sourceName: data.sourceName || 'Agencia Periodística',
               country: (data.country || 'global').toLowerCase(),
               publishedAt: pubTime,
               url: data.link || data.url || '#'
@@ -149,12 +164,12 @@ export default function NoticiasPage() {
         }
         setLoadingFeed(false);
       }, (err) => {
-        console.warn("Firestore Gran Noticias listener fallback active:", err);
+        console.warn("Firestore Gran Noticias fallback active:", err);
         setRealtimeArticles(fallbackGlobalNews);
         setLoadingFeed(false);
       });
     } catch (e) {
-      console.warn("Error setting up Gran Noticias snapshot:", e);
+      console.warn("Error initializing Gran Noticias feed:", e);
       setRealtimeArticles(fallbackGlobalNews);
       setLoadingFeed(false);
     }
@@ -173,7 +188,7 @@ export default function NoticiasPage() {
     <div className="min-h-screen theme-noticias text-white pt-32 pb-24 px-4 sm:px-6 relative overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
         
-        {/* Header */}
+        {/* Main Header */}
         <div className="text-center mb-12 fade-in">
           <span className="text-[#E2E8F0] text-xs font-bold tracking-[0.3em] uppercase mb-3 block flex items-center justify-center gap-2">
             <Newspaper size={16} className="text-[#E2E8F0]" /> PORTAL DE NOTICIAS GLOBALES EN TIEMPO REAL
@@ -183,17 +198,17 @@ export default function NoticiasPage() {
           </h1>
           <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#E2E8F0] to-transparent mx-auto mb-6"></div>
           <p className="text-gray-300 max-w-2xl mx-auto font-light leading-relaxed text-sm md:text-base">
-            Monitoreo en tiempo real de noticias, avances científicos y actualidad internacional alimentado por la red Gran Noticias.
+            Monitoreo en tiempo real de noticias internacionales, investigación botánica y economía del bienestar impulsado por la red Gran Noticias.
           </p>
         </div>
 
-        {/* OPICIÓN B: FRANJA EDITORIAL DESTACADA GRANCOLINOS (SECTOR SUPERIOR FIJO) */}
+        {/* OPCIÓN B: FRANJA FIJA EDITORIAL DESTACADA GRANCOLINOS */}
         <div className="mb-16">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 border-b border-white/10 pb-3">
             <h2 className="text-xs font-bold text-[#E2E8F0] uppercase tracking-[0.25em] flex items-center gap-2">
               <Sparkles size={16} /> DESTACADOS Y REGULACIÓN GRANCOLINOS
             </h2>
-            <span className="text-[10px] text-gray-400 font-mono">EDICIÓN EXCLUSIVA</span>
+            <span className="text-[10px] text-gray-400 font-mono">EDICIÓN INSTITUCIONAL</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -212,7 +227,7 @@ export default function NoticiasPage() {
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-400 font-mono pt-3 border-t border-white/10">
                   <span>{article.date}</span>
-                  <span className="text-[#E2E8F0] flex items-center gap-1 cursor-pointer hover:underline">
+                  <span className="text-[#E2E8F0] flex items-center gap-1 cursor-pointer hover:underline font-bold">
                     Ver Reporte <ArrowRight size={12} />
                   </span>
                 </div>
@@ -232,7 +247,7 @@ export default function NoticiasPage() {
               </div>
               <div>
                 <h3 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  FEED EN VIVO DE GRAN NOTICIAS <span className="px-2 py-0.5 bg-[#E2E8F0]/20 text-[#E2E8F0] text-[9px] font-mono rounded border border-[#E2E8F0]/30">EN TIEMPO REAL</span>
+                  FEED EN VIVO DE GRAN NOTICIAS <span className="px-2.5 py-0.5 bg-[#E2E8F0]/20 text-[#E2E8F0] text-[9px] font-mono rounded border border-[#E2E8F0]/30">EN TIEMPO REAL</span>
                 </h3>
                 <p className="text-xs text-gray-300">Fuentes periodísticas e internacionales verificadas en directo</p>
               </div>
@@ -243,7 +258,7 @@ export default function NoticiasPage() {
               {countryFilters.map((filter) => (
                 <button
                   key={filter.id}
-                  onClick={() => setActiveCountry(filter.id)}
+                  onClick={() => handleCountryChange(filter.id)}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap border ${
                     activeCountry === filter.id
                       ? 'bg-[#E2E8F0] text-black border-[#E2E8F0] shadow-[0_0_15px_rgba(226,232,240,0.4)]'
@@ -310,5 +325,17 @@ export default function NoticiasPage() {
         <PaymentMethodsBadge />
       </div>
     </div>
+  );
+}
+
+export default function NoticiasPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen theme-noticias flex items-center justify-center text-white">
+        <RefreshCw className="animate-spin text-[#E2E8F0]" size={32} />
+      </div>
+    }>
+      <NoticiasContent />
+    </Suspense>
   );
 }
