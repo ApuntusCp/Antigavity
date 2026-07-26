@@ -87,25 +87,33 @@ export default function Header({ headerConfig = {} }) {
 
   return (
     <>
-      {/* Header Superior Fijo (Logo, Búsqueda, Usuario, Carrito) */}
+      {/* Header Superior Fijo (Logo Centrado en la Geometría Exacta) */}
       <header className="fixed top-0 left-0 right-0 z-40 bg-[#050A07]/90 backdrop-blur-xl border-b border-[#D4AF37]/20 px-4 py-3 shadow-xl">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            {headerConfig.logoText ? (
-              <span className="font-playfair text-lg font-bold text-gold-gradient tracking-wide">{headerConfig.logoText}</span>
-            ) : (
-              <Image 
-                src="/Logos/GranColinos.Com.png" 
-                alt="GranColinos Logo" 
-                width={140} 
-                height={38} 
-                className="object-contain filter drop-shadow-[0_0_10px_rgba(212,175,55,0.45)]"
-                priority
-              />
-            )}
-          </Link>
+        <div className="max-w-7xl mx-auto flex items-center justify-between relative h-10">
+          
+          {/* Lado Izquierdo Vacio/Equilibrado */}
+          <div className="flex items-center gap-2"></div>
 
-          <div className="flex items-center gap-3">
+          {/* LOGO EN EL CENTRO EXACTO DEL ENCABEZADO */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-auto">
+            <Link href="/" className="flex items-center gap-2">
+              {headerConfig.logoText ? (
+                <span className="font-playfair text-lg font-bold text-gold-gradient tracking-wide">{headerConfig.logoText}</span>
+              ) : (
+                <Image 
+                  src="/Logos/GranColinos.Com.png" 
+                  alt="GranColinos Logo" 
+                  width={150} 
+                  height={40} 
+                  className="object-contain filter drop-shadow-[0_0_12px_rgba(212,175,55,0.55)] hover:scale-105 transition-transform"
+                  priority
+                />
+              )}
+            </Link>
+          </div>
+
+          {/* Acciones del Lado Derecho (Búsqueda, Usuario, Carrito) */}
+          <div className="flex items-center gap-3 ml-auto">
             {/* Buscador Rápido */}
             <div className="relative">
               {showSearch ? (
@@ -180,7 +188,7 @@ export default function Header({ headerConfig = {} }) {
       {/* Floating Bottom Navigation Container */}
       <div className="fixed bottom-4 left-0 right-0 z-50 px-2 sm:px-6 max-w-5xl mx-auto pointer-events-none">
         
-        {/* CARRUSEL DE BURBUJAS FLOTANTES MÓVIL (<768px - FASE 0) */}
+        {/* CARRUSEL DE BURBUJAS FLOTANTES MÓVIL (<768px) */}
         <div className="md:hidden pointer-events-auto bg-[#050A07]/90 border border-[#D4AF37]/40 backdrop-blur-2xl rounded-full py-2.5 px-3 shadow-[0_10px_35px_rgba(0,0,0,0.9)]">
           <div
             ref={carouselRef}
