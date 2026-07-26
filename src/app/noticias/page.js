@@ -51,6 +51,18 @@ function NoticiasContent() {
   const [loadingFeed, setLoadingFeed] = useState(true);
   const [visibleNewsCount, setVisibleNewsCount] = useState(6);
 
+  // Bloquear Scroll del Fondo cuando el Modal este abierto para Cobertura 100% Sin Cortar
+  useEffect(() => {
+    if (selectedArticle) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedArticle]);
+
   // Fecha Actual para Masthead
   const formattedDate = new Intl.DateTimeFormat('es-CO', {
     weekday: 'long',
@@ -609,11 +621,18 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA COMPLETA DE NOTICIA CON FONDO TRANSPARENTE 22% Y BLUR GLASSMORPISM ELEGANTE */}
+        {/* MODAL LECTURA COMPLETA DE NOTICIA CON OVERLAY 22% TRANSPARENTE Y BLUR DE PANTALLA COMPLETA 100vw x 100vh */}
         {selectedArticle && (
           <div 
             className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
             style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: '100vw',
+              height: '100vh',
               backgroundColor: 'rgba(0, 0, 0, 0.22)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)'
