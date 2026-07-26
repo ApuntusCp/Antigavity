@@ -2,65 +2,85 @@ import { NextResponse } from 'next/server';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 /**
- * Limpiador definitivo de metadatos OCR y ruido de cabeceras web (Archive.org / Gutenberg)
- * Garantiza que ÚNICAMENTE los capítulos y párrafos reales del libro se incluyan en el PDF.
+ * Algoritmo de Búsqueda Intensiva en DuckDuckGo para encontrar y descargar el archivo .PDF real de la obra
  */
-function cleanRawBookTextToParagraphs(rawText) {
-  if (!rawText) return [];
-
-  let text = rawText;
-
-  // 1. Recortar cabeceras y pies de página de Project Gutenberg
-  const startMatch = text.match(/\*\*\*\s*START OF TH(IS|E) PROJECT GUTENBERG EBOOK[\s\S]*?\*\*\*/i);
-  if (startMatch) {
-    const endHeaderIdx = text.indexOf(startMatch[0]) + startMatch[0].length;
-    text = text.substring(endHeaderIdx);
-  }
-
-  const endMatch = text.match(/\*\*\*\s*END OF TH(IS|E) PROJECT GUTENBERG EBOOK/i);
-  if (endMatch) {
-    const endFooterIdx = text.indexOf(endMatch[0]);
-    text = text.substring(0, endFooterIdx);
-  }
-
-  // 2. Eliminar cualquier etiqueta HTML o script restante
-  text = text
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<[^>]+>/g, ' ');
-
-  // 3. Filtrar líneas de metadatos OCR de Internet Archive (EMBED, ABBYY FineReader, DOWNLOAD OPTIONS, etc.)
-  const lines = text.split(/\n+/);
-  const cleanLines = lines.filter(line => {
-    const trimmed = line.trim();
-    if (trimmed.length < 3) return false;
+async function findAndFetchRealPdfFromDuckDuckGo(title, author) {
+  try {
+    const cleanTitle = (title || '').replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    const cleanAuthor = (author || '').replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    const query = `filetype:pdf ${cleanTitle} ${cleanAuthor}`;
     
-    // Lista de patrones de metadatos no deseados
-    if (trimmed.match(/^(EMBED|archiveorg|TheArtOfWarBySunTzu|Want more\?|Advanced embedding|Flag this item|Graphic Violence|Explicit Sexual|Misinformation|Marketing\/Phishing|Misleading|Usage Public Domain|Topics |The Art of War by Sun Tzu|Conversion to pdf|Identifier|ABBYY|FineReader|plus-circle|Add Review|Favorites|Reviews|DOWNLOAD OPTIONS|download \d+ file|item Description fields|frameborder=)/i)) {
-      return false;
+    console.log(`[DuckDuckGo Crawler] Buscando archivo .PDF descargable para: "${query}"...`);
+
+    const ddgUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+    const ddgRes = await fetch(ddgUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8'
+      }
+    });
+
+    if (ddgRes.ok) {
+      const html = await ddgRes.text();
+      // Extraer enlaces a archivos .pdf
+      const rawMatches = html.match(/href="([^"]+)"/gi) || [];
+      const pdfUrls = [];
+
+      for (const m of rawMatches) {
+        let url = m.replace(/^href="/, '').replace(/"$/, '');
+        if (url.includes('uddg=')) {
+          try {
+            const urlObj = new URL(url, 'https://html.duckduckgo.com');
+            const uddg = urlObj.searchParams.get('uddg');
+            if (uddg) url = uddg;
+          } catch (e) {}
+        }
+        if (url && url.startsWith('http') && url.toLowerCase().includes('.pdf') && !pdfUrls.includes(url)) {
+          pdfUrls.push(url);
+        }
+      }
+
+      console.log(`[DuckDuckGo Crawler] Encontrados ${pdfUrls.length} enlaces .PDF candidatos.`);
+
+      // Probar los enlaces encontrados hasta obtener un PDF binario válido
+      for (const targetPdfUrl of pdfUrls.slice(0, 5)) {
+        try {
+          console.log(`[DuckDuckGo Crawler] Intentando descarga desde: ${targetPdfUrl}`);
+          const pdfFetch = await fetch(targetPdfUrl, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) GranColinosDigitalLibrary/2.0'
+            }
+          });
+
+          if (pdfFetch.ok) {
+            const contentType = pdfFetch.headers.get('content-type') || '';
+            const arrayBuffer = await pdfFetch.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+
+            // Verificar que sea un PDF binario real (debe comenzar con %PDF- y tener peso significativo)
+            if (buffer.length > 5000 && (contentType.includes('pdf') || buffer.toString('ascii', 0, 5) === '%PDF-')) {
+              console.log(`[DuckDuckGo Crawler] ¡PDF Real Descargado Exitosamente! (${buffer.length} bytes)`);
+              return buffer;
+            }
+          }
+        } catch (e) {
+          console.warn(`[DuckDuckGo Crawler] Fallo al descargar de ${targetPdfUrl}:`, e.message);
+        }
+      }
     }
-    if (trimmed.includes('archive.org') || trimmed.includes('gutenberg.org/license')) return false;
-    return true;
-  });
-
-  const joinedText = cleanLines.join('\n');
-
-  // 4. Dividir en párrafos limpios
-  const paragraphs = joinedText
-    .split(/\n\s*\n/)
-    .map(p => p.replace(/\s+/g, ' ').trim())
-    .filter(p => p.length > 25);
-
-  return paragraphs;
+  } catch (err) {
+    console.error("[DuckDuckGo Crawler] Error en la búsqueda:", err);
+  }
+  return null;
 }
 
 /**
- * Extractor Multitarea de Texto Plano Puro para cualquier Libro
+ * Extractor Multitarea de Texto Completo (Gutenberg, Internet Archive, Wikisource)
  */
 async function fetchCleanBookParagraphs(title, author, gutId = null) {
   let rawText = '';
 
-  // 1. PRIORIDAD MÁXIMA: PROJECT GUTENBERG (Textos de máxima pureza tipográfica)
+  // 1. PROJECT GUTENBERG SI TIENE ID DIRECTO
   if (gutId && gutId.startsWith('gut-')) {
     const cleanGutId = gutId.replace('gut-', '');
     const mirrorUrls = [
@@ -85,7 +105,7 @@ async function fetchCleanBookParagraphs(title, author, gutId = null) {
     }
   }
 
-  // 2. CONSULTA EN GUTENDEX SI ES BÚSQUEDA POR TÍTULO O AUTOR
+  // 2. BUSCAR EN GUTENDEX
   if (!rawText || rawText.length < 2000) {
     try {
       const searchRes = await fetch(`https://gutendex.com/books/?search=${encodeURIComponent(title)}`);
@@ -110,7 +130,7 @@ async function fetchCleanBookParagraphs(title, author, gutId = null) {
     } catch (e) {}
   }
 
-  // 3. CONSULTA EN WIKISOURCE PROFUNDO
+  // 3. BUSCAR EN WIKISOURCE
   if (!rawText || rawText.length < 2000) {
     for (const lang of ['es', 'en']) {
       try {
@@ -139,13 +159,39 @@ async function fetchCleanBookParagraphs(title, author, gutId = null) {
     }
   }
 
-  // Procesar y depurar ruido de metadatos OCR
-  const cleanParagraphs = cleanRawBookTextToParagraphs(rawText);
-  return cleanParagraphs;
+  // Depurar metadatos OCR
+  let text = rawText || '';
+
+  const startMatch = text.match(/\*\*\*\s*START OF TH(IS|E) PROJECT GUTENBERG EBOOK[\s\S]*?\*\*\*/i);
+  if (startMatch) {
+    const endHeaderIdx = text.indexOf(startMatch[0]) + startMatch[0].length;
+    text = text.substring(endHeaderIdx);
+  }
+
+  const endMatch = text.match(/\*\*\*\s*END OF TH(IS|E) PROJECT GUTENBERG EBOOK/i);
+  if (endMatch) {
+    const endFooterIdx = text.indexOf(endMatch[0]);
+    text = text.substring(0, endFooterIdx);
+  }
+
+  text = text.replace(/<[^>]+>/g, ' ');
+
+  const lines = text.split(/\n+/);
+  const cleanLines = lines.filter(line => {
+    const trimmed = line.trim();
+    if (trimmed.length < 3) return false;
+    if (trimmed.match(/^(EMBED|archiveorg|TheArtOfWarBySunTzu|Want more\?|Advanced embedding|Flag this item|Graphic Violence|Explicit Sexual|Misinformation|Marketing\/Phishing|Misleading|Usage Public Domain|Topics |The Art of War by Sun Tzu|Conversion to pdf|Identifier|ABBYY|FineReader|plus-circle|Add Review|Favorites|Reviews|DOWNLOAD OPTIONS|download \d+ file|item Description fields|frameborder=)/i)) {
+      return false;
+    }
+    if (trimmed.includes('archive.org') || trimmed.includes('gutenberg.org/license')) return false;
+    return true;
+  });
+
+  return cleanLines.join('\n').split(/\n\s*\n/).map(p => p.replace(/\s+/g, ' ').trim()).filter(p => p.length > 25);
 }
 
 /**
- * Compilador de PDF Limpio e Íntegro con pdf-lib (Certificado para Adobe Acrobat)
+ * Compilador de PDF de Respaldo Multi-Página de la Obra Completa
  */
 async function buildFullBookPdf(title, author, paragraphs) {
   const pdfDoc = await PDFDocument.create();
@@ -181,7 +227,6 @@ async function buildFullBookPdf(title, author, paragraphs) {
   let page = pdfDoc.addPage([pageWidth, pageHeight]);
   let y = pageHeight - margin;
 
-  // Header principal en la primera página
   page.drawText(safeTitle.substring(0, 55), {
     x: margin,
     y: y,
@@ -268,16 +313,30 @@ export async function GET(request) {
     const title = searchParams.get('title') || 'Libro';
     const author = searchParams.get('author') || 'GranColinos';
 
-    console.log(`Ingiriendo y depurando texto puro original para PDF: "${title}" (${author})`);
+    console.log(`Ejecutando algoritmo de descarga intensiva para: "${title}" (${author})`);
 
-    // Ingesta depurada del texto original libre de ruido OCR o metadatos de cabecera
-    const cleanParagraphs = await fetchCleanBookParagraphs(title, author, id);
+    // PASO 1: Búsqueda intensiva en DuckDuckGo del archivo .PDF real de la obra
+    const realPdfBuffer = await findAndFetchRealPdfFromDuckDuckGo(title, author);
 
-    // COMPILAR EL LIBRO ENTERO EN PDF LIMPIO MULTI-PÁGINA
-    const pdfBuffer = await buildFullBookPdf(title, author, cleanParagraphs);
     const safeFilename = `${title.replace(/[^a-zA-Z0-9\s_-]/g, '') || 'libro'}_completo.pdf`;
 
-    return new NextResponse(pdfBuffer, {
+    if (realPdfBuffer && realPdfBuffer.length > 5000) {
+      console.log(`Entregando PDF descargado directamente desde DuckDuckGo (${realPdfBuffer.length} bytes).`);
+      return new NextResponse(realPdfBuffer, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${encodeURIComponent(safeFilename)}"`
+        }
+      });
+    }
+
+    // PASO 2: Si no se halló PDF binario en DuckDuckGo, extraer el texto integro y compilar el PDF de la obra completa
+    console.log("Compilando texto íntegro completo desde repositorios abiertos...");
+    const cleanParagraphs = await fetchCleanBookParagraphs(title, author, id);
+    const compiledPdfBuffer = await buildFullBookPdf(title, author, cleanParagraphs);
+
+    return new NextResponse(compiledPdfBuffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
