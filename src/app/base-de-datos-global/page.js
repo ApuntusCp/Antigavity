@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { Database, Globe, Search, Cpu, ShieldCheck, BookOpen, ExternalLink, Filter, Layers, Download, Check, Sparkles, FolderPlus, Bookmark, Copy, FileText, Sliders, X, RefreshCw, AlertCircle, Trash2, Edit3, ChevronRight, Share2, CornerDownRight } from 'lucide-react';
 import { useAuth } from '@/components/AuthProvider';
-import PaymentMethodsBadge from '@/components/PaymentMethodsBadge';
+import AcademicTrustBadge from '@/components/AcademicTrustBadge';
 
 // COMPONENTE PRINCIPAL REPOSITORIO ACADÉMICO GLOBAL
 function GlobalAcademicRepositoryContent() {
@@ -769,7 +769,7 @@ function GlobalAcademicRepositoryContent() {
           </div>
         )}
 
-        <PaymentMethodsBadge />
+        <AcademicTrustBadge />
       </div>
     </div>
   );
