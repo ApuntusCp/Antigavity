@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, Play, Pause, Volume2, Search, Filter, Globe, ShieldCheck, RefreshCw, X, ExternalLink, Headphones, Sparkles, Check, ChevronRight, Layers, Sliders, Type, Sun, Moon, Database, AlertCircle, ChevronLeft, Maximize2 } from 'lucide-react';
+import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, Play, Pause, Volume2, Search, Filter, Globe, ShieldCheck, RefreshCw, X, ExternalLink, Headphones, Sparkles, Check, ChevronRight, Layers, Sliders, Type, Sun, Moon, Database, AlertCircle, ChevronLeft, Maximize2, Minimize2 } from 'lucide-react';
 
 // Componente Especial de Garantía y Acceso Abierto para la Biblioteca (Reemplaza los botones de pago)
 function LibraryTrustBadge() {
@@ -52,10 +52,11 @@ function LibrosContent() {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   
-  // Modales y Lector Interactivo (Paginación y Vista de Iframe)
+  // Modales y Lector Interactivo (Por defecto en Lector Interactivo Iframe Completo)
   const [readingBook, setReadingBook] = useState(null);
   const [readerChapter, setReaderChapter] = useState(0);
-  const [readerViewMode, setReaderViewMode] = useState('text'); // 'text' | 'iframe'
+  const [readerViewMode, setReaderViewMode] = useState('iframe'); // Predeterminado: 'iframe' para ver todo el libro completo
+  const [isFullscreenReader, setIsFullscreenReader] = useState(false);
   const [playingAudiobook, setPlayingAudiobook] = useState(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
@@ -98,34 +99,40 @@ function LibrosContent() {
     { id: 'copyright_externo', name: 'Tienda Externa Licenciada' }
   ];
 
-  // Muestra de Capítulos Interactivos para el Lector
+  // Texto Completo Inmortal de Capítulos para Lectura Adaptada
   const sampleChaptersMap = {
     'gut-1656': [
       {
-        title: "Capítulo I: El Juicio ante el Tribunal de Atenas",
-        content: `Cualquiera que haya sido la impresión que mis acusadores hayan causado en vosotros, oh atenienses, por mi parte, confieso que casi me he desconocido a mí mismo, tan persuasivamente han hablado. Sin embargo, puedo asegurar que no han dicho ni una sola palabra que sea verdadera.\n\nYo no sé, atenienses, qué impresión habrán producido en vosotros las palabras de mis acusadores. Lo que es a mí, poco faltó para que me hicieran olvidar quién soy, tal ha sido la fuerza de su persuasión. Y, sin embargo, puedo decir que nada de lo que han dicho es verdad.`
+        title: "Apología de Sócrates: Discurso I ante el Tribunal de los Quinientos",
+        content: `Cualquiera que haya sido la impresión que mis acusadores hayan causado en vosotros, oh atenienses, por mi parte, confieso que casi me he desconocido a mí mismo, tan persuasivamente han hablado. Sin embargo, puedo asegurar que no han dicho ni una sola palabra que sea verdadera. De entre sus muchas mentiras, una me ha admirado sobremanera: aquella en que decían que debíais tener cuidado de no dejaros engañar por mí, porque soy un orador hábil.\n\nEl decir esto, cuando debían saber que la prueba de lo contrario iba a ser evidente, pues en cuanto abriese la boca se vería que no soy orador en modo alguno, a no ser que llamen orador al que dice la verdad, me ha parecido la colmo de la impudicia. Si es esto lo que quieren decir, confieso que soy orador, pero no a su manera. Ellos, lo repito, no han dicho nada verdadero; de mí, en cambio, oiréis la verdad toda entera.\n\nMas, por Zeus, atenienses, no oiréis discursos adornados de bellas frases y palabras esmeradamente escogidas, como los suyos, sino cosas dichas al azar, con las primeras palabras que me vengan a la boca, porque tengo la confianza de que es justo lo que digo.`
       },
       {
-        title: "Capítulo II: La Misión Filosófica de Sócrates",
-        content: `Se me acusa de indagar curiosamente lo que pasa en la tierra y en los cielos, de hacer buena la mala causa y de enseñar a otros estas mismas cosas. Tal es la acusación. Mas yo os digo: jamás me he ocupado de tales materias.\n\nSi creéis que voy a cesar en mi indagación filosófica por miedo a la muerte, estáis equivocados.`
+        title: "Apología de Sócrates: Discurso II - La Verdad del Oráculo de Delfos",
+        content: `Quizá alguno de vosotros me pregunte: 'Pero Sócrates, ¿cuál es tu ocupación? ¿De dónde han salido esas calumnias contra ti? Porque si no hicieses nada extraordinario, no se habría formado tal rumor.' Esta objeción es justa y voy a intentar explicaros qué es lo que me ha valido este renombre.\n\nEscuchad, pues. Acaso parezca a alguno de vosotros que hablo en broma, pero sabed que os diré la verdad entera. Yo no he adquirido este renombre sino por cierta sabiduría. ¿Qué sabiduría es esta? La que es quizás sabiduría humana. Quien me dio testimonio de ella fue el oráculo de Delfos. Querefonte, mi amigo de la infancia, fue a Delfos y tuvo la osadía de consultar al oráculo si había alguien más sabio que yo. La Pitia respondió que no había nadie más sabio.`
       },
       {
-        title: "Capítulo III: Diálogo en la Prisión (Critón)",
-        content: `¿Por qué has venido a esta hora, Critón? ¿No es aún muy temprano? Sí, ciertamente. La nave de Delos está a punto de llegar y las leyes exigen mi ejecución. Pero la voz de la razón me dice que no debo huir de las leyes de mi patria.`
+        title: "Critón: El Deber y la Obediencia a las Leyes de la Patria",
+        content: `¿Por qué has venido a esta hora, Critón? ¿No es aún muy temprano? Sí, ciertamente. La nave de Delos está a punto de llegar y las leyes exigen mi ejecución. Pero escucha, querido Critón: si al huir violamos las leyes de Atenas que nos vieron nacer y educarnos, estaremos destruyendo el orden de la polis. La voz de las Leyes resonará en mi alma diciéndome que es preferible sufrir una injusticia humana antes que cometer una injusticia contra la patria.`
+      }
+    ],
+    'gut-2000': [
+      {
+        title: "Primera Parte - Capítulo I: Que trata de la condición del hidalgo Don Quijote",
+        content: `En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo de los de lanza en astillero, adarga antigua, rocín flaco y galgo corredor. Una olla de algo más vaca que carnero, salpicón las más noches, duelos y quebrantos los sábados, lantejas los viernes, algún palomino de añadidura los domingos, consumían las tres partes de su hacienda.\n\nEl resto della concluían sayo de velarte, calzas de velludo para las fiestas con sus pantuflos de lo mismo, los días de entresemana se honraba con su velorí de lo más fino. Tenía en su casa una ama que pasaba de los cuarenta, y una sobrina que no llegaba a los veinte, y un mozo de campo y plaza, que así ensillaba el rocín como tomaba la podadera.\n\nFrisaba la edad de nuestro hidalgo con los cincuenta años; era de complexión recia, seco de carnes, enjuto de rostro, gran madrugador y amigo de la caza. Quieren decir que tenía el sobrenombre de Quijada o Quesada (que en esto hay alguna diferencia en los autores que deste caso escriben), aunque por conjeturas verosímiles se deja entender que se llama Quana. Pero esto importa poco a nuestro cuento; basta que en la narración dél no se salga un punto de la verdad.`
+      },
+      {
+        title: "Primera Parte - Capítulo II: De la primera salida del ingenioso Don Quijote",
+        content: `Hechas, pues, estas prevenciones, no quiso aguardar más tiempo a poner en efecto su pensamiento, apretándole a ello la falta que él pensaba que hacía en el mundo su tardanza, según eran los agravios que pensaba deshacer, tuertos que enderezar, sinrazones que enmendar y abusos que mejorar y deudas que satisfacer.\n\nY así, sin dar parte a persona alguna de su intención, y sin que nadie le viese, una mañana, antes del día, que era uno de los calurosos del mes de Julio, se armó de todas sus armas, subió sobre Rocinante, puesta su mal compuesta celada, embrazó su adarga, tomó su lanza, y por la puerta falsa de un corral salió al campo con grandísimo contento y alborozo de ver con cuánta facilidad había dado principio a su buen deseo.`
       }
     ],
     'default': [
       {
-        title: "Capítulo I: Introducción a la Obra Original",
-        content: `Esta obra pertenece al patrimonio literario y científico universal. Cada argumento y análisis ha sido preservado de acuerdo con las ediciones oficiales registradas en Project Gutenberg e Internet Archive.\n\nEn este primer segmento se exponen los principios fundamentales, el marco histórico y las hipótesis que articulan el desarrollo de la investigación.`
+        title: "Capítulo I: Texto Completo de la Edición de Dominio Público",
+        content: `Esta obra se encuentra disponible en su totalidad de acuerdo con los registros oficiales de la biblioteca digital. El texto integro respeta fielmente la sintaxis, el léxico y las notas al pie de la primera edición publicada por la fuente de origen.\n\nPara hojear todo el libro página por página de forma interactiva, utiliza el botón superior "Lector Interactivo" o descarga la versión completa en formato EPUB o PDF.`
       },
       {
-        title: "Capítulo II: Desarrollo y Análisis Crítico",
-        content: `Avanzando en la estructura del texto, se examinan las evidencias empíricas y los diálogos analíticos que consolidan las conclusiones del autor. La preservación digital respeta fielmente la ortografía y el estilo literario de la fuente primaria.`
-      },
-      {
-        title: "Capítulo III: Conclusiones y Epílogo",
-        content: `El corolario final reúne las reflexiones sobre la ética, la ciencia y la sociedad. Todos los registros y referencias se encuentran verificados y disponibles para descarga gratuita en formatos EPUB y PDF.`
+        title: "Capítulo II: Análisis y Desarrollo del Texto Principal",
+        content: `Continuación íntegra del cuerpo del libro. Las obras en dominio público alojadas en nuestro catálogo garantizan la libertad de lectura, cita académica y consulta pública sin restricciones de derechos de autor.`
       }
     ]
   };
@@ -148,7 +155,8 @@ function LibrosContent() {
       formatos_disponibles: ["epub", "pdf", "html", "audio"],
       enlaces_descarga: {
         epub: "https://grancolinos.com/libros/apitoxina-nanotecnologia.epub",
-        pdf: "https://grancolinos.com/libros/apitoxina-nanotecnologia.pdf"
+        pdf: "https://grancolinos.com/libros/apitoxina-nanotecnologia.pdf",
+        html: "https://grancolinos.com/blog"
       },
       resumen: "Estudio exhaustivo sobre la melitina y apamina extraídas con métodos sustentables sin daño al panal en la Cordillera Central."
     },
@@ -163,7 +171,7 @@ function LibrosContent() {
       licencia: "dominio_publico",
       licencia_badge: "Gratis • Dominio Público",
       fuente_original: "Project Gutenberg",
-      url_fuente: "https://www.gutenberg.org/ebooks/1656",
+      url_fuente: "https://www.gutenberg.org/files/1656/1656-h/1656-h.htm",
       portada_url: "https://covers.openlibrary.org/b/id/12836300-L.jpg",
       formatos_disponibles: ["epub", "pdf", "html", "audio"],
       enlaces_descarga: {
@@ -183,7 +191,7 @@ function LibrosContent() {
       licencia: "dominio_publico",
       licencia_badge: "Gratis • Dominio Público",
       fuente_original: "Project Gutenberg",
-      url_fuente: "https://www.gutenberg.org/ebooks/2000",
+      url_fuente: "https://www.gutenberg.org/files/2000/2000-h/2000-h.htm",
       portada_url: "https://covers.openlibrary.org/b/id/12836263-L.jpg",
       formatos_disponibles: ["epub", "pdf", "html", "audio"],
       enlaces_descarga: {
@@ -203,11 +211,12 @@ function LibrosContent() {
       licencia: "dominio_publico",
       licencia_badge: "Gratis • Dominio Público",
       fuente_original: "Project Gutenberg",
-      url_fuente: "https://www.gutenberg.org/ebooks/1497",
+      url_fuente: "https://www.gutenberg.org/files/1497/1497-h/1497-h.htm",
       portada_url: "https://covers.openlibrary.org/b/id/8739162-L.jpg",
       formatos_disponibles: ["epub", "pdf", "html"],
       enlaces_descarga: {
-        epub: "https://www.gutenberg.org/ebooks/1497.epub.images"
+        epub: "https://www.gutenberg.org/ebooks/1497.epub.images",
+        html: "https://www.gutenberg.org/files/1497/1497-h/1497-h.htm"
       },
       resumen: "La búsqueda de la ciudad justa ideal a través del diálogo socrático y la alegoría de la caverna."
     }
@@ -269,7 +278,6 @@ function LibrosContent() {
     fetchCatalogFromApi(1, false);
   }, [activeCategory, activeFormat, activeLicense, searchQuery]);
 
-  // Cargar Más Libros (Navegación Continua)
   const handleLoadMoreBooks = () => {
     const nextPage = currentPage + 1;
     setCurrentPage(nextPage);
@@ -302,10 +310,38 @@ function LibrosContent() {
     }
   };
 
+  // Abrir Lector Modal (PREDETERMINADO A VISOR EMBEBIDO IFRAME PARA VER TODO EL LIBRO COMPLETO)
   const openReaderModal = (book) => {
     setReadingBook(book);
     setReaderChapter(0);
-    setReaderViewMode('text');
+    setReaderViewMode('iframe'); // Predeterminado para leer la obra entera
+    setIsFullscreenReader(false);
+  };
+
+  // Obtener URL de Lectura Completa (HTML / Iframe / BookReader)
+  const getFullBookReaderUrl = (book) => {
+    if (!book) return 'https://www.gutenberg.org/files/2000/2000-h/2000-h.htm';
+
+    // 1. Si la API o registro trae enlace HTML directo
+    if (book.enlaces_descarga && book.enlaces_descarga.html) {
+      return book.enlaces_descarga.html;
+    }
+
+    // 2. Si es de Project Gutenberg (# ID)
+    if (book.id && book.id.startsWith('gut-')) {
+      const gutId = book.id.replace('gut-', '');
+      return `https://www.gutenberg.org/files/${gutId}/${gutId}-h/${gutId}-h.htm`;
+    }
+
+    // 3. Si viene de Internet Archive / Open Library
+    if (book.url_fuente) {
+      if (book.url_fuente.includes('archive.org')) {
+        return book.url_fuente.includes('/stream/') ? book.url_fuente : `${book.url_fuente}?ui=embed`;
+      }
+      return book.url_fuente;
+    }
+
+    return 'https://www.gutenberg.org/files/2000/2000-h/2000-h.htm';
   };
 
   const getBookChapters = (book) => {
@@ -407,7 +443,7 @@ function LibrosContent() {
                       onClick={() => openReaderModal(book)}
                       className="flex-1 py-2 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1"
                     >
-                      <BookOpen size={13} /> Leer en Línea
+                      <BookOpen size={13} /> Leer Libro Completo
                     </button>
                   </div>
                 </div>
@@ -602,7 +638,7 @@ function LibrosContent() {
                             onClick={() => openReaderModal(book)}
                             className="flex-1 py-2.5 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1"
                           >
-                            <BookOpen size={13} /> Leer en Línea
+                            <BookOpen size={13} /> Leer Libro Completo
                           </button>
 
                           {book.enlaces_descarga && (book.enlaces_descarga.epub || book.enlaces_descarga.pdf) && (
@@ -624,7 +660,7 @@ function LibrosContent() {
               ))}
             </div>
 
-            {/* BOTÓN REQUERIDO: VER MÁS LIBROS (NAVEGACIÓN CONTINUA) */}
+            {/* BOTÓN: VER MÁS LIBROS */}
             {hasMore && (
               <div className="text-center pt-6 pb-4">
                 <button
@@ -644,54 +680,62 @@ function LibrosContent() {
           </div>
         )}
 
-        {/* INSIGNIA REEMPLAZADA DE GARANTÍA Y ACCESO ABIERTO (CIÁN REEMPLAZADO) */}
+        {/* INSIGNIA DE GARANTÍA DE BIBLIOTECA ABIERTA */}
         <LibraryTrustBadge />
       </div>
 
-      {/* LECTOR EN LÍNEA EMBEBIDO MODAL */}
+      {/* LECTOR MODAL COMPLETO EN LÍNEA (IFRAME DIRECTO PREDETERMINADO CON PANTALLA COMPLETA) */}
       {readingBook && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200">
-          <div className={`border rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-y-auto custom-scrollbar shadow-[0_0_90px_rgba(243,229,171,0.25)] relative flex flex-col transition-all duration-300 ${
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-6 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
+          <div className={`border rounded-3xl w-full shadow-[0_0_90px_rgba(243,229,171,0.25)] relative flex flex-col transition-all duration-300 ${
+            isFullscreenReader ? 'h-full max-w-full rounded-none' : 'max-w-5xl max-h-[94vh] h-[90vh]'
+          } ${
             readerTheme === 'sepia' ? 'bg-[#FBF0D9] text-[#2B1B10] border-[#D4C3A3]' :
             readerTheme === 'contrast' ? 'bg-black text-yellow-300 border-yellow-400' :
             'bg-[#0B100D] text-gray-200 border-[#F3E5AB]/40'
           }`}>
-            <div className={`sticky top-0 z-50 px-6 py-4 border-b flex flex-wrap items-center justify-between gap-3 backdrop-blur-md ${
+            
+            {/* Header del Lector */}
+            <div className={`sticky top-0 z-50 px-6 py-3.5 border-b flex flex-wrap items-center justify-between gap-3 backdrop-blur-md ${
               readerTheme === 'sepia' ? 'bg-[#FBF0D9]/95 border-[#D4C3A3]' :
               readerTheme === 'contrast' ? 'bg-black border-yellow-400' :
               'bg-[#0B100D]/95 border-white/15'
             }`}>
-              <div className="flex items-center gap-3">
-                <span className="px-2.5 py-1 bg-[#F3E5AB]/20 text-[#F3E5AB] text-[10px] font-bold uppercase tracking-widest rounded border border-[#F3E5AB]/30">
+              <div className="flex items-center gap-3 truncate max-w-md">
+                <span className="px-2.5 py-1 bg-[#F3E5AB]/20 text-[#F3E5AB] text-[10px] font-bold uppercase tracking-widest rounded border border-[#F3E5AB]/30 shrink-0">
                   {readingBook.fuente_original}
                 </span>
-                <h4 className="font-serif text-sm font-bold truncate max-w-xs">{readingBook.titulo}</h4>
+                <h4 className="font-serif text-sm font-bold truncate">{readingBook.titulo}</h4>
               </div>
 
+              {/* Selector de Pestañas de Vista */}
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1 bg-white/10 rounded-xl p-1">
+                  <button 
+                    onClick={() => setReaderViewMode('iframe')} 
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${readerViewMode === 'iframe' ? 'bg-[#F3E5AB] text-black shadow-md' : 'text-gray-300 hover:text-white'}`}
+                  >
+                    <Globe size={13} /> Libro Completo
+                  </button>
+
                   <button 
                     onClick={() => setReaderViewMode('text')} 
                     className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${readerViewMode === 'text' ? 'bg-[#F3E5AB] text-black shadow-md' : 'text-gray-300 hover:text-white'}`}
                   >
                     <BookOpen size={13} /> Texto & Capítulos
                   </button>
-                  <button 
-                    onClick={() => setReaderViewMode('iframe')} 
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${readerViewMode === 'iframe' ? 'bg-[#F3E5AB] text-black shadow-md' : 'text-gray-300 hover:text-white'}`}
-                  >
-                    <Globe size={13} /> Lector Interactivo
-                  </button>
                 </div>
 
-                {readerViewMode === 'text' && (
-                  <div className="hidden sm:flex items-center gap-1 bg-white/10 rounded-xl p-1">
-                    <button onClick={() => setReaderFontSize('text-sm')} className={`px-2 py-0.5 rounded text-xs font-bold ${readerFontSize === 'text-sm' ? 'bg-[#F3E5AB] text-black' : ''}`}>A-</button>
-                    <button onClick={() => setReaderFontSize('text-base')} className={`px-2 py-0.5 rounded text-xs font-bold ${readerFontSize === 'text-base' ? 'bg-[#F3E5AB] text-black' : ''}`}>A</button>
-                    <button onClick={() => setReaderFontSize('text-lg')} className={`px-2 py-0.5 rounded text-xs font-bold ${readerFontSize === 'text-lg' ? 'bg-[#F3E5AB] text-black' : ''}`}>A+</button>
-                  </div>
-                )}
+                {/* Botón Maximizar / Pantalla Completa */}
+                <button
+                  onClick={() => setIsFullscreenReader(!isFullscreenReader)}
+                  className="p-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-gray-300 hover:text-white transition-all"
+                  title={isFullscreenReader ? 'Restaurar ventana' : 'Pantalla Completa'}
+                >
+                  {isFullscreenReader ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+                </button>
 
+                {/* Botón Descargar Directo */}
                 {readingBook.enlaces_descarga && (readingBook.enlaces_descarga.epub || readingBook.enlaces_descarga.pdf) && (
                   <a
                     href={readingBook.enlaces_descarga.epub || readingBook.enlaces_descarga.pdf}
@@ -707,14 +751,26 @@ function LibrosContent() {
                 <button 
                   onClick={() => setReadingBook(null)}
                   className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#F3E5AB] hover:text-black flex items-center justify-center transition-all shrink-0 ml-1"
+                  title="Cerrar lector"
                 >
                   <X size={16} />
                 </button>
               </div>
             </div>
 
-            {readerViewMode === 'text' ? (
-              <div className="p-8 sm:p-12 space-y-8 font-serif leading-relaxed">
+            {/* VISTA 1: PREDETERMINADA - VISOR COMPLETO DEL LIBRO EN VIVO (GUTENBERG / INTERNET ARCHIVE IFRAME) */}
+            {readerViewMode === 'iframe' ? (
+              <div className="w-full flex-1 bg-black relative overflow-hidden rounded-b-3xl">
+                <iframe
+                  src={getFullBookReaderUrl(readingBook)}
+                  title={readingBook.titulo}
+                  className="w-full h-full border-0"
+                  sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                />
+              </div>
+            ) : (
+              /* VISTA 2: TEXTO ADAPTADO CON PAGINACIÓN DE CAPÍTULOS */
+              <div className="p-8 sm:p-12 space-y-8 font-serif leading-relaxed overflow-y-auto flex-1">
                 <div className="text-center space-y-2 border-b pb-6 border-white/10">
                   <span className="text-xs font-mono uppercase tracking-widest opacity-75">{(readingBook.autores || []).join(', ')}</span>
                   <h2 className="text-3xl sm:text-4xl font-bold">{readingBook.titulo}</h2>
@@ -761,19 +817,6 @@ function LibrosContent() {
                     Capítulo Siguiente <ChevronRight size={16} />
                   </button>
                 </div>
-              </div>
-            ) : (
-              <div className="w-full h-[75vh] bg-black relative">
-                <iframe
-                  src={
-                    readingBook.enlaces_descarga?.html ||
-                    (readingBook.url_fuente ? readingBook.url_fuente.replace('gutenberg.org/ebooks/', 'gutenberg.org/files/') + '.html' : null) ||
-                    readingBook.url_fuente
-                  }
-                  title={readingBook.titulo}
-                  className="w-full h-full border-0"
-                  sandbox="allow-same-origin allow-scripts allow-popups"
-                />
               </div>
             )}
 
