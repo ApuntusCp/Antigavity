@@ -11,7 +11,7 @@ function GlobalAcademicRepositoryContent() {
 
   // Estados de Búsqueda y Filtros
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeQuery, setActiveQuery] = useState('apitoxina botánica salud');
+  const [activeQuery, setActiveQuery] = useState('');
   const [activeDiscipline, setActiveDiscipline] = useState('todas');
   const [activeDocType, setActiveDocType] = useState('todos');
   const [yearStart, setYearStart] = useState('2018');
@@ -66,7 +66,6 @@ function GlobalAcademicRepositoryContent() {
       if (saved) {
         setResearchFolders(JSON.parse(saved));
       } else {
-        // Carpeta por defecto
         setResearchFolders({
           'Investigación Apiterapia & Botánica': []
         });
@@ -81,28 +80,26 @@ function GlobalAcademicRepositoryContent() {
     } catch (e) {}
   };
 
-  // Mostrar mensaje Toast temporal
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  // Ejecutar Consulta a la API de Búsqueda Académica
-  const executeAcademicSearch = async (queryToSearch) => {
+  // Ejecutar Consulta a la API de Búsqueda Académica Dinámica
+  const executeAcademicSearch = async (queryToSearch, disciplineToSearch = activeDiscipline, docTypeToSearch = activeDocType) => {
     setLoading(true);
     try {
-      let finalQuery = queryToSearch || activeQuery || 'apitoxina';
-      
-      // Si la búsqueda avanzada está activa, compilar sintaxis booleana
+      let finalQuery = queryToSearch !== undefined ? queryToSearch : searchQuery;
+
       if (showAdvancedSearch) {
         if (exactPhrase.trim()) finalQuery += ` "${exactPhrase.trim()}"`;
         if (authorFilter.trim()) finalQuery += ` author:${authorFilter.trim()}`;
       }
 
       const params = new URLSearchParams({
-        q: finalQuery,
-        disciplina: activeDiscipline,
-        tipo: activeDocType
+        q: finalQuery || '',
+        disciplina: disciplineToSearch,
+        tipo: docTypeToSearch
       });
 
       const res = await fetch(`/api/academic/search?${params.toString()}`);
@@ -126,8 +123,18 @@ function GlobalAcademicRepositoryContent() {
   };
 
   useEffect(() => {
-    executeAcademicSearch(activeQuery);
-  }, [activeDiscipline, activeDocType]);
+    executeAcademicSearch(searchQuery, activeDiscipline, activeDocType);
+  }, []);
+
+  const handleDisciplineChange = (newDiscipline) => {
+    setActiveDiscipline(newDiscipline);
+    executeAcademicSearch(searchQuery, newDiscipline, activeDocType);
+  };
+
+  const handleDocTypeChange = (newDocType) => {
+    setActiveDocType(newDocType);
+    executeAcademicSearch(searchQuery, activeDiscipline, newDocType);
+  };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -406,7 +413,7 @@ function GlobalAcademicRepositoryContent() {
               </label>
               <select
                 value={activeDiscipline}
-                onChange={(e) => setActiveDiscipline(e.target.value)}
+                onChange={(e) => handleDisciplineChange(e.target.value)}
                 className="w-full bg-[#050A12] text-[#00F0FF] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#00F0FF] cursor-pointer"
               >
                 {disciplines.map(d => (
@@ -421,7 +428,7 @@ function GlobalAcademicRepositoryContent() {
               </label>
               <select
                 value={activeDocType}
-                onChange={(e) => setActiveDocType(e.target.value)}
+                onChange={(e) => handleDocTypeChange(e.target.value)}
                 className="w-full bg-[#050A12] text-[#00F0FF] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#00F0FF] cursor-pointer"
               >
                 {docTypes.map(t => (

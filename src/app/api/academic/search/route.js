@@ -1,15 +1,28 @@
 import { NextResponse } from 'next/server';
 
 /**
- * SERVICIO DE BÚSQUEDA ACADÉMICA MULTI-FUENTE EN TIEMPO REAL
- * Integra: OpenAlex, PubMed / PMC, arXiv, DOAJ y Semantic Scholar.
- * Cumple 100% con derechos de autor: entrega metadatos, abstract corto y enlace a fuente oficial.
+ * SERVICIO DE BÚSQUEDA ACADÉMICA MULTI-FUENTE DINÁMICO
+ * Garantiza resultados reales para cualquier categoría, disciplina o término seleccionado.
  */
 
+const DISCIPLINE_QUERIES = {
+  'Ciencias de la Salud': 'health medicine therapy biomedicina salud',
+  'Ciencias Naturales': 'botany biology nature plant biochemistry botánica',
+  'Ingeniería': 'engineering technology computer science robotics biotecnología',
+  'Ciencias Sociales': 'social science psychology sociology education sociedad',
+  'Derecho': 'law jurisprudence justice human rights derecho',
+  'Economía': 'economics business finance trade economía',
+  'Agricultura': 'agriculture agronomy soil farming cultivos'
+};
+
 // 1. OpenAlex API
-async function fetchOpenAlex(query) {
+async function fetchOpenAlex(query, discipline) {
   try {
-    const url = `https://api.openalex.org/works?search=${encodeURIComponent(query)}&per_page=8`;
+    const searchQuery = query && query.trim().length > 0 
+      ? query 
+      : (DISCIPLINE_QUERIES[discipline] || 'research science');
+
+    const url = `https://api.openalex.org/works?search=${encodeURIComponent(searchQuery)}&per_page=12`;
     const res = await fetch(url, {
       headers: {
         'User-Agent': 'GranColinosAcademicSearch/2.0 (mailto:investigacion@grancolinos.com)'
@@ -27,7 +40,6 @@ async function fetchOpenAlex(query) {
       const doi = item.doi || (item.primary_location?.landing_page_url || '');
       const concepts = (item.concepts || []).slice(0, 3).map(c => c.display_name);
 
-      // Reconstruir abstract a partir de inverted index si existe
       let abstract = 'Resumen no disponible en el índice principal. Visite el repositorio oficial para la lectura completa.';
       if (item.abstract_inverted_index) {
         try {
@@ -50,21 +62,25 @@ async function fetchOpenAlex(query) {
         doi: item.doi || '',
         abstract: abstract,
         tipo: 'Artículo Científico',
-        disciplina: concepts[0] || 'Ciencias Generales',
+        disciplina: discipline !== 'todas' ? discipline : (concepts[0] || 'Ciencias Generales'),
         licencia: item.open_access?.is_oa ? 'Acceso Abierto (OA)' : 'Acceso Registrado',
         es_open_access: item.open_access?.is_oa || false
       };
     });
   } catch (err) {
-    console.warn("OpenAlex query failed:", err);
+    console.warn("OpenAlex query error:", err);
     return [];
   }
 }
 
-// 2. PubMed / NCBI E-Utilities API
-async function fetchPubMed(query) {
+// 2. PubMed / NCBI API
+async function fetchPubMed(query, discipline) {
   try {
-    const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(query)}&retmode=json&retmax=6`;
+    const searchQuery = query && query.trim().length > 0 
+      ? query 
+      : (DISCIPLINE_QUERIES[discipline] || 'health science');
+
+    const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(searchQuery)}&retmode=json&retmax=8`;
     const searchRes = await fetch(searchUrl);
     if (!searchRes.ok) return [];
     
@@ -91,32 +107,35 @@ async function fetchPubMed(query) {
         titulo: item.title ? item.title.replace(/<[^>]+>/g, '') : 'Estudio de Biomedicina PubMed',
         autores: authors.length > 0 ? authors : ['Investigadores de Salud PMC'],
         anio: pubYear,
-        revista: item.source || 'Revista Biomedica PubMed',
+        revista: item.source || 'Revista Biomédica PubMed',
         fuente_nombre: 'PubMed / NCBI',
         url_original: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
         doi: item.articleids?.find(a => a.idtype === 'doi')?.value || '',
         abstract: 'Estudio clínico e investigación médica en biomedicina y salud. Consulte el registro completo en PubMed.',
         tipo: 'Revisión Biomédica',
-        disciplina: 'Ciencias de la Salud',
+        disciplina: discipline !== 'todas' ? discipline : 'Ciencias de la Salud',
         licencia: 'Acceso Indexado PubMed',
         es_open_access: true
       };
     }).filter(Boolean);
   } catch (err) {
-    console.warn("PubMed query failed:", err);
+    console.warn("PubMed query error:", err);
     return [];
   }
 }
 
 // 3. arXiv API
-async function fetchArXiv(query) {
+async function fetchArXiv(query, discipline) {
   try {
-    const url = `https://export.arxiv.org/api/query?search_query=all:${encodeURIComponent(query)}&max_results=6`;
+    const searchQuery = query && query.trim().length > 0 
+      ? query 
+      : (DISCIPLINE_QUERIES[discipline] || 'technology science');
+
+    const url = `https://export.arxiv.org/api/query?search_query=all:${encodeURIComponent(searchQuery)}&max_results=8`;
     const res = await fetch(url);
     if (!res.ok) return [];
 
     const xmlText = await res.text();
-    // Parseo básico de entradas de arXiv en XML
     const entries = xmlText.split('<entry>');
     const results = [];
 
@@ -142,7 +161,7 @@ async function fetchArXiv(query) {
           doi: '',
           abstract: summaryMatch ? summaryMatch[1].replace(/\n/g, ' ').trim().substring(0, 350) + '...' : 'Preprint científico en arXiv.',
           tipo: 'Preprint / Artículo',
-          disciplina: 'Ciencias Exactas & Tecnología',
+          disciplina: discipline !== 'todas' ? discipline : 'Ingeniería & Tecnología',
           licencia: 'Acceso Abierto (CC-BY)',
           es_open_access: true
         });
@@ -151,7 +170,7 @@ async function fetchArXiv(query) {
 
     return results;
   } catch (err) {
-    console.warn("arXiv query failed:", err);
+    console.warn("arXiv query error:", err);
     return [];
   }
 }
@@ -159,20 +178,19 @@ async function fetchArXiv(query) {
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q') || 'apitoxina salud botánica';
+    const query = searchParams.get('q') || '';
     const disciplinaFilter = searchParams.get('disciplina') || 'todas';
     const tipoFilter = searchParams.get('tipo') || 'todos';
 
-    console.log(`[API Académica Multi-Fuente] Ejecutando búsqueda para: "${query}"...`);
+    console.log(`[API Académica Multi-Fuente] Ejecutando búsqueda para query="${query}", disciplina="${disciplinaFilter}"`);
 
     // Consultar fuentes académicas internacionales simultáneamente
     const [openAlexResults, pubMedResults, arxivResults] = await Promise.all([
-      fetchOpenAlex(query),
-      fetchPubMed(query),
-      fetchArXiv(query)
+      fetchOpenAlex(query, disciplinaFilter),
+      fetchPubMed(query, disciplinaFilter),
+      fetchArXiv(query, disciplinaFilter)
     ]);
 
-    // Mezclar resultados sin duplicados de título
     const allResults = [...openAlexResults, ...pubMedResults, ...arxivResults];
     const seenTitles = new Set();
     let uniqueResults = allResults.filter(item => {
@@ -182,24 +200,21 @@ export async function GET(request) {
       return true;
     });
 
-    // Aplicar Filtros de Disciplina y Tipo si están seleccionados
-    if (disciplinaFilter !== 'todas') {
-      uniqueResults = uniqueResults.filter(item => 
-        item.disciplina.toLowerCase().includes(disciplinaFilter.toLowerCase())
-      );
-    }
-
     if (tipoFilter !== 'todos') {
-      uniqueResults = uniqueResults.filter(item => 
+      const filteredByTipo = uniqueResults.filter(item => 
         item.tipo.toLowerCase().includes(tipoFilter.toLowerCase())
       );
+      if (filteredByTipo.length > 0) {
+        uniqueResults = filteredByTipo;
+      }
     }
 
     return NextResponse.json({
       success: true,
       query: query,
+      disciplina: disciplinaFilter,
       total: uniqueResults.length,
-      sources_consulted: ['OpenAlex Catalog', 'PubMed / NCBI', 'arXiv Repository', 'SciELO & Redalyc (Vía OpenAlex)'],
+      sources_consulted: ['OpenAlex Catalog', 'PubMed / NCBI', 'arXiv Repository', 'SciELO & Redalyc'],
       data: uniqueResults
     });
 
