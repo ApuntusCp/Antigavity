@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAH980UahKAMSzLpnSeSYojJgeeMhE40yU",
@@ -16,17 +16,18 @@ const db = getFirestore(app);
 async function test() {
   const q = collection(db, 'products');
   const snapshot = await getDocs(q);
-  console.log("Found products:", snapshot.size);
   snapshot.forEach(doc => {
-    console.log("SKU:", doc.data().sku, "| Name:", doc.data().name);
+    const data = doc.data();
+    console.log("SKU:", data.sku, "| Name:", data.name);
+    if (data.images) {
+      console.log("Images count:", data.images.length);
+      data.images.forEach((img, idx) => {
+        console.log(`Image [${idx}] type:`, img.substring(0, 40));
+      });
+    } else {
+      console.log("No images array found!");
+    }
+    console.log("-----------------------------------");
   });
-  
-  const q2 = query(collection(db, 'products'), where('sku', '==', 'GC-NANO-CBD-001'));
-  const snapshot2 = await getDocs(q2);
-  console.log("Query with dashes size:", snapshot2.size);
-
-  const q3 = query(collection(db, 'products'), where('sku', '==', 'GC-NANO-CBD 001'));
-  const snapshot3 = await getDocs(q3);
-  console.log("Query with spaces size:", snapshot3.size);
 }
 test();

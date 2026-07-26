@@ -2,36 +2,76 @@
 
 @theme {
   --color-brand-green: #2D5016;
+  --color-brand-darkgreen: #0A1408;
   --color-brand-gold: #D4AF37;
+  --color-brand-gold-bright: #E5C158;
+  --color-brand-leather: #070D06;
   --color-brand-light: #F9F9F9;
-  --color-brand-dark: #121212;
+  --color-brand-dark: #050A04;
   --font-sans: var(--font-inter);
   --font-playfair: var(--font-playfair);
 }
 
 :root {
-  --background: #F9F9F9;
-  --foreground: #121212;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #121212;
-    --foreground: #F9F9F9;
-  }
+  --background: #060D05;
+  --foreground: #F9F9F9;
+  --gold-accent: #D4AF37;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background-color: #060D05;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(45, 80, 22, 0.35) 0%, transparent 70%),
+    radial-gradient(circle at 50% 100%, rgba(212, 175, 55, 0.1) 0%, transparent 60%),
+    linear-gradient(180deg, #091307 0%, #050A04 50%, #030602 100%);
+  background-attachment: fixed;
+  color: #F9F9F9;
   font-family: var(--font-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Leather texture overlay class */
+.bg-leather-texture {
+  background-color: #070E06;
+  background-image: 
+    radial-gradient(ellipse at center, rgba(212, 175, 55, 0.12) 0%, transparent 70%),
+    linear-gradient(135deg, rgba(45, 80, 22, 0.4) 0%, rgba(5, 10, 4, 0.95) 100%);
+}
+
+/* Golden Glow Effects */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
+}
+
+.glow-gold-subtle {
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
+}
+
+.glow-gold-hover:hover {
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+  border-color: rgba(212, 175, 55, 0.8) !important;
+}
+
+/* Gold Gradient Text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #FFF0B3 0%, #D4AF37 50%, #AA820A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Floating Pill Navigation */
+.nav-pill-floating {
+  background: rgba(10, 18, 9, 0.88);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+
 /* Luxury transitions */
 .fade-in {
-  animation: fadeIn 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: fadeIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   opacity: 0;
 }
 
@@ -40,6 +80,6 @@ body {
 .delay-500 { animation-delay: 500ms; }
 
 @keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(20px); }
+  0% { opacity: 0; transform: translateY(16px); }
   100% { opacity: 1; transform: translateY(0); }
 }
