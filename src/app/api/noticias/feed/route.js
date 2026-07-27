@@ -198,8 +198,8 @@ function calculateExactBiasScore(title, sourceName, mediaDomain) {
     : "0% (Lenguaje Factual Sin Adjetivos Sensacionalistas)";
 
   let verdictExplanation = isNeutral
-    ? `✅ TITULAR 100% NEUTRAL FACTUAL (0% SESGO) — Transmite datos o declaraciones puras sin adjetivos sensacionales.`
-    : `⚠️ EVALUACIÓN: ${absPercent}% SESGO ${biasDirection.toUpperCase()} — Calculado mediante la fórmula: Línea Editorial del Medio (${f1_score > 0 ? '+' : ''}${f1_score}%) + Carga Léxica del Titular (${f2_score > 0 ? '+' : ''}${f2_score}%).`;
+    ? `✅ TITULAR NEUTRAL FACTUAL (0% SESGO) — Transmite datos o hechos constatables sin adjetivos sensacionalistas.`
+    : `⚠️ ENCUADRE REGISTRADO: ${absPercent}% SESGO ${biasDirection.toUpperCase()} — Derivado de la postura del medio (${f1_score > 0 ? '+' : ''}${f1_score}%) y la adjetivación del titular (${f2_score > 0 ? '+' : ''}${f2_score}%).`;
 
   return {
     totalScore,
@@ -273,15 +273,22 @@ function generateDetailedReportAndMetrics(title, sourceName, category, published
   };
 }
 
-// GENERADOR DE ANÁLISIS ACADÉMICO CON DIAGNÓSTICO MATEMÁTICO EXACTO
+// GENERADOR DE ANÁLISIS ACADÉMICO SIN REPETICIÓN DE TEXTOS
 function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   const t = (title || '').trim();
   const biasCalc = calculateExactBiasScore(t, sourceName, mediaDomain);
 
+  let conclusionText = "";
+  if (biasCalc.isNeutral) {
+    conclusionText = `El reporte presenta datos 100% objetivos (0% Sesgo) emitidos por ${sourceName}. No se identifican encuadres tendenciosos.`;
+  } else {
+    conclusionText = `Se recomienda contrastar la perspectiva de ${sourceName} (${biasCalc.biasBadgeText}) con las coberturas complementarias de los otros medios para obtener un criterio neutro.`;
+  }
+
   return {
-    marcoTeorico: `Diagnóstico hemerográfico cuantitativo basado en la Teoría del Encuadre (Framing Analysis). Mide matemáticamente la desviación entre la fuente emisora y el Punto Cero Neutral (0%).`,
-    tesisCentral: `Premisa Informativa: "${t}"`,
-    conclusionImparcial: biasCalc.verdictExplanation,
+    marcoTeorico: `Diagnóstico hemerográfico cuantitativo basado en la Teoría del Encuadre (Framing Analysis). Mide la desviación entre la fuente emisora y el Punto Cero Neutral (0%).`,
+    tesisCentral: `Premisa Informativa: Despacho noticioso sobre "${t}" difundido por el medio ${sourceName}.`,
+    conclusionImparcial: conclusionText,
     biasLevel: biasCalc.biasBadgeText,
     isNeutral: biasCalc.isNeutral,
     verdictText: biasCalc.verdictExplanation,

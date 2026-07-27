@@ -50,7 +50,7 @@ function EventMetricsGrid({ metrics }) {
   );
 }
 
-// COMPONENTE PARA EL DESGLOSE MATEMÁTICO TRANSPARENTE DEL CÁLCULO DE SESGO
+// COMPONENTE PARA EL DESGLOSE MATEMÁTICO TRANSPARENTE DEL CÁLCULO DE SESGO (F1 + F2)
 function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
   if (!formulaBreakdown) return null;
 
@@ -110,51 +110,21 @@ function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
   );
 }
 
-// COMPONENTE EXCLUSIVO PARA EL DIAGNÓSTICO EDITORIAL DE INTEGRIDAD
-function EditorialIntegrityDiagnosis({ biasLevel, verdictText, isNeutral, formulaBreakdown }) {
-  if (!verdictText && !biasLevel) return null;
-
-  return (
-    <div className="space-y-4">
-      <MathematicalBiasBreakdown formulaBreakdown={formulaBreakdown} biasLevel={biasLevel} isNeutral={isNeutral} />
-
-      <div 
-        className="p-5 rounded-2xl border border-[#D4AF37]/50 space-y-3 shadow-2xl"
-        style={{
-          backgroundColor: 'rgba(5, 12, 24, 0.22)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)'
-        }}
-      >
-        <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-2.5 gap-2">
-          <span className="text-xs font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
-            <ShieldCheck size={16} className="text-[#D4AF37]" /> DIAGNÓSTICO EDITORIAL DE INTEGRIDAD EN EL TITULAR
-          </span>
-        </div>
-
-        {/* VEREDICTO DE INTEGRIDAD EDITORIAL */}
-        <div className={`p-4 rounded-xl border text-xs md:text-sm font-sans font-medium leading-relaxed shadow-inner ${
-          isNeutral
-            ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-100'
-            : 'bg-amber-950/40 border-amber-500/50 text-amber-100'
-        }`}>
-          <strong className="block font-mono text-[10px] uppercase font-black tracking-wider mb-1 text-[#D4AF37]">
-            [ DIAGNÓSTICO EDITORIAL DE INTEGRIDAD ]:
-          </strong>
-          {verdictText}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// COMPONENTE DE ANÁLISIS COMPLETO (MARCO TEÓRICO, TESIS Y CONCLUSIÓN NEUTRA)
+// COMPONENTE DE ANÁLISIS ACADÉMICO UNIFICADO (SIN DUPLICACIONES)
 function AcademicAnalysisSection({ analysis, title }) {
   if (!analysis) return null;
 
   return (
     <div className="space-y-5 pt-2">
       
+      {/* 1. FÓRMULA MATEMÁTICA Y DESGLOSE EXACTO DEL CÁLCULO */}
+      <MathematicalBiasBreakdown 
+        formulaBreakdown={analysis.formulaBreakdown} 
+        biasLevel={analysis.biasLevel} 
+        isNeutral={analysis.isNeutral} 
+      />
+
+      {/* 2. MARCO TEÓRICO */}
       <div 
         className="p-5 rounded-2xl border border-[#D4AF37]/35 space-y-2 shadow-2xl"
         style={{
@@ -171,6 +141,7 @@ function AcademicAnalysisSection({ analysis, title }) {
         </p>
       </div>
 
+      {/* 3. TESIS CENTRAL */}
       <div 
         className="p-5 rounded-2xl border-l-4 border-[#D4AF37] border border-[#D4AF37]/35 space-y-2 shadow-2xl"
         style={{
@@ -187,14 +158,7 @@ function AcademicAnalysisSection({ analysis, title }) {
         </p>
       </div>
 
-      {/* FÓRMULA MATEMÁTICA Y DIAGNÓSTICO EDITORIAL DE INTEGRIDAD */}
-      <EditorialIntegrityDiagnosis 
-        biasLevel={analysis.biasLevel}
-        verdictText={analysis.verdictText}
-        isNeutral={analysis.isNeutral}
-        formulaBreakdown={analysis.formulaBreakdown}
-      />
-
+      {/* 4. CONCLUSIÓN DEFINITIVA DE INTEGRIDAD EDITORIAL (ÚNICA) */}
       <div 
         className="p-5 rounded-2xl border-l-4 border-emerald-400 border border-emerald-500/40 space-y-2 shadow-2xl"
         style={{
@@ -204,7 +168,7 @@ function AcademicAnalysisSection({ analysis, title }) {
         }}
       >
         <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest flex items-center gap-2">
-          <CheckCheck size={16} /> CONCLUSIÓN DEFINITIVA SIN SESGOS NI BANDOS:
+          <CheckCheck size={16} /> CONCLUSIÓN IMPARCIAL DE INTEGRIDAD EDITORIAL:
         </span>
         <p className="font-sans text-xs md:text-sm text-emerald-100 leading-relaxed font-normal">
           {analysis.conclusionImparcial}
@@ -883,7 +847,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN CON NAVEGACIÓN Y DESGLOSE MATEMÁTICO EXACTO */}
+        {/* MODAL DE COMPARACIÓN CON NAVEGACIÓN Y DESGLOSE MATEMÁTICO SIN DUPLICACIÓN */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -931,17 +895,10 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              {/* FÓRMULA MATEMÁTICA Y DESGLOSE TRANSPARENTE DEL CÁLCULO DE SESGO */}
-              <MathematicalBiasBreakdown 
-                formulaBreakdown={selectedBiasComparison.academicAnalysis?.formulaBreakdown}
-                biasLevel={selectedBiasComparison.biasLabel}
-                isNeutral={selectedBiasComparison.academicAnalysis?.isNeutral}
-              />
-
               {/* DATOS Y MÉTRICAS CUANTITATIVAS BALANCEADAS DEL EVENTO */}
               <EventMetricsGrid metrics={selectedBiasComparison.metricsData} />
 
-              {/* INTEGRACIÓN DEL ANÁLISIS ACADÉMICO Y DIAGNÓSTICO EDITORIAL DE INTEGRIDAD */}
+              {/* INTEGRACIÓN DEL ANÁLISIS ACADÉMICO Y FÓRMULA MATEMÁTICA UNIFICADA */}
               <AcademicAnalysisSection 
                 analysis={selectedBiasComparison.academicAnalysis} 
                 title={selectedBiasComparison.title}
@@ -1165,7 +1122,7 @@ function NoticiasContent() {
 
                 <button
                   onClick={() => setSelectedAuthor(null)}
-                  className="px-6 py-2.5 bg-white/10 text-white hover:bg-white/20 font-bold text-xs uppercase rounded-xl transition-all border border-white/20"
+                  className="px-6 py-2.5 bg-[#D4AF37] text-black hover:bg-white font-extrabold text-xs uppercase rounded-xl transition-all border border-[#D4AF37]"
                 >
                   Cerrar Hoja de Vida
                 </button>
