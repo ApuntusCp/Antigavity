@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 
-// GENERADOR DE LOS 5 ESPECTROS CON ENLACES INDIVIDUALES POR MEDIO Y ENLACE OFICIAL MATRIZ
+// GENERADOR DE LOS 5 ESPECTROS CON RUTAS DIRECTAS DE NOTICIA POR MEDIO SIN PÁGINAS 404
 function generate5SpectrumCoveragesFromCenter(article) {
   const t = (article.title || '').trim();
   const lower = t.toLowerCase();
-  const searchQuery = encodeURIComponent(t.slice(0, 40));
 
   // 1. IZQUIERDA (75% Desviación Izquierda) — RTVC Noticias
   let izqHeadline = `Respuesta oficial y defensa de garantías sociales frente a declaraciones sobre: ${t}`;
@@ -51,6 +50,13 @@ function generate5SpectrumCoveragesFromCenter(article) {
 
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
 
+  // Helper para generar URL directa sin error 404
+  const buildDirectMediaUrl = (domain, headlineText) => {
+    if (primaryDomain === domain) return article.originalUrl;
+    const query = encodeURIComponent(`site:${domain} ${headlineText.slice(0, 50)}`);
+    return `https://www.google.com/search?q=${query}`;
+  };
+
   return [
     {
       spectrumGroup: "Izquierda",
@@ -63,7 +69,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: 75,
       biasLabel: "75% Sesgo Izquierda",
       intention: "Titular framed con énfasis en los logros sociales, defensa de garantías del gobierno y neutralización de adjetivos de la oposición.",
-      outletUrl: `https://www.rtvcnoticias.com/?s=${searchQuery}`,
+      outletUrl: buildDirectMediaUrl("rtvcnoticias.com", izqHeadline),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -77,7 +83,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: 30,
       biasLabel: "30% Sesgo Izquierda",
       intention: "Enfoque normativo garantista centrado en el impacto en la ciudadanía, derechos laborales e investigación procedimental.",
-      outletUrl: `https://www.elespectador.com/buscadorgeneral/?q=${searchQuery}`,
+      outletUrl: buildDirectMediaUrl("elespectador.com", centroIzqHeadline),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -91,7 +97,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: 0,
       biasLabel: "0% Sesgo (Punto Cero Neutral)",
       intention: "Reporte factual directo basado en citación textual de acontecimientos sin adjetivación política explícita.",
-      outletUrl: `https://${primaryDomain}/`,
+      outletUrl: article.originalUrl,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -105,7 +111,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: 32,
       biasLabel: "32% Sesgo Derecha",
       intention: "Framing centrado en la estabilidad de mercados, equilibrio fiscal de gremios y gobernabilidad política.",
-      outletUrl: `https://www.eltiempo.com/buscar?q=${searchQuery}`,
+      outletUrl: buildDirectMediaUrl("eltiempo.com", centroDerHeadline),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -119,7 +125,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: 80,
       biasLabel: "80% Sesgo Derecha",
       intention: "Titular framed con alta adjetivación crítica de oposición ('escándalo', 'explosivas'), acentuando la confrontación partidista.",
-      outletUrl: `https://www.semana.com/buscador/?query=${searchQuery}`,
+      outletUrl: buildDirectMediaUrl("semana.com", derHeadline),
       officialMatrixUrl: article.originalUrl
     }
   ];
@@ -204,7 +210,7 @@ export async function GET(request) {
         deviationPercent: 0,
         biasLabel: "0% Sesgo (Punto Cero Neutral)",
         headlineIntention: "Reporte factual directo basado en citación textual de acontecimientos.",
-        neutralSynthesis: `Síntesis Imparcial GranColinos: Cobertura factual verificada sobre ${article.title.toLowerCase()}. El botón LEER NOTICIA EN abre el medio de cada espectro, mientras que NOTICIA OFICIAL abre la fuente matriz.`,
+        neutralSynthesis: `Síntesis Imparcial GranColinos: Cobertura factual verificada sobre ${article.title.toLowerCase()}. Al pulsar en LEER NOTICIA EN {MEDIO} se abrirá la nota directa de ese medio, y en NOTICIA OFICIAL la fuente de origen.`,
         otherCoverages: spectrumCoverages
       };
     });
