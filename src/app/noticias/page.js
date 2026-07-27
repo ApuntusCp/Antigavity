@@ -86,7 +86,7 @@ function PoliticalBiasBar({ biasScore, biasLabel }) {
   );
 }
 
-// BASE DE DATOS DE AUTORES Y PERIODISTAS
+// BASE DE DATOS DE AUTORES
 const AUTHORS_DATABASE = {
   "Lina María Orozco": {
     name: "Lina María Orozco",
@@ -237,7 +237,6 @@ function NoticiasContent() {
     { id: 'cl', name: 'Chile' }
   ];
 
-  // CONSUMIR FEED CON LOS 5 ESPECTROS IDEOLÓGICOS (IZQUIERDA A DERECHA)
   useEffect(() => {
     setLoadingFeed(true);
     let isMounted = true;
@@ -323,7 +322,7 @@ function NoticiasContent() {
             <div className="pt-1 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-950/80 border border-emerald-500/50 rounded-full text-[10px] font-mono text-emerald-300 font-bold">
                 <Radio size={12} className="animate-pulse text-emerald-400" />
-                <span>COMPARATIVA DE LOS 5 ESPECTROS IDEOLÓGICOS ACTIVA ({dateDayMonthYear})</span>
+                <span>DISEÑO DE CRISTAL GLASSMORPHISM TRANSPARENTE 22% ACTIVO ({dateDayMonthYear})</span>
               </div>
             </div>
           </div>
@@ -391,13 +390,12 @@ function NoticiasContent() {
                   <div className="space-y-3">
                     <PoliticalBiasBar biasScore={topNewsPrimary.biasScore} biasLabel={topNewsPrimary.biasLabel} />
 
-                    {/* BOTÓN REVOLUCIONARIO DE COMPARACIÓN EN LOS 5 ESPECTROS */}
                     <button
                       onClick={() => setSelectedBiasComparison(topNewsPrimary)}
                       className="w-full py-3 px-4 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-xs uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2 border border-white/30"
                     >
                       <Scale size={16} />
-                      <span>Ver Comparativa en los 5 Espectros Politicos (Izquierda a Derecha)</span>
+                      <span>Ver Comparativa en los 5 Espectros Políticos (Izquierda a Derecha)</span>
                     </button>
                   </div>
                 </div>
@@ -458,7 +456,6 @@ function NoticiasContent() {
                 <span className="text-xs font-mono text-gray-400">{filteredNews.length} Coberturas</span>
               </div>
 
-              {/* Grid 2 Columnas Estructurado */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {filteredNews.slice(1, visibleNewsCount + 1).map(feedItem => (
                   <div
@@ -624,7 +621,14 @@ function NoticiasContent() {
               </div>
 
               {/* BOTÓN EN MODAL LECTURA */}
-              <div className="bg-black/60 p-4 rounded-2xl border border-[#D4AF37]/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div 
+                className="p-4 rounded-2xl border border-[#D4AF37]/50 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl"
+                style={{
+                  backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)'
+                }}
+              >
                 <div className="space-y-1">
                   <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase flex items-center gap-1.5">
                     <Scale size={14} /> Comparador de los 5 Espectros Ideológicos
@@ -684,7 +688,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN COMPLETA EN LOS 5 ESPECTROS IDEOLÓGICOS (IZQUIERDA -> DERECHA) */}
+        {/* MODAL DE COMPARACIÓN COMPLETA EN LOS 5 ESPECTROS CON TRANSPARENCIA DEL 22% Y BLUR DE ALTA GAMA */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -714,7 +718,7 @@ function NoticiasContent() {
               <div className="space-y-3 border-b border-[#D4AF37]/30 pb-6 clear-both text-center sm:text-left">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#D4AF37] text-[10px] font-mono font-bold uppercase tracking-widest">
                   <Scale size={14} />
-                  <span>Comparador Algorítmico de los 5 Espectros Politicos</span>
+                  <span>Comparador Algorítmico de los 5 Espectros Políticos</span>
                 </div>
 
                 <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight">
@@ -726,23 +730,71 @@ function NoticiasContent() {
                 </p>
               </div>
 
-              {/* LEYENDA VISUAL DEL ESPECTRO IDEOLÓGICO COMPLETO */}
-              <div className="bg-black/90 p-4 rounded-2xl border border-white/20 space-y-2">
+              {/* GUÍA DEL ESPECTRO IDEOLÓGICO EVALUADO CON TRANSPARENCIA DE 22% Y BLUR */}
+              <div 
+                className="p-5 rounded-2xl border border-[#D4AF37]/40 space-y-3 shadow-2xl"
+                style={{
+                  backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)'
+                }}
+              >
                 <span className="text-[10px] font-mono text-[#D4AF37] uppercase font-extrabold tracking-widest flex items-center gap-1.5">
                   <CompassIcon size={14} /> GUÍA DEL ESPECTRO IDEOLÓGICO EVALUADO:
                 </span>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[10px] font-mono text-center font-bold">
-                  <span className="px-2.5 py-1.5 rounded-lg bg-red-950/80 border border-red-500/50 text-red-300">🔴 1. Izquierda (20%)</span>
-                  <span className="px-2.5 py-1.5 rounded-lg bg-blue-950/80 border border-blue-400/50 text-blue-300">🔵 2. Centro-Izquierda (38%)</span>
-                  <span className="px-2.5 py-1.5 rounded-lg bg-slate-900/90 border border-slate-400/50 text-slate-200">⚪ 3. Centro Factual (50%)</span>
-                  <span className="px-2.5 py-1.5 rounded-lg bg-amber-950/80 border border-amber-400/50 text-amber-300">🟡 4. Centro-Derecha (64%)</span>
-                  <span className="px-2.5 py-1.5 rounded-lg bg-orange-950/80 border border-orange-500/50 text-orange-300">🟠 5. Derecha (82%)</span>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-[10px] font-mono text-center font-bold">
+                  <div 
+                    className="p-2.5 rounded-xl border border-red-500/50 text-red-300 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(180, 20, 20, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                  >
+                    <span className="w-2.5 h-2.5 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
+                    <span>1. Izquierda (20%)</span>
+                  </div>
+
+                  <div 
+                    className="p-2.5 rounded-xl border border-blue-400/50 text-blue-300 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(20, 80, 180, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                  >
+                    <span className="w-2.5 h-2.5 bg-blue-400 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"></span>
+                    <span>2. Centro-Izquierda (38%)</span>
+                  </div>
+
+                  <div 
+                    className="p-2.5 rounded-xl border border-slate-300/50 text-slate-100 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(100, 116, 139, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                  >
+                    <span className="w-2.5 h-2.5 bg-slate-200 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"></span>
+                    <span>3. Centro Factual (50%)</span>
+                  </div>
+
+                  <div 
+                    className="p-2.5 rounded-xl border border-amber-400/50 text-amber-300 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(180, 130, 20, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                  >
+                    <span className="w-2.5 h-2.5 bg-amber-400 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span>
+                    <span>4. Centro-Derecha (64%)</span>
+                  </div>
+
+                  <div 
+                    className="p-2.5 rounded-xl border border-orange-500/50 text-orange-300 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(194, 65, 12, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                  >
+                    <span className="w-2.5 h-2.5 bg-orange-500 rounded-full shadow-[0_0_8px_rgba(249,115,22,0.8)]"></span>
+                    <span>5. Derecha (82%)</span>
+                  </div>
                 </div>
               </div>
 
-              {/* SÍNTESIS IMPARCIAL GRANCOLINOS (SIN TOMAR BANDOS) */}
-              <div className="bg-black/80 p-5 rounded-2xl border-l-4 border-emerald-400 space-y-2 shadow-inner">
+              {/* SÍNTESIS IMPARCIAL GRANCOLINOS CON TRANSPARENCIA DE 22% Y BLUR */}
+              <div 
+                className="p-5 rounded-2xl border-l-4 border-emerald-400 border border-emerald-500/30 space-y-2 shadow-2xl"
+                style={{
+                  backgroundColor: 'rgba(0, 30, 20, 0.22)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)'
+                }}
+              >
                 <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest flex items-center gap-1.5">
                   <ShieldCheck size={14} /> SÍNTESIS IMPARCIAL FACTUAL (GRANCOLINOS JOURNAL):
                 </span>
@@ -751,49 +803,61 @@ function NoticiasContent() {
                 </p>
               </div>
 
-              {/* COMPARATIVA DE LOS 5 ESPECTROS SIDE-BY-SIDE */}
+              {/* VENTANAS DE CADA TITULAR (LAS 5 COBERTURAS) CON TRANSPARENCIA DE 22% Y BLUR */}
               <div className="space-y-4 pt-2">
                 <h4 className="font-serif text-base font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
-                  <Scale size={16} /> Coberturas Registradas en los 5 Espectros Ideológicos
+                  <Scale size={16} /> COBERTURAS REGISTRADAS EN LOS 5 ESPECTROS IDEOLÓGICOS
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {(selectedBiasComparison.otherCoverages || []).map((coverage, idx) => (
                     <div 
                       key={idx}
-                      className="leather-card-dark rounded-2xl p-5 border border-white/15 space-y-3 shadow-lg hover:border-[#D4AF37] transition-all flex flex-col justify-between"
+                      className="rounded-2xl p-5 border border-[#D4AF37]/35 space-y-3 shadow-2xl hover:border-[#D4AF37] hover:shadow-[0_0_30px_rgba(212,175,55,0.35)] transition-all flex flex-col justify-between group/card"
+                      style={{
+                        backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)'
+                      }}
                     >
                       <div className="space-y-2.5">
                         {/* Cabecera del Espectro */}
                         <div className="flex items-center justify-between border-b border-white/10 pb-2">
                           <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-md bg-white p-0.5 border border-[#D4AF37]/50 flex items-center justify-center shrink-0">
+                            <div className="w-6 h-6 rounded-md bg-white p-0.5 border border-[#D4AF37]/50 flex items-center justify-center shrink-0 shadow-sm">
                               <img 
                                 src={coverage.logoUrl || `https://icons.duckduckgo.com/ip3/${coverage.sourceDomain || 'prensa.org'}.ico`}
                                 alt={coverage.sourceName}
                                 className="w-full h-full object-contain"
                               />
                             </div>
-                            <span className="font-serif text-sm font-bold text-white">{coverage.sourceName}</span>
+                            <span className="font-serif text-sm font-bold text-white group-hover/card:text-[#D4AF37] transition-colors">{coverage.sourceName}</span>
                           </div>
                           
-                          <span className="text-[9px] font-mono text-[#D4AF37] bg-black/80 px-2.5 py-1 rounded-full border border-[#D4AF37]/40 font-extrabold">
+                          <span className="text-[9px] font-mono text-[#D4AF37] bg-black/70 px-2.5 py-1 rounded-full border border-[#D4AF37]/40 font-extrabold">
                             {coverage.spectrumBadge || `Espectro ${idx + 1}`}
                           </span>
                         </div>
 
                         {/* Titular utilizado por el Medio */}
                         <div>
-                          <span className="text-[9px] font-mono text-gray-400 uppercase block">Titular del Medio:</span>
-                          <h5 className="font-serif text-sm font-bold text-white leading-snug mt-0.5">
+                          <span className="text-[9px] font-mono text-gray-400 uppercase block">TITULAR DEL MEDIO:</span>
+                          <h5 className="font-serif text-sm font-bold text-white leading-snug mt-0.5 group-hover/card:text-[#D4AF37] transition-colors">
                             "{coverage.headline}"
                           </h5>
                         </div>
 
-                        {/* Análisis de Intención & Encuadre */}
-                        <div className="bg-black/50 p-3 rounded-xl border border-white/10 space-y-1 text-xs">
+                        {/* Análisis de Intención & Encuadre con Transparencia 22% */}
+                        <div 
+                          className="p-3 rounded-xl border border-white/15 space-y-1 text-xs shadow-inner"
+                          style={{
+                            backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                            backdropFilter: 'blur(16px)',
+                            WebkitBackdropFilter: 'blur(16px)'
+                          }}
+                        >
                           <span className="text-[9px] font-mono text-[#D4AF37] font-bold uppercase block">
-                            Análisis de Intención Comunicativa:
+                            ANÁLISIS DE INTENCIÓN & ENCUADRE:
                           </span>
                           <p className="font-sans text-[11px] text-gray-200 leading-relaxed italic">
                             "{coverage.intention}"
@@ -809,9 +873,9 @@ function NoticiasContent() {
                           href={coverage.originalUrl || selectedBiasComparison.originalUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full py-2 px-3 bg-white/10 hover:bg-[#D4AF37] text-white hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-white/20 flex items-center justify-center gap-1.5"
+                          className="w-full py-2 px-3 bg-white/10 hover:bg-[#D4AF37] text-white hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-white/20 flex items-center justify-center gap-1.5 shadow-md"
                         >
-                          <span>Leer Noticia en {coverage.sourceName}</span>
+                          <span>LEER NOTICIA EN {coverage.sourceName}</span>
                           <ExternalLink size={12} />
                         </a>
                       </div>
@@ -826,7 +890,7 @@ function NoticiasContent() {
                   onClick={() => setSelectedBiasComparison(null)}
                   className="px-6 py-2.5 bg-white/10 text-white hover:bg-white/20 font-mono font-bold text-xs uppercase rounded-xl transition-all border border-white/20"
                 >
-                  Cerrar Comparador
+                  CERRAR COMPARADOR
                 </button>
               </div>
 
