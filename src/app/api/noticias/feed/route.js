@@ -309,16 +309,17 @@ function extractCleanSearchKeywords(title) {
   return words.slice(0, 4).join(' ');
 }
 
-// GENERADOR DE LOS 5 ESPECTROS DINÁMICO DONDE CADA TARJETA CONSERVA SU SESGO Y FUENTE REAL
+// GENERADOR DE ENLACES DIRECTOS A GOOGLE NEWS POR MEDIO DE COMUNICACIÓN
 function generate5SpectrumCoveragesFromCenter(article) {
   const t = (article.title || '').trim();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
   const cleanKeywords = extractCleanSearchKeywords(t);
 
-  const buildDirectMediaUrl = (domain) => {
+  const buildGoogleNewsUrl = (domain) => {
     if (primaryDomain === domain) return article.originalUrl;
-    const query = encodeURIComponent(`${domain} ${cleanKeywords}`);
-    return `https://www.google.com/search?q=${query}`;
+    // Enlace a Google Noticias filtrado por dominio emisor (Lleva directo a la noticia en Google News)
+    const query = encodeURIComponent(`site:${domain} ${cleanKeywords}`);
+    return `https://news.google.com/search?q=${query}&hl=es-419&gl=CO&ceid=CO:es-419`;
   };
 
   const evaluatedBias = calculateExactBiasScore(t, article.sourceName, primaryDomain);
@@ -335,7 +336,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: primaryDomain.includes('rtvc') ? evaluatedBias.absPercent : 75,
       biasLabel: primaryDomain.includes('rtvc') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "75% Sesgo Izquierda",
       intention: "Enfoque en garantías sociales e impacto comunitario.",
-      outletUrl: primaryDomain.includes('rtvc') ? article.originalUrl : buildDirectMediaUrl("rtvcnoticias.com"),
+      outletUrl: primaryDomain.includes('rtvc') ? article.originalUrl : buildGoogleNewsUrl("rtvcnoticias.com"),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -349,7 +350,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: primaryDomain.includes('espectador') ? evaluatedBias.absPercent : 30,
       biasLabel: primaryDomain.includes('espectador') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "30% Sesgo Izquierda",
       intention: "Enfoque en derechos ciudadanos y procedimiento normativo.",
-      outletUrl: primaryDomain.includes('espectador') ? article.originalUrl : buildDirectMediaUrl("elespectador.com"),
+      outletUrl: primaryDomain.includes('espectador') ? article.originalUrl : buildGoogleNewsUrl("elespectador.com"),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -363,7 +364,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: 0,
       biasLabel: "0% Sesgo (Punto Cero Neutral)",
       intention: "Reporte directo de hechos constatados sin encuadre ideológico.",
-      outletUrl: primaryDomain.includes('caracol') ? article.originalUrl : buildDirectMediaUrl("caracol.com.co"),
+      outletUrl: primaryDomain.includes('caracol') ? article.originalUrl : buildGoogleNewsUrl("caracol.com.co"),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -377,7 +378,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: primaryDomain.includes('tiempo') ? evaluatedBias.absPercent : 32,
       biasLabel: primaryDomain.includes('tiempo') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "32% Sesgo Derecha",
       intention: "Enfoque en gobernabilidad e impacto en sectores económicos.",
-      outletUrl: primaryDomain.includes('tiempo') ? article.originalUrl : buildDirectMediaUrl("eltiempo.com"),
+      outletUrl: primaryDomain.includes('tiempo') ? article.originalUrl : buildGoogleNewsUrl("eltiempo.com"),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -391,7 +392,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: primaryDomain.includes('semana') ? evaluatedBias.absPercent : 80,
       biasLabel: primaryDomain.includes('semana') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "80% Sesgo Derecha",
       intention: "Enfoque crítico de fiscalización política y contradicciones de gobierno.",
-      outletUrl: primaryDomain.includes('semana') ? article.originalUrl : buildDirectMediaUrl("semana.com"),
+      outletUrl: primaryDomain.includes('semana') ? article.originalUrl : buildGoogleNewsUrl("semana.com"),
       officialMatrixUrl: article.originalUrl
     }
   ];
