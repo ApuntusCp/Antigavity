@@ -46,8 +46,17 @@ export async function GET(request) {
       const scraped = await scrapeOriginalMediaImageAndUrl(article.originalUrl);
       if (scraped) {
         if (scraped.realArticleUrl) article.originalUrl = scraped.realArticleUrl;
-        if (scraped.realArticleImage) article.image = scraped.realArticleImage;
+        if (scraped.realArticleImage) {
+          // Servir a través de Proxy para omitir bloqueos por Hotlink / CORS
+          article.image = `/api/noticias/proxy-image?url=${encodeURIComponent(scraped.realArticleImage)}`;
+        }
       }
+
+      // Si no se extrajo imagen, asignar imagen de respaldo en alta resolución
+      if (!article.image) {
+        article.image = getHighResCategoryFallbackImage(article.category, article.title);
+      }
+
       return article;
     }));
 
@@ -69,14 +78,13 @@ export async function GET(request) {
   }
 }
 
-// Extractor profundo de la imagen principal del HTML original (amp-img, figure.main-photo, og:image, twitter:image)
+// Extractor profundo de la imagen principal del HTML original
 async function scrapeOriginalMediaImageAndUrl(googleRssUrl) {
   try {
-    // Intentar decodificar la URL real embebida en la cadena de Google News
     let targetUrl = decodeGoogleNewsUrl(googleRssUrl) || googleRssUrl;
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500); // 3.5s timeout
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
 
     const res = await fetch(targetUrl, {
       signal: controller.signal,
@@ -104,7 +112,7 @@ async function scrapeOriginalMediaImageAndUrl(googleRssUrl) {
       extractedImage = ogMatch[1].trim();
     }
 
-    // Patrón 2: figure.main-photo / amp-img / article img (Específico para LatinUS, La República, etc., como figura en DevTools)
+    // Patrón 2: figure.main-photo / amp-img / article img (Específico para LatinUS, La República, etc.)
     if (!extractedImage || extractedImage.includes('google') || extractedImage.includes('gstatic')) {
       const ampImgMatch = html.match(/<figure[^>]*class=["'][^"']*main-photo[^"']*["'][^>]*>[\s\S]*?<amp-img[^>]*src=["']([^"']+)["']/i) ||
                           html.match(/<amp-img[^>]*src=["']([^"']+)["'][^>]*class=["'][^"']*main[^"']*["']/i) ||
@@ -117,14 +125,12 @@ async function scrapeOriginalMediaImageAndUrl(googleRssUrl) {
     }
 
     if (extractedImage) {
-      // Resolver URLs relativas a absolutas (Ej: /fotografias/m/2026/7/26/f960x540.jpg -> https://latinus.us/fotografias/m/2026/7/26/f960x540.jpg)
       try {
         extractedImage = new URL(extractedImage, finalUrl).href;
       } catch (e) {
         if (extractedImage.startsWith('//')) extractedImage = 'https:' + extractedImage;
       }
 
-      // Validar que no sea un ícono de Google o favicon
       if (!extractedImage.includes('google') && !extractedImage.includes('gstatic') && !extractedImage.includes('favicon')) {
         return { realArticleUrl: finalUrl, realArticleImage: extractedImage };
       }
@@ -151,6 +157,34 @@ function decodeGoogleNewsUrl(googleUrl) {
   }
 }
 
+// Helper de imágenes editoriales en alta definición según tema
+function getHighResCategoryFallbackImage(category, title = '') {
+  const t = title.toLowerCase();
+  
+  if (t.includes('espriella') || t.includes('embajada') || t.includes('gobierno') || t.includes('presidente') || t.includes('politica')) {
+    return "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1200&q=85";
+  }
+  if (t.includes('hambruna') || t.includes('onu') || t.includes('latinoamerica') || t.includes('alimento')) {
+    return "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=85";
+  }
+  if (t.includes('dolar') || t.includes('economia') || t.includes('banco') || t.includes('moneda')) {
+    return "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=85";
+  }
+  if (category === 'Colombia') {
+    return "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=1200&q=85";
+  }
+  if (category === 'Economía') {
+    return "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=1200&q=85";
+  }
+  if (category === 'Cultura') {
+    return "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=85";
+  }
+  if (category === 'Ciencia y Salud') {
+    return "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=1200&q=85";
+  }
+  return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=85";
+}
+
 // Helper para parsear XML de RSS
 function parseRssItems(xmlText, defaultCategory, defaultCountry) {
   const articles = [];
@@ -168,7 +202,6 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
       let pubDateStr = pubDateMatch ? pubDateMatch[1] : new Date().toUTCString();
       let sourceName = sourceMatch ? sourceMatch[1].trim() : 'Agencia Periodística';
 
-      // Limpiar título de fuente repetida (Ej: "De la Espriella anunció el cierre... - La República")
       if (rawTitle.includes(' - ')) {
         const parts = rawTitle.split(' - ');
         if (parts.length > 1) {
@@ -201,7 +234,7 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
         sourceName: sourceName,
         sourceLogo: sourceName,
         originalUrl: link,
-        image: null, // Se extraera directamente del HTML original (amp-img / og:image)
+        image: null,
         category: defaultCategory,
         country: defaultCountry,
         publishedAt: formattedExactDate,
