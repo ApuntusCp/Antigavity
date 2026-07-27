@@ -9,7 +9,7 @@ import { db } from '../../utils/firebase';
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
-// BASE DE DATOS DE HOJAS DE VIDA Y DOSSIERS PROFESIONALES DE AUTORES Y PERIODISTAS
+// BASE DE DATOS DE HOJAS DE VIDA Y DOSSIERS PROFESIONALES DE AUTORES Y PERIODISTAS (ALTA GAMA)
 const AUTHORS_DATABASE = {
   "Lina María Orozco": {
     name: "Lina María Orozco",
@@ -35,7 +35,7 @@ const AUTHORS_DATABASE = {
     verified: true,
     verificationDate: "10 de Noviembre, 2024",
     location: "Buenos Aires, Argentina / Cobertura Panamericana",
-    avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Leila_Guerriero_en_2019.jpg/800px-Leila_Guerriero_en_2019.jpg",
+    avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80",
     bio: "Reconocida periodista y escritora argentina. Autora de obras fundamentales de periodismo narrativo como 'Los suicidas del fin del mundo', 'Plano americano' y 'La llamada'. Maestra de la Fundación Gabo y referente imprescindible del periodismo hispanoamericano.",
     specialties: ["Periodismo Narrativo de Investigación", "Perfiles Profundos", "Ética y Tecnologías en Medios", "Crónica Hispanoamericana"],
     awards: ["Premio Fundación Nuevo Periodismo Iberoamericano (FNPI 2010)", "Premio Periodístico Manuel Vázquez Montalbán (2019)", "Premio Konex de Platino"],
@@ -97,7 +97,6 @@ function getAuthorProfile(authorName) {
   if (AUTHORS_DATABASE[authorName]) {
     return AUTHORS_DATABASE[authorName];
   }
-  // Perfil por defecto verificado para autores adicionales
   return {
     name: authorName || "Comunicador Verificado",
     title: "Periodista & Investigador Adscrito a la Red GranColinos",
@@ -131,8 +130,8 @@ function PoliticalBiasBar({ biasScore, biasLabel }) {
         <span className="text-gray-400 font-bold shrink-0">{score}%</span>
       </div>
 
-      <div className="relative w-full h-1.5 rounded-full bg-black/50 overflow-hidden border border-white/15">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-slate-300 to-amber-500 opacity-90"></div>
+      <div className="relative w-full h-1.5 rounded-full bg-black/60 overflow-hidden border border-white/20">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-slate-200 to-amber-500 opacity-90"></div>
         <div 
           className="absolute top-0 bottom-0 w-2.5 bg-white border border-black shadow-[0_0_8px_rgba(255,255,255,0.9)] rounded-full -translate-x-1/2 transition-all duration-500"
           style={{ left: `${score}%` }}
@@ -198,7 +197,7 @@ function NoticiasContent() {
     { id: 'cl', name: 'Chile' }
   ];
 
-  // Base Extensa de Noticias Multimedio Panamericanas con Fotos Prensa Oficiales 100% Reales
+  // Base Extensa de Noticias Multimedio Panamericanas con Fotos Prensa Oficiales de Alta Resolución
   const fallbackGlobalNews = [
     {
       id: 'top-1',
@@ -228,7 +227,7 @@ function NoticiasContent() {
       sourceName: "La Silla Vacía",
       sourceLogo: "La Silla Vacía",
       originalUrl: "https://www.lasillavacia.com/silla-nacional/",
-      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Leila_Guerriero_en_2019.jpg/800px-Leila_Guerriero_en_2019.jpg",
+      image: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=85",
       category: "Cultura",
       country: "co",
       publishedAt: "Hace 1 hora",
@@ -373,40 +372,40 @@ function NoticiasContent() {
       {/* CONTENEDOR PRINCIPAL CON TEXTURA DE CUERO AZUL NOCTURNO REAL EMBOSADA */}
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
 
-        {/* FASE 0 — MASTHEAD CON TEXTURA DE CUERO EMBOSADA Y COSTURA DE ORO */}
-        <div className="leather-canvas-blue rounded-3xl p-6 md:p-8 backdrop-blur-2xl relative overflow-hidden space-y-6">
+        {/* FASE 0 — MASTHEAD CON TEXTURA DE CUERO EMBOSADA Y COSTURA DE ORO (LUXURY MASTHEAD) */}
+        <div className="leather-canvas-blue rounded-3xl p-6 md:p-10 backdrop-blur-2xl relative overflow-hidden space-y-6 border-2 border-[#D4AF37]/50 shadow-[0_20px_60px_rgba(0,0,0,0.9)]">
           
-          {/* Masthead Header Centrado */}
-          <div className="text-center space-y-3 border-b border-[#D4AF37]/35 pb-6">
+          {/* Masthead Header Centrado con Tipografía de Oro Ley */}
+          <div className="text-center space-y-4 border-b border-[#D4AF37]/35 pb-6">
             <div className="flex items-center justify-between text-[11px] font-mono text-gray-300 uppercase tracking-widest px-2">
-              <span className="hidden sm:inline">Edición Hemerográfica Panamericana</span>
-              <span className="font-bold text-[#D4AF37]">{formattedDate}</span>
-              <span className="hidden sm:inline">GranColinos Journal</span>
+              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Edición Hemerográfica Panamericana</span>
+              <span className="font-extrabold text-[#D4AF37] px-3 py-1 bg-black/60 rounded-full border border-[#D4AF37]/40 shadow-sm">{formattedDate}</span>
+              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">GranColinos Journal</span>
             </div>
 
-            <h1 className="font-serif text-4xl md:text-7xl font-extrabold tracking-tight text-white drop-shadow-[0_0_25px_rgba(212,175,55,0.45)] uppercase">
+            <h1 className="font-serif text-5xl md:text-8xl font-black tracking-tight text-gold-gradient uppercase drop-shadow-[0_4px_30px_rgba(212,175,55,0.45)]">
               GRAN NOTICIAS
             </h1>
             
-            <div className="w-28 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full"></div>
+            <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
-            <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-2xl mx-auto font-light leading-relaxed">
+            <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
               "Información factual verídica, análisis multivariable de sesgo editorial y preservación del archivo periodístico de América."
             </p>
           </div>
 
-          {/* Barra de Pestañas de Categoría */}
-          <nav className="flex items-center justify-center gap-2 md:gap-5 overflow-x-auto scrollbar-none font-mono text-xs border-b border-white/10 pb-2">
+          {/* Barra de Pestañas de Categoría con Acabado Metálico */}
+          <nav className="flex items-center justify-center gap-2 md:gap-4 overflow-x-auto scrollbar-none font-mono text-xs border-b border-white/10 pb-3">
             {categoryTabs.map(tab => {
               const isActive = activeCategoryTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveCategoryTab(tab.id)}
-                  className={`px-4 py-2 rounded-xl transition-all whitespace-nowrap font-bold uppercase tracking-wider ${
+                  className={`px-4 py-2.5 rounded-xl transition-all whitespace-nowrap font-extrabold uppercase tracking-wider ${
                     isActive
-                      ? 'bg-[#D4AF37] text-black shadow-[0_0_25px_rgba(212,175,55,0.6)] scale-105'
-                      : 'text-gray-300 hover:text-white hover:bg-white/10'
+                      ? 'bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black shadow-[0_0_25px_rgba(212,175,55,0.7)] scale-105 border border-white/40'
+                      : 'text-gray-300 hover:text-white hover:bg-white/10 border border-transparent'
                   }`}
                 >
                   {tab.name}
@@ -415,72 +414,87 @@ function NoticiasContent() {
             })}
           </nav>
 
-          {/* FASE 1 — SECCIÓN "TOP NEWS" (HERO GRID EN TARJETAS DE CUERO EMBOSADAS) */}
-          <div className="pt-2 space-y-4">
+          {/* FASE 1 — SECCIÓN "TOP NEWS" (HERO GRID EN TARJETAS DE CUERO EMBOSADAS DE ALTA GAMA) */}
+          <div className="pt-2 space-y-5">
             <div className="flex items-center justify-between border-b border-white/15 pb-2">
               <h2 className="font-serif text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
-                <span className="w-3 h-3 bg-[#D4AF37] rounded-full inline-block shadow-[0_0_12px_rgba(212,175,55,0.9)]"></span> TOP NEWS — NOTICIAS PRINCIPALES
+                <span className="w-3.5 h-3.5 bg-[#D4AF37] rounded-full inline-block shadow-[0_0_15px_rgba(212,175,55,0.9)] animate-pulse"></span> TOP NEWS — NOTICIAS PRINCIPALES
               </h2>
-              <span className="text-xs font-mono text-[#D4AF37]">Actualización en vivo</span>
+              <span className="text-xs font-mono text-[#D4AF37] font-bold">Actualización en vivo</span>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               
               {/* Bloque Grande Destacado (Izquierda - 7 Cols) */}
               <div 
                 onClick={() => setSelectedArticle(topNewsPrimary)}
-                className="lg:col-span-7 leather-card-dark rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 group cursor-pointer space-y-4 p-4 hover:border-[#D4AF37]/80 hover:-translate-y-1"
+                className="lg:col-span-7 leather-card-dark rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 group cursor-pointer space-y-4 p-5 hover:border-[#D4AF37] hover:-translate-y-1.5 flex flex-col justify-between"
               >
-                <div className="relative h-64 md:h-80 w-full overflow-hidden rounded-xl bg-black/60 border border-white/10">
-                  <img 
-                    src={topNewsPrimary.image} 
-                    alt={topNewsPrimary.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-3 left-3 bg-[#D4AF37] text-black font-mono text-[10px] font-extrabold uppercase px-3 py-1 rounded-full shadow-lg">
-                    {topNewsPrimary.category}
-                  </span>
+                <div className="space-y-4">
+                  <div className="relative h-72 md:h-96 w-full overflow-hidden rounded-2xl bg-black/80 border border-white/15 shadow-inner">
+                    <img 
+                      src={topNewsPrimary.image} 
+                      alt={topNewsPrimary.title}
+                      onError={(e) => {
+                        e.currentTarget.src = "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=1200&q=85";
+                      }}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                    <span className="absolute top-3 left-3 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono text-[10px] font-extrabold uppercase px-3.5 py-1 rounded-full shadow-[0_0_15px_rgba(212,175,55,0.6)]">
+                      {topNewsPrimary.category}
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-[11px] font-mono text-[#D4AF37] uppercase font-bold">
+                      <span>{topNewsPrimary.sourceName}</span>
+                      <span>{topNewsPrimary.publishedAt}</span>
+                    </div>
+
+                    <h3 className="font-serif text-2xl md:text-4xl font-extrabold text-white leading-tight group-hover:text-[#D4AF37] transition-colors">
+                      {topNewsPrimary.title}
+                    </h3>
+                    
+                    <p className="text-gray-200 text-xs md:text-sm font-sans line-clamp-3 leading-relaxed font-light">
+                      {topNewsPrimary.summary}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <span className="text-[11px] font-mono text-gray-400 uppercase font-semibold">
-                    {topNewsPrimary.sourceName} • {topNewsPrimary.publishedAt}
-                  </span>
-                  <h3 className="font-serif text-2xl md:text-3xl font-bold text-white leading-snug group-hover:text-[#D4AF37] transition-colors">
-                    {topNewsPrimary.title}
-                  </h3>
-                  <p className="text-gray-300 text-xs md:text-sm font-sans line-clamp-3 leading-relaxed font-light">
-                    {topNewsPrimary.summary}
-                  </p>
-
-                  <PoliticalBiasBar biasScore={topNewsPrimary.biasScore} biasLabel={topNewsPrimary.biasLabel} />
-                </div>
+                <PoliticalBiasBar biasScore={topNewsPrimary.biasScore} biasLabel={topNewsPrimary.biasLabel} />
               </div>
 
               {/* Columna de Noticas Medianas (Derecha - 5 Cols) */}
-              <div className="lg:col-span-5 space-y-4">
+              <div className="lg:col-span-5 space-y-4 flex flex-col justify-between">
                 {topNewsSecondary.map(secItem => (
                   <div
                     key={secItem.id}
                     onClick={() => setSelectedArticle(secItem)}
-                    className="leather-card-dark rounded-2xl p-3.5 shadow-md hover:shadow-2xl transition-all cursor-pointer group flex items-center gap-3.5 hover:border-[#D4AF37]/60"
+                    className="leather-card-dark rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-all cursor-pointer group flex items-center gap-4 hover:border-[#D4AF37]"
                   >
-                    <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-xl bg-black/50 border border-white/10">
+                    <div className="relative h-24 w-28 shrink-0 overflow-hidden rounded-xl bg-black/60 border border-white/15 shadow-md">
                       <img 
                         src={secItem.image} 
                         alt={secItem.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.currentTarget.src = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=85";
+                        }}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                       />
                     </div>
 
-                    <div className="space-y-1 flex-1 min-w-0">
-                      <span className="text-[9px] font-mono text-[#D4AF37] font-bold uppercase block">
-                        {secItem.sourceName}
-                      </span>
+                    <div className="space-y-1.5 flex-1 min-w-0">
+                      <div className="flex items-center justify-between text-[10px] font-mono">
+                        <span className="text-[#D4AF37] font-extrabold uppercase">{secItem.sourceName}</span>
+                        <span className="text-gray-400">{secItem.publishedAt}</span>
+                      </div>
                       <h4 className="font-serif text-xs md:text-sm font-bold text-white line-clamp-2 leading-snug group-hover:text-[#D4AF37] transition-colors">
                         {secItem.title}
                       </h4>
-                      <span className="text-[9px] font-mono text-gray-400 block">{secItem.publishedAt}</span>
+                      <span className="text-[10px] font-sans text-gray-300 line-clamp-1 italic">
+                        {secItem.summary}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -490,13 +504,13 @@ function NoticiasContent() {
           </div>
 
           {/* FASE 2 — SECCIÓN "SELECCIÓN UMMA" */}
-          <div className="pt-6 border-t border-white/15 space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+          <div className="pt-8 border-t border-white/15 space-y-5">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
               <div>
-                <span className="px-3 py-1 bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] font-mono font-bold uppercase tracking-widest rounded-full border border-[#D4AF37]/40 inline-flex items-center gap-1.5">
-                  <Sparkles size={12} className="text-[#D4AF37]" /> SELECCIÓN ALGORÍTMICA UMMA
+                <span className="px-3.5 py-1 bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] font-mono font-extrabold uppercase tracking-widest rounded-full border border-[#D4AF37]/50 inline-flex items-center gap-1.5 shadow-sm">
+                  <Sparkles size={13} className="text-[#D4AF37]" /> SELECCIÓN ALGORÍTMICA UMMA
                 </span>
-                <h3 className="font-serif text-xl font-bold text-white mt-1">Síntesis Imparcial & Diversidad de Fuentes</h3>
+                <h3 className="font-serif text-2xl font-bold text-white mt-1.5">Síntesis Imparcial & Diversidad de Fuentes</h3>
               </div>
 
               <div className="flex items-center gap-2 font-mono text-[10px]">
@@ -504,8 +518,8 @@ function NoticiasContent() {
                   <button
                     key={c.id}
                     onClick={() => setActiveUmmaCategory(c.id)}
-                    className={`px-3 py-1 rounded-lg font-bold uppercase ${
-                      activeUmmaCategory === c.id ? 'bg-[#D4AF37] text-black shadow-md' : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                    className={`px-3.5 py-1.5 rounded-lg font-extrabold uppercase transition-all ${
+                      activeUmmaCategory === c.id ? 'bg-[#D4AF37] text-black shadow-md border border-white/30' : 'bg-white/5 text-gray-300 hover:bg-white/10'
                     }`}
                   >
                     {c.name}
@@ -520,24 +534,27 @@ function NoticiasContent() {
                 <div
                   key={`circular-${circularItem.id}`}
                   onClick={() => setSelectedArticle(circularItem)}
-                  className="leather-card-dark rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all cursor-pointer group flex items-start gap-4 hover:border-[#D4AF37]/60"
+                  className="leather-card-dark rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all cursor-pointer group flex items-start gap-4 hover:border-[#D4AF37]"
                 >
-                  <div className="relative w-16 h-16 rounded-full overflow-hidden shrink-0 border-2 border-[#D4AF37] shadow-md">
+                  <div className="relative w-16 h-16 rounded-full overflow-hidden shrink-0 border-2 border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.4)]">
                     <img 
                       src={circularItem.image} 
-                      alt={circularItem.title} 
+                      alt={circularItem.title}
+                      onError={(e) => {
+                        e.currentTarget.src = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=600&q=85";
+                      }}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                   </div>
 
                   <div className="space-y-1.5 flex-1 min-w-0">
-                    <span className="text-[9px] font-mono text-gray-400 font-bold uppercase block">
+                    <span className="text-[9px] font-mono text-[#D4AF37] font-extrabold uppercase block">
                       {circularItem.sourceName} • Umma Verified
                     </span>
                     <h4 className="font-serif text-xs md:text-sm font-bold text-white line-clamp-2 group-hover:text-[#D4AF37] transition-colors">
                       {circularItem.title}
                     </h4>
-                    <p className="text-[11px] font-sans text-gray-300 line-clamp-2 italic bg-black/50 p-2 rounded-lg border border-white/5">
+                    <p className="text-[11px] font-sans text-gray-300 line-clamp-2 italic bg-black/60 p-2 rounded-lg border border-white/10">
                       "{circularItem.summary}"
                     </p>
                   </div>
@@ -547,12 +564,12 @@ function NoticiasContent() {
           </div>
 
           {/* FASE 3 & 4 — SECCIÓN "ÚLTIMAS NOTICIAS" CON SIDEBAR REGIONAL */}
-          <div className="pt-6 border-t border-white/15 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="pt-8 border-t border-white/15 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* Contenido Principal de Últimas Noticias (8 Cols) */}
             <div className="lg:col-span-8 space-y-6">
               <div className="border-b border-white/15 pb-2">
-                <h3 className="font-serif text-xl font-bold text-white uppercase tracking-wider">
+                <h3 className="font-serif text-2xl font-bold text-white uppercase tracking-wider">
                   ÚLTIMAS NOTICIAS DEL FEED
                 </h3>
               </div>
@@ -567,8 +584,8 @@ function NoticiasContent() {
                       onClick={() => setSelectedArticle(textCard)}
                       className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 flex flex-col justify-between ${
                         isCenterResaltada
-                          ? 'bg-[#112444] text-white border-[#D4AF37] shadow-[0_0_30px_rgba(212,175,55,0.35)] scale-105'
-                          : 'leather-card-dark text-white hover:border-[#D4AF37]/50'
+                          ? 'bg-gradient-to-b from-[#112444] to-[#0A162B] text-white border-[#D4AF37] shadow-[0_0_35px_rgba(212,175,55,0.4)] scale-105'
+                          : 'leather-card-dark text-white hover:border-[#D4AF37]'
                       }`}
                     >
                       <div className="space-y-1.5">
@@ -593,13 +610,16 @@ function NoticiasContent() {
                   <div
                     key={`feed-grid-${feedItem.id}`}
                     onClick={() => setSelectedArticle(feedItem)}
-                    className="leather-card-dark rounded-2xl overflow-hidden shadow-lg transition-all cursor-pointer group space-y-3 p-3.5 hover:border-[#D4AF37]/60"
+                    className="leather-card-dark rounded-2xl overflow-hidden shadow-lg transition-all cursor-pointer group space-y-3 p-4 hover:border-[#D4AF37]"
                   >
-                    <div className="relative h-44 w-full overflow-hidden rounded-xl bg-black/50 border border-white/10">
+                    <div className="relative h-48 w-full overflow-hidden rounded-xl bg-black/60 border border-white/15">
                       <img 
                         src={feedItem.image} 
                         alt={feedItem.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.currentTarget.src = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=85";
+                        }}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                       />
                       <span className="absolute top-2 left-2 bg-[#D4AF37] text-black font-mono text-[9px] font-bold uppercase px-2.5 py-0.5 rounded-full shadow-md">
                         {feedItem.sourceName}
@@ -623,7 +643,7 @@ function NoticiasContent() {
               <div className="text-center pt-4">
                 <button
                   onClick={() => setVisibleNewsCount(prev => prev + 6)}
-                  className="px-8 py-3 bg-[#D4AF37] text-black font-mono font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_25px_rgba(212,175,55,0.5)]"
+                  className="px-8 py-3 bg.gradient-to-r from-[#D4AF37] to-[#AA7C11] bg-[#D4AF37] text-black font-mono font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_25px_rgba(212,175,55,0.5)] border border-white/30"
                 >
                   Ver Más Noticias
                 </button>
@@ -631,9 +651,9 @@ function NoticiasContent() {
             </div>
 
             {/* FASE 4 — SIDEBAR DE PAÍS / REGIÓN (4 Cols) */}
-            <div className="lg:col-span-4 leather-card-dark rounded-2xl p-5 shadow-xl space-y-4">
-              <div className="space-y-1 border-b border-white/15 pb-3">
-                <span className="text-[10px] font-mono text-[#D4AF37] font-bold uppercase tracking-wider block">
+            <div className="lg:col-span-4 leather-card-dark rounded-3xl p-6 shadow-xl space-y-5 border border-[#D4AF37]/40">
+              <div className="space-y-1.5 border-b border-white/15 pb-4">
+                <span className="text-[10px] font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider block">
                   FILTRO PAÍS SELECCIONADO
                 </span>
                 <div className="flex items-center justify-between">
@@ -644,7 +664,7 @@ function NoticiasContent() {
                   <select
                     value={activeCountry}
                     onChange={(e) => handleCountryChange(e.target.value)}
-                    className="bg-black/60 text-[#D4AF37] text-xs font-mono font-bold py-1 px-2 rounded-lg border border-[#D4AF37]/40 focus:outline-none"
+                    className="bg-black/70 text-[#D4AF37] text-xs font-mono font-bold py-1.5 px-3 rounded-xl border border-[#D4AF37]/50 focus:outline-none shadow-sm"
                   >
                     {countries.map(c => (
                       <option key={c.id} value={c.id} className="bg-[#07101E] text-white">{c.name}</option>
@@ -662,13 +682,13 @@ function NoticiasContent() {
                   <div
                     key={`sidebar-${sideItem.id}`}
                     onClick={() => setSelectedArticle(sideItem)}
-                    className="p-2.5 hover:bg-white/5 rounded-xl transition-colors cursor-pointer border-b border-white/5 space-y-1"
+                    className="p-3 hover:bg-white/10 rounded-xl transition-colors cursor-pointer border-b border-white/10 space-y-1 group"
                   >
                     <div className="flex items-center justify-between text-[10px] text-gray-400">
                       <span className="font-bold text-[#D4AF37]">#{idx + 1} • {sideItem.sourceName}</span>
                       <span>{sideItem.publishedAt}</span>
                     </div>
-                    <p className="font-serif font-bold text-white leading-snug line-clamp-2 hover:text-[#D4AF37]">
+                    <p className="font-serif font-bold text-white leading-snug line-clamp-2 group-hover:text-[#D4AF37]">
                       {sideItem.title}
                     </p>
                   </div>
@@ -681,16 +701,17 @@ function NoticiasContent() {
           {/* FASE 5 — SECCIONES TEMÁTICAS AL PIE */}
           <div className="pt-8 border-t border-white/15 space-y-6">
             <div className="border-b border-white/15 pb-2">
-              <h3 className="font-serif text-xl font-bold text-white uppercase tracking-wider">
+              <h3 className="font-serif text-2xl font-bold text-white uppercase tracking-wider">
                 SECCIONES TEMÁTICAS ESPECIALIZADAS
               </h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               
-              <div className="leather-card-dark rounded-2xl p-4 shadow-lg space-y-3">
-                <h4 className="font-serif text-base font-bold text-[#D4AF37] border-b border-[#D4AF37]/30 pb-1">
-                  Cultura & Sociedad
+              <div className="leather-card-dark rounded-2xl p-5 shadow-lg space-y-3">
+                <h4 className="font-serif text-base font-bold text-[#D4AF37] border-b border-[#D4AF37]/30 pb-1.5 flex items-center justify-between">
+                  <span>Cultura & Sociedad</span>
+                  <BookOpen size={16} />
                 </h4>
                 {realtimeArticles.slice(0, 3).map(item => (
                   <div key={`cultura-${item.id}`} onClick={() => setSelectedArticle(item)} className="cursor-pointer space-y-1 border-b border-white/5 pb-2">
@@ -700,9 +721,10 @@ function NoticiasContent() {
                 ))}
               </div>
 
-              <div className="leather-card-dark rounded-2xl p-4 shadow-lg space-y-3">
-                <h4 className="font-serif text-base font-bold text-[#D4AF37] border-b border-[#D4AF37]/30 pb-1">
-                  Ciencia, Botánica & Salud
+              <div className="leather-card-dark rounded-2xl p-5 shadow-lg space-y-3">
+                <h4 className="font-serif text-base font-bold text-[#D4AF37] border-b border-[#D4AF37]/30 pb-1.5 flex items-center justify-between">
+                  <span>Ciencia, Botánica & Salud</span>
+                  <Sparkles size={16} />
                 </h4>
                 {realtimeArticles.slice(2, 5).map(item => (
                   <div key={`salud-${item.id}`} onClick={() => setSelectedArticle(item)} className="cursor-pointer space-y-1 border-b border-white/5 pb-2">
@@ -712,9 +734,10 @@ function NoticiasContent() {
                 ))}
               </div>
 
-              <div className="leather-card-dark rounded-2xl p-4 shadow-lg space-y-3">
-                <h4 className="font-serif text-base font-bold text-[#D4AF37] border-b border-[#D4AF37]/30 pb-1">
-                  Economía & Negocios
+              <div className="leather-card-dark rounded-2xl p-5 shadow-lg space-y-3">
+                <h4 className="font-serif text-base font-bold text-[#D4AF37] border-b border-[#D4AF37]/30 pb-1.5 flex items-center justify-between">
+                  <span>Economía & Negocios</span>
+                  <TrendingUp size={16} />
                 </h4>
                 {realtimeArticles.slice(1, 4).map(item => (
                   <div key={`econ-${item.id}`} onClick={() => setSelectedArticle(item)} className="cursor-pointer space-y-1 border-b border-white/5 pb-2">
@@ -729,7 +752,7 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA COMPLETA DE NOTICIA CON OVERLAY 22% TRANSPARENTE Y BLUR DE PANTALLA COMPLETA 100vw x 100vh */}
+        {/* MODAL LECTURA COMPLETA DE NOTICIA CON OVERLAY 22% TRANSPARENTE Y BLUR DE PANTALLA COMPLETA */}
         {selectedArticle && (
           <div 
             className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -746,12 +769,12 @@ function NoticiasContent() {
               WebkitBackdropFilter: 'blur(20px)'
             }}
           >
-            <div className="leather-canvas-blue text-white rounded-3xl max-w-4xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_100px_rgba(212,175,55,0.45)] border border-[#D4AF37]/60 my-auto">
+            <div className="leather-canvas-blue text-white rounded-3xl max-w-4xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.5)] border-2 border-[#D4AF37] my-auto">
               
               {/* Botón de Cierre Superior Flotante Visibilidad Garantizada */}
               <button
                 onClick={() => setSelectedArticle(null)}
-                className="sticky top-0 float-right z-50 text-gray-300 hover:text-white bg-black/80 hover:bg-[#D4AF37] hover:text-black w-9 h-9 rounded-full border border-white/20 flex items-center justify-center font-bold transition-all shadow-lg"
+                className="sticky top-0 float-right z-50 text-gray-300 hover:text-white bg-black/90 hover:bg-[#D4AF37] hover:text-black w-9 h-9 rounded-full border border-white/30 flex items-center justify-center font-bold transition-all shadow-lg"
                 title="Cerrar Lectura"
               >
                 ✕
@@ -773,7 +796,7 @@ function NoticiasContent() {
                   {/* AUTOR CLICABLE CON ACCESO DIRECTO A LA HOJA DE VIDA / DOSSIER VERIFICADO */}
                   <button 
                     onClick={() => setSelectedAuthor(getAuthorProfile(selectedArticle.author))}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/40 hover:bg-[#D4AF37] hover:text-black transition-all group/author cursor-pointer text-left"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/40 hover:bg-[#D4AF37] hover:text-black transition-all group/author cursor-pointer text-left shadow-sm"
                     title="Ver Hoja de Vida e Información Profesional del Autor"
                   >
                     <User size={15} className="text-[#D4AF37] group-hover/author:text-black transition-colors" />
@@ -791,7 +814,10 @@ function NoticiasContent() {
               <div className="relative h-64 md:h-96 w-full rounded-2xl overflow-hidden bg-black/60 border border-white/15 shadow-2xl">
                 <img 
                   src={selectedArticle.image} 
-                  alt={selectedArticle.title} 
+                  alt={selectedArticle.title}
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=1200&q=85";
+                  }}
                   className="w-full h-full object-cover" 
                 />
               </div>
@@ -818,7 +844,7 @@ function NoticiasContent() {
                   href={selectedArticle.originalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto px-6 py-3 bg-[#D4AF37] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_25px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_25px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2 border border-white/30"
                 >
                   <span>Leer en Fuente Oficial ({selectedArticle.sourceName})</span>
                   <ExternalLink size={15} />
@@ -869,6 +895,9 @@ function NoticiasContent() {
                   <img 
                     src={selectedAuthor.avatar} 
                     alt={selectedAuthor.name}
+                    onError={(e) => {
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80";
+                    }}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute bottom-1 right-1 bg-black/80 p-1 rounded-full border border-[#D4AF37]">
@@ -957,7 +986,7 @@ function NoticiasContent() {
                 <Link
                   href={selectedAuthor.networkProfile}
                   onClick={() => setSelectedAuthor(null)}
-                  className="w-full sm:w-auto px-5 py-2.5 bg-[#D4AF37] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2 border border-white/30"
                 >
                   <Briefcase size={15} />
                   <span>Ver Perfil en Red de Servicios</span>
