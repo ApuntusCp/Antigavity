@@ -50,7 +50,7 @@ function EventMetricsGrid({ metrics }) {
   );
 }
 
-// COMPONENTE EXCLUSIVO PARA EL DIAGNÓSTICO EDITORIAL DE INTEGRIDAD (SIN MAPA MENTAL)
+// COMPONENTE EXCLUSIVO PARA EL DIAGNÓSTICO EDITORIAL DE INTEGRIDAD
 function EditorialIntegrityDiagnosis({ biasLevel, verdictText, isNeutral }) {
   if (!verdictText && !biasLevel) return null;
 
@@ -133,7 +133,7 @@ function AcademicAnalysisSection({ analysis, title }) {
         </p>
       </div>
 
-      {/* DIAGNÓSTICO EDITORIAL DE INTEGRIDAD (SIN MAPA MENTAL) */}
+      {/* DIAGNÓSTICO EDITORIAL DE INTEGRIDAD */}
       <EditorialIntegrityDiagnosis 
         biasLevel={analysis.biasLevel}
         verdictText={analysis.verdictText}
@@ -213,7 +213,7 @@ function MediaHeaderBadge({ sourceName, sourceDomain, logoUrl }) {
   );
 }
 
-// BARRA DE SESGO IDEOLÓGICO MATEMÁTICO CON ORIGEN EN CENTRO (0% PUNTO NEUTRO)
+// BARRA DE SESGO IDEOLÓGICO: VERDE (IZQUIERDA) -> AMARILLO DORADO (CENTRO NEUTRAL) -> NARANJA INTENSO (DERECHA)
 function PoliticalBiasBar({ biasDirection, deviationPercent, biasLabel }) {
   const dir = biasDirection || 'Centro';
   const percent = deviationPercent !== undefined ? deviationPercent : 0;
@@ -226,25 +226,33 @@ function PoliticalBiasBar({ biasDirection, deviationPercent, biasLabel }) {
   }
 
   let displayText = "0% Sesgo (Punto Cero Neutral)";
-  if (dir === 'Izquierda') displayText = `${percent}% Sesgo Izquierda`;
-  else if (dir === 'Derecha') displayText = `${percent}% Sesgo Derecha`;
+  let textColorClass = "text-[#D4AF37]"; // Amarillo Dorado por defecto en el Centro
+
+  if (dir === 'Izquierda') {
+    displayText = `${percent}% Sesgo Izquierda`;
+    textColorClass = "text-emerald-400"; // Verde
+  } else if (dir === 'Derecha') {
+    displayText = `${percent}% Sesgo Derecha`;
+    textColorClass = "text-orange-400"; // Naranja Intenso
+  }
 
   return (
-    <div className="w-full space-y-1 mt-3 pt-2.5 border-t border-white/15 font-mono text-[10px]">
+    <div className="w-full space-y-1.5 mt-3 pt-2.5 border-t border-white/15 font-mono text-[10px]">
       <div className="flex items-center justify-between text-gray-300">
-        <span className="flex items-center gap-1 font-semibold text-[#D4AF37] truncate">
+        <span className="flex items-center gap-1 font-semibold text-gray-200 truncate">
           <Scale size={12} className="text-[#D4AF37] shrink-0" />
           <span>Calculo desde el Centro:</span>
         </span>
-        <span className="text-[#D4AF37] font-bold shrink-0">{displayText}</span>
+        <span className={`font-black shrink-0 ${textColorClass}`}>{displayText}</span>
       </div>
 
-      <div className="relative w-full h-2 rounded-full bg-black/80 overflow-hidden border border-white/20">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#84cc16] via-slate-200 to-red-600 opacity-90"></div>
-        <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white/60 -translate-x-1/2 z-10"></div>
+      {/* BARRA TRICOLOR: VERDE (IZQ) -> AMARILLO DORADO (CENTRO) -> NARANJA INTENSO (DER) */}
+      <div className="relative w-full h-2.5 rounded-full bg-black/90 overflow-hidden border border-white/20 shadow-inner">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-[#D4AF37] to-orange-500 opacity-95"></div>
+        <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white -translate-x-1/2 z-10"></div>
         
         <div 
-          className="absolute top-0 bottom-0 w-3 bg-white border border-black shadow-[0_0_8px_rgba(255,255,255,1)] rounded-full -translate-x-1/2 transition-all duration-500 z-20"
+          className="absolute top-0 bottom-0 w-3.5 bg-white border-2 border-black shadow-[0_0_10px_rgba(255,255,255,1)] rounded-full -translate-x-1/2 transition-all duration-500 z-20"
           style={{ left: `${visualPos}%` }}
         ></div>
       </div>
@@ -820,7 +828,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN CON DATOS, MÉTRICAS, MARCO TEÓRICO, TESIS Y CONCLUSIÓN IMPARCIAL */}
+        {/* MODAL DE COMPARACIÓN CON NAVEGACIÓN Y GUÍA DE ESPECTRO RENOVADA TRICOLOR */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -868,9 +876,9 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              {/* GUÍA DEL ESPECTRO IDEOLÓGICO */}
+              {/* GUÍA DEL ESPECTRO IDEOLÓGICO TRICOLOR: VERDE (IZQ) -> AMARILLO DORADO (CENTRO) -> NARANJA INTENSO (DER) */}
               <div 
-                className="p-5 rounded-2xl border border-[#D4AF37]/40 space-y-3 shadow-2xl"
+                className="p-5 rounded-2xl border border-[#D4AF37]/40 space-y-3.5 shadow-2xl"
                 style={{
                   backgroundColor: 'rgba(0, 0, 0, 0.22)',
                   backdropFilter: 'blur(20px)',
@@ -878,47 +886,52 @@ function NoticiasContent() {
                 }}
               >
                 <span className="text-[10px] font-mono text-[#D4AF37] uppercase font-extrabold tracking-widest flex items-center gap-1.5">
-                  <CompassIcon size={14} /> GUÍA DEL ESPECTRO (DISTANCIA DESDE EL CENTRO 0% NEUTRAL):
+                  <CompassIcon size={14} /> GUÍA DEL ESPECTRO (MEDICIÓN DESDE EL CENTRO 0% NEUTRAL):
                 </span>
                 
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-[10px] font-mono text-center font-bold">
+                  {/* 1. IZQUIERDA (VERDE) */}
                   <div 
-                    className="p-2.5 rounded-xl border border-lime-500/60 text-lime-300 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(132, 204, 22, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                    className="p-3 rounded-xl border border-emerald-500/70 text-emerald-300 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(16, 185, 129, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
-                    <span className="w-2.5 h-2.5 bg-[#84cc16] rounded-full shadow-[0_0_8px_rgba(132,204,22,0.8)]"></span>
+                    <span className="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.9)]"></span>
                     <span>1. Izquierda (75% Sesgo Izq)</span>
                   </div>
 
+                  {/* 2. CENTRO-IZQUIERDA (VERDE CLARO) */}
                   <div 
-                    className="p-2.5 rounded-xl border border-lime-400/50 text-lime-200 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(100, 180, 20, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                    className="p-3 rounded-xl border border-emerald-400/50 text-emerald-200 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(52, 211, 153, 0.18)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
-                    <span className="w-2.5 h-2.5 bg-[#a3e635] rounded-full shadow-[0_0_8px_rgba(163,230,53,0.8)]"></span>
+                    <span className="w-3 h-3 bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.8)]"></span>
                     <span>2. Centro-Izquierda (30% Sesgo Izq)</span>
                   </div>
 
+                  {/* 3. CENTRO FACTUAL (AMARILLO DORADO) */}
                   <div 
-                    className="p-2.5 rounded-xl border border-slate-300/50 text-slate-100 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(100, 116, 139, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                    className="p-3 rounded-xl border border-[#D4AF37] text-[#D4AF37] flex flex-col items-center justify-center gap-1 shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+                    style={{ backgroundColor: 'rgba(212, 175, 55, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
-                    <span className="w-2.5 h-2.5 bg-slate-200 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"></span>
+                    <span className="w-3.5 h-3.5 bg-[#D4AF37] rounded-full shadow-[0_0_12px_rgba(212,175,55,1)]"></span>
                     <span>3. Centro Factual (0% Punto Cero)</span>
                   </div>
 
+                  {/* 4. CENTRO-DERECHA (NARANJA SUAVE) */}
                   <div 
-                    className="p-2.5 rounded-xl border border-red-400/50 text-red-200 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(180, 40, 40, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                    className="p-3 rounded-xl border border-orange-400/50 text-orange-200 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(251, 146, 60, 0.18)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
-                    <span className="w-2.5 h-2.5 bg-red-400 rounded-full shadow-[0_0_8px_rgba(248,113,113,0.8)]"></span>
+                    <span className="w-3 h-3 bg-orange-400 rounded-full shadow-[0_0_10px_rgba(251,146,60,0.8)]"></span>
                     <span>4. Centro-Derecha (32% Sesgo Der)</span>
                   </div>
 
+                  {/* 5. DERECHA (NARANJA INTENSO) */}
                   <div 
-                    className="p-2.5 rounded-xl border border-red-600/60 text-red-300 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(220, 38, 38, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                    className="p-3 rounded-xl border border-orange-600/70 text-orange-400 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(234, 88, 12, 0.25)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
-                    <span className="w-2.5 h-2.5 bg-red-600 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
+                    <span className="w-3 h-3 bg-orange-600 rounded-full shadow-[0_0_10px_rgba(234,88,12,0.9)]"></span>
                     <span>5. Derecha (80% Sesgo Der)</span>
                   </div>
                 </div>
