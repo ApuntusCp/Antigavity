@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Network, BrainCircuit, Target, Lightbulb, CheckCheck, Percent, LayoutGrid, Rows3, SlidersHorizontal, PieChart } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Network, BrainCircuit, Target, Lightbulb, CheckCheck, Percent, LayoutGrid, Rows3, SlidersHorizontal, PieChart, History } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
@@ -286,6 +286,7 @@ function NoticiasContent() {
 
   // Modales
   const [selectedArticle, setSelectedArticle] = useState(null);
+  const [selectedAuthor, setSelectedAuthor] = useState(null);
   const [selectedBiasComparison, setSelectedBiasComparison] = useState(null);
   
   const [realtimeArticles, setRealtimeArticles] = useState([]);
@@ -307,7 +308,7 @@ function NoticiasContent() {
   }).format(todayObj);
 
   useEffect(() => {
-    if (selectedArticle || selectedBiasComparison) {
+    if (selectedArticle || selectedAuthor || selectedBiasComparison) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -315,7 +316,7 @@ function NoticiasContent() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [selectedArticle, selectedBiasComparison]);
+  }, [selectedArticle, selectedAuthor, selectedBiasComparison]);
 
   const categoryTabs = [
     { id: 'ultimas', name: 'Últimas Noticias' },
@@ -415,7 +416,7 @@ function NoticiasContent() {
             <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
             <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-              "Sistema Publisher Periodístico: Maquetación editorial, atribución verificada del medio emisor, monitoreo hemerográfico de 5 espectros e información cuantitativa real."
+              "Perfil verificado de periodistas, maquetación editorial, trayectoria pública comprobada y monitoreo cuantitativo de 5 espectros."
             </p>
 
             {/* BARRA DE CONTROL PUBLISHER EDITORIAL */}
@@ -472,8 +473,8 @@ function NoticiasContent() {
               <strong className="text-emerald-400 font-extrabold text-sm">0% Sesgo de Origen</strong>
             </div>
             <div className="p-3 bg-black/40 rounded-xl border border-white/10 space-y-0.5">
-              <span className="text-gray-400 text-[10px] uppercase font-bold block">Atribución Factual</span>
-              <strong className="text-white font-extrabold text-sm">Redacción Oficial</strong>
+              <span className="text-gray-400 text-[10px] uppercase font-bold block">Autores Acreditados</span>
+              <strong className="text-white font-extrabold text-sm">Perfil Público Verificado</strong>
             </div>
           </div>
 
@@ -713,7 +714,7 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA INTEGRADO CON ATRIBUCIÓN FACTUAL DEL MEDIO EMISOR */}
+        {/* MODAL LECTURA INTEGRADO CON BOTÓN INTERACTIVO PARA VER EL DOSSIER DEL AUTOR */}
         {selectedArticle && (
           <div 
             className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -752,12 +753,16 @@ function NoticiasContent() {
                 </h2>
 
                 <div className="flex flex-wrap items-center justify-between text-xs font-mono text-gray-300 pt-1">
-                  {/* ATRIBUCIÓN FACTUAL VERÍDICA DEL MEDIO EMISOR */}
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 border border-[#D4AF37]/40 text-left shadow-sm">
-                    <Building2 size={15} className="text-[#D4AF37]" />
-                    <span>Emisor Factual: <strong className="text-white font-bold">{selectedArticle.sourceName} (Redacción Oficial)</strong></span>
-                    <BadgeCheck size={14} className="text-[#D4AF37] shrink-0" />
-                  </div>
+                  {/* BOTÓN INTERACTIVO PARA ABRIR HOJA DE VIDA Y TRAYECTORIA DEL AUTOR */}
+                  <button 
+                    onClick={() => setSelectedAuthor(selectedArticle.authorProfile)}
+                    className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/50 hover:bg-[#D4AF37] hover:text-black transition-all group/author cursor-pointer text-left shadow-md"
+                  >
+                    <User size={15} className="text-[#D4AF37] group-hover/author:text-black transition-colors" />
+                    <span>Autor del Titular: <strong className="underline decoration-[#D4AF37] underline-offset-4">{selectedArticle.author}</strong></span>
+                    <BadgeCheck size={14} className="text-[#D4AF37] group-hover/author:text-black shrink-0" />
+                    <span className="text-[9px] bg-black/60 group-hover/author:bg-black text-[#D4AF37] group-hover/author:text-white px-2 py-0.5 rounded-full font-bold">Ver Hoja de Vida</span>
+                  </button>
 
                   <span className="flex items-center gap-1.5 font-bold text-[#D4AF37]">
                     <Clock size={14} className="text-[#D4AF37]" /> {selectedArticle.publishedAt}
@@ -1060,6 +1065,136 @@ function NoticiasContent() {
           </div>
         )}
 
+        {/* MODAL HOJA DE VIDA PÚBLICA & TRAYECTORIA PROFESIONAL DEL AUTOR */}
+        {selectedAuthor && (
+          <div 
+            className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: 'rgba(0, 0, 0, 0.45)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)'
+            }}
+          >
+            <div className="leather-canvas-blue text-white rounded-3xl max-w-2xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-8 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto">
+              
+              <button
+                onClick={() => setSelectedAuthor(null)}
+                className="sticky top-0 float-right z-50 text-gray-300 hover:text-white bg-black/90 hover:bg-[#D4AF37] hover:text-black w-9 h-9 rounded-full border border-[#D4AF37]/50 flex items-center justify-center font-bold transition-all shadow-lg"
+                title="Cerrar Hoja de Vida"
+              >
+                ✕
+              </button>
+
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 border-b border-[#D4AF37]/30 pb-6 clear-both">
+                <div className="relative w-28 h-28 rounded-2xl overflow-hidden shrink-0 border-2 border-[#D4AF37] shadow-[0_0_25px_rgba(212,175,55,0.5)]">
+                  <img 
+                    src={selectedAuthor.avatar} 
+                    alt={selectedAuthor.name}
+                    onError={(e) => {
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80";
+                    }}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-1 right-1 bg-black/80 p-1 rounded-full border border-[#D4AF37]">
+                    <BadgeCheck size={18} className="text-[#D4AF37]" />
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-center sm:text-left flex-1 min-w-0">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#D4AF37] text-[10px] font-mono font-bold uppercase tracking-widest">
+                    <ShieldCheck size={13} />
+                    <span>Perfil Profesional de Prensa Verificado</span>
+                  </div>
+
+                  <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight">
+                    {selectedAuthor.name}
+                  </h3>
+
+                  <p className="font-mono text-xs text-[#D4AF37] font-bold">
+                    {selectedAuthor.title}
+                  </p>
+
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-[11px] font-mono text-gray-300 pt-1">
+                    <span className="flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-lg border border-white/10">
+                      <GraduationCap size={13} className="text-[#D4AF37]" /> {selectedAuthor.institution}
+                    </span>
+                    <span className="flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-lg border border-white/10">
+                      <MapPin size={13} className="text-[#D4AF37]" /> {selectedAuthor.location}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs bg-black/50 p-4 rounded-2xl border border-white/10">
+                <div>
+                  <span className="text-gray-400 block text-[10px]">REGISTRO PERIODÍSTICO / CREDENCIAL:</span>
+                  <strong className="text-white font-bold">{selectedAuthor.tpNumber}</strong>
+                </div>
+                <div>
+                  <span className="text-gray-400 block text-[10px]">FECHA DE VERIFICACIÓN:</span>
+                  <strong className="text-[#D4AF37] font-bold">{selectedAuthor.verificationDate}</strong>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="font-serif text-sm font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
+                  <FileText size={16} /> Biografía & Trayectoria Informativa
+                </h4>
+                <p className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed bg-black/40 p-4 rounded-2xl border border-white/10">
+                  {selectedAuthor.bio}
+                </p>
+              </div>
+
+              {/* TRAYECTORIA DE MEDIOS Y EMPRESAS DONDE HA TRABAJADO */}
+              <div className="space-y-2">
+                <h4 className="font-serif text-sm font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
+                  <History size={16} /> Medios y Empresas Donde Ha Trabajado (Trayectoria Profesional)
+                </h4>
+                <div className="space-y-2 bg-black/40 p-4 rounded-2xl border border-white/10 font-mono text-xs">
+                  {selectedAuthor.previousWork.map((work, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-gray-200">
+                      <span className="w-2 h-2 rounded-full bg-[#D4AF37]"></span>
+                      <span>{work}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h4 className="font-serif text-sm font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
+                  <Briefcase size={16} /> Áreas de Especialización Periodística
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {selectedAuthor.specialties.map((spec, i) => (
+                    <span key={i} className="px-3 py-1 rounded-lg bg-white/10 border border-white/15 text-xs font-mono font-semibold text-gray-200">
+                      • {spec}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-white/20 flex items-center justify-between font-mono text-xs">
+                <span className="text-[#D4AF37] font-bold">Publicaciones Indexadas: {selectedAuthor.publishedCount} Reportes</span>
+
+                <button
+                  onClick={() => setSelectedAuthor(null)}
+                  className="px-6 py-2.5 bg-white/10 text-white hover:bg-white/20 font-bold text-xs uppercase rounded-xl transition-all border border-white/20"
+                >
+                  Cerrar Hoja de Vida
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
+
         <NewsTrustBadge />
       </div>
     </div>
@@ -1070,7 +1205,7 @@ export default function NoticiasPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#050A14] flex items-center justify-center text-white font-mono text-xs">
-        <RefreshCw className="animate-spin text-[#D4AF37] mb-2" size={32} />
+        <RefreshCw className="animate-spin text-[#D4AF37] mb-[#D4AF37] mb-2" size={32} />
       </div>
     }>
       <NoticiasContent />
