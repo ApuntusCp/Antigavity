@@ -3,11 +3,11 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
-// COMPONENTE DE INSIGNIA ELEGANTE COMPACTA DEL MEDIO DE COMUNICACIÓN
+// COMPONENTE DE INSIGNIA ELEGANTE COMPACTA DEL MEDIO
 function MediaHeaderBadge({ sourceName, sourceDomain, logoUrl, brandColor }) {
   const cleanDomain = React.useMemo(() => {
     if (sourceDomain && !sourceDomain.includes('google')) return sourceDomain;
@@ -20,6 +20,7 @@ function MediaHeaderBadge({ sourceName, sourceDomain, logoUrl, brandColor }) {
     if (name.includes('heraldo')) return 'elheraldo.co';
     if (name.includes('red+')) return 'redmas.com.co';
     if (name.includes('oncuba')) return 'oncubanews.com';
+    if (name.includes('caracol')) return 'caracol.com.co';
     if (name.includes('bbc')) return 'bbc.com';
     if (name.includes('ny') || name.includes('york')) return 'nytimes.com';
     return 'prensa.org';
@@ -58,7 +59,7 @@ function MediaHeaderBadge({ sourceName, sourceDomain, logoUrl, brandColor }) {
   );
 }
 
-// BARRAS DE SESGO IDEOLÓGICO DISCRETAS
+// COMPONENTE DE BARRA DE SESGO IDEOLÓGICO MATEMÁTICO
 function PoliticalBiasBar({ biasScore, biasLabel }) {
   const score = Math.max(5, Math.min(95, biasScore || 50));
 
@@ -67,7 +68,7 @@ function PoliticalBiasBar({ biasScore, biasLabel }) {
       <div className="flex items-center justify-between text-gray-300">
         <span className="flex items-center gap-1 font-semibold text-[#D4AF37] truncate">
           <Scale size={12} className="text-[#D4AF37] shrink-0" />
-          <span>Sesgo:</span>
+          <span>Sesgo Ideológico:</span>
           <strong className="text-white font-bold truncate">{biasLabel || 'Neutral / Centro'}</strong>
         </span>
         <span className="text-gray-400 font-bold shrink-0">{score}%</span>
@@ -84,7 +85,7 @@ function PoliticalBiasBar({ biasScore, biasLabel }) {
   );
 }
 
-// BASE DE DATOS DE AUTORES
+// BASE DE DATOS DE AUTORES Y PERIODISTAS
 const AUTHORS_DATABASE = {
   "Lina María Orozco": {
     name: "Lina María Orozco",
@@ -185,6 +186,7 @@ function NoticiasContent() {
   // Modales
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [selectedAuthor, setSelectedAuthor] = useState(null);
+  const [selectedBiasComparison, setSelectedBiasComparison] = useState(null);
   
   const [realtimeArticles, setRealtimeArticles] = useState([]);
   const [loadingFeed, setLoadingFeed] = useState(true);
@@ -205,7 +207,7 @@ function NoticiasContent() {
   }).format(todayObj);
 
   useEffect(() => {
-    if (selectedArticle || selectedAuthor) {
+    if (selectedArticle || selectedAuthor || selectedBiasComparison) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -213,7 +215,7 @@ function NoticiasContent() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [selectedArticle, selectedAuthor]);
+  }, [selectedArticle, selectedAuthor, selectedBiasComparison]);
 
   const categoryTabs = [
     { id: 'ultimas', name: 'Últimas Noticias' },
@@ -234,62 +236,71 @@ function NoticiasContent() {
     { id: 'cl', name: 'Chile' }
   ];
 
-  // Backup sin duplicados
   const fallbackGlobalNews = [
     {
       id: 'top-1',
-      topicKey: "de-la-espriella-embajadas",
-      title: "De la Espriella anunció el cierre de 14 embajadas y 15 consulados en su administración",
-      summary: "Anuncio oficial sobre la reestructuración diplomática y cierre de sedes consulares en el exterior.",
-      fullContent: `El anuncio oficial sobre el cierre de 14 embajadas y 15 consulados forma parte de la propuesta de reestructuración diplomática de la administración entrante.\n\nLa medida busca optimizar recursos del presupuesto público y reorganizar la presencia consular en el exterior.`,
-      author: "LaRepública.co Redacción",
-      sourceName: "La República",
-      sourceDomain: "larepublica.co",
-      sourceLogoUrl: "https://icons.duckduckgo.com/ip3/larepublica.co.ico",
-      originalUrl: "https://www.larepublica.co/economia/de-la-espriella-anuncio-el-cierre-de-14-embajadas-y-15-consulados-en-su-administracion-4444159",
+      topicKey: "contralor-general",
+      title: "Petrismo y uribismo podrían unirse para elegir contralor general",
+      summary: "Conversaciones institucionales en el Senado buscan consenso entre bancadas sobre la terna para el órgano de control fiscal.",
+      fullContent: `Noticia publicada originalmente por Caracol Radio el 27 de julio de 2026.\n\nEsta nota forma parte de la cobertura hemisférica indexada en tiempo real por el sistema de monitoreo periodístico de GranColinos Journal.`,
+      author: "Caracol Radio Redacción",
+      sourceName: "Caracol Radio",
+      sourceDomain: "caracol.com.co",
+      sourceLogoUrl: "https://icons.duckduckgo.com/ip3/caracol.com.co.ico",
+      originalUrl: "https://caracol.com.co/2026/07/27/politica/",
       category: "Colombia",
       country: "co",
-      publishedAt: `${dateDayMonthYear} a las 01:11 p. m.`,
-      biasScore: 50,
-      biasLabel: "Imparcial / Verificado"
-    },
-    {
-      id: 'top-2',
-      topicKey: "dolar-casas-cambio-semana",
-      title: "Dólar en casas de cambio: así está fluctuando la moneda este 27 de julio en Colombia",
-      summary: "Análisis de divisas y cotización del dólar en el mercado cambiario colombiano.",
-      fullContent: `Monitoreo de tasa de cambio y fluctuación de la divisa estadounidense en casas de cambio y sistema financiero nacional.`,
-      author: "Revista Semana Redacción",
-      sourceName: "Revista Semana",
-      sourceDomain: "semana.com",
-      sourceLogoUrl: "https://icons.duckduckgo.com/ip3/semana.com.ico",
-      originalUrl: "https://www.semana.com/economia/macroeconomia/",
-      category: "Economía",
-      country: "co",
-      publishedAt: `${dateDayMonthYear} a las 12:54 p. m.`,
-      biasScore: 60,
-      biasLabel: "Centro-Derecha"
-    },
-    {
-      id: 'top-3',
-      topicKey: "hambruna-onu-latinus",
-      title: "Hambruna afecta a 645 millones de personas pese a que se redujo 4.8% en Latinoamérica: ONU",
-      summary: "Informe global de las Naciones Unidas sobre seguridad alimentaria e interrupción de la tendencia al alza del hambre.",
-      fullContent: `El informe global sobre seguridad alimentaria publicado por las Naciones Unidas señala que 645 millones de personas sufren hambruna en el mundo.\n\nPese al contexto global, la región latinoamericana registró una reducción del 4.8% en los índices de desnutrición.`,
-      author: "LatinUS Redacción",
-      sourceName: "LatinUS",
-      sourceDomain: "latinus.us",
-      sourceLogoUrl: "https://icons.duckduckgo.com/ip3/latinus.us.ico",
-      originalUrl: "https://latinus.us/mundo/2026/7/27/hambruna-afecta-a-645-millones-de-personas-pese-a-que-se-redujo-48-en-latinoamerica-onu-179966.html",
-      category: "Mundo",
-      country: "us",
-      publishedAt: `${dateDayMonthYear} a las 12:00 p. m.`,
-      biasScore: 50,
-      biasLabel: "Imparcial / Verificado"
+      publishedAt: `${dateDayMonthYear} a las 12:57 p. m.`,
+      biasScore: 48,
+      biasLabel: "Centro Factual / Informativo",
+      headlineIntention: "Titular informativo centrado en las negociaciones entre bancadas en el Congreso.",
+      neutralSynthesis: "Síntesis Imparcial GranColinos: Diversas bancadas del Senado adelantan conversaciones formales para la definición de la terna del Contralor General.",
+      otherCoverages: [
+        {
+          sourceName: "Caracol Radio",
+          sourceDomain: "caracol.com.co",
+          logoUrl: "https://icons.duckduckgo.com/ip3/caracol.com.co.ico",
+          headline: "Petrismo y uribismo podrían unirse para elegir contralor general",
+          biasScore: 48,
+          biasLabel: "Centro Factual / Informativo",
+          intention: "Enfoque descriptivo institucional sobre conversaciones de bancada en el Senado.",
+          originalUrl: "https://caracol.com.co/"
+        },
+        {
+          sourceName: "Revista Semana",
+          sourceDomain: "semana.com",
+          logoUrl: "https://icons.duckduckgo.com/ip3/semana.com.ico",
+          headline: "La polémica movida política entre petrismo y uribismo que sacude la elección de Contralor",
+          biasScore: 78,
+          biasLabel: "Derecha / Enfoque Crítico de Oposición",
+          intention: "Titular framed con adjetivo 'polémica movida' para acentuar el cuestionamiento público de la alianza.",
+          originalUrl: "https://www.semana.com/"
+        },
+        {
+          sourceName: "El Espectador",
+          sourceDomain: "elespectador.com",
+          logoUrl: "https://icons.duckduckgo.com/ip3/elespectador.com.ico",
+          headline: "Congreso busca acuerdo entre bancadas para definir la terna al Contralor General",
+          biasScore: 42,
+          biasLabel: "Centro-Izquierda Constitucional",
+          intention: "Enfoque procesal normativo centrado en la terna parlamentaria y el reglamento del Congreso.",
+          originalUrl: "https://www.elespectador.com/"
+        },
+        {
+          sourceName: "La Silla Vacía",
+          sourceDomain: "lasillavacia.com",
+          logoUrl: "https://icons.duckduckgo.com/ip3/lasillavacia.com.ico",
+          headline: "Detrás del pacto no escrito por el control fiscal: Así se reparten los votos en el Senado",
+          biasScore: 45,
+          biasLabel: "Centro / Investigación de Poder",
+          intention: "Análisis cualitativo enfocado en los acuerdos no escritos y pesos de poder en bancadas.",
+          originalUrl: "https://www.lasillavacia.com/"
+        }
+      ]
     }
   ];
 
-  // CONSUMIR FEED CON DEDUPLICACIÓN
+  // CONSUMIR FEED CON DEDUPLICACIÓN Y ANÁLISIS DE SESGOS
   useEffect(() => {
     setLoadingFeed(true);
     let isMounted = true;
@@ -301,16 +312,7 @@ function NoticiasContent() {
           const data = await response.json();
           if (data.success && data.articles && data.articles.length > 0) {
             if (isMounted) {
-              // Deduplicar títulos
-              const seen = new Set();
-              const cleanList = data.articles.filter(item => {
-                const norm = item.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 30);
-                if (seen.has(norm)) return false;
-                seen.add(norm);
-                return true;
-              });
-
-              setRealtimeArticles(cleanList);
+              setRealtimeArticles(data.articles);
               setLoadingFeed(false);
               return;
             }
@@ -366,7 +368,7 @@ function NoticiasContent() {
           
           <div className="text-center space-y-4 border-b border-[#D4AF37]/35 pb-6">
             <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-gray-300 uppercase tracking-widest px-2 gap-2">
-              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Monitoreo de Prensa en Tiempo Real</span>
+              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Monitoreo & Comparador Multimedios de Sesgos</span>
               
               <div className="inline-flex items-center gap-2 font-extrabold text-[#D4AF37] px-4 py-1.5 bg-black/80 rounded-full border border-[#D4AF37]/50 shadow-md">
                 <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
@@ -383,13 +385,13 @@ function NoticiasContent() {
             <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
             <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-              "Cobertura hemerográfica imparcial, organizada sin duplicaciones y verificado por fuentes matriz oficiales."
+              "Compara la misma noticia entre diferentes medios de comunicación: Analiza sus titulares, intención comunicativa y cálculo de sesgo ideológico sin tomar bandos."
             </p>
 
             <div className="pt-1 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-950/80 border border-emerald-500/50 rounded-full text-[10px] font-mono text-emerald-300 font-bold">
                 <Radio size={12} className="animate-pulse text-emerald-400" />
-                <span>FEED ESTRUCTURADO SIN REPETICIONES ({dateDayMonthYear})</span>
+                <span>ALGORITMO MATEMÁTICO & SOCIAL DE INTENCIÓN DE TITULARES ACTIVO ({dateDayMonthYear})</span>
               </div>
             </div>
           </div>
@@ -414,11 +416,11 @@ function NoticiasContent() {
             })}
           </nav>
 
-          {/* ESTRUCTURA ORGANIZADA 1: LEAD HERO + TRENDING LIST */}
+          {/* ESTRUCTURA HERO CON BOTÓN DE COMPARACIÓN DE TITULARES */}
           <div className="pt-2 space-y-5">
             <div className="flex items-center justify-between border-b border-white/15 pb-2">
               <h2 className="font-serif text-xl md:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
-                <span className="w-3.5 h-3.5 bg-[#D4AF37] rounded-full inline-block shadow-[0_0_15px_rgba(212,175,55,0.9)] animate-pulse"></span> NOTICIA DE PORTADA & TENDENCIAS
+                <span className="w-3.5 h-3.5 bg-[#D4AF37] rounded-full inline-block shadow-[0_0_15px_rgba(212,175,55,0.9)] animate-pulse"></span> NOTICIA DE PORTADA & ANÁLISIS DE TITULARES
               </h2>
               <span className="text-xs font-mono text-[#D4AF37] font-bold">Fecha: {dateDayMonthYear}</span>
             </div>
@@ -428,8 +430,7 @@ function NoticiasContent() {
               {/* Noticia de Portada Principal (7 Cols) */}
               {topNewsPrimary && (
                 <div 
-                  onClick={() => setSelectedArticle(topNewsPrimary)}
-                  className="lg:col-span-7 leather-card-dark rounded-3xl p-6 shadow-2xl transition-all duration-500 group cursor-pointer space-y-4 hover:border-[#D4AF37] hover:-translate-y-1 flex flex-col justify-between"
+                  className="lg:col-span-7 leather-card-dark rounded-3xl p-6 shadow-2xl transition-all duration-500 space-y-4 hover:border-[#D4AF37] flex flex-col justify-between"
                 >
                   <div className="space-y-3">
                     <MediaHeaderBadge 
@@ -439,13 +440,13 @@ function NoticiasContent() {
                       brandColor={topNewsPrimary.sourceBrandColor}
                     />
 
-                    <div className="space-y-2">
+                    <div className="space-y-2 cursor-pointer" onClick={() => setSelectedArticle(topNewsPrimary)}>
                       <div className="flex items-center justify-between text-[11px] font-mono text-[#D4AF37]">
                         <span className="font-bold">{topNewsPrimary.category}</span>
                         <span>{topNewsPrimary.publishedAt}</span>
                       </div>
 
-                      <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight group-hover:text-[#D4AF37] transition-colors">
+                      <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight hover:text-[#D4AF37] transition-colors">
                         {topNewsPrimary.title}
                       </h3>
                       
@@ -455,7 +456,18 @@ function NoticiasContent() {
                     </div>
                   </div>
 
-                  <PoliticalBiasBar biasScore={topNewsPrimary.biasScore} biasLabel={topNewsPrimary.biasLabel} />
+                  <div className="space-y-3">
+                    <PoliticalBiasBar biasScore={topNewsPrimary.biasScore} biasLabel={topNewsPrimary.biasLabel} />
+
+                    {/* BOTÓN REVOLUCIONARIO DE COMPARACIÓN DE TITULARES & SESGOS */}
+                    <button
+                      onClick={() => setSelectedBiasComparison(topNewsPrimary)}
+                      className="w-full py-2.5 px-4 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-xs uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2 border border-white/30"
+                    >
+                      <GitCompare size={15} />
+                      <span>Comparar Esta Noticia en Otros Medios ({topNewsPrimary.otherCoverages?.length || 4} Fuentes)</span>
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -464,29 +476,38 @@ function NoticiasContent() {
                 {topNewsSecondary.map((secItem, idx) => (
                   <div
                     key={secItem.id}
-                    onClick={() => setSelectedArticle(secItem)}
-                    className="leather-card-dark rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all cursor-pointer group flex items-start gap-3.5 hover:border-[#D4AF37]"
+                    className="leather-card-dark rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all space-y-2 hover:border-[#D4AF37]"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-white p-1 border border-[#D4AF37]/50 shrink-0 flex items-center justify-center shadow-sm">
-                      <img 
-                        src={secItem.sourceLogoUrl || `https://icons.duckduckgo.com/ip3/${secItem.sourceDomain || 'prensa.org'}.ico`}
-                        alt={secItem.sourceName}
-                        onError={(e) => {
-                          e.currentTarget.src = `https://unavatar.io/${secItem.sourceDomain || 'prensa.org'}`;
-                        }}
-                        className="w-full h-full object-contain"
-                      />
+                    <div className="flex items-start gap-3.5 cursor-pointer" onClick={() => setSelectedArticle(secItem)}>
+                      <div className="w-8 h-8 rounded-lg bg-white p-1 border border-[#D4AF37]/50 shrink-0 flex items-center justify-center shadow-sm">
+                        <img 
+                          src={secItem.sourceLogoUrl || `https://icons.duckduckgo.com/ip3/${secItem.sourceDomain || 'prensa.org'}.ico`}
+                          alt={secItem.sourceName}
+                          onError={(e) => {
+                            e.currentTarget.src = `https://unavatar.io/${secItem.sourceDomain || 'prensa.org'}`;
+                          }}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <div className="flex items-center justify-between text-[10px] font-mono">
+                          <span className="text-[#D4AF37] font-bold">#{idx + 1} • {secItem.sourceName}</span>
+                          <span className="text-gray-400">{secItem.publishedAt}</span>
+                        </div>
+                        <h4 className="font-serif text-xs md:text-sm font-bold text-white line-clamp-2 leading-snug hover:text-[#D4AF37] transition-colors">
+                          {secItem.title}
+                        </h4>
+                      </div>
                     </div>
 
-                    <div className="space-y-1 flex-1 min-w-0">
-                      <div className="flex items-center justify-between text-[10px] font-mono">
-                        <span className="text-[#D4AF37] font-bold">#{idx + 1} • {secItem.sourceName}</span>
-                        <span className="text-gray-400">{secItem.publishedAt}</span>
-                      </div>
-                      <h4 className="font-serif text-xs md:text-sm font-bold text-white line-clamp-2 leading-snug group-hover:text-[#D4AF37] transition-colors">
-                        {secItem.title}
-                      </h4>
-                    </div>
+                    <button
+                      onClick={() => setSelectedBiasComparison(secItem)}
+                      className="w-full py-1.5 px-3 bg-white/10 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black font-mono font-bold text-[10px] uppercase tracking-wider rounded-lg transition-all border border-[#D4AF37]/30 flex items-center justify-center gap-1.5"
+                    >
+                      <Scale size={12} />
+                      <span>Comparar Titulares & Sesgos</span>
+                    </button>
                   </div>
                 ))}
               </div>
@@ -494,15 +515,15 @@ function NoticiasContent() {
             </div>
           </div>
 
-          {/* ESTRUCTURA ORGANIZADA 2: MAIN GRID LIMPIO (SIN REPETICIONES) */}
+          {/* MAIN GRID CON BOTONES DE COMPARACIÓN */}
           <div className="pt-8 border-t border-white/15 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             <div className="lg:col-span-8 space-y-6">
               <div className="border-b border-white/15 pb-2 flex items-center justify-between">
                 <h3 className="font-serif text-xl font-bold text-white uppercase tracking-wider">
-                  COBERTURA DE PRENSA GENERAL
+                  COBERTURA HEGUEMÓNICA & MULTIMEDIOS
                 </h3>
-                <span className="text-xs font-mono text-gray-400">{filteredNews.length} Noticias Indexadas</span>
+                <span className="text-xs font-mono text-gray-400">{filteredNews.length} Coberturas</span>
               </div>
 
               {/* Grid 2 Columnas Estructurado */}
@@ -510,10 +531,9 @@ function NoticiasContent() {
                 {filteredNews.slice(1, visibleNewsCount + 1).map(feedItem => (
                   <div
                     key={`feed-grid-${feedItem.id}`}
-                    onClick={() => setSelectedArticle(feedItem)}
-                    className="leather-card-dark rounded-2xl p-5 shadow-lg transition-all cursor-pointer group space-y-3 hover:border-[#D4AF37] flex flex-col justify-between"
+                    className="leather-card-dark rounded-2xl p-5 shadow-lg transition-all space-y-3 hover:border-[#D4AF37] flex flex-col justify-between"
                   >
-                    <div className="space-y-2">
+                    <div className="space-y-2 cursor-pointer" onClick={() => setSelectedArticle(feedItem)}>
                       <MediaHeaderBadge 
                         sourceName={feedItem.sourceName}
                         sourceDomain={feedItem.sourceDomain}
@@ -521,7 +541,7 @@ function NoticiasContent() {
                         brandColor={feedItem.sourceBrandColor}
                       />
 
-                      <h4 className="font-serif text-base font-bold text-white line-clamp-2 group-hover:text-[#D4AF37] transition-colors leading-snug">
+                      <h4 className="font-serif text-base font-bold text-white line-clamp-2 hover:text-[#D4AF37] transition-colors leading-snug">
                         {feedItem.title}
                       </h4>
                       
@@ -531,11 +551,16 @@ function NoticiasContent() {
                     </div>
 
                     <div className="space-y-2 pt-2">
-                      <div className="flex items-center justify-between text-[10px] font-mono text-gray-400">
-                        <span>{feedItem.category}</span>
-                        <span className="text-[#D4AF37] font-semibold">{feedItem.publishedAt}</span>
-                      </div>
                       <PoliticalBiasBar biasScore={feedItem.biasScore} biasLabel={feedItem.biasLabel} />
+
+                      {/* BOTÓN DE COMPARACIÓN POR NOTICIA */}
+                      <button
+                        onClick={() => setSelectedBiasComparison(feedItem)}
+                        className="w-full py-2 px-3 bg-black/70 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-[#D4AF37]/40 flex items-center justify-center gap-1.5 shadow-sm"
+                      >
+                        <GitCompare size={13} />
+                        <span>Comparar Noticia en Otros Medios</span>
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -574,15 +599,14 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              {/* Lista Numerada Ordenada */}
               <div className="space-y-3 font-mono text-xs">
                 {countrySidebarNews.slice(0, 8).map((sideItem, idx) => {
                   const domain = sideItem.sourceDomain || 'prensa.org';
                   return (
                     <div
                       key={`sidebar-${sideItem.id}`}
-                      onClick={() => setSelectedArticle(sideItem)}
                       className="p-3 hover:bg-white/10 rounded-xl transition-colors cursor-pointer border-b border-white/10 space-y-1 group flex items-center gap-3"
+                      onClick={() => setSelectedArticle(sideItem)}
                     >
                       <div className="w-7 h-7 rounded-lg bg-white p-1 border border-[#D4AF37]/40 shrink-0 flex items-center justify-center">
                         <img 
@@ -613,7 +637,7 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA */}
+        {/* MODAL LECTURA CON BOTÓN DE COMPARACIÓN DE TITULARES & SESGOS */}
         {selectedArticle && (
           <div 
             className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -668,6 +692,30 @@ function NoticiasContent() {
                 </div>
               </div>
 
+              {/* BOTÓN DESTACADO DENTRO DEL MODAL PARA VER OTRAS COBERTURAS Y TITULARES */}
+              <div className="bg-black/60 p-4 rounded-2xl border border-[#D4AF37]/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase flex items-center gap-1.5">
+                    <Scale size={14} /> Análisis de Enfoque Periodístico
+                  </span>
+                  <p className="text-xs font-sans text-gray-300">
+                    ¿Quieres ver cómo titularon esta misma noticia otros medios de comunicación?
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    const art = selectedArticle;
+                    setSelectedArticle(null);
+                    setSelectedBiasComparison(art);
+                  }}
+                  className="px-5 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] shrink-0 flex items-center gap-2"
+                >
+                  <GitCompare size={15} />
+                  <span>Comparar Titulares & Sesgos</span>
+                </button>
+              </div>
+
               <div className="space-y-4 font-sans text-sm text-gray-200 leading-relaxed font-light">
                 <div className="bg-black/60 p-5 rounded-2xl border-l-4 border-[#D4AF37] shadow-inner space-y-2">
                   <span className="text-[10px] font-mono text-[#D4AF37] uppercase font-bold tracking-widest block">
@@ -701,6 +749,151 @@ function NoticiasContent() {
                   Cerrar Lectura
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL INTERACTIVO DE COMPARACIÓN MULTIMEDIOS DE TITULARES & SESGOS IDEOLÓGICOS */}
+        {selectedBiasComparison && (
+          <div 
+            className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: 'rgba(0, 0, 0, 0.45)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)'
+            }}
+          >
+            <div className="leather-canvas-blue text-white rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto">
+              
+              <button
+                onClick={() => setSelectedBiasComparison(null)}
+                className="sticky top-0 float-right z-50 text-gray-300 hover:text-white bg-black/90 hover:bg-[#D4AF37] hover:text-black w-9 h-9 rounded-full border border-[#D4AF37]/50 flex items-center justify-center font-bold transition-all shadow-lg"
+                title="Cerrar Comparador"
+              >
+                ✕
+              </button>
+
+              <div className="space-y-3 border-b border-[#D4AF37]/30 pb-6 clear-both text-center sm:text-left">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#D4AF37] text-[10px] font-mono font-bold uppercase tracking-widest">
+                  <GitCompare size={14} />
+                  <span>Comparador Algorítmico & Social de Titulares</span>
+                </div>
+
+                <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight">
+                  Misma Noticia — Diferentes Titulares y Sesgos Editorial
+                </h3>
+                
+                <p className="text-xs font-mono text-gray-300">
+                  Noticia Matriz: <strong className="text-[#D4AF37]">{selectedBiasComparison.title}</strong>
+                </p>
+              </div>
+
+              {/* SÍNTESIS IMPARCIAL GRANCOLINOS (SIN TOMAR BANDOS) */}
+              <div className="bg-black/80 p-5 rounded-2xl border-l-4 border-emerald-400 space-y-2 shadow-inner">
+                <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest flex items-center gap-1.5">
+                  <ShieldCheck size={14} /> SÍNTESIS IMPARCIAL FACTUAL (GRANCOLINOS JOURNAL):
+                </span>
+                <p className="font-sans text-xs md:text-sm text-gray-100 leading-relaxed font-light">
+                  {selectedBiasComparison.neutralSynthesis || `Síntesis Factual: Diversas salas de redacción cubren el acontecimiento aplicando distintos encuadres del lenguaje. El gráfico inferior desglosa el cálculo de sesgo de cada titular.`}
+                </p>
+              </div>
+
+              {/* COMPARATIVA DE MEDIOS SIDE-BY-SIDE */}
+              <div className="space-y-4 pt-2">
+                <h4 className="font-serif text-base font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
+                  <Scale size={16} /> Coberturas Registradas por Medios de Comunicación
+                </h4>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {(selectedBiasComparison.otherCoverages || [
+                    {
+                      sourceName: selectedBiasComparison.sourceName,
+                      sourceDomain: selectedBiasComparison.sourceDomain,
+                      logoUrl: selectedBiasComparison.sourceLogoUrl,
+                      headline: selectedBiasComparison.title,
+                      biasScore: selectedBiasComparison.biasScore,
+                      biasLabel: selectedBiasComparison.biasLabel,
+                      intention: selectedBiasComparison.headlineIntention || "Enfoque periodístico oficial del medio.",
+                      originalUrl: selectedBiasComparison.originalUrl
+                    }
+                  ]).map((coverage, idx) => (
+                    <div 
+                      key={idx}
+                      className="leather-card-dark rounded-2xl p-5 border border-white/15 space-y-3 shadow-lg hover:border-[#D4AF37] transition-all flex flex-col justify-between"
+                    >
+                      <div className="space-y-2.5">
+                        {/* Cabecera del Medio */}
+                        <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-md bg-white p-0.5 border border-[#D4AF37]/50 flex items-center justify-center shrink-0">
+                              <img 
+                                src={coverage.logoUrl || `https://icons.duckduckgo.com/ip3/${coverage.sourceDomain || 'prensa.org'}.ico`}
+                                alt={coverage.sourceName}
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                            <span className="font-serif text-sm font-bold text-white">{coverage.sourceName}</span>
+                          </div>
+                          <span className="text-[9px] font-mono text-[#D4AF37] bg-black/60 px-2 py-0.5 rounded-full border border-[#D4AF37]/30">
+                            {coverage.sourceDomain}
+                          </span>
+                        </div>
+
+                        {/* Titular utilizado por el Medio */}
+                        <div>
+                          <span className="text-[9px] font-mono text-gray-400 uppercase block">Titular del Medio:</span>
+                          <h5 className="font-serif text-sm font-bold text-white leading-snug mt-0.5">
+                            "{coverage.headline}"
+                          </h5>
+                        </div>
+
+                        {/* Análisis de Intención Comunicativa */}
+                        <div className="bg-black/50 p-3 rounded-xl border border-white/10 space-y-1 text-xs">
+                          <span className="text-[9px] font-mono text-[#D4AF37] font-bold uppercase block">
+                            Análisis de Intención & Encuadre:
+                          </span>
+                          <p className="font-sans text-[11px] text-gray-200 leading-relaxed italic">
+                            "{coverage.intention}"
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Barra de Sesgo Ideológico */}
+                      <div className="space-y-2 pt-2">
+                        <PoliticalBiasBar biasScore={coverage.biasScore} biasLabel={coverage.biasLabel} />
+
+                        <a
+                          href={coverage.originalUrl || selectedBiasComparison.originalUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full py-2 px-3 bg-white/10 hover:bg-[#D4AF37] text-white hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-white/20 flex items-center justify-center gap-1.5"
+                        >
+                          <span>Leer Noticia en {coverage.sourceName}</span>
+                          <ExternalLink size={12} />
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Botón de Cierre */}
+              <div className="pt-4 border-t border-white/20 text-right">
+                <button
+                  onClick={() => setSelectedBiasComparison(null)}
+                  className="px-6 py-2.5 bg-white/10 text-white hover:bg-white/20 font-mono font-bold text-xs uppercase rounded-xl transition-all border border-white/20"
+                >
+                  Cerrar Comparador
+                </button>
+              </div>
+
             </div>
           </div>
         )}
