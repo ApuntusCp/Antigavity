@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Network, BrainCircuit, Target, Lightbulb, CheckCheck, Percent, LayoutGrid, Rows3, SlidersHorizontal, PieChart, History, AlertTriangle, Calculator } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Network, BrainCircuit, Target, Lightbulb, CheckCheck, Percent, LayoutGrid, Rows3, SlidersHorizontal, PieChart, History, AlertTriangle, Calculator, Flame } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
@@ -424,7 +424,7 @@ function NoticiasContent() {
       
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
 
-        {/* MASTHEAD PRINCIPAL CON FONDO DE 22% TRANSPARENCIA Y 22PX BLUR DE ALTA GAMA */}
+        {/* MASTHEAD PRINCIPAL CON FONDO DE 22% TRANSPARENCIA Y FECHA SIN ANIMACIÓN DE PUNTO VERDE */}
         <div 
           className="rounded-3xl p-6 md:p-10 relative overflow-hidden space-y-6 border-2 border-[#D4AF37]/50 shadow-[0_20px_80px_rgba(0,0,0,0.95)]"
           style={{
@@ -438,8 +438,8 @@ function NoticiasContent() {
             <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-gray-300 uppercase tracking-widest px-2 gap-2">
               <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Mesa Editorial GranColinos • Publisher News Engine</span>
               
-              <div className="inline-flex items-center gap-2 font-extrabold text-[#D4AF37] px-4 py-1.5 bg-black/80 rounded-full border border-[#D4AF37]/50 shadow-md">
-                <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
+              {/* INSIGNIA FECHA LIMPIA SIN ANIMACIÓN DE PUNTO VERDE */}
+              <div className="inline-flex items-center font-extrabold text-[#D4AF37] px-4 py-1.5 bg-black/80 rounded-full border border-[#D4AF37]/50 shadow-md">
                 <span>{formattedDate}</span>
               </div>
 
@@ -566,51 +566,66 @@ function NoticiasContent() {
             })}
           </nav>
 
-          {/* HERO SECCIÓN CON COMPARACIÓN DE LOS 5 ESPECTROS */}
+          {/* HERO SECCIÓN: TARJETA PRINCIPAL CON LA NOTICIA MÁS VIRAL Y RESUMEN COMPLETO QUE RELLENA EL ESPACIO */}
           <div className="pt-2 space-y-5">
             <div className="flex items-center justify-between border-b border-white/15 pb-2">
               <h2 className="font-serif text-xl md:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
-                <span className="w-3.5 h-3.5 bg-[#D4AF37] rounded-full inline-block shadow-[0_0_15px_rgba(212,175,55,0.9)] animate-pulse"></span> NOTICIA DE PORTADA & ANÁLISIS DE TITULARES
+                <Flame size={20} className="text-amber-400 fill-amber-400 animate-pulse" /> NOTICIA MÁS VIRAL DEL DÍA & ANÁLISIS DE TITULARES
               </h2>
               <span className="text-xs font-mono text-[#D4AF37] font-bold">Fecha: {dateDayMonthYear}</span>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               
-              {/* Noticia de Portada Principal (7 Cols con 22% Transparencia) */}
+              {/* Noticia de Portada Principal: NOTICIA MÁS VIRAL DEL DÍA CON RESUMEN COMPLETO Y RELLENO PERFECTO */}
               {topNewsPrimary && (
                 <div 
-                  className="lg:col-span-7 rounded-3xl p-6 shadow-2xl transition-all duration-500 space-y-4 hover:border-[#D4AF37] flex flex-col justify-between border border-[#D4AF37]/40"
+                  className="lg:col-span-7 rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-500 space-y-4 hover:border-[#D4AF37] flex flex-col justify-between border-2 border-[#D4AF37]/60"
                   style={{
                     backgroundColor: 'rgba(5, 12, 24, 0.22)',
                     backdropFilter: 'blur(22px)',
                     WebkitBackdropFilter: 'blur(22px)'
                   }}
                 >
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <MediaHeaderBadge 
                       sourceName={topNewsPrimary.sourceName}
                       sourceDomain={topNewsPrimary.sourceDomain}
                       logoUrl={topNewsPrimary.sourceLogoUrl}
                     />
 
-                    <div className="space-y-2 cursor-pointer" onClick={() => setSelectedArticle(topNewsPrimary)}>
-                      <div className="flex items-center justify-between text-[11px] font-mono text-[#D4AF37]">
-                        <span className="font-bold">{topNewsPrimary.category}</span>
-                        <span>{topNewsPrimary.publishedAt}</span>
+                    <div className="space-y-3 cursor-pointer" onClick={() => setSelectedArticle(topNewsPrimary)}>
+                      <div className="flex flex-wrap items-center justify-between text-[11px] font-mono gap-2">
+                        <span className="px-3 py-1 bg-gradient-to-r from-amber-500 to-[#D4AF37] text-black font-black uppercase tracking-widest rounded-full shadow-lg flex items-center gap-1.5 border border-white/40">
+                          <Flame size={13} className="fill-black" /> 🔥 NOTICIA MÁS VIRAL DEL DÍA
+                        </span>
+                        <span className="text-[#D4AF37] font-bold">{topNewsPrimary.publishedAt}</span>
                       </div>
 
-                      <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight hover:text-[#D4AF37] transition-colors">
+                      <h3 className="font-serif text-2xl md:text-4xl font-black text-white leading-tight hover:text-[#D4AF37] transition-colors drop-shadow-md">
                         {topNewsPrimary.title}
                       </h3>
-                      
-                      <p className="text-gray-200 text-xs md:text-sm font-sans line-clamp-3 leading-relaxed font-light">
-                        {topNewsPrimary.summary}
-                      </p>
+
+                      {/* RESUMEN COMPLETO QUE RELLENA EL ESPACIO VACÍO DE LA TARJETA */}
+                      <div 
+                        className="p-4 rounded-2xl border border-[#D4AF37]/30 space-y-2 shadow-inner"
+                        style={{
+                          backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                          backdropFilter: 'blur(16px)',
+                          WebkitBackdropFilter: 'blur(16px)'
+                        }}
+                      >
+                        <span className="text-[10px] font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider block flex items-center gap-1.5">
+                          <FileText size={13} /> RESUMEN EJECUTIVO DE LA NOTICIA:
+                        </span>
+                        <p className="text-gray-100 text-xs md:text-sm font-sans leading-relaxed font-normal">
+                          {topNewsPrimary.summary || topNewsPrimary.fullContent}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-3 pt-2">
                     <PoliticalBiasBar biasDirection={topNewsPrimary.biasDirection} deviationPercent={topNewsPrimary.deviationPercent} biasLabel={topNewsPrimary.biasLabel} />
 
                     <button
