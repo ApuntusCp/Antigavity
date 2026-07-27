@@ -7,7 +7,7 @@ import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserChec
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
-// COMPONENTE DE DATOS Y MÉTRICAS BALANCEADO (TRANSPARENCIA DEL 69% CON BLUR Y TIPOGRAFÍA INTELIGENTE)
+// COMPONENTE DE DATOS Y MÉTRICAS EN TEMA VERDE BOTÁNICO Y DORADO LUXURY (69% TRANSPARENCIA + BLUR)
 function EventMetricsGrid({ metrics }) {
   if (!metrics || metrics.length === 0) return null;
 
@@ -17,16 +17,16 @@ function EventMetricsGrid({ metrics }) {
     <div 
       className="p-5 sm:p-6 rounded-2xl border border-[#D4AF37]/50 space-y-4 shadow-2xl"
       style={{
-        backgroundColor: 'rgba(5, 12, 24, 0.69)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)'
+        backgroundColor: 'rgba(10, 24, 12, 0.65)',
+        backdropFilter: 'blur(22px)',
+        WebkitBackdropFilter: 'blur(22px)'
       }}
     >
-      <div className="flex items-center justify-between border-b border-white/15 pb-3">
+      <div className="flex items-center justify-between border-b border-[#D4AF37]/30 pb-3">
         <span className="text-xs sm:text-sm font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider flex items-center gap-2">
           <BarChart3 size={18} className="text-[#D4AF37]" /> DATOS & MÉTRICAS CUANTITATIVAS DEL EVENTO
         </span>
-        <span className="text-[10px] sm:text-xs font-mono text-[#D4AF37] font-extrabold px-3 py-1 rounded-full bg-black/70 border border-[#D4AF37]/50 shadow-md">
+        <span className="text-[10px] sm:text-xs font-mono text-[#D4AF37] font-extrabold px-3 py-1 rounded-full bg-[#051006]/80 border border-[#D4AF37]/60 shadow-md">
           Métricas Verificadas
         </span>
       </div>
@@ -37,12 +37,12 @@ function EventMetricsGrid({ metrics }) {
             key={idx}
             className="p-4 rounded-xl border border-[#D4AF37]/35 space-y-1.5 shadow-md flex flex-col justify-between hover:border-[#D4AF37] transition-all"
             style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.45)',
+              backgroundColor: 'rgba(4, 14, 5, 0.55)',
               backdropFilter: 'blur(16px)',
               WebkitBackdropFilter: 'blur(16px)'
             }}
           >
-            <span className="text-[10px] font-mono text-gray-400 font-extrabold uppercase tracking-wider block">
+            <span className="text-[10px] font-mono text-emerald-300/80 font-extrabold uppercase tracking-wider block">
               {item.label}:
             </span>
             <strong className="font-serif text-sm sm:text-base font-black text-white block leading-snug">
@@ -55,7 +55,7 @@ function EventMetricsGrid({ metrics }) {
   );
 }
 
-// COMPONENTE PARA EL DESGLOSE MATEMÁTICO DEL CÁLCULO DE SESGO (69% TRANSPARENCIA + TIPOGRAFÍA INTELIGENTE)
+// COMPONENTE PARA EL DESGLOSE MATEMÁTICO DEL CÁLCULO DE SESGO (TEMA VERDE BOTÁNICO + DORADO LUXURY)
 function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
   if (!formulaBreakdown) return null;
 
@@ -63,12 +63,12 @@ function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
     <div 
       className="p-5 sm:p-6 rounded-2xl border border-[#D4AF37]/50 space-y-4 shadow-2xl"
       style={{
-        backgroundColor: 'rgba(5, 12, 24, 0.69)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)'
+        backgroundColor: 'rgba(10, 24, 12, 0.65)',
+        backdropFilter: 'blur(22px)',
+        WebkitBackdropFilter: 'blur(22px)'
       }}
     >
-      <div className="flex flex-wrap items-center justify-between border-b border-white/15 pb-3 gap-2">
+      <div className="flex flex-wrap items-center justify-between border-b border-[#D4AF37]/30 pb-3 gap-2">
         <span className="text-xs sm:text-sm font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider flex items-center gap-2">
           <Calculator size={18} className="text-[#D4AF37]" /> FÓRMULA MATEMÁTICA Y DESGLOSE EXACTO DEL CÁLCULO
         </span>
@@ -81,17 +81,17 @@ function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
         </span>
       </div>
 
-      {/* DESGLOSE FACTORIAL CUANTITATIVO CON TIPOGRAFÍA AJUSTADA */}
+      {/* DESGLOSE FACTORIAL CUANTITATIVO CON TIPOGRAFÍA Y TONALIDAD VERDE BOTÁNICA */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 font-mono">
         <div 
-          className="p-4 rounded-xl border border-white/20 space-y-1.5"
+          className="p-4 rounded-xl border border-[#D4AF37]/30 space-y-1.5"
           style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.45)',
+            backgroundColor: 'rgba(4, 14, 5, 0.55)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)'
           }}
         >
-          <span className="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider block">
+          <span className="text-emerald-300/80 text-[10px] sm:text-xs font-extrabold uppercase tracking-wider block">
             1. PONDERACIÓN LÍNEA EDITORIAL DEL MEDIO (F1):
           </span>
           <strong className="text-white text-xs sm:text-sm block font-serif font-bold leading-relaxed">
@@ -100,14 +100,14 @@ function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
         </div>
 
         <div 
-          className="p-4 rounded-xl border border-white/20 space-y-1.5"
+          className="p-4 rounded-xl border border-[#D4AF37]/30 space-y-1.5"
           style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.45)',
+            backgroundColor: 'rgba(4, 14, 5, 0.55)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)'
           }}
         >
-          <span className="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider block">
+          <span className="text-emerald-300/80 text-[10px] sm:text-xs font-extrabold uppercase tracking-wider block">
             2. CARGA LÉXICA & ADJETIVACIÓN EN EL TITULAR (F2):
           </span>
           <strong className="text-white text-xs sm:text-sm block font-serif font-bold leading-relaxed">
@@ -120,7 +120,7 @@ function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
       <div 
         className="p-4 rounded-xl border border-[#D4AF37] text-center font-mono text-xs sm:text-sm font-bold text-white shadow-xl"
         style={{
-          backgroundColor: 'rgba(5, 12, 24, 0.69)',
+          backgroundColor: 'rgba(10, 24, 12, 0.75)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)'
         }}
@@ -136,7 +136,7 @@ function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
   );
 }
 
-// COMPONENTE DE ANÁLISIS ACADÉMICO UNIFICADO (TRANSPARENCIA DEL 69% Y TIPOGRAFÍA INTELIGENTE)
+// COMPONENTE DE ANÁLISIS ACADÉMICO UNIFICADO (BOTÁNICO Y DORADO LUXURY)
 function AcademicAnalysisSection({ analysis, title }) {
   if (!analysis) return null;
 
@@ -152,11 +152,11 @@ function AcademicAnalysisSection({ analysis, title }) {
 
       {/* 2. MARCO TEÓRICO */}
       <div 
-        className="p-5 sm:p-6 rounded-2xl border border-[#D4AF37]/45 space-y-2.5 shadow-2xl"
+        className="p-5 sm:p-6 rounded-2xl border border-[#D4AF37]/50 space-y-2.5 shadow-2xl"
         style={{
-          backgroundColor: 'rgba(5, 12, 24, 0.69)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)'
+          backgroundColor: 'rgba(10, 24, 12, 0.65)',
+          backdropFilter: 'blur(22px)',
+          WebkitBackdropFilter: 'blur(22px)'
         }}
       >
         <span className="text-xs sm:text-sm font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider flex items-center gap-2">
@@ -169,11 +169,11 @@ function AcademicAnalysisSection({ analysis, title }) {
 
       {/* 3. TESIS CENTRAL */}
       <div 
-        className="p-5 sm:p-6 rounded-2xl border-l-4 border-[#D4AF37] border border-[#D4AF37]/40 space-y-2.5 shadow-2xl"
+        className="p-5 sm:p-6 rounded-2xl border-l-4 border-[#D4AF37] border border-[#D4AF37]/50 space-y-2.5 shadow-2xl"
         style={{
-          backgroundColor: 'rgba(5, 12, 24, 0.69)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)'
+          backgroundColor: 'rgba(10, 24, 12, 0.75)',
+          backdropFilter: 'blur(22px)',
+          WebkitBackdropFilter: 'blur(22px)'
         }}
       >
         <span className="text-xs sm:text-sm font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider flex items-center gap-2">
@@ -188,9 +188,9 @@ function AcademicAnalysisSection({ analysis, title }) {
       <div 
         className="p-5 sm:p-6 rounded-2xl border-l-4 border-emerald-400 border border-emerald-500/50 space-y-2.5 shadow-2xl"
         style={{
-          backgroundColor: 'rgba(5, 12, 24, 0.69)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)'
+          backgroundColor: 'rgba(6, 28, 12, 0.7)',
+          backdropFilter: 'blur(22px)',
+          WebkitBackdropFilter: 'blur(22px)'
         }}
       >
         <span className="text-xs sm:text-sm font-mono text-emerald-400 font-extrabold uppercase tracking-wider flex items-center gap-2">
@@ -808,7 +808,7 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA INTEGRADO CON TRANSPARENCIA DEL 69% Y TIPOGRAFÍA INTELIGENTE */}
+        {/* MODAL LECTURA CON TEMA VERDE BOTÁNICO Y DORADO LUXURY (69% TRANSPARENCIA + BLUR) */}
         {selectedArticle && (
           <div 
             className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -820,29 +820,30 @@ function NoticiasContent() {
               bottom: 0,
               width: '100vw',
               height: '100vh',
-              backgroundColor: 'rgba(0, 0, 0, 0.65)',
+              backgroundColor: 'rgba(3, 10, 4, 0.75)',
               backdropFilter: 'blur(28px)',
               WebkitBackdropFilter: 'blur(28px)'
             }}
           >
             <div 
-              className="text-white rounded-3xl max-w-5xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto"
+              className="text-white rounded-3xl max-w-5xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.4)] border-2 border-[#D4AF37]/80 my-auto"
               style={{
-                backgroundColor: 'rgba(5, 12, 24, 0.69)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)'
+                backgroundColor: 'rgba(7, 20, 10, 0.75)',
+                backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.25) 0%, transparent 70%), radial-gradient(circle at 50% 100%, rgba(45, 80, 22, 0.4) 0%, transparent 70%)',
+                backdropFilter: 'blur(26px)',
+                WebkitBackdropFilter: 'blur(26px)'
               }}
             >
               
               <button
                 onClick={() => setSelectedArticle(null)}
-                className="sticky top-0 float-right z-50 text-gray-300 hover:text-white bg-black/90 hover:bg-[#D4AF37] hover:text-black w-9 h-9 rounded-full border border-white/40 flex items-center justify-center font-bold transition-all shadow-lg"
+                className="sticky top-0 float-right z-50 text-[#D4AF37] hover:text-black bg-[#051006] hover:bg-[#D4AF37] w-9 h-9 rounded-full border-2 border-[#D4AF37]/70 flex items-center justify-center font-black transition-all shadow-xl"
                 title="Cerrar Lectura"
               >
                 ✕
               </button>
 
-              <div className="space-y-3 border-b border-[#D4AF37]/35 pb-5 clear-both">
+              <div className="space-y-3 border-b border-[#D4AF37]/40 pb-5 clear-both">
                 <MediaHeaderBadge 
                   sourceName={selectedArticle.sourceName}
                   sourceDomain={selectedArticle.sourceDomain}
@@ -873,7 +874,7 @@ function NoticiasContent() {
               <div 
                 className="p-4 sm:p-5 rounded-2xl border border-[#D4AF37]/60 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl"
                 style={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                  backgroundColor: 'rgba(4, 14, 5, 0.55)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)'
                 }}
@@ -913,9 +914,9 @@ function NoticiasContent() {
                 </h4>
 
                 <div 
-                  className="space-y-4 text-sm sm:text-base leading-relaxed text-gray-100 font-sans p-6 rounded-2xl border border-white/15 shadow-inner"
+                  className="space-y-4 text-sm sm:text-base leading-relaxed text-gray-100 font-sans p-6 rounded-2xl border border-[#D4AF37]/35 shadow-inner"
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                    backgroundColor: 'rgba(4, 14, 5, 0.55)',
                     backdropFilter: 'blur(16px)',
                     WebkitBackdropFilter: 'blur(16px)'
                   }}
@@ -946,7 +947,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN DE 5 ESPECTROS CON TRANSPARENCIA DEL 69% Y BLUR ELEGANTE */}
+        {/* MODAL DE COMPARACIÓN DE 5 ESPECTROS EN TEMA BOTÁNICO DE CUERO VERDE Y DORADO LUXURY */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -958,30 +959,31 @@ function NoticiasContent() {
               bottom: 0,
               width: '100vw',
               height: '100vh',
-              backgroundColor: 'rgba(0, 0, 0, 0.65)',
+              backgroundColor: 'rgba(3, 10, 4, 0.75)',
               backdropFilter: 'blur(28px)',
               WebkitBackdropFilter: 'blur(28px)'
             }}
           >
             <div 
-              className="text-white rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto"
+              className="text-white rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_130px_rgba(212,175,55,0.45)] border-2 border-[#D4AF37]/80 my-auto"
               style={{
-                backgroundColor: 'rgba(5, 12, 24, 0.69)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)'
+                backgroundColor: 'rgba(7, 20, 10, 0.75)',
+                backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.28) 0%, transparent 70%), radial-gradient(circle at 50% 100%, rgba(45, 80, 22, 0.45) 0%, transparent 70%)',
+                backdropFilter: 'blur(26px)',
+                WebkitBackdropFilter: 'blur(26px)'
               }}
             >
               
               <button
                 onClick={() => setSelectedBiasComparison(null)}
-                className="sticky top-0 float-right z-50 text-gray-300 hover:text-white bg-black/90 hover:bg-[#D4AF37] hover:text-black w-9 h-9 rounded-full border border-[#D4AF37]/50 flex items-center justify-center font-bold transition-all shadow-lg"
+                className="sticky top-0 float-right z-50 text-[#D4AF37] hover:text-black bg-[#051006] hover:bg-[#D4AF37] w-9 h-9 rounded-full border-2 border-[#D4AF37]/70 flex items-center justify-center font-black transition-all shadow-xl"
                 title="Cerrar Comparador"
               >
                 ✕
               </button>
 
-              {/* ENCABEZADO Y TIPOGRAFÍA INTELIGENTE AJUSTADA */}
-              <div className="space-y-4 border-b border-[#D4AF37]/35 pb-6 clear-both text-center sm:text-left">
+              {/* ENCABEZADO CON DEGRADADO DORADO Y FONDO VERDE ORGANICO */}
+              <div className="space-y-4 border-b border-[#D4AF37]/40 pb-6 clear-both text-center sm:text-left">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4AF37]/25 border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-mono font-extrabold uppercase tracking-widest shadow-md">
                   <Scale size={16} />
                   <span>ANÁLISIS DE SESGOS + MÉTRICAS + DIAGNÓSTICO EDITORIAL + CONCLUSIÓN NEUTRA</span>
@@ -991,7 +993,7 @@ function NoticiasContent() {
                   Misma Noticia — Cobertura en los 5 Espectros Políticos
                 </h3>
                 
-                {/* EVENTO MATRIZ DESTACADO CON TIPOGRAFÍA DE ALTO IMPACTO */}
+                {/* EVENTO MATRIZ DESTACADO */}
                 <div className="pt-2">
                   <span className="text-xs font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider block">
                     EVENTO MATRIZ / NOTICIA EVALUADA:
@@ -1002,7 +1004,7 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              {/* DATOS Y MÉTRICAS CUANTITATIVAS (69% TRANSPARENCIA) */}
+              {/* DATOS Y MÉTRICAS CUANTITATIVAS */}
               <EventMetricsGrid metrics={selectedBiasComparison.metricsData} />
 
               {/* INTEGRACIÓN DEL ANÁLISIS ACADÉMICO Y FÓRMULA MATEMÁTICA UNIFICADA */}
@@ -1011,8 +1013,8 @@ function NoticiasContent() {
                 title={selectedBiasComparison.title}
               />
 
-              {/* TARJETAS DE LOS 5 ESPECTROS CON TRANSPARENCIA DEL 69% Y TIPOGRAFÍA AJUSTADA */}
-              <div className="space-y-4 pt-4 border-t border-white/15">
+              {/* TARJETAS DE LOS 5 ESPECTROS EN VERDE BOTÁNICO Y DORADO */}
+              <div className="space-y-4 pt-4 border-t border-[#D4AF37]/35">
                 <h4 className="font-serif text-lg font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
                   <Scale size={18} /> COBERTURAS Y DESVIACIONES DESDE EL CENTRO (0%)
                 </h4>
@@ -1021,15 +1023,15 @@ function NoticiasContent() {
                   {(selectedBiasComparison.otherCoverages || []).map((coverage, idx) => (
                     <div 
                       key={idx}
-                      className="rounded-2xl p-5 border border-[#D4AF37]/45 space-y-3.5 shadow-2xl hover:border-[#D4AF37] hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all flex flex-col justify-between group/card"
+                      className="rounded-2xl p-5 border border-[#D4AF37]/50 space-y-3.5 shadow-2xl hover:border-[#D4AF37] hover:shadow-[0_0_30px_rgba(212,175,55,0.45)] transition-all flex flex-col justify-between group/card"
                       style={{
-                        backgroundColor: 'rgba(5, 12, 24, 0.69)',
+                        backgroundColor: 'rgba(10, 24, 12, 0.75)',
                         backdropFilter: 'blur(20px)',
                         WebkitBackdropFilter: 'blur(20px)'
                       }}
                     >
                       <div className="space-y-3">
-                        <div className="flex items-center justify-between border-b border-white/15 pb-2.5">
+                        <div className="flex items-center justify-between border-b border-[#D4AF37]/25 pb-2.5">
                           <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-md bg-white p-0.5 border border-[#D4AF37]/50 flex items-center justify-center shrink-0 shadow-sm">
                               <img 
@@ -1041,22 +1043,22 @@ function NoticiasContent() {
                             <span className="font-serif text-sm font-bold text-white group-hover/card:text-[#D4AF37] transition-colors">{coverage.sourceName}</span>
                           </div>
                           
-                          <span className="text-[9px] font-mono text-[#D4AF37] bg-black/80 px-2.5 py-1 rounded-full border border-[#D4AF37]/50 font-extrabold">
+                          <span className="text-[9px] font-mono text-[#D4AF37] bg-[#051006] px-2.5 py-1 rounded-full border border-[#D4AF37]/60 font-extrabold">
                             {coverage.spectrumBadge || `Espectro ${idx + 1}`}
                           </span>
                         </div>
 
                         <div>
-                          <span className="text-[9px] font-mono text-gray-400 font-bold uppercase block tracking-wider">TITULAR DEL MEDIO:</span>
+                          <span className="text-[9px] font-mono text-emerald-300/80 font-bold uppercase block tracking-wider">TITULAR DEL MEDIO:</span>
                           <h5 className="font-serif text-sm sm:text-base font-bold text-white leading-snug mt-1 group-hover/card:text-[#D4AF37] transition-colors">
                             "{coverage.headline}"
                           </h5>
                         </div>
 
                         <div 
-                          className="p-3.5 rounded-xl border border-white/15 space-y-1 text-xs shadow-inner"
+                          className="p-3.5 rounded-xl border border-[#D4AF37]/30 space-y-1 text-xs shadow-inner"
                           style={{
-                            backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                            backgroundColor: 'rgba(4, 14, 5, 0.55)',
                             backdropFilter: 'blur(16px)',
                             WebkitBackdropFilter: 'blur(16px)'
                           }}
@@ -1102,7 +1104,7 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-white/20 text-right">
+              <div className="pt-4 border-t border-[#D4AF37]/35 text-right">
                 <button
                   onClick={() => setSelectedBiasComparison(null)}
                   className="px-8 py-3 bg-white/10 text-white hover:bg-white/20 font-mono font-bold text-xs uppercase rounded-xl transition-all border border-white/20"
@@ -1115,7 +1117,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL HOJA DE VIDA DEL AUTOR (69% TRANSPARENCIA + BLUR) */}
+        {/* MODAL HOJA DE VIDA DEL AUTOR (BOTÁNICO Y DORADO LUXURY) */}
         {selectedAuthor && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -1127,23 +1129,24 @@ function NoticiasContent() {
               bottom: 0,
               width: '100vw',
               height: '100vh',
-              backgroundColor: 'rgba(0, 0, 0, 0.65)',
+              backgroundColor: 'rgba(3, 10, 4, 0.75)',
               backdropFilter: 'blur(28px)',
               WebkitBackdropFilter: 'blur(28px)'
             }}
           >
             <div 
-              className="text-white rounded-3xl max-w-2xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-8 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto"
+              className="text-white rounded-3xl max-w-2xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-8 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.4)] border-2 border-[#D4AF37]/80 my-auto"
               style={{
-                backgroundColor: 'rgba(5, 12, 24, 0.69)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)'
+                backgroundColor: 'rgba(7, 20, 10, 0.75)',
+                backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.28) 0%, transparent 70%), radial-gradient(circle at 50% 100%, rgba(45, 80, 22, 0.45) 0%, transparent 70%)',
+                backdropFilter: 'blur(26px)',
+                WebkitBackdropFilter: 'blur(26px)'
               }}
             >
               
               <button
                 onClick={() => setSelectedAuthor(null)}
-                className="sticky top-0 float-right z-50 text-gray-300 hover:text-white bg-black/90 hover:bg-[#D4AF37] hover:text-black w-9 h-9 rounded-full border border-[#D4AF37]/50 flex items-center justify-center font-bold transition-all shadow-lg"
+                className="sticky top-0 float-right z-50 text-[#D4AF37] hover:text-black bg-[#051006] hover:bg-[#D4AF37] w-9 h-9 rounded-full border-2 border-[#D4AF37]/70 flex items-center justify-center font-black transition-all shadow-xl"
                 title="Cerrar Hoja de Vida"
               >
                 ✕
@@ -1196,7 +1199,7 @@ function NoticiasContent() {
                 <p 
                   className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed p-4 rounded-2xl border border-white/10"
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                    backgroundColor: 'rgba(4, 14, 5, 0.55)',
                     backdropFilter: 'blur(16px)',
                     WebkitBackdropFilter: 'blur(16px)'
                   }}
@@ -1212,7 +1215,7 @@ function NoticiasContent() {
                 <div 
                   className="space-y-2 p-4 rounded-2xl border border-white/10 font-mono text-xs"
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+                    backgroundColor: 'rgba(4, 14, 5, 0.55)',
                     backdropFilter: 'blur(16px)',
                     WebkitBackdropFilter: 'blur(16px)'
                   }}
