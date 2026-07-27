@@ -11,7 +11,6 @@ import NewsTrustBadge from '../../components/NewsTrustBadge';
 function EventMetricsGrid({ metrics }) {
   if (!metrics || metrics.length === 0) return null;
 
-  // Tomar exactamente 4 métricas para evitar tarjetas huérfanas en 2da fila
   const displayMetrics = metrics.slice(0, 4);
 
   return (
@@ -71,10 +70,7 @@ function AcademicMindMap({ nodes, title }) {
         <span className="text-[10px] font-mono text-gray-300">Desglose Imparcial</span>
       </div>
 
-      {/* DIAGRAMA CONCEPTUAL CON CONEXIONES */}
       <div className="space-y-4 pt-1">
-        
-        {/* NÚCLEO CENTRAL */}
         <div className="p-4 rounded-xl bg-gradient-to-r from-[#D4AF37]/25 via-black/80 to-[#D4AF37]/25 border-2 border-[#D4AF37] text-center space-y-1 shadow-[0_0_25px_rgba(212,175,55,0.4)]">
           <span className="text-[10px] font-mono text-[#D4AF37] font-black uppercase tracking-widest block">
             [ NÚCLEO CENTRAL DE LA NOTICIA ]
@@ -84,10 +80,8 @@ function AcademicMindMap({ nodes, title }) {
           </h5>
         </div>
 
-        {/* LÍNEAS DE CONEXIÓN HACIA RAMAS */}
         <div className="w-0.5 h-6 bg-[#D4AF37] mx-auto opacity-70"></div>
 
-        {/* RAMAS CONCEPTUALES */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {nodes.slice(1).map((node, idx) => {
             let borderColor = "border-lime-500/70";
@@ -135,7 +129,6 @@ function AcademicAnalysisSection({ analysis, title }) {
   return (
     <div className="space-y-5 pt-2">
       
-      {/* MARCO TEÓRICO */}
       <div 
         className="p-5 rounded-2xl border border-[#D4AF37]/35 space-y-2 shadow-2xl"
         style={{
@@ -152,7 +145,6 @@ function AcademicAnalysisSection({ analysis, title }) {
         </p>
       </div>
 
-      {/* TESIS CENTRAL FACTUAL */}
       <div 
         className="p-5 rounded-2xl border-l-4 border-[#D4AF37] border border-[#D4AF37]/35 space-y-2 shadow-2xl"
         style={{
@@ -169,10 +161,8 @@ function AcademicAnalysisSection({ analysis, title }) {
         </p>
       </div>
 
-      {/* MAPA MENTAL CONCEPTUAL */}
       <AcademicMindMap nodes={analysis.mapaMentalNodes} title={title} />
 
-      {/* CONCLUSIÓN IMPARCIAL DEFINITIVA */}
       <div 
         className="p-5 rounded-2xl border-l-4 border-emerald-400 border border-emerald-500/40 space-y-2 shadow-2xl"
         style={{
@@ -285,96 +275,6 @@ function PoliticalBiasBar({ biasDirection, deviationPercent, biasLabel }) {
   );
 }
 
-// BASE DE DATOS DE AUTORES
-const AUTHORS_DATABASE = {
-  "Lina María Orozco": {
-    name: "Lina María Orozco",
-    title: "Periodista Senior de Investigación Agroregional & Asuntos Comunitarios",
-    tpNumber: "REG-CNP-CO-78412",
-    institution: "Universidad del Norte • Barranquilla",
-    verified: true,
-    verificationDate: "15 de Enero, 2025",
-    location: "Montería / Córdoba, Colombia",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
-    bio: "Periodista colombiana con más de 12 años de trayectoria cubriendo transformación agrícola, desarrollo de unidades productivas rurales y fortalecimiento de asociaciones indígenas y campesinas en Córdoba y la región Caribe.",
-    specialties: ["Desarrollo Agrario", "Comunidades Indígenas del Caribe", "Seguridad Alimentaria", "Mecanización Agrícola"],
-    awards: ["Premio Regional de Periodismo Simón Bolívar (Reportaje Rural 2022)", "Mención de Honor en Crónica Comunitaria CNP 2023"],
-    publishedCount: 148,
-    contactEmail: "lina.orozco@elheraldo.co",
-    networkProfile: "/servicios?autor=lina-orozco"
-  },
-  "Leila Guerriero": {
-    name: "Leila Guerriero",
-    title: "Cronista, Escritora y Editora Periodística Internacional",
-    tpNumber: "PRESS-ID-INT-ARG-312",
-    institution: "Universidad de Buenos Aires / Fundación Gabo",
-    verified: true,
-    verificationDate: "10 de Noviembre, 2024",
-    location: "Buenos Aires, Argentina / Cobertura Panamericana",
-    avatar: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80",
-    bio: "Reconocida periodista y escritora argentina. Autora de obras fundamentales de periodismo narrativo como 'Los suicidas del fin del mundo', 'Plano americano' y 'La llamada'. Maestra de la Fundación Gabo y referente imprescindible del periodismo hispanoamericano.",
-    specialties: ["Periodismo Narrativo de Investigación", "Perfiles Profundos", "Ética y Tecnologías en Medios", "Crónica Hispanoamericana"],
-    awards: ["Premio Fundación Nuevo Periodismo Iberoamericano (FNPI 2010)", "Premio Periodístico Manuel Vázquez Montalbán (2019)", "Premio Konex de Platino"],
-    publishedCount: 312,
-    contactEmail: "leila.guerriero@fundaciongabo.org",
-    networkProfile: "/servicios?autor=leila-guerriero"
-  },
-  "Camilo Sotomayor": {
-    name: "Camilo Sotomayor",
-    title: "Analista Político & Investigador de Tecnologías y Medios",
-    tpNumber: "REG-CPB-2024-5542",
-    institution: "Universidad de los Andes • Bogotá",
-    verified: true,
-    verificationDate: "20 de Febrero, 2025",
-    location: "Bogotá D.C., Colombia",
-    avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80",
-    bio: "Investigador y comunicador especializado en el impacto de algoritmos, redes de desinformación e inteligencia artificial en la opinión pública y el ejercicio del periodismo ético en América Latina.",
-    specialties: ["Inteligencia Artificial en Redacciones", "Gobernanza Digital", "Análisis Electoral", "Verificación Factual"],
-    awards: ["Premio Nacional de Periodismo Digital 2023", "Beca de Investigación Periodística Dejusticia 2024"],
-    publishedCount: 94,
-    contactEmail: "camilo.sotomayor@lasillavacia.com",
-    networkProfile: "/servicios?autor=camilo-sotomayor"
-  },
-  "Juliana Restrepo": {
-    name: "Juliana Restrepo",
-    title: "Editora de Macroeconomía y Mercados Agroindustriales",
-    tpNumber: "REG-CNP-CO-69814",
-    institution: "Universidad Nacional de Colombia • Bogotá",
-    verified: true,
-    verificationDate: "05 de Diciembre, 2024",
-    location: "Bogotá D.C., Colombia",
-    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=600&q=80",
-    bio: "Economista y periodista con 15 años de cobertura especializada en finanzas públicas, balanza comercial de Colombia, exportaciones agropecuarias e informes de coyuntura del DANE.",
-    specialties: ["Comercio Exterior & Balanza Comercial", "Informes Factuales DANE", "Cadenas Globales de Valor Agrícola", "Café y Flores de Exportación"],
-    awards: ["Premio ANIF al Periodismo Económico 2021", "Reconocimiento Bolsa de Valores de Colombia 2023"],
-    publishedCount: 230,
-    contactEmail: "juliana.restrepo@eltiempo.com",
-    networkProfile: "/servicios?autor=juliana-restrepo"
-  }
-};
-
-function getAuthorProfile(authorName) {
-  if (AUTHORS_DATABASE[authorName]) {
-    return AUTHORS_DATABASE[authorName];
-  }
-  return {
-    name: authorName || "Comunicador Verificado",
-    title: "Periodista & Investigador Adscrito a la Red GranColinos",
-    tpNumber: "REG-CPB-GC-102",
-    institution: "Red Panamericana de Comunicadores",
-    verified: true,
-    verificationDate: "Verificado Activo",
-    location: "América Latina",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80",
-    bio: `Comunicador profesional registrado en la red periodística de GranColinos con credenciales de identidad y trayectoria pública verificadas bajo la Ley 1581 de Habeas Data.`,
-    specialties: ["Periodismo de Investigación", "Análisis Factual", "Derecho a la Información"],
-    awards: ["Credencial de Prensa Verificada GranColinos"],
-    publishedCount: 45,
-    contactEmail: "redaccion@grancolinos.com",
-    networkProfile: "/servicios"
-  };
-}
-
 function NoticiasContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -382,13 +282,10 @@ function NoticiasContent() {
   const initialCountry = searchParams.get('pais') || 'co';
   const [activeCountry, setActiveCountry] = useState(initialCountry);
   const [activeCategoryTab, setActiveCategoryTab] = useState('ultimas');
-  
-  // MODOS DE ORGANIZACIÓN PUBLISHER
-  const [publisherLayoutMode, setPublisherLayoutMode] = useState('diario'); // 'diario' | 'radar' | 'investigacion'
+  const [publisherLayoutMode, setPublisherLayoutMode] = useState('diario');
 
   // Modales
   const [selectedArticle, setSelectedArticle] = useState(null);
-  const [selectedAuthor, setSelectedAuthor] = useState(null);
   const [selectedBiasComparison, setSelectedBiasComparison] = useState(null);
   
   const [realtimeArticles, setRealtimeArticles] = useState([]);
@@ -410,7 +307,7 @@ function NoticiasContent() {
   }).format(todayObj);
 
   useEffect(() => {
-    if (selectedArticle || selectedAuthor || selectedBiasComparison) {
+    if (selectedArticle || selectedBiasComparison) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -418,7 +315,7 @@ function NoticiasContent() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [selectedArticle, selectedAuthor, selectedBiasComparison]);
+  }, [selectedArticle, selectedBiasComparison]);
 
   const categoryTabs = [
     { id: 'ultimas', name: 'Últimas Noticias' },
@@ -518,7 +415,7 @@ function NoticiasContent() {
             <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
             <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-              "Sistema Publisher Periodístico: Maquetación editorial, monitoreo hemerográfico de 5 espectros y análisis cuantitativo imparcial."
+              "Sistema Publisher Periodístico: Maquetación editorial, atribución verificada del medio emisor, monitoreo hemerográfico de 5 espectros e información cuantitativa real."
             </p>
 
             {/* BARRA DE CONTROL PUBLISHER EDITORIAL */}
@@ -575,8 +472,8 @@ function NoticiasContent() {
               <strong className="text-emerald-400 font-extrabold text-sm">0% Sesgo de Origen</strong>
             </div>
             <div className="p-3 bg-black/40 rounded-xl border border-white/10 space-y-0.5">
-              <span className="text-gray-400 text-[10px] uppercase font-bold block">Formato Publisher</span>
-              <strong className="text-white font-extrabold text-sm">Verificación 100%</strong>
+              <span className="text-gray-400 text-[10px] uppercase font-bold block">Atribución Factual</span>
+              <strong className="text-white font-extrabold text-sm">Redacción Oficial</strong>
             </div>
           </div>
 
@@ -816,7 +713,7 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA INTEGRADO CON DATOS, MÉTRICAS, MARCO TEÓRICO, MAPA MENTAL Y REPORTAJE DETALLADO */}
+        {/* MODAL LECTURA INTEGRADO CON ATRIBUCIÓN FACTUAL DEL MEDIO EMISOR */}
         {selectedArticle && (
           <div 
             className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -855,14 +752,12 @@ function NoticiasContent() {
                 </h2>
 
                 <div className="flex flex-wrap items-center justify-between text-xs font-mono text-gray-300 pt-1">
-                  <button 
-                    onClick={() => setSelectedAuthor(getAuthorProfile(selectedArticle.author))}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/40 hover:bg-[#D4AF37] hover:text-black transition-all group/author cursor-pointer text-left shadow-sm"
-                  >
-                    <User size={15} className="text-[#D4AF37] group-hover/author:text-black transition-colors" />
-                    <span>Autor: <strong className="underline decoration-[#D4AF37] underline-offset-4">{selectedArticle.author}</strong></span>
-                    <BadgeCheck size={14} className="text-[#D4AF37] group-hover/author:text-black shrink-0" />
-                  </button>
+                  {/* ATRIBUCIÓN FACTUAL VERÍDICA DEL MEDIO EMISOR */}
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 border border-[#D4AF37]/40 text-left shadow-sm">
+                    <Building2 size={15} className="text-[#D4AF37]" />
+                    <span>Emisor Factual: <strong className="text-white font-bold">{selectedArticle.sourceName} (Redacción Oficial)</strong></span>
+                    <BadgeCheck size={14} className="text-[#D4AF37] shrink-0" />
+                  </div>
 
                   <span className="flex items-center gap-1.5 font-bold text-[#D4AF37]">
                     <Clock size={14} className="text-[#D4AF37]" /> {selectedArticle.publishedAt}
@@ -1158,128 +1053,6 @@ function NoticiasContent() {
                   className="px-6 py-2.5 bg-white/10 text-white hover:bg-white/20 font-mono font-bold text-xs uppercase rounded-xl transition-all border border-white/20"
                 >
                   CERRAR COMPARADOR
-                </button>
-              </div>
-
-            </div>
-          </div>
-        )}
-
-        {/* MODAL AUTOR */}
-        {selectedAuthor && (
-          <div 
-            className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              width: '100vw',
-              height: '100vh',
-              backgroundColor: 'rgba(0, 0, 0, 0.45)',
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)'
-            }}
-          >
-            <div className="leather-canvas-blue text-white rounded-3xl max-w-2xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-8 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto">
-              
-              <button
-                onClick={() => setSelectedAuthor(null)}
-                className="sticky top-0 float-right z-50 text-gray-300 hover:text-white bg-black/90 hover:bg-[#D4AF37] hover:text-black w-9 h-9 rounded-full border border-[#D4AF37]/50 flex items-center justify-center font-bold transition-all shadow-lg"
-                title="Cerrar Hoja de Vida"
-              >
-                ✕
-              </button>
-
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 border-b border-[#D4AF37]/30 pb-6 clear-both">
-                <div className="relative w-28 h-28 rounded-2xl overflow-hidden shrink-0 border-2 border-[#D4AF37] shadow-[0_0_25px_rgba(212,175,55,0.5)]">
-                  <img 
-                    src={selectedAuthor.avatar} 
-                    alt={selectedAuthor.name}
-                    onError={(e) => {
-                      e.currentTarget.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80";
-                    }}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute bottom-1 right-1 bg-black/80 p-1 rounded-full border border-[#D4AF37]">
-                    <BadgeCheck size={18} className="text-[#D4AF37]" />
-                  </div>
-                </div>
-
-                <div className="space-y-2 text-center sm:text-left flex-1 min-w-0">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#D4AF37] text-[10px] font-mono font-bold uppercase tracking-widest">
-                    <ShieldCheck size={13} />
-                    <span>Perfil Profesional Verificado por GranColinos</span>
-                  </div>
-
-                  <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight">
-                    {selectedAuthor.name}
-                  </h3>
-
-                  <p className="font-mono text-xs text-[#D4AF37] font-bold">
-                    {selectedAuthor.title}
-                  </p>
-
-                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-[11px] font-mono text-gray-300 pt-1">
-                    <span className="flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-lg border border-white/10">
-                      <GraduationCap size={13} className="text-[#D4AF37]" /> {selectedAuthor.institution}
-                    </span>
-                    <span className="flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-lg border border-white/10">
-                      <MapPin size={13} className="text-[#D4AF37]" /> {selectedAuthor.location}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs bg-black/50 p-4 rounded-2xl border border-white/10">
-                <div>
-                  <span className="text-gray-400 block text-[10px]">REGISTRO PERIODÍSTICO / CREDENCIAL:</span>
-                  <strong className="text-white font-bold">{selectedAuthor.tpNumber}</strong>
-                </div>
-                <div>
-                  <span className="text-gray-400 block text-[10px]">FECHA DE VERIFICACIÓN HABEAS DATA:</span>
-                  <strong className="text-[#D4AF37] font-bold">{selectedAuthor.verificationDate}</strong>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-serif text-sm font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
-                  <FileText size={16} /> Biografía & Trayectoria Pública
-                </h4>
-                <p className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed bg-black/40 p-4 rounded-2xl border border-white/10">
-                  {selectedAuthor.bio}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-serif text-sm font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
-                  <Briefcase size={16} /> Áreas de Especialización
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedAuthor.specialties.map((spec, i) => (
-                    <span key={i} className="px-3 py-1 rounded-lg bg-white/10 border border-white/15 text-xs font-mono font-semibold text-gray-200">
-                      • {spec}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-xs">
-                <Link
-                  href={selectedAuthor.networkProfile}
-                  onClick={() => setSelectedAuthor(null)}
-                  className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2 border border-white/30"
-                >
-                  <Briefcase size={15} />
-                  <span>Ver Perfil en Red de Servicios</span>
-                </Link>
-
-                <button
-                  onClick={() => setSelectedAuthor(null)}
-                  className="w-full sm:w-auto px-5 py-2.5 bg-white/10 text-white hover:bg-white/20 font-bold text-xs uppercase rounded-xl transition-all border border-white/20"
-                >
-                  Cerrar Dossier
                 </button>
               </div>
 
