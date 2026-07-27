@@ -124,6 +124,100 @@ function getVerifiedJournalistForArticle(sourceDomain, sourceName, title) {
   };
 }
 
+// ALGORITMO MATEMÁTICO CUANTITATIVO DE CÁLCULO DE SESGO CON DESGLOSE DE FÓRMULA
+function calculateExactBiasScore(title, sourceName, mediaDomain) {
+  const t = (title || '').trim();
+  const lower = t.toLowerCase();
+  const domain = (mediaDomain || sourceName || '').toLowerCase();
+
+  // 1. FACTOR DE LÍNEA EDITORIAL DEL MEDIO (F1)
+  let f1_score = 0; // Centro Neutral por defecto
+  let f1_label = "0% (Línea Factual Neutra)";
+
+  if (domain.includes('semana')) {
+    f1_score = 45;
+    f1_label = "+45% (Línea Editorial Revista Semana - Fiscalización de Oposición)";
+  } else if (domain.includes('rtvc')) {
+    f1_score = -40;
+    f1_label = "-40% (Línea Editorial RTVC - Cobertura Institucional de Gobierno)";
+  } else if (domain.includes('tiempo')) {
+    f1_score = 15;
+    f1_label = "+15% (Línea Editorial El Tiempo - Centro-Derecha Moderada)";
+  } else if (domain.includes('espectador')) {
+    f1_score = -15;
+    f1_label = "-15% (Línea Editorial El Espectador - Centro-Izquierda Normativa)";
+  } else if (domain.includes('republica')) {
+    f1_score = 20;
+    f1_label = "+20% (Línea Editorial La República - Enfoque Económico-Corporativo)";
+  }
+
+  // 2. FACTOR DE CARGA LÉXICA Y ADJETIVACIÓN EN EL TITULAR (F2)
+  let f2_score = 0;
+  let f2_matchedWords = [];
+
+  const conflictWords = ['fracturó', 'crisis', 'escándalo', 'caos', 'fracaso', 'acusó', 'tensión', 'golpe', 'denuncia', 'amenaza'];
+  const socialWords = ['logro', 'avance', 'histórico', 'pueblo', 'social', 'garantía', 'comunidad', 'reivindicación', 'paz'];
+
+  conflictWords.forEach(w => {
+    if (lower.includes(w)) {
+      f2_matchedWords.push(`"${w}"`);
+      f2_score += 35; // Carga de conflicto política (+35%)
+    }
+  });
+
+  socialWords.forEach(w => {
+    if (lower.includes(w)) {
+      f2_matchedWords.push(`"${w}"`);
+      f2_score -= 35; // Carga de narrativa social (-35%)
+    }
+  });
+
+  // 3. FÓRMULA FINAL DE SESGO PONDERADO (F1 + F2)
+  let totalScore = f1_score + f2_score;
+  
+  // Limitar rango a [-100, +100]
+  if (totalScore > 95) totalScore = 95;
+  if (totalScore < -95) totalScore = -95;
+
+  let biasDirection = "Centro";
+  let absPercent = Math.abs(totalScore);
+  let isNeutral = absPercent === 0;
+
+  if (totalScore > 0) {
+    biasDirection = "Derecha";
+  } else if (totalScore < 0) {
+    biasDirection = "Izquierda";
+  }
+
+  let biasBadgeText = isNeutral 
+    ? "0% Sesgo (Punto Cero Neutral)" 
+    : `${absPercent}% Sesgo ${biasDirection}`;
+
+  let f2_label = f2_matchedWords.length > 0
+    ? `${f2_score > 0 ? '+' : ''}${f2_score}% (Léxico Emocional: ${f2_matchedWords.join(', ')})`
+    : "0% (Lenguaje Factual Sin Adjetivos Sensacionalistas)";
+
+  let verdictExplanation = isNeutral
+    ? `✅ TITULAR 100% NEUTRAL FACTUAL (0% SESGO) — Transmite datos o declaraciones puras sin adjetivos sensacionales.`
+    : `⚠️ EVALUACIÓN: ${absPercent}% SESGO ${biasDirection.toUpperCase()} — Calculado mediante la fórmula: Línea Editorial del Medio (${f1_score > 0 ? '+' : ''}${f1_score}%) + Carga Léxica del Titular (${f2_score > 0 ? '+' : ''}${f2_score}%).`;
+
+  return {
+    totalScore,
+    absPercent,
+    biasDirection,
+    isNeutral,
+    biasBadgeText,
+    formulaBreakdown: {
+      f1_score,
+      f1_label,
+      f2_score,
+      f2_label,
+      formulaText: `${f1_score > 0 ? '+' : ''}${f1_score}% (Medio) ${f2_score >= 0 ? '+' : ''}${f2_score}% (Léxico) = ${totalScore > 0 ? '+' : ''}${totalScore}% (${biasDirection})`
+    },
+    verdictExplanation
+  };
+}
+
 // GENERADOR DE DATOS, MÉTRICAS Y REPORTAJE DETALLADO BASADO EN RSS VERIFICADO
 function generateDetailedReportAndMetrics(title, sourceName, category, publishedAt) {
   const t = (title || '').trim();
@@ -179,76 +273,20 @@ function generateDetailedReportAndMetrics(title, sourceName, category, published
   };
 }
 
-// GENERADOR DE ANÁLISIS ACADÉMICO CON DIAGNÓSTICO DE SESGO IDEOLÓGICO ESPECÍFICO DEL TITULAR
+// GENERADOR DE ANÁLISIS ACADÉMICO CON DIAGNÓSTICO MATEMÁTICO EXACTO
 function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   const t = (title || '').trim();
-  const lower = t.toLowerCase();
-  const domain = (mediaDomain || sourceName || '').toLowerCase();
-
-  let biasLevel = "Centro Factual (0% Neutral)";
-  let isNeutral = true;
-  let verdictText = "✅ TITULAR NEUTRAL FACTUAL — Presenta datos o declaraciones constatables sin adjetivación ni encuadre ideológico sesgado.";
-  let biasBadgeColor = "emerald";
-
-  if (domain.includes('semana') || lower.includes('fractur') || lower.includes('crisis') || lower.includes('escandalo')) {
-    biasLevel = "Derecha (80% Sesgo Derecha)";
-    isNeutral = false;
-    verdictText = "⚠️ TITULAR CON SESGO EDITORIAL DE DERECHA / FISCALIZACIÓN POLÍTICA — Enfocado en la narrativa de fractura, crisis gubernamental e impacto crítico en la esfera pública.";
-    biasBadgeColor = "red";
-  } else if (domain.includes('rtvc') || lower.includes('logro') || lower.includes('avance') || lower.includes('pueblo')) {
-    biasLevel = "Izquierda (75% Sesgo Izquierda)";
-    isNeutral = false;
-    verdictText = "⚠️ TITULAR CON SESGO EDITORIAL DE IZQUIERDA / ENCUADRE SOCIAL — Enfocado en la narrativa de reivindicación comunitaria y gestión del proyecto de gobierno.";
-    biasBadgeColor = "lime";
-  } else if (domain.includes('tiempo')) {
-    biasLevel = "Centro-Derecha (32% Sesgo Derecha)";
-    isNeutral = false;
-    verdictText = "🔍 TITULAR CENTRO-DERECHA — Cobertura moderada institucional con inclinación al impacto en la gobernabilidad e indicadores económicos.";
-    biasBadgeColor = "orange";
-  } else if (domain.includes('espectador')) {
-    biasLevel = "Centro-Izquierda (30% Sesgo Izquierda)";
-    isNeutral = false;
-    verdictText = "🔍 TITULAR CENTRO-IZQUIERDA — Cobertura moderada con foco en derechos constitucionales y análisis normativo de fondo.";
-    biasBadgeColor = "lime";
-  }
-
-  const mapaMentalNodes = [
-    {
-      label: "NÚCLEO CENTRAL DE LA NOTICIA",
-      desc: `"${t}" — Reportado por ${sourceName}.`,
-      color: "gold"
-    },
-    {
-      label: "🟢 PERSPECTIVA SOCIAL / IZQUIERDA (75% SESGO IZQ)",
-      desc: lower.includes('petro') || lower.includes('gobierno') || lower.includes('poder')
-        ? `Analiza el hecho destacando el impacto en la esfera pública y la narrativa de resistencia del proyecto social.`
-        : `Interpreta la nota enfatizando el beneficio social y las garantías institucionales del Estado.`,
-      color: "lime"
-    },
-    {
-      label: "⚪ DIAGNÓSTICO DE NEUTRALIDAD FACTUAL (0% CENTRO)",
-      desc: isNeutral 
-        ? `DIAGNOSTICO: Titular 100% factual y neutro (0% Sesgo). No contiene adjetivos manipuladores.` 
-        : `DIAGNOSTICO: Presenta una desviación de Origen 0% hacia ${biasLevel}. Se identifica encuadre de intención periodística.`,
-      color: "slate"
-    },
-    {
-      label: "🔴 PERSPECTIVA INSTITUCIONAL / DERECHA (80% SESGO DER)",
-      desc: lower.includes('petro') || lower.includes('fractur') || lower.includes('familia')
-        ? `Enfoca la declaración destacando la inestabilidad política, las contradicciones éticas y la fiscalización al entorno gubernamental.`
-        : `Interpreta la noticia analizando la seguridad jurídica, la confianza de inversión y la estabilidad del mercado.`,
-      color: "red"
-    }
-  ];
+  const biasCalc = calculateExactBiasScore(t, sourceName, mediaDomain);
 
   return {
-    marcoTeorico: `Diagnóstico hemerográfico de la noticia "${t}" emitida por ${sourceName}. Aplica el marco analítico de encuadre mediático (Framing Theory) para determinar si el titular es neutro o posee carga ideológica.`,
+    marcoTeorico: `Diagnóstico hemerográfico cuantitativo basado en la Teoría del Encuadre (Framing Analysis). Mide matemáticamente la desviación entre la fuente emisora y el Punto Cero Neutral (0%).`,
     tesisCentral: `Premisa Informativa: "${t}"`,
-    conclusionImparcial: verdictText,
-    biasLevel: biasLevel,
-    isNeutral: isNeutral,
-    verdictText: verdictText,
-    mapaMentalNodes: mapaMentalNodes
+    conclusionImparcial: biasCalc.verdictExplanation,
+    biasLevel: biasCalc.biasBadgeText,
+    isNeutral: biasCalc.isNeutral,
+    verdictText: biasCalc.verdictExplanation,
+    formulaBreakdown: biasCalc.formulaBreakdown,
+    biasCalc: biasCalc
   };
 }
 
@@ -431,9 +469,9 @@ export async function GET(request) {
         sourceLogoUrl: `https://icons.duckduckgo.com/ip3/${mediaDomain}.ico`,
         author: authorProfile.name,
         authorProfile: authorProfile,
-        biasDirection: academicAnalysis.isNeutral ? "Centro" : (academicAnalysis.biasLevel.includes("Izquierda") ? "Izquierda" : "Derecha"),
-        deviationPercent: academicAnalysis.isNeutral ? 0 : (academicAnalysis.biasLevel.includes("75%") ? 75 : (academicAnalysis.biasLevel.includes("80%") ? 80 : 32)),
-        biasLabel: academicAnalysis.biasLevel,
+        biasDirection: academicAnalysis.biasCalc.biasDirection,
+        deviationPercent: academicAnalysis.biasCalc.absPercent,
+        biasLabel: academicAnalysis.biasCalc.biasBadgeText,
         headlineIntention: academicAnalysis.verdictText,
         academicAnalysis: academicAnalysis,
         metricsData: reportDetails.metrics,

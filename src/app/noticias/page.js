@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Network, BrainCircuit, Target, Lightbulb, CheckCheck, Percent, LayoutGrid, Rows3, SlidersHorizontal, PieChart, History, AlertTriangle } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Network, BrainCircuit, Target, Lightbulb, CheckCheck, Percent, LayoutGrid, Rows3, SlidersHorizontal, PieChart, History, AlertTriangle, Calculator } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
@@ -50,45 +50,99 @@ function EventMetricsGrid({ metrics }) {
   );
 }
 
-// COMPONENTE EXCLUSIVO PARA EL DIAGNÓSTICO EDITORIAL DE INTEGRIDAD
-function EditorialIntegrityDiagnosis({ biasLevel, verdictText, isNeutral }) {
-  if (!verdictText && !biasLevel) return null;
+// COMPONENTE PARA EL DESGLOSE MATEMÁTICO TRANSPARENTE DEL CÁLCULO DE SESGO
+function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
+  if (!formulaBreakdown) return null;
 
   return (
     <div 
-      className="p-5 rounded-2xl border border-[#D4AF37]/50 space-y-3 shadow-2xl"
+      className="p-5 rounded-2xl border border-[#D4AF37]/50 space-y-3.5 shadow-2xl"
       style={{
         backgroundColor: 'rgba(5, 12, 24, 0.22)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)'
       }}
     >
-      <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-2.5 gap-2">
+      <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
         <span className="text-xs font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
-          <ShieldCheck size={16} className="text-[#D4AF37]" /> DIAGNÓSTICO EDITORIAL DE INTEGRIDAD EN EL TITULAR
+          <Calculator size={16} className="text-[#D4AF37]" /> FÓRMULA MATEMÁTICA Y DESGLOSE EXACTO DEL CÁLCULO
         </span>
-        
-        {/* BADGE DE SESGO/NEUTRALIDAD */}
-        <span className={`text-[10px] font-mono font-bold px-3 py-1 rounded-full border shadow-md flex items-center gap-1.5 ${
+        <span className={`text-[10px] font-mono font-extrabold px-3 py-1 rounded-full border shadow-md flex items-center gap-1.5 ${
           isNeutral 
             ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/60' 
             : 'bg-amber-950/80 text-amber-300 border-amber-500/60'
         }`}>
-          {isNeutral ? <CheckCheck size={13} /> : <AlertTriangle size={13} />}
-          <span>{biasLevel || "Diagnóstico Factual"}</span>
+          <span>{biasLevel || "0% Sesgo (Neutral)"}</span>
         </span>
       </div>
 
-      {/* VEREDICTO DE INTEGRIDAD EDITORIAL */}
-      <div className={`p-4 rounded-xl border text-xs md:text-sm font-sans font-medium leading-relaxed shadow-inner ${
-        isNeutral
-          ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-100'
-          : 'bg-amber-950/40 border-amber-500/50 text-amber-100'
-      }`}>
-        <strong className="block font-mono text-[10px] uppercase font-black tracking-wider mb-1 text-[#D4AF37]">
-          [ DIAGNÓSTICO EDITORIAL DE INTEGRIDAD ]:
-        </strong>
-        {verdictText}
+      {/* DESGLOSE FACTORIAL CUANTITATIVO */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+        <div className="p-3.5 rounded-xl bg-black/50 border border-white/15 space-y-1">
+          <span className="text-gray-400 text-[10px] font-bold uppercase block">
+            1. PONDERACIÓN LÍNEA EDITORIAL DEL MEDIO (F1):
+          </span>
+          <strong className="text-white text-xs block font-serif">
+            {formulaBreakdown.f1_label}
+          </strong>
+        </div>
+
+        <div className="p-3.5 rounded-xl bg-black/50 border border-white/15 space-y-1">
+          <span className="text-gray-400 text-[10px] font-bold uppercase block">
+            2. CARGA LÉXICA & ADJETIVACIÓN EN EL TITULAR (F2):
+          </span>
+          <strong className="text-white text-xs block font-serif">
+            {formulaBreakdown.f2_label}
+          </strong>
+        </div>
+      </div>
+
+      {/* RESULTADO FINAL DE LA FÓRMULA */}
+      <div className="p-3.5 rounded-xl bg-gradient-to-r from-[#D4AF37]/20 via-black/80 to-[#D4AF37]/20 border border-[#D4AF37] text-center font-mono text-xs font-bold text-white shadow-lg">
+        <span className="text-[10px] text-[#D4AF37] font-black uppercase tracking-wider block mb-0.5">
+          FÓRMULA DEL RESULTADO FINAL = (F1 MEDIO) + (F2 LÉXICO):
+        </span>
+        <span className="text-sm font-black text-gold-gradient">
+          {formulaBreakdown.formulaText}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// COMPONENTE EXCLUSIVO PARA EL DIAGNÓSTICO EDITORIAL DE INTEGRIDAD
+function EditorialIntegrityDiagnosis({ biasLevel, verdictText, isNeutral, formulaBreakdown }) {
+  if (!verdictText && !biasLevel) return null;
+
+  return (
+    <div className="space-y-4">
+      <MathematicalBiasBreakdown formulaBreakdown={formulaBreakdown} biasLevel={biasLevel} isNeutral={isNeutral} />
+
+      <div 
+        className="p-5 rounded-2xl border border-[#D4AF37]/50 space-y-3 shadow-2xl"
+        style={{
+          backgroundColor: 'rgba(5, 12, 24, 0.22)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)'
+        }}
+      >
+        <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-2.5 gap-2">
+          <span className="text-xs font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
+            <ShieldCheck size={16} className="text-[#D4AF37]" /> DIAGNÓSTICO EDITORIAL DE INTEGRIDAD EN EL TITULAR
+          </span>
+        </div>
+
+        {/* VEREDICTO DE INTEGRIDAD EDITORIAL */}
+        <div className={`p-4 rounded-xl border text-xs md:text-sm font-sans font-medium leading-relaxed shadow-inner ${
+          isNeutral
+            ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-100'
+            : 'bg-amber-950/40 border-amber-500/50 text-amber-100'
+        }`}>
+          <strong className="block font-mono text-[10px] uppercase font-black tracking-wider mb-1 text-[#D4AF37]">
+            [ DIAGNÓSTICO EDITORIAL DE INTEGRIDAD ]:
+          </strong>
+          {verdictText}
+        </div>
       </div>
     </div>
   );
@@ -133,11 +187,12 @@ function AcademicAnalysisSection({ analysis, title }) {
         </p>
       </div>
 
-      {/* DIAGNÓSTICO EDITORIAL DE INTEGRIDAD */}
+      {/* FÓRMULA MATEMÁTICA Y DIAGNÓSTICO EDITORIAL DE INTEGRIDAD */}
       <EditorialIntegrityDiagnosis 
         biasLevel={analysis.biasLevel}
         verdictText={analysis.verdictText}
         isNeutral={analysis.isNeutral}
+        formulaBreakdown={analysis.formulaBreakdown}
       />
 
       <div 
@@ -789,7 +844,7 @@ function NoticiasContent() {
               {/* SECCIÓN 1: DATOS Y MÉTRICAS CUANTITATIVAS BALANCEADAS */}
               <EventMetricsGrid metrics={selectedArticle.metricsData} />
 
-              {/* SECCIÓN 2: MARCO TEÓRICO, TESIS & DIAGNÓSTICO EDITORIAL DE INTEGRIDAD */}
+              {/* SECCIÓN 2: MARCO TEÓRICO, TESIS, FÓRMULA MATEMÁTICA & DIAGNÓSTICO EDITORIAL DE INTEGRIDAD */}
               <AcademicAnalysisSection 
                 analysis={selectedArticle.academicAnalysis} 
                 title={selectedArticle.title}
@@ -828,7 +883,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN CON NAVEGACIÓN Y GUÍA DE ESPECTRO RENOVADA TRICOLOR */}
+        {/* MODAL DE COMPARACIÓN CON NAVEGACIÓN Y DESGLOSE MATEMÁTICO EXACTO */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -876,66 +931,12 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              {/* GUÍA DEL ESPECTRO IDEOLÓGICO TRICOLOR: VERDE (IZQ) -> AMARILLO DORADO (CENTRO) -> NARANJA INTENSO (DER) */}
-              <div 
-                className="p-5 rounded-2xl border border-[#D4AF37]/40 space-y-3.5 shadow-2xl"
-                style={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.22)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)'
-                }}
-              >
-                <span className="text-[10px] font-mono text-[#D4AF37] uppercase font-extrabold tracking-widest flex items-center gap-1.5">
-                  <CompassIcon size={14} /> GUÍA DEL ESPECTRO (MEDICIÓN DESDE EL CENTRO 0% NEUTRAL):
-                </span>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-[10px] font-mono text-center font-bold">
-                  {/* 1. IZQUIERDA (VERDE) */}
-                  <div 
-                    className="p-3 rounded-xl border border-emerald-500/70 text-emerald-300 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(16, 185, 129, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
-                  >
-                    <span className="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.9)]"></span>
-                    <span>1. Izquierda (75% Sesgo Izq)</span>
-                  </div>
-
-                  {/* 2. CENTRO-IZQUIERDA (VERDE CLARO) */}
-                  <div 
-                    className="p-3 rounded-xl border border-emerald-400/50 text-emerald-200 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(52, 211, 153, 0.18)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
-                  >
-                    <span className="w-3 h-3 bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.8)]"></span>
-                    <span>2. Centro-Izquierda (30% Sesgo Izq)</span>
-                  </div>
-
-                  {/* 3. CENTRO FACTUAL (AMARILLO DORADO) */}
-                  <div 
-                    className="p-3 rounded-xl border border-[#D4AF37] text-[#D4AF37] flex flex-col items-center justify-center gap-1 shadow-[0_0_20px_rgba(212,175,55,0.4)]"
-                    style={{ backgroundColor: 'rgba(212, 175, 55, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
-                  >
-                    <span className="w-3.5 h-3.5 bg-[#D4AF37] rounded-full shadow-[0_0_12px_rgba(212,175,55,1)]"></span>
-                    <span>3. Centro Factual (0% Punto Cero)</span>
-                  </div>
-
-                  {/* 4. CENTRO-DERECHA (NARANJA SUAVE) */}
-                  <div 
-                    className="p-3 rounded-xl border border-orange-400/50 text-orange-200 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(251, 146, 60, 0.18)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
-                  >
-                    <span className="w-3 h-3 bg-orange-400 rounded-full shadow-[0_0_10px_rgba(251,146,60,0.8)]"></span>
-                    <span>4. Centro-Derecha (32% Sesgo Der)</span>
-                  </div>
-
-                  {/* 5. DERECHA (NARANJA INTENSO) */}
-                  <div 
-                    className="p-3 rounded-xl border border-orange-600/70 text-orange-400 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(234, 88, 12, 0.25)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
-                  >
-                    <span className="w-3 h-3 bg-orange-600 rounded-full shadow-[0_0_10px_rgba(234,88,12,0.9)]"></span>
-                    <span>5. Derecha (80% Sesgo Der)</span>
-                  </div>
-                </div>
-              </div>
+              {/* FÓRMULA MATEMÁTICA Y DESGLOSE TRANSPARENTE DEL CÁLCULO DE SESGO */}
+              <MathematicalBiasBreakdown 
+                formulaBreakdown={selectedBiasComparison.academicAnalysis?.formulaBreakdown}
+                biasLevel={selectedBiasComparison.biasLabel}
+                isNeutral={selectedBiasComparison.academicAnalysis?.isNeutral}
+              />
 
               {/* DATOS Y MÉTRICAS CUANTITATIVAS BALANCEADAS DEL EVENTO */}
               <EventMetricsGrid metrics={selectedBiasComparison.metricsData} />
