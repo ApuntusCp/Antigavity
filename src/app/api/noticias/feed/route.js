@@ -282,7 +282,7 @@ function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   if (biasCalc.isNeutral) {
     conclusionText = `El reporte presenta datos 100% objetivos (0% Sesgo) emitidos por ${sourceName}. No se identifican encuadres tendenciosos.`;
   } else {
-    conclusionText = `Se recomienda contrastar la perspectiva de ${sourceName} (${biasCalc.biasBadgeText}) with las coberturas complementarias de los otros medios para obtener un criterio neutro.`;
+    conclusionText = `Se recomienda contrastar la perspectiva de ${sourceName} (${biasCalc.biasBadgeText}) con las coberturas complementarias de los otros medios para obtener un criterio neutro.`;
   }
 
   return {
@@ -297,26 +297,43 @@ function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   };
 }
 
-// EXTRAE 2 TÉRMINOS CLAVE PRECISOS PARA MÁXIMA COMPATIBILIDAD EN BUSCADORES DE MEDIOS
+// EXTRAE LOS SUSTANTIVOS Y TEMAS CLAVE PRINCIPALES DEL TITULAR
 function extractCleanSearchKeywords(title) {
-  if (!title) return "noticias";
+  if (!title) return "bogota";
+
+  const stopWords = new Set([
+    'conoce', 'programación', 'programacion', 'semana', 'barrios', 'confirmado', 'confirma', 
+    'aseguró', 'aseguro', 'dijo', 'sobre', 'desde', 'hasta', 'como', 'este', 'esta', 
+    'estos', 'estas', 'pero', 'entre', 'donde', 'cuando', 'para', 'ante', 'tras', 
+    'unos', 'unas', 'este', 'esta', 'estos', 'estas', 'hace', 'días', 'dias', 'enero', 
+    'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 
+    'octubre', 'noviembre', 'diciembre', '2024', '2025', '2026', 'oficial', 'nuevo', 'nueva'
+  ]);
+
   const clean = title
     .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"'?]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 
-  const words = clean.split(' ').filter(w => w.length > 3 && !['para', 'sobre', 'desde', 'hasta', 'como', 'este', 'esta', 'estos', 'estas', 'pero', 'entre', 'donde', 'cuando', 'confirmado', 'confirma', 'aseguro', 'dijo'].includes(w.toLowerCase()));
-  return words.slice(0, 2).join(' ');
+  const words = clean
+    .split(' ')
+    .filter(w => w.length > 3 && !stopWords.has(w.toLowerCase()));
+
+  if (words.length >= 2) {
+    return words.slice(0, 3).join(' ');
+  }
+
+  return clean.split(' ').slice(0, 2).join(' ');
 }
 
-// ENLACES DIRECTOS 1-A-1 AL MEDIO EMISOR Y A SUS BUSCADORES INTERNOS CON 2 PALABRAS CLAVE
+// ENLACES DIRECTOS 1-A-1 AL MEDIO EMISOR Y A SUS SECCIONES/BUSCADORES OFICIALES
 function generate5SpectrumCoveragesFromCenter(article) {
   const t = (article.title || '').trim();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
   const cleanKeywords = extractCleanSearchKeywords(t);
 
   const buildDirectMediaUrl = (domain) => {
-    // Si la tarjeta corresponde al medio original emisor de la noticia, abre la NOTICIA EXACTA directamente
+    // Si la tarjeta es del medio emisor original de la noticia, redirige DIRECTAMENTE a la noticia exacta
     if (primaryDomain.includes(domain) || domain.includes(primaryDomain)) {
       return article.originalUrl;
     }
@@ -336,7 +353,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       return `https://caracol.com.co/busqueda/${keywords}/`;
     }
     if (domain.includes('rtvcnoticias.com')) {
-      return `https://www.rtvcnoticias.com/?s=${keywords}`;
+      return `https://www.rtvcnoticias.com/?s=${encodeURIComponent(cleanKeywords).replace(/%20/g, '+')}`;
     }
     if (domain.includes('larepublica.co')) {
       return `https://www.larepublica.co/buscar?q=${keywords}`;
