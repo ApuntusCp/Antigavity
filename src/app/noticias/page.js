@@ -1076,15 +1076,22 @@ function NoticiasContent() {
                         <PoliticalBiasBar biasDirection={coverage.biasDirection} deviationPercent={coverage.deviationPercent} biasLabel={coverage.biasLabel} />
 
                         <div className="grid grid-cols-1 gap-2 font-mono text-[10px]">
-                          <a
-                            href={coverage.outletUrl || `https://${coverage.sourceDomain}/`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full py-2.5 px-3 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all shadow-md hover:bg-white flex items-center justify-center gap-1.5"
-                          >
-                            <span>LEER NOTICIA EN {coverage.sourceName}</span>
-                            <ExternalLink size={12} />
-                          </a>
+                          {coverage.hasCoverage !== false && coverage.outletUrl ? (
+                            <a
+                              href={coverage.outletUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full py-2.5 px-3 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all shadow-md hover:bg-white flex items-center justify-center gap-1.5"
+                            >
+                              <span>LEER NOTICIA EN {coverage.sourceName}</span>
+                              <ExternalLink size={12} />
+                            </a>
+                          ) : (
+                            <div className="w-full py-2.5 px-3 bg-amber-950/40 text-amber-300/80 border border-amber-500/30 font-mono font-extrabold text-[9px] uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 opacity-80 cursor-not-allowed">
+                              <AlertTriangle size={12} className="text-amber-400 shrink-0" />
+                              <span>SIN REGISTRO EN ESTE MEDIO</span>
+                            </div>
+                          )}
 
                           <a
                             href={coverage.officialMatrixUrl || selectedBiasComparison.originalUrl}

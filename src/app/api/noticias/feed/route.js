@@ -284,85 +284,100 @@ function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   };
 }
 
-// BÚSQUEDA DE ARTÍCULO REAL ESPECÍFICO EN EL FEED DE CADA EDITORIAL
-function findRealArticleInFeed(domainKey, targetKeywords, allArticles, fallbackArticle) {
+// EXTRAER ENTIDADES/PALABRAS CLAVE RELEVANTES DEL TÍTULO EVALUADO
+function extractKeyEntities(title) {
+  if (!title) return [];
+
+  const stopWords = new Set([
+    'conoce', 'programación', 'programacion', 'semana', 'barrios', 'confirmado', 'confirma', 
+    'aseguró', 'aseguro', 'dijo', 'sobre', 'desde', 'hasta', 'como', 'este', 'esta', 'también', 'tambien',
+    'estos', 'estas', 'pero', 'entre', 'donde', 'cuando', 'para', 'ante', 'tras', 'tuvo', 'hizo', 'llegó', 'llego',
+    'unos', 'unas', 'este', 'esta', 'estos', 'estas', 'hace', 'días', 'dias', 'enero', 'hermana', 'hermano', 'temas',
+    'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'maneja', 'oficina',
+    'octubre', 'noviembre', 'diciembre', '2024', '2025', '2026', 'oficial', 'nuevo', 'nueva', 'primer', 'primero'
+  ]);
+
+  const clean = title
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"'?]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return clean
+    .split(' ')
+    .filter(w => w.length > 3 && !stopWords.has(w.toLowerCase()))
+    .map(w => w.toLowerCase());
+}
+
+// ALGORITMO RIGUROSO DE VERIFICACIÓN DE COBERTURA SOBRE EL MISMO TEMA
+function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
   const domain = domainKey.toLowerCase();
-  
-  // 1. Buscar en todos los artículos indexados uno que provenga de ese dominio y coincida con palabras clave
-  const matched = (allArticles || []).find(item => {
+  const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
+
+  // 1. Si el propio artículo en evaluación pertenece a este medio emisor, es cobertura 100% real confirmada
+  if (
+    primaryDomain.includes(domain) || 
+    domain.includes(primaryDomain) || 
+    (article.originalUrl && article.originalUrl.toLowerCase().includes(domain))
+  ) {
+    return {
+      hasCoverage: true,
+      title: article.title,
+      url: article.originalUrl,
+      isOfficialSource: true
+    };
+  }
+
+  // 2. Extraer palabras clave del tema de la noticia evaluada
+  const keyEntities = extractKeyEntities(article.title);
+
+  if (keyEntities.length === 0) {
+    return {
+      hasCoverage: false,
+      title: "Sin cobertura registrada sobre este hecho",
+      url: null,
+      isOfficialSource: false
+    };
+  }
+
+  // 3. Buscar en los artículos indexados de esa editorial si existe uno que contenga AL MENOS UNA PALABRA CLAVE del tema
+  const matchedArticle = (allArticles || []).find(item => {
     const itemDomain = resolveDomain(item.sourceName, item.originalUrl);
-    const itemTitle = (item.title || '').toLowerCase();
-    
     const isDomainMatch = itemDomain.includes(domain) || domain.includes(itemDomain) || (item.originalUrl && item.originalUrl.toLowerCase().includes(domain));
     if (!isDomainMatch) return false;
 
-    // Verificar si comparte palabras clave significativas (ej: juliana, guerrero, contratos, reforma, agua, dólar)
-    const keywords = targetKeywords.toLowerCase().split(' ');
-    return keywords.some(kw => kw.length > 3 && itemTitle.includes(kw));
+    const itemTitleLower = (item.title || '').toLowerCase();
+    // Debe coincidir con alguna de las entidades clave del tema (ej: "juliana", "guerrero", "contratos")
+    return keyEntities.some(entity => itemTitleLower.includes(entity));
   });
 
-  if (matched && matched.originalUrl) {
+  if (matchedArticle && matchedArticle.originalUrl) {
     return {
-      title: matched.title,
-      url: matched.originalUrl
+      hasCoverage: true,
+      title: matchedArticle.title,
+      url: matchedArticle.originalUrl,
+      isOfficialSource: false
     };
   }
 
-  // 2. Si no hay coincidencia exacta de palabras clave, tomar cualquier artículo real indexado de ese medio
-  const anyArticleFromDomain = (allArticles || []).find(item => {
-    const itemDomain = resolveDomain(item.sourceName, item.originalUrl);
-    return itemDomain.includes(domain) || domain.includes(itemDomain) || (item.originalUrl && item.originalUrl.toLowerCase().includes(domain));
-  });
-
-  if (anyArticleFromDomain && anyArticleFromDomain.originalUrl) {
-    return {
-      title: anyArticleFromDomain.title,
-      url: anyArticleFromDomain.originalUrl
-    };
-  }
-
-  // 3. Si es el propio artículo matriz, retornar su URL original
+  // 4. REGLA ESTRICTA SOLICITADA POR EL USUARIO: Si este medio NO tocó el tema, se marca como SIN REGISTRO
   return {
-    title: fallbackArticle.title,
-    url: fallbackArticle.originalUrl
+    hasCoverage: false,
+    title: "No hay registros de este hecho en esta editorial",
+    url: null,
+    isOfficialSource: false
   };
 }
 
-// GENERACIÓN DE LOS 5 ESPECTROS CON VINCULACIÓN DIRECTA A ARTÍCULOS REALES
+// GENERACIÓN DE LOS 5 ESPECTROS CON REGLA ESTRICTA DE COBERTURA SOBRE EL MISMO TEMA
 function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
   const t = (article.title || '').trim();
-  const lower = t.toLowerCase();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
 
-  const keywords = (lower.includes('juliana') || lower.includes('guerrero')) 
-    ? "juliana guerrero" 
-    : (lower.includes('agua') || lower.includes('bogot'))
-    ? "agua bogota"
-    : (lower.includes('dolar') || lower.includes('dólar'))
-    ? "dolar colombia"
-    : t.split(' ').slice(0, 2).join(' ');
-
-  // Buscar el artículo real para cada una de las 5 editoriales
-  const rtvcReal = findRealArticleInFeed("rtvcnoticias.com", keywords, allArticles, article);
-  const espectadorReal = findRealArticleInFeed("elespectador.com", keywords, allArticles, article);
-  const caracolReal = findRealArticleInFeed("caracol.com.co", keywords, allArticles, article);
-  const tiempoReal = findRealArticleInFeed("eltiempo.com", keywords, allArticles, article);
-  const semanaReal = findRealArticleInFeed("semana.com", keywords, allArticles, article);
-
-  // Titulares orientados a la perspectiva de cada medio para la noticia evaluada
-  let rtvcHeadline = rtvcReal.title;
-  let espectadorHeadline = espectadorReal.title;
-  let caracolHeadline = caracolReal.title;
-  let tiempoHeadline = tiempoReal.title;
-  let semanaHeadline = semanaReal.title;
-
-  if (lower.includes('juliana') || lower.includes('guerrero') || lower.includes('transparencia') || lower.includes('contratos')) {
-    rtvcHeadline = `RTVC Noticias: "Oficina de Transparencia precisa cumplimiento de ley en contrataciones"`;
-    espectadorHeadline = `El Espectador: "Investigan a Juliana Guerrero y su hermana por presunta red de contratación"`;
-    caracolHeadline = `Caracol Radio: "Juliana Guerrero renuncia a su cargo tras controversia por contratos públicos"`;
-    tiempoHeadline = `El Tiempo: "Hermana de Juliana Guerrero también tuvo contratos con gobierno Petro"`;
-    semanaHeadline = `Revista Semana: "Escándalo en Transparencia: la red de contratación que salpica a Juliana Guerrero"`;
-  }
+  const rtvcMatch = findExactTopicArticleInFeed("rtvcnoticias.com", article, allArticles);
+  const espectadorMatch = findExactTopicArticleInFeed("elespectador.com", article, allArticles);
+  const caracolMatch = findExactTopicArticleInFeed("caracol.com.co", article, allArticles);
+  const tiempoMatch = findExactTopicArticleInFeed("eltiempo.com", article, allArticles);
+  const semanaMatch = findExactTopicArticleInFeed("semana.com", article, allArticles);
 
   const evaluatedBias = calculateExactBiasScore(t, article.sourceName, primaryDomain);
 
@@ -373,12 +388,15 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       sourceName: "RTVC Noticias",
       sourceDomain: "rtvcnoticias.com",
       logoUrl: "https://icons.duckduckgo.com/ip3/rtvcnoticias.com.ico",
-      headline: rtvcHeadline,
+      hasCoverage: rtvcMatch.hasCoverage,
+      headline: rtvcMatch.hasCoverage ? rtvcMatch.title : "Sin cobertura registrada en RTVC Noticias sobre esta noticia",
       biasDirection: "Izquierda",
       deviationPercent: primaryDomain.includes('rtvc') ? evaluatedBias.absPercent : 75,
       biasLabel: primaryDomain.includes('rtvc') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "75% Sesgo Izquierda",
-      intention: "Enfoque institucional en garantías comunitarias y explicaciones oficiales.",
-      outletUrl: rtvcReal.url,
+      intention: rtvcMatch.hasCoverage 
+        ? "Enfoque institucional en garantías comunitarias y explicaciones oficiales." 
+        : "⚠️ Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
+      outletUrl: rtvcMatch.url,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -387,12 +405,15 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       sourceName: "El Espectador",
       sourceDomain: "elespectador.com",
       logoUrl: "https://icons.duckduckgo.com/ip3/elespectador.com.ico",
-      headline: espectadorHeadline,
+      hasCoverage: espectadorMatch.hasCoverage,
+      headline: espectadorMatch.hasCoverage ? espectadorMatch.title : "Sin cobertura registrada en El Espectador sobre esta noticia",
       biasDirection: "Izquierda",
       deviationPercent: primaryDomain.includes('espectador') ? evaluatedBias.absPercent : 30,
       biasLabel: primaryDomain.includes('espectador') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "30% Sesgo Izquierda",
-      intention: "Enfoque en el debido proceso, marco normativo y fiscalización jurídica.",
-      outletUrl: espectadorReal.url,
+      intention: espectadorMatch.hasCoverage 
+        ? "Enfoque en el debido proceso, marco normativo y fiscalización jurídica." 
+        : "⚠️ Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
+      outletUrl: espectadorMatch.url,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -401,12 +422,15 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       sourceName: "Caracol Radio (Prensa Neutral)",
       sourceDomain: "caracol.com.co",
       logoUrl: "https://icons.duckduckgo.com/ip3/caracol.com.co.ico",
-      headline: caracolHeadline,
+      hasCoverage: caracolMatch.hasCoverage,
+      headline: caracolMatch.hasCoverage ? caracolMatch.title : "Sin cobertura registrada en Caracol Radio sobre esta noticia",
       biasDirection: "Centro",
       deviationPercent: 0,
       biasLabel: "0% Sesgo (Punto Cero Neutral)",
-      intention: "Reporte directo de hechos constatados sin encuadre ideológico.",
-      outletUrl: caracolReal.url,
+      intention: caracolMatch.hasCoverage 
+        ? "Reporte directo de hechos constatados sin encuadre ideológico." 
+        : "⚠️ Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
+      outletUrl: caracolMatch.url,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -415,12 +439,15 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       sourceName: "El Tiempo",
       sourceDomain: "eltiempo.com",
       logoUrl: "https://icons.duckduckgo.com/ip3/eltiempo.com.ico",
-      headline: tiempoHeadline,
+      hasCoverage: tiempoMatch.hasCoverage,
+      headline: tiempoMatch.hasCoverage ? tiempoMatch.title : "Sin cobertura registrada en El Tiempo sobre esta noticia",
       biasDirection: "Derecha",
       deviationPercent: primaryDomain.includes('tiempo') ? evaluatedBias.absPercent : 32,
       biasLabel: primaryDomain.includes('tiempo') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "32% Sesgo Derecha",
-      intention: "Enfoque en gobernabilidad e impacto institucional.",
-      outletUrl: tiempoReal.url,
+      intention: tiempoMatch.hasCoverage 
+        ? "Enfoque en gobernabilidad e impacto institucional." 
+        : "⚠️ Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
+      outletUrl: tiempoMatch.url,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -429,12 +456,15 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       sourceName: "Revista Semana",
       sourceDomain: "semana.com",
       logoUrl: "https://icons.duckduckgo.com/ip3/semana.com.ico",
-      headline: semanaHeadline,
+      hasCoverage: semanaMatch.hasCoverage,
+      headline: semanaMatch.hasCoverage ? semanaMatch.title : "Sin cobertura registrada en Revista Semana sobre esta noticia",
       biasDirection: "Derecha",
       deviationPercent: primaryDomain.includes('semana') ? evaluatedBias.absPercent : 80,
       biasLabel: primaryDomain.includes('semana') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "80% Sesgo Derecha",
-      intention: "Enfoque crítico de fiscalización política y posturas de oposición.",
-      outletUrl: semanaReal.url,
+      intention: semanaMatch.hasCoverage 
+        ? "Enfoque crítico de fiscalización política y posturas de oposición." 
+        : "⚠️ Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
+      outletUrl: semanaMatch.url,
       officialMatrixUrl: article.originalUrl
     }
   ];
