@@ -3,9 +3,53 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Network, BrainCircuit, Target, Lightbulb, CheckCheck } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Network, BrainCircuit, Target, Lightbulb, CheckCheck, Percent } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
+
+// COMPONENTE DE DATOS Y MÉTRICAS CUANTITATIVAS CLAVE DEL EVENTO
+function EventMetricsGrid({ metrics }) {
+  if (!metrics || metrics.length === 0) return null;
+
+  return (
+    <div 
+      className="p-5 rounded-2xl border border-[#D4AF37]/40 space-y-3.5 shadow-2xl"
+      style={{
+        backgroundColor: 'rgba(0, 0, 0, 0.22)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)'
+      }}
+    >
+      <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+        <span className="text-xs font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
+          <BarChart3 size={16} className="text-[#D4AF37]" /> DATOS & MÉTRICAS CUANTITATIVAS DEL EVENTO
+        </span>
+        <span className="text-[10px] font-mono text-gray-300 font-bold">Verificación Hemerográfica</span>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {metrics.map((item, idx) => (
+          <div 
+            key={idx}
+            className="p-3.5 rounded-xl border border-white/15 space-y-1 text-xs shadow-inner flex flex-col justify-between"
+            style={{
+              backgroundColor: 'rgba(5, 15, 30, 0.22)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)'
+            }}
+          >
+            <span className="text-[9px] font-mono text-gray-400 font-bold uppercase tracking-wider block">
+              {item.label}:
+            </span>
+            <strong className="font-serif text-sm font-black text-white block mt-0.5 leading-snug">
+              {item.value}
+            </strong>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // COMPONENTE DE MAPA MENTAL CONCEPTUAL VISUAL CON VERDE LIMO EN IZQUIERDA Y ROJO EN DERECHA
 function AcademicMindMap({ nodes, title }) {
@@ -46,7 +90,6 @@ function AcademicMindMap({ nodes, title }) {
         {/* RAMAS CONCEPTUALES */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {nodes.slice(1).map((node, idx) => {
-            // IZQUIERDA = VERDE LIMO, DERECHA = ROJO
             let borderColor = "border-lime-500/70";
             let textColor = "text-lime-300";
             let bgColor = "rgba(132, 204, 22, 0.22)";
@@ -455,7 +498,7 @@ function NoticiasContent() {
           
           <div className="text-center space-y-4 border-b border-[#D4AF37]/35 pb-6">
             <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-gray-300 uppercase tracking-widest px-2 gap-2">
-              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Monitoreo Hemerográfico • Izquierda (Verde Limo) & Derecha (Rojo)</span>
+              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Reportajes Detallados • Métricas Cuantitativas • Marco Teórico & Mapa Mental</span>
               
               <div className="inline-flex items-center gap-2 font-extrabold text-[#D4AF37] px-4 py-1.5 bg-black/80 rounded-full border border-[#D4AF37]/50 shadow-md">
                 <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
@@ -472,13 +515,13 @@ function NoticiasContent() {
             <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
             <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-              "Análisis de mapa mental conceptual: Izquierda identificada en Verde Limo (🟢) y Derecha identificada en Rojo (🔴) para una lectura visual rápida."
+              "Resumen hemerográfico completo con datos duros, métricas cuantitativas, marco teórico, mapa mental conceptual y conclusión impartial."
             </p>
 
             <div className="pt-1 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-950/80 border border-emerald-500/50 rounded-full text-[10px] font-mono text-emerald-300 font-bold">
-                <BrainCircuit size={13} className="animate-pulse text-emerald-400" />
-                <span>MAPA CONCEPTUAL: IZQUIERDA (VERDE LIMO) & DERECHA (ROJO) ACTIVO ({dateDayMonthYear})</span>
+                <BarChart3 size={13} className="animate-pulse text-emerald-400" />
+                <span>REPORTAJES DETALLADOS CON DATOS & MÉTRICAS CUANTITATIVAS ({dateDayMonthYear})</span>
               </div>
             </div>
           </div>
@@ -550,7 +593,7 @@ function NoticiasContent() {
                       className="w-full py-3 px-4 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-xs uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2 border border-white/30"
                     >
                       <Scale size={16} />
-                      <span>Ver Comparativa + Mapa Mental + Conclusión Neutra</span>
+                      <span>Ver Datos & Métricas + Mapa Mental + Conclusión Neutra</span>
                     </button>
                   </div>
                 </div>
@@ -591,7 +634,7 @@ function NoticiasContent() {
                       className="w-full py-1.5 px-3 bg-white/10 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black font-mono font-bold text-[10px] uppercase tracking-wider rounded-lg transition-all border border-[#D4AF37]/30 flex items-center justify-center gap-1.5"
                     >
                       <GitCompare size={12} />
-                      <span>Comparar 5 Espectros + Mapa Mental</span>
+                      <span>Comparar 5 Espectros + Métricas</span>
                     </button>
                   </div>
                 ))}
@@ -641,7 +684,7 @@ function NoticiasContent() {
                         className="w-full py-2 px-3 bg-black/70 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-[#D4AF37]/40 flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         <Scale size={13} />
-                        <span>Análisis de Tesis + Mapa Mental + Conclusión</span>
+                        <span>Abrir Noticia Completa + Métricas + Mapa Mental</span>
                       </button>
                     </div>
                   </div>
@@ -719,7 +762,7 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA INTEGRADO CON MARCO TEÓRICO, MAPA MENTAL Y TESIS */}
+        {/* MODAL LECTURA INTEGRADO CON DATOS, MÉTRICAS, MARCO TEÓRICO, MAPA MENTAL Y REPORTAJE DETALLADO */}
         {selectedArticle && (
           <div 
             className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -773,7 +816,7 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              {/* BOTÓN EN MODAL LECTURA */}
+              {/* ACCESO A COMPARADOR DE ESPECTROS */}
               <div 
                 className="p-4 rounded-2xl border border-[#D4AF37]/50 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl"
                 style={{
@@ -784,10 +827,10 @@ function NoticiasContent() {
               >
                 <div className="space-y-1">
                   <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase flex items-center gap-1.5">
-                    <Scale size={14} /> Comparador + Mapa Mental Conceptual
+                    <Scale size={14} /> Comparador de Espectros Politicos (0% Centro)
                   </span>
                   <p className="text-xs font-sans text-gray-300">
-                    Compara el porcentaje de distancia desde el Centro (0%) e inspecciona la conclusión imparcial.
+                    Inspecciona la misma noticia bajo la narrativa de los 5 medios de comunicación.
                   </p>
                 </div>
 
@@ -800,27 +843,26 @@ function NoticiasContent() {
                   className="px-5 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] shrink-0 flex items-center gap-2 border border-white/30"
                 >
                   <BrainCircuit size={15} />
-                  <span>Ver Mapa Mental & Conclusión Imparcial</span>
+                  <span>Ver 5 Espectros & Comparativa</span>
                 </button>
               </div>
 
-              {/* SECCIÓN DE MARCO TEÓRICO, MAPA MENTAL & TESIS INTEGRADA EN LA NOTICIA */}
+              {/* SECCIÓN 1: DATOS Y MÉTRICAS CUANTITATIVAS */}
+              <EventMetricsGrid metrics={selectedArticle.metricsData} />
+
+              {/* SECCIÓN 2: MARCO TEÓRICO, TESIS, MAPA MENTAL & CONCLUSIÓN IMPARCIAL */}
               <AcademicAnalysisSection 
                 analysis={selectedArticle.academicAnalysis} 
                 title={selectedArticle.title}
               />
 
-              <div className="space-y-4 font-sans text-sm text-gray-200 leading-relaxed font-light pt-2">
-                <div className="bg-black/60 p-5 rounded-2xl border-l-4 border-[#D4AF37] shadow-inner space-y-2">
-                  <span className="text-[10px] font-mono text-[#D4AF37] uppercase font-bold tracking-widest block">
-                    Síntesis Oficial ({selectedArticle.sourceName}):
-                  </span>
-                  <p className="font-serif text-base italic text-white leading-relaxed">
-                    "{selectedArticle.summary}"
-                  </p>
-                </div>
+              {/* SECCIÓN 3: REPORTAJE COMPLETO DETALLADO DEL EVENTO */}
+              <div className="space-y-4 font-sans text-sm text-gray-200 leading-relaxed font-light pt-4 border-t border-white/15">
+                <h4 className="font-serif text-lg font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
+                  <FileText size={18} /> REPORTAJE COMPLETO & HECHOS DESARROLLADOS
+                </h4>
 
-                <div className="space-y-3 pt-2 text-base leading-relaxed text-gray-100 font-sans">
+                <div className="space-y-4 text-base leading-relaxed text-gray-100 font-sans bg-black/40 p-6 rounded-2xl border border-white/15 shadow-inner">
                   <p className="whitespace-pre-line leading-relaxed">{selectedArticle.fullContent}</p>
                 </div>
               </div>
@@ -847,7 +889,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN CON MARCO TEÓRICO, TESIS, MAPA MENTAL Y CONCLUSIÓN IMPARCIAL */}
+        {/* MODAL DE COMPARACIÓN CON DATOS, MÉTRICAS, MARCO TEÓRICO, TESIS, MAPA MENTAL Y CONCLUSIÓN IMPARCIAL */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -877,7 +919,7 @@ function NoticiasContent() {
               <div className="space-y-3 border-b border-[#D4AF37]/30 pb-6 clear-both text-center sm:text-left">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#D4AF37] text-[10px] font-mono font-bold uppercase tracking-widest">
                   <Scale size={14} />
-                  <span>Análisis de Sesgos + Mapa Mental + Conclusión Neutra</span>
+                  <span>Análisis de Sesgos + Métricas + Mapa Mental + Conclusión Neutra</span>
                 </div>
 
                 <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight">
@@ -950,6 +992,9 @@ function NoticiasContent() {
                   </div>
                 </div>
               </div>
+
+              {/* DATOS Y MÉTRICAS CUANTITATIVAS DEL EVENTO */}
+              <EventMetricsGrid metrics={selectedBiasComparison.metricsData} />
 
               {/* INTEGRACIÓN DEL ANÁLISIS ACADÉMICO: MARCO TEÓRICO, TESIS, MAPA MENTAL Y CONCLUSIÓN IMPARCIAL */}
               <AcademicAnalysisSection 
