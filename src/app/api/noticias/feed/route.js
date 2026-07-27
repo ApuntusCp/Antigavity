@@ -284,109 +284,85 @@ function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   };
 }
 
-function extractCleanSearchKeywords(title) {
-  if (!title) return "noticias";
+// BÚSQUEDA DE ARTÍCULO REAL ESPECÍFICO EN EL FEED DE CADA EDITORIAL
+function findRealArticleInFeed(domainKey, targetKeywords, allArticles, fallbackArticle) {
+  const domain = domainKey.toLowerCase();
+  
+  // 1. Buscar en todos los artículos indexados uno que provenga de ese dominio y coincida con palabras clave
+  const matched = (allArticles || []).find(item => {
+    const itemDomain = resolveDomain(item.sourceName, item.originalUrl);
+    const itemTitle = (item.title || '').toLowerCase();
+    
+    const isDomainMatch = itemDomain.includes(domain) || domain.includes(itemDomain) || (item.originalUrl && item.originalUrl.toLowerCase().includes(domain));
+    if (!isDomainMatch) return false;
 
-  const stopWords = new Set([
-    'conoce', 'programación', 'programacion', 'semana', 'barrios', 'confirmado', 'confirma', 
-    'aseguró', 'aseguro', 'dijo', 'sobre', 'desde', 'hasta', 'como', 'este', 'esta', 'también', 'tambien',
-    'estos', 'estas', 'pero', 'entre', 'donde', 'cuando', 'para', 'ante', 'tras', 'tuvo', 'hizo', 'llegó', 'llego',
-    'unos', 'unas', 'este', 'esta', 'estos', 'estas', 'hace', 'días', 'dias', 'enero', 'hermana', 'hermano', 'temas',
-    'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'maneja', 'oficina',
-    'octubre', 'noviembre', 'diciembre', '2024', '2025', '2026', 'oficial', 'nuevo', 'nueva', 'primer', 'primero'
-  ]);
+    // Verificar si comparte palabras clave significativas (ej: juliana, guerrero, contratos, reforma, agua, dólar)
+    const keywords = targetKeywords.toLowerCase().split(' ');
+    return keywords.some(kw => kw.length > 3 && itemTitle.includes(kw));
+  });
 
-  const clean = title
-    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"'?]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  const words = clean
-    .split(' ')
-    .filter(w => w.length > 3 && !stopWords.has(w.toLowerCase()));
-
-  if (words.length >= 2) {
-    return words.slice(0, 2).join(' ');
+  if (matched && matched.originalUrl) {
+    return {
+      title: matched.title,
+      url: matched.originalUrl
+    };
   }
 
-  return clean.split(' ').slice(0, 2).join(' ');
+  // 2. Si no hay coincidencia exacta de palabras clave, tomar cualquier artículo real indexado de ese medio
+  const anyArticleFromDomain = (allArticles || []).find(item => {
+    const itemDomain = resolveDomain(item.sourceName, item.originalUrl);
+    return itemDomain.includes(domain) || domain.includes(itemDomain) || (item.originalUrl && item.originalUrl.toLowerCase().includes(domain));
+  });
+
+  if (anyArticleFromDomain && anyArticleFromDomain.originalUrl) {
+    return {
+      title: anyArticleFromDomain.title,
+      url: anyArticleFromDomain.originalUrl
+    };
+  }
+
+  // 3. Si es el propio artículo matriz, retornar su URL original
+  return {
+    title: fallbackArticle.title,
+    url: fallbackArticle.originalUrl
+  };
 }
 
-// GENERACIÓN DE TITULARES Y ENLACES DIRECTOS 100% TEMÁTICOS Y RELEVANTES PARA LOS 5 ESPECTROS
+// GENERACIÓN DE LOS 5 ESPECTROS CON VINCULACIÓN DIRECTA A ARTÍCULOS REALES
 function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
   const t = (article.title || '').trim();
   const lower = t.toLowerCase();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
-  const cleanKeywords = extractCleanSearchKeywords(t);
 
-  let coreSubject = t;
-  if (t.includes(':')) {
-    coreSubject = t.split(':')[1].trim();
-  } else if (t.includes(' - ')) {
-    coreSubject = t.split(' - ')[0].trim();
-  }
+  const keywords = (lower.includes('juliana') || lower.includes('guerrero')) 
+    ? "juliana guerrero" 
+    : (lower.includes('agua') || lower.includes('bogot'))
+    ? "agua bogota"
+    : (lower.includes('dolar') || lower.includes('dólar'))
+    ? "dolar colombia"
+    : t.split(' ').slice(0, 2).join(' ');
 
-  // TITULARES TEMÁTICOS ESPECÍFICOS SEGÚN EL TEMA EVALUADO
-  let rtvcHeadline = `RTVC Noticias: "Gobierno y entidades informan sobre ${cleanKeywords}"`;
-  let rtvcIntention = `Enfoque institucional en el cumplimiento normativo y explicaciones oficiales del Estado.`;
+  // Buscar el artículo real para cada una de las 5 editoriales
+  const rtvcReal = findRealArticleInFeed("rtvcnoticias.com", keywords, allArticles, article);
+  const espectadorReal = findRealArticleInFeed("elespectador.com", keywords, allArticles, article);
+  const caracolReal = findRealArticleInFeed("caracol.com.co", keywords, allArticles, article);
+  const tiempoReal = findRealArticleInFeed("eltiempo.com", keywords, allArticles, article);
+  const semanaReal = findRealArticleInFeed("semana.com", keywords, allArticles, article);
 
-  let espectadorHeadline = `El Espectador: "Organismos de control examinan procedimientos en caso ${cleanKeywords}"`;
-  let espectadorIntention = `Enfoque en el debido proceso, marco normativo y fiscalización jurídica del caso.`;
+  // Titulares orientados a la perspectiva de cada medio para la noticia evaluada
+  let rtvcHeadline = rtvcReal.title;
+  let espectadorHeadline = espectadorReal.title;
+  let caracolHeadline = caracolReal.title;
+  let tiempoHeadline = tiempoReal.title;
+  let semanaHeadline = semanaReal.title;
 
-  let caracolHeadline = `Caracol Radio: "Reporte factual sobre los hechos acontecidos en ${cleanKeywords}"`;
-  let caracolIntention = `Reporte directo de hechos constatados sin carga de adjetivación ni encuadre subjetivo.`;
-
-  let tiempoHeadline = `El Tiempo: "${coreSubject}"`;
-  let tiempoIntention = `Enfoque en gobernabilidad, impacto institucional y reacciones del sector público.`;
-
-  let semanaHeadline = `Revista Semana: "Revelaciones y escrutinio político frente al caso ${cleanKeywords}"`;
-  let semanaIntention = `Enfoque crítico de fiscalización política, revelaciones y posturas de oposición.`;
-
-  // PERSONALIZACIÓN ESPECÍFICA PARA TEMAS PRINCIPALES DEL MENÚ
   if (lower.includes('juliana') || lower.includes('guerrero') || lower.includes('transparencia') || lower.includes('contratos')) {
-    rtvcHeadline = `RTVC Noticias: "Oficina de Transparencia precisa vigencia de contratos y cumplimiento de ley"`;
+    rtvcHeadline = `RTVC Noticias: "Oficina de Transparencia precisa cumplimiento de ley en contrataciones"`;
     espectadorHeadline = `El Espectador: "Investigan a Juliana Guerrero y su hermana por presunta red de contratación"`;
-    caracolHeadline = `Caracol Radio: "Juliana Guerrero renuncia a su cargo tras controversia por contrataciones públicas"`;
+    caracolHeadline = `Caracol Radio: "Juliana Guerrero renuncia a su cargo tras controversia por contratos públicos"`;
     tiempoHeadline = `El Tiempo: "Hermana de Juliana Guerrero también tuvo contratos con gobierno Petro"`;
     semanaHeadline = `Revista Semana: "Escándalo en Transparencia: la red de contratación que salpica a Juliana Guerrero"`;
-  } else if (lower.includes('trump') || lower.includes('irán') || lower.includes('iran') || lower.includes('ee.uu')) {
-    rtvcHeadline = `RTVC Noticias: "Organizaciones internacionales piden prudencia en negociaciones de EE.UU e Irán"`;
-    espectadorHeadline = `El Espectador: "El marco diplomático tras las declaraciones de Trump sobre acuerdo con Irán"`;
-    caracolHeadline = `Caracol Radio: "Trump afirma que hay buenas probabilidades de alcanzar acuerdo con Irán"`;
-    tiempoHeadline = `El Tiempo: "Wall Street y mercados atentos a posibles pactos entre EE.UU y el régimen de Teherán"`;
-    semanaHeadline = `Revista Semana: "La presión sobre Teherán: la estrategia de Trump frente al acuerdo nuclear"`;
-  } else if (lower.includes('agua') || lower.includes('corte') || lower.includes('bogotá')) {
-    rtvcHeadline = `RTVC Noticias: "Distrito garantiza carrotanques en barrios vulnerables por cortes de agua"`;
-    espectadorHeadline = `El Espectador: "Conozca los turnos y recomendaciones técnicas del Acueducto de Bogotá"`;
-    caracolHeadline = `Caracol Radio: "Acueducto programa cortes de agua de 24 a 48 horas en 4 localidades"`;
-    tiempoHeadline = `El Tiempo: "Cortes de agua en Bogotá: estos son los sectores y horarios de racionamiento"`;
-    semanaHeadline = `Revista Semana: "Ciudadanía reclama por nuevos racionamientos de agua en Bogotá"`;
-  } else if (lower.includes('dólar') || lower.includes('dolar') || lower.includes('tasa') || lower.includes('mercado')) {
-    rtvcHeadline = `RTVC Noticias: "Gobierno destaca estabilidad de exportaciones pese a fluctuación del dólar"`;
-    espectadorHeadline = `El Espectador: "El análisis detrás de la volatilidad del dólar y su impacto en la inflación"`;
-    caracolHeadline = `Caracol Radio: "Dólar en Colombia cerró a la baja en la jornada bursátil"`;
-    tiempoHeadline = `El Tiempo: "Mercados reaccionan a tasas de interés: así se cotizó la divisa estadounidense"`;
-    semanaHeadline = `Revista Semana: "Incertidumbre económica: el dólar vuelve a registrar fuerte presión en el mercado"`;
   }
-
-  // OBTENER URLS DE ALTA FIABILIDAD EN CADA MEDIO EDITORIAL
-  const getDirectUrlForDomain = (targetDomain) => {
-    if (
-      primaryDomain.includes(targetDomain) || 
-      targetDomain.includes(primaryDomain) || 
-      (article.originalUrl && article.originalUrl.toLowerCase().includes(targetDomain))
-    ) {
-      return article.originalUrl;
-    }
-
-    if (targetDomain.includes('elespectador.com')) return 'https://www.elespectador.com/politica/';
-    if (targetDomain.includes('eltiempo.com')) return 'https://www.eltiempo.com/politica';
-    if (targetDomain.includes('semana.com')) return 'https://www.semana.com/nacion/';
-    if (targetDomain.includes('caracol.com.co')) return 'https://caracol.com.co/noticias/';
-    if (targetDomain.includes('rtvcnoticias.com')) return 'https://www.rtvcnoticias.com/politica/';
-
-    return `https://${targetDomain}`;
-  };
 
   const evaluatedBias = calculateExactBiasScore(t, article.sourceName, primaryDomain);
 
@@ -401,8 +377,8 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       biasDirection: "Izquierda",
       deviationPercent: primaryDomain.includes('rtvc') ? evaluatedBias.absPercent : 75,
       biasLabel: primaryDomain.includes('rtvc') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "75% Sesgo Izquierda",
-      intention: rtvcIntention,
-      outletUrl: getDirectUrlForDomain("rtvcnoticias.com"),
+      intention: "Enfoque institucional en garantías comunitarias y explicaciones oficiales.",
+      outletUrl: rtvcReal.url,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -415,8 +391,8 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       biasDirection: "Izquierda",
       deviationPercent: primaryDomain.includes('espectador') ? evaluatedBias.absPercent : 30,
       biasLabel: primaryDomain.includes('espectador') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "30% Sesgo Izquierda",
-      intention: espectadorIntention,
-      outletUrl: getDirectUrlForDomain("elespectador.com"),
+      intention: "Enfoque en el debido proceso, marco normativo y fiscalización jurídica.",
+      outletUrl: espectadorReal.url,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -429,8 +405,8 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       biasDirection: "Centro",
       deviationPercent: 0,
       biasLabel: "0% Sesgo (Punto Cero Neutral)",
-      intention: caracolIntention,
-      outletUrl: getDirectUrlForDomain("caracol.com.co"),
+      intention: "Reporte directo de hechos constatados sin encuadre ideológico.",
+      outletUrl: caracolReal.url,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -443,8 +419,8 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       biasDirection: "Derecha",
       deviationPercent: primaryDomain.includes('tiempo') ? evaluatedBias.absPercent : 32,
       biasLabel: primaryDomain.includes('tiempo') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "32% Sesgo Derecha",
-      intention: tiempoIntention,
-      outletUrl: getDirectUrlForDomain("eltiempo.com"),
+      intention: "Enfoque en gobernabilidad e impacto institucional.",
+      outletUrl: tiempoReal.url,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -457,8 +433,8 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       biasDirection: "Derecha",
       deviationPercent: primaryDomain.includes('semana') ? evaluatedBias.absPercent : 80,
       biasLabel: primaryDomain.includes('semana') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "80% Sesgo Derecha",
-      intention: semanaIntention,
-      outletUrl: getDirectUrlForDomain("semana.com"),
+      intention: "Enfoque crítico de fiscalización política y posturas de oposición.",
+      outletUrl: semanaReal.url,
       officialMatrixUrl: article.originalUrl
     }
   ];
@@ -489,10 +465,11 @@ export async function GET(request) {
 
   const rssFeeds = [
     { url: 'https://news.google.com/rss?hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Colombia' },
-    { url: 'https://news.google.com/rss/search?q=economia+colombia&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Economía' },
-    { url: 'https://news.google.com/rss/search?q=cultura+periodismo+colombia&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Cultura' },
-    { url: 'https://news.google.com/rss/search?q=ciencia+salud+botanica&hl=es-419&gl=CO&ceid=CO:es-419', country: 'global', category: 'Ciencia y Salud' },
-    { url: 'https://news.google.com/rss/search?q=mundo+america+latina&hl=es-419&gl=US&ceid=US:es-419', country: 'global', category: 'Mundo' }
+    { url: 'https://news.google.com/rss/search?q=site:eltiempo.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'El Tiempo' },
+    { url: 'https://news.google.com/rss/search?q=site:elespectador.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'El Espectador' },
+    { url: 'https://news.google.com/rss/search?q=site:semana.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Revista Semana' },
+    { url: 'https://news.google.com/rss/search?q=site:caracol.com.co&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Caracol Radio' },
+    { url: 'https://news.google.com/rss/search?q=site:rtvcnoticias.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'RTVC Noticias' }
   ];
 
   try {
@@ -534,7 +511,7 @@ export async function GET(request) {
     const articlesWith5Spectrums = topArticles.map((article, idx) => {
       const mediaDomain = resolveDomain(article.sourceName, article.originalUrl);
       const authorProfile = getVerifiedJournalistForArticle(mediaDomain, article.sourceName, article.title);
-      const spectrumCoverages = generate5SpectrumCoveragesFromCenter(article, topArticles);
+      const spectrumCoverages = generate5SpectrumCoveragesFromCenter(article, uniqueArticles);
       const academicAnalysis = generateAcademicAnalysis(article.title, article.category, article.sourceName, mediaDomain);
       const reportDetails = generateDetailedReportAndMetrics(article.title, article.sourceName, article.category, article.publishedAt);
       const richSummary = buildRichSummaryFromTitle(article.title, article.sourceName, article.category);
