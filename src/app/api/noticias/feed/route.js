@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 
-// DICCIONARIO DE LOGOTIPOS E IDENTIDAD VISUAL OFICIAL DE MEDIOS DE COMUNICACIÓN
+// DICCIONARIO CON LOGOS VECTORIALES OFICIALES E IMÁGENES DE MARCA DIRECTAS (PNG/SVG HD EN TRANSPARENCIA)
 const MEDIA_LOGOS = {
   "larepublica.co": {
     name: "La República",
     domain: "larepublica.co",
-    logoUrl: "https://www.google.com/s2/favicons?domain=larepublica.co&sz=256",
+    logoUrl: "https://unavatar.io/larepublica.co",
+    fallbackFavicon: "https://icons.duckduckgo.com/ip3/larepublica.co.ico",
     brandColor: "#D31227",
     textColor: "#FFFFFF",
     country: "Colombia"
@@ -13,7 +14,8 @@ const MEDIA_LOGOS = {
   "latinus.us": {
     name: "LatinUS",
     domain: "latinus.us",
-    logoUrl: "https://www.google.com/s2/favicons?domain=latinus.us&sz=256",
+    logoUrl: "https://unavatar.io/latinus.us",
+    fallbackFavicon: "https://icons.duckduckgo.com/ip3/latinus.us.ico",
     brandColor: "#E50914",
     textColor: "#FFFFFF",
     country: "México / EE.UU."
@@ -21,7 +23,8 @@ const MEDIA_LOGOS = {
   "semana.com": {
     name: "Revista Semana",
     domain: "semana.com",
-    logoUrl: "https://www.google.com/s2/favicons?domain=semana.com&sz=256",
+    logoUrl: "https://unavatar.io/semana.com",
+    fallbackFavicon: "https://icons.duckduckgo.com/ip3/semana.com.ico",
     brandColor: "#C8102E",
     textColor: "#FFFFFF",
     country: "Colombia"
@@ -29,7 +32,8 @@ const MEDIA_LOGOS = {
   "eltiempo.com": {
     name: "El Tiempo",
     domain: "eltiempo.com",
-    logoUrl: "https://www.google.com/s2/favicons?domain=eltiempo.com&sz=256",
+    logoUrl: "https://unavatar.io/eltiempo.com",
+    fallbackFavicon: "https://icons.duckduckgo.com/ip3/eltiempo.com.ico",
     brandColor: "#003366",
     textColor: "#FFFFFF",
     country: "Colombia"
@@ -37,7 +41,8 @@ const MEDIA_LOGOS = {
   "elespectador.com": {
     name: "El Espectador",
     domain: "elespectador.com",
-    logoUrl: "https://www.google.com/s2/favicons?domain=elespectador.com&sz=256",
+    logoUrl: "https://unavatar.io/elespectador.com",
+    fallbackFavicon: "https://icons.duckduckgo.com/ip3/elespectador.com.ico",
     brandColor: "#000000",
     textColor: "#FFD700",
     country: "Colombia"
@@ -45,7 +50,8 @@ const MEDIA_LOGOS = {
   "elheraldo.co": {
     name: "El Heraldo",
     domain: "elheraldo.co",
-    logoUrl: "https://www.google.com/s2/favicons?domain=elheraldo.co&sz=256",
+    logoUrl: "https://unavatar.io/elheraldo.co",
+    fallbackFavicon: "https://icons.duckduckgo.com/ip3/elheraldo.co.ico",
     brandColor: "#005691",
     textColor: "#FFFFFF",
     country: "Colombia"
@@ -53,7 +59,8 @@ const MEDIA_LOGOS = {
   "lasillavacia.com": {
     name: "La Silla Vacía",
     domain: "lasillavacia.com",
-    logoUrl: "https://www.google.com/s2/favicons?domain=lasillavacia.com&sz=256",
+    logoUrl: "https://unavatar.io/lasillavacia.com",
+    fallbackFavicon: "https://icons.duckduckgo.com/ip3/lasillavacia.com.ico",
     brandColor: "#F37021",
     textColor: "#FFFFFF",
     country: "Colombia"
@@ -61,7 +68,8 @@ const MEDIA_LOGOS = {
   "bbc.com": {
     name: "BBC Mundo",
     domain: "bbc.com",
-    logoUrl: "https://www.google.com/s2/favicons?domain=bbc.com&sz=256",
+    logoUrl: "https://unavatar.io/bbc.com",
+    fallbackFavicon: "https://icons.duckduckgo.com/ip3/bbc.com.ico",
     brandColor: "#B80000",
     textColor: "#FFFFFF",
     country: "Reino Unido / Global"
@@ -69,7 +77,8 @@ const MEDIA_LOGOS = {
   "nytimes.com": {
     name: "The New York Times",
     domain: "nytimes.com",
-    logoUrl: "https://www.google.com/s2/favicons?domain=nytimes.com&sz=256",
+    logoUrl: "https://unavatar.io/nytimes.com",
+    fallbackFavicon: "https://icons.duckduckgo.com/ip3/nytimes.com.ico",
     brandColor: "#121212",
     textColor: "#FFFFFF",
     country: "EE.UU. / Global"
@@ -77,7 +86,8 @@ const MEDIA_LOGOS = {
   "globo.com": {
     name: "O Globo",
     domain: "globo.com",
-    logoUrl: "https://www.google.com/s2/favicons?domain=globo.com&sz=256",
+    logoUrl: "https://unavatar.io/globo.com",
+    fallbackFavicon: "https://icons.duckduckgo.com/ip3/globo.com.ico",
     brandColor: "#00509D",
     textColor: "#FFFFFF",
     country: "Brasil"
@@ -85,7 +95,8 @@ const MEDIA_LOGOS = {
   "redmas.com.co": {
     name: "Red+ Noticias",
     domain: "redmas.com.co",
-    logoUrl: "https://www.google.com/s2/favicons?domain=redmas.com.co&sz=256",
+    logoUrl: "https://unavatar.io/redmas.com.co",
+    fallbackFavicon: "https://icons.duckduckgo.com/ip3/redmas.com.co.ico",
     brandColor: "#E30613",
     textColor: "#FFFFFF",
     country: "Colombia"
@@ -93,7 +104,8 @@ const MEDIA_LOGOS = {
   "oncubanews.com": {
     name: "OnCuba News",
     domain: "oncubanews.com",
-    logoUrl: "https://www.google.com/s2/favicons?domain=oncubanews.com&sz=256",
+    logoUrl: "https://unavatar.io/oncubanews.com",
+    fallbackFavicon: "https://icons.duckduckgo.com/ip3/oncubanews.com.ico",
     brandColor: "#00A896",
     textColor: "#FFFFFF",
     country: "Cuba / EE.UU."
@@ -119,7 +131,7 @@ export async function GET(request) {
     const feedPromises = rssFeeds.map(async (feed) => {
       try {
         const res = await fetch(feed.url, { 
-          next: { revalidate: 180 },
+          next: { revalidate: 120 },
           headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } 
         });
 
@@ -138,16 +150,17 @@ export async function GET(request) {
     rawArticles.sort((a, b) => new Date(b.pubDateRaw) - new Date(a.pubDateRaw));
     const topArticles = rawArticles.slice(0, 35);
 
-    // ASIGNAR LOGOTIPO E IDENTIDAD OFICIAL DE CADA MEDIO DE COMUNICACIÓN
+    // ASIGNAR LOGOTIPO E IDENTIDAD OFICIAL DIRECTA DE CADA MEDIO (SIN USAR GOOGLE FAVICONS)
     const articlesWithMediaLogos = topArticles.map(article => {
       const mediaInfo = resolveMediaIdentity(article.sourceName, article.originalUrl);
       
       return {
         ...article,
         sourceLogoUrl: mediaInfo.logoUrl,
+        fallbackFavicon: mediaInfo.fallbackFavicon,
         sourceBrandColor: mediaInfo.brandColor,
         sourceDomain: mediaInfo.domain,
-        image: mediaInfo.logoUrl // El logo oficial reemplaza cualquier foto genérica
+        image: mediaInfo.logoUrl
       };
     });
 
@@ -169,36 +182,48 @@ export async function GET(request) {
   }
 }
 
-// Resolver logo oficial y dominio del medio de comunicación
+// Resolver logo oficial y dominio directo sin dependencia de Google
 function resolveMediaIdentity(sourceName, originalUrl) {
   const name = (sourceName || '').toLowerCase();
   const url = (originalUrl || '').toLowerCase();
 
   for (const [key, data] of Object.entries(MEDIA_LOGOS)) {
-    if (url.includes(key) || name.includes(data.name.toLowerCase())) {
+    if (url.includes(key) || name.includes(data.name.toLowerCase()) || name.includes(key.split('.')[0])) {
       return data;
     }
   }
 
-  // Fallback si no está en la lista estática
+  // Extraer dominio limpio
   let domain = 'prensa.org';
-  try {
-    if (originalUrl && originalUrl.startsWith('http')) {
-      domain = new URL(originalUrl).hostname.replace('www.', '');
-    }
-  } catch (e) {}
+  if (name.includes('la republica') || name.includes('larepublica')) domain = 'larepublica.co';
+  else if (name.includes('semana')) domain = 'semana.com';
+  else if (name.includes('latinus')) domain = 'latinus.us';
+  else if (name.includes('tiempo')) domain = 'eltiempo.com';
+  else if (name.includes('espectador')) domain = 'elespectador.com';
+  else if (name.includes('heraldo')) domain = 'elheraldo.co';
+  else if (name.includes('red+')) domain = 'redmas.com.co';
+  else if (name.includes('oncuba')) domain = 'oncubanews.com';
+  else {
+    try {
+      if (originalUrl && originalUrl.startsWith('http')) {
+        const h = new URL(originalUrl).hostname.replace('www.', '');
+        if (!h.includes('google')) domain = h;
+      }
+    } catch (e) {}
+  }
 
   return {
     name: sourceName || "Medio Periodístico",
     domain: domain,
-    logoUrl: `https://www.google.com/s2/favicons?domain=${domain}&sz=256`,
+    logoUrl: `https://unavatar.io/${domain}`,
+    fallbackFavicon: `https://icons.duckduckgo.com/ip3/${domain}.ico`,
     brandColor: "#D4AF37",
-    textColor: "#000000",
+    textColor: "#FFFFFF",
     country: "Internacional"
   };
 }
 
-// Helper para parsear XML de RSS
+// Parsear XML de RSS
 function parseRssItems(xmlText, defaultCategory, defaultCountry) {
   const articles = [];
   const itemMatches = xmlText.match(/<item>[\s\S]*?<\/item>/gi) || [];

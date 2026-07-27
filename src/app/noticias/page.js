@@ -7,16 +7,47 @@ import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserChec
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
-// COMPONENTE DE TARJETA DE MARCA / LOGO OFICIAL DEL MEDIO DE COMUNICACIÓN DE ALTA GAMA
-function MediaBrandLogoCard({ sourceName, sourceDomain, logoUrl, brandColor, className = "h-48 md:h-64" }) {
+// COMPONENTE DE TARJETA DE MARCA / LOGO OFICIAL CON DUCKDUCKGO Y UNAVATAR (0 LOGOS DE GOOGLE GE)
+function MediaBrandLogoCard({ sourceName, sourceDomain, logoUrl, fallbackFavicon, brandColor, className = "h-48 md:h-64" }) {
+  const [imgSrc, setImgSrc] = useState(null);
   const [imgError, setImgError] = useState(false);
-  const domain = sourceDomain || (sourceName || 'medio').toLowerCase().replace(/\s+/g, '') + '.com';
-  const favicon = logoUrl || `https://www.google.com/s2/favicons?domain=${domain}&sz=256`;
+
+  // Extraer dominio limpio (evitando google.com)
+  const cleanDomain = React.useMemo(() => {
+    if (sourceDomain && !sourceDomain.includes('google')) return sourceDomain;
+    const name = (sourceName || '').toLowerCase();
+    if (name.includes('la republica') || name.includes('larepublica')) return 'larepublica.co';
+    if (name.includes('semana')) return 'semana.com';
+    if (name.includes('latinus')) return 'latinus.us';
+    if (name.includes('tiempo')) return 'eltiempo.com';
+    if (name.includes('espectador')) return 'elespectador.com';
+    if (name.includes('heraldo')) return 'elheraldo.co';
+    if (name.includes('red+')) return 'redmas.com.co';
+    if (name.includes('oncuba')) return 'oncubanews.com';
+    if (name.includes('bbc')) return 'bbc.com';
+    if (name.includes('ny') || name.includes('york')) return 'nytimes.com';
+    return 'prensa.org';
+  }, [sourceDomain, sourceName]);
+
+  useEffect(() => {
+    // Primer intento: DuckDuckGo ICO limpia de alta definición del dominio exacto del medio
+    setImgSrc(`https://icons.duckduckgo.com/ip3/${cleanDomain}.ico`);
+    setImgError(false);
+  }, [cleanDomain]);
+
+  const handlePrimaryError = () => {
+    // Segundo intento: Unavatar CDN del dominio del medio
+    if (imgSrc && imgSrc.includes('duckduckgo')) {
+      setImgSrc(`https://unavatar.io/${cleanDomain}`);
+    } else {
+      setImgError(true);
+    }
+  };
 
   return (
     <div className={`relative w-full overflow-hidden rounded-2xl leather-canvas-blue border-2 border-[#D4AF37]/50 shadow-inner flex flex-col items-center justify-center p-6 space-y-3 group ${className}`}>
       
-      {/* Fondo con resplandor suave de la marca */}
+      {/* Fondo con resplandor suave de la marca del medio */}
       <div 
         className="absolute inset-0 opacity-25 group-hover:opacity-40 transition-opacity duration-500"
         style={{
@@ -24,23 +55,26 @@ function MediaBrandLogoCard({ sourceName, sourceDomain, logoUrl, brandColor, cla
         }}
       ></div>
 
-      {/* Sello de verificación superior */}
-      <div className="absolute top-3 left-3 bg-black/80 px-3 py-1 rounded-full border border-[#D4AF37]/40 text-[9px] font-mono font-extrabold text-[#D4AF37] uppercase tracking-widest flex items-center gap-1 shadow-md">
+      {/* Dominio Oficial */}
+      <div className="absolute top-3 left-3 bg-black/90 px-3 py-1 rounded-full border border-[#D4AF37]/40 text-[9px] font-mono font-extrabold text-[#D4AF37] uppercase tracking-widest flex items-center gap-1 shadow-md">
         <BadgeCheck size={12} className="text-[#D4AF37]" />
-        <span>{domain}</span>
+        <span>{cleanDomain}</span>
       </div>
 
-      {/* Ícono de Logotipo Oficial del Medio */}
-      <div className="relative z-10 w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-black/90 p-3.5 border-2 border-[#D4AF37] shadow-[0_0_30px_rgba(212,175,55,0.4)] flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+      {/* Ícono de Logotipo Oficial del Medio de Comunicación */}
+      <div className="relative z-10 w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white p-3.5 border-2 border-[#D4AF37] shadow-[0_0_30px_rgba(212,175,55,0.4)] flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
         {!imgError ? (
           <img 
-            src={favicon} 
+            src={imgSrc} 
             alt={sourceName}
-            onError={() => setImgError(true)}
+            onError={handlePrimaryError}
             className="w-full h-full object-contain filter drop-shadow-md"
           />
         ) : (
-          <Landmark size={36} className="text-[#D4AF37]" />
+          <div className="w-full h-full flex flex-col items-center justify-center text-black font-black text-xs uppercase font-mono">
+            <Landmark size={32} className="text-[#D31227] mb-1" />
+            <span>{sourceName.slice(0, 3)}</span>
+          </div>
         )}
       </div>
 
@@ -263,7 +297,8 @@ function NoticiasContent() {
       author: "LaRepública.co Redacción",
       sourceName: "La República",
       sourceDomain: "larepublica.co",
-      sourceLogoUrl: "https://www.google.com/s2/favicons?domain=larepublica.co&sz=256",
+      sourceLogoUrl: "https://icons.duckduckgo.com/ip3/larepublica.co.ico",
+      fallbackFavicon: "https://unavatar.io/larepublica.co",
       sourceBrandColor: "#D31227",
       originalUrl: "https://www.larepublica.co/economia/de-la-espriella-anuncio-el-cierre-de-14-embajadas-y-15-consulados-en-su-administracion-4444159",
       category: "Colombia",
@@ -282,7 +317,8 @@ function NoticiasContent() {
       author: "LatinUS Redacción",
       sourceName: "LatinUS",
       sourceDomain: "latinus.us",
-      sourceLogoUrl: "https://www.google.com/s2/favicons?domain=latinus.us&sz=256",
+      sourceLogoUrl: "https://icons.duckduckgo.com/ip3/latinus.us.ico",
+      fallbackFavicon: "https://unavatar.io/latinus.us",
       sourceBrandColor: "#E50914",
       originalUrl: "https://latinus.us/mundo/2026/7/27/hambruna-afecta-a-645-millones-de-personas-pese-a-que-se-redujo-48-en-latinoamerica-onu-179966.html",
       category: "Mundo",
@@ -301,7 +337,8 @@ function NoticiasContent() {
       author: "Revista Semana Redacción",
       sourceName: "Revista Semana",
       sourceDomain: "semana.com",
-      sourceLogoUrl: "https://www.google.com/s2/favicons?domain=semana.com&sz=256",
+      sourceLogoUrl: "https://icons.duckduckgo.com/ip3/semana.com.ico",
+      fallbackFavicon: "https://unavatar.io/semana.com",
       sourceBrandColor: "#C8102E",
       originalUrl: "https://www.semana.com/economia/macroeconomia/",
       category: "Economía",
@@ -405,7 +442,7 @@ function NoticiasContent() {
             <div className="pt-1 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-950/80 border border-emerald-500/50 rounded-full text-[10px] font-mono text-emerald-300 font-bold">
                 <Radio size={12} className="animate-pulse text-emerald-400" />
-                <span>IDENTIFICACIÓN VISUAL POR MEDIO DE COMUNICACIÓN VERIFICADO ({dateDayMonthYear})</span>
+                <span>LOGOTIPOS DIRECTOS SIN DEPENDENCIAS DE GOOGLE NEWS ({dateDayMonthYear})</span>
               </div>
             </div>
           </div>
@@ -452,6 +489,7 @@ function NoticiasContent() {
                     sourceName={topNewsPrimary.sourceName}
                     sourceDomain={topNewsPrimary.sourceDomain}
                     logoUrl={topNewsPrimary.sourceLogoUrl}
+                    fallbackFavicon={topNewsPrimary.fallbackFavicon}
                     brandColor={topNewsPrimary.sourceBrandColor}
                     className="h-64 md:h-80"
                   />
@@ -477,38 +515,41 @@ function NoticiasContent() {
 
               {/* Columna de Noticias Secundarias con Logos de Medios (5 Cols) */}
               <div className="lg:col-span-5 space-y-4 flex flex-col justify-between">
-                {topNewsSecondary.map(secItem => (
-                  <div
-                    key={secItem.id}
-                    onClick={() => setSelectedArticle(secItem)}
-                    className="leather-card-dark rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-all cursor-pointer group flex items-center gap-4 hover:border-[#D4AF37]"
-                  >
-                    {/* Ícono de Logotipo del Medio */}
-                    <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-xl bg-black/80 border border-[#D4AF37]/40 shadow-md flex items-center justify-center p-2 group-hover:scale-105 transition-transform">
-                      <img 
-                        src={secItem.sourceLogoUrl || `https://www.google.com/s2/favicons?domain=${secItem.sourceDomain || 'prensa.org'}&sz=128`} 
-                        alt={secItem.sourceName}
-                        onError={(e) => {
-                          e.currentTarget.src = "https://www.google.com/s2/favicons?domain=prensa.org&sz=128";
-                        }}
-                        className="w-12 h-12 object-contain filter drop-shadow-md"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5 flex-1 min-w-0">
-                      <div className="flex items-center justify-between text-[10px] font-mono">
-                        <span className="text-[#D4AF37] font-extrabold uppercase">{secItem.sourceName}</span>
-                        <span className="text-gray-400">{secItem.publishedAt}</span>
+                {topNewsSecondary.map(secItem => {
+                  const domain = secItem.sourceDomain || 'prensa.org';
+                  return (
+                    <div
+                      key={secItem.id}
+                      onClick={() => setSelectedArticle(secItem)}
+                      className="leather-card-dark rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-all cursor-pointer group flex items-center gap-4 hover:border-[#D4AF37]"
+                    >
+                      {/* Ícono de Logotipo del Medio desde DuckDuckGo IP3 */}
+                      <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-xl bg-white border border-[#D4AF37]/40 shadow-md flex items-center justify-center p-2 group-hover:scale-105 transition-transform">
+                        <img 
+                          src={`https://icons.duckduckgo.com/ip3/${domain}.ico`} 
+                          alt={secItem.sourceName}
+                          onError={(e) => {
+                            e.currentTarget.src = `https://unavatar.io/${domain}`;
+                          }}
+                          className="w-12 h-12 object-contain filter drop-shadow-md"
+                        />
                       </div>
-                      <h4 className="font-serif text-xs md:text-sm font-bold text-white line-clamp-2 leading-snug group-hover:text-[#D4AF37] transition-colors">
-                        {secItem.title}
-                      </h4>
-                      <span className="text-[10px] font-sans text-gray-300 line-clamp-1 italic">
-                        {secItem.summary}
-                      </span>
+
+                      <div className="space-y-1.5 flex-1 min-w-0">
+                        <div className="flex items-center justify-between text-[10px] font-mono">
+                          <span className="text-[#D4AF37] font-extrabold uppercase">{secItem.sourceName}</span>
+                          <span className="text-gray-400">{secItem.publishedAt}</span>
+                        </div>
+                        <h4 className="font-serif text-xs md:text-sm font-bold text-white line-clamp-2 leading-snug group-hover:text-[#D4AF37] transition-colors">
+                          {secItem.title}
+                        </h4>
+                        <span className="text-[10px] font-sans text-gray-300 line-clamp-1 italic">
+                          {secItem.summary}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
             </div>
@@ -537,6 +578,7 @@ function NoticiasContent() {
                       sourceName={feedItem.sourceName}
                       sourceDomain={feedItem.sourceDomain}
                       logoUrl={feedItem.sourceLogoUrl}
+                      fallbackFavicon={feedItem.fallbackFavicon}
                       brandColor={feedItem.sourceBrandColor}
                       className="h-44"
                     />
@@ -594,30 +636,36 @@ function NoticiasContent() {
 
               {/* Lista Numerada de Medios */}
               <div className="space-y-3 font-mono text-xs">
-                {countrySidebarNews.slice(0, 8).map((sideItem, idx) => (
-                  <div
-                    key={`sidebar-${sideItem.id}`}
-                    onClick={() => setSelectedArticle(sideItem)}
-                    className="p-3 hover:bg-white/10 rounded-xl transition-colors cursor-pointer border-b border-white/10 space-y-1 group flex items-center gap-3"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-black/80 p-1 border border-[#D4AF37]/40 shrink-0 flex items-center justify-center">
-                      <img 
-                        src={sideItem.sourceLogoUrl || `https://www.google.com/s2/favicons?domain=${sideItem.sourceDomain || 'prensa.org'}&sz=64`}
-                        alt={sideItem.sourceName}
-                        className="w-5 h-5 object-contain"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between text-[10px] text-gray-400">
-                        <span className="font-bold text-[#D4AF37]">#{idx + 1} • {sideItem.sourceName}</span>
-                        <span>{sideItem.publishedAt}</span>
+                {countrySidebarNews.slice(0, 8).map((sideItem, idx) => {
+                  const domain = sideItem.sourceDomain || 'prensa.org';
+                  return (
+                    <div
+                      key={`sidebar-${sideItem.id}`}
+                      onClick={() => setSelectedArticle(sideItem)}
+                      className="p-3 hover:bg-white/10 rounded-xl transition-colors cursor-pointer border-b border-white/10 space-y-1 group flex items-center gap-3"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-white p-1 border border-[#D4AF37]/40 shrink-0 flex items-center justify-center">
+                        <img 
+                          src={`https://icons.duckduckgo.com/ip3/${domain}.ico`}
+                          alt={sideItem.sourceName}
+                          onError={(e) => {
+                            e.currentTarget.src = `https://unavatar.io/${domain}`;
+                          }}
+                          className="w-5 h-5 object-contain"
+                        />
                       </div>
-                      <p className="font-serif font-bold text-white leading-snug line-clamp-1 group-hover:text-[#D4AF37]">
-                        {sideItem.title}
-                      </p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between text-[10px] text-gray-400">
+                          <span className="font-bold text-[#D4AF37]">#{idx + 1} • {sideItem.sourceName}</span>
+                          <span>{sideItem.publishedAt}</span>
+                        </div>
+                        <p className="font-serif font-bold text-white leading-snug line-clamp-1 group-hover:text-[#D4AF37]">
+                          {sideItem.title}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -684,6 +732,7 @@ function NoticiasContent() {
                 sourceName={selectedArticle.sourceName}
                 sourceDomain={selectedArticle.sourceDomain}
                 logoUrl={selectedArticle.sourceLogoUrl}
+                fallbackFavicon={selectedArticle.fallbackFavicon}
                 brandColor={selectedArticle.sourceBrandColor}
                 className="h-56 md:h-72"
               />
