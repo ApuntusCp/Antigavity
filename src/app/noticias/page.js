@@ -3,11 +3,11 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Pin } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
-// INSIGNIA ELEGANTE COMPACTA DEL MEDIO (LIMPIA SIN BORDES DORADOS)
+// INSIGNIA ELEGANTE COMPACTA DEL MEDIO
 function MediaHeaderBadge({ sourceName, sourceDomain, logoUrl }) {
   const cleanDomain = React.useMemo(() => {
     if (sourceDomain && !sourceDomain.includes('google')) return sourceDomain;
@@ -322,7 +322,7 @@ function NoticiasContent() {
             <div className="pt-1 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-950/90 border border-emerald-400/60 rounded-full text-[10px] font-mono text-emerald-200 font-bold shadow-md">
                 <Radio size={12} className="animate-pulse text-emerald-400" />
-                <span>TIPOGRAFÍA DE ALTO CONTRASTE BLANCO CRISTALINO ACTIVA ({dateDayMonthYear})</span>
+                <span>TITULAR PRINCIPAL DE EVENTO DESTACADO EN TAMAÑO AMPLIO ({dateDayMonthYear})</span>
               </div>
             </div>
           </div>
@@ -685,7 +685,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN COMPLETA SIN BORDES DORADOS Y TIPOGRAFÍA BLANCO CRISTAL DE ALTO CONTRASTE */}
+        {/* MODAL DE COMPARACIÓN CON TITULAR PRINCIPAL DE EVENTO EVALUADO AMPLIADO Y PROMINENTE */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -712,22 +712,28 @@ function NoticiasContent() {
                 ✕
               </button>
 
-              <div className="space-y-3 border-b border-white/20 pb-6 clear-both text-center sm:text-left">
+              <div className="space-y-4 border-b border-white/20 pb-6 clear-both text-center sm:text-left">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/30 text-white text-[10px] font-mono font-black uppercase tracking-widest">
                   <Scale size={14} className="text-emerald-400" />
                   <span>Comparador Algorítmico de los 5 Espectros Políticos</span>
                 </div>
 
-                <h3 className="font-serif text-2xl md:text-4xl font-black text-white leading-tight drop-shadow-md">
+                <h3 className="font-serif text-2xl md:text-3xl font-black text-white leading-tight drop-shadow-md">
                   Misma Noticia — Cobertura en los 5 Espectros (Izquierda a Derecha)
                 </h3>
                 
-                <p className="text-xs font-mono text-gray-200 font-extrabold">
-                  Evento Matriz: <strong className="text-emerald-300 font-black">{selectedBiasComparison.title}</strong>
-                </p>
+                {/* TARJETA DEL EVENTO PRINCIPAL DESTACADA EN TAMAÑO AMPLIO Y PROMINENTE */}
+                <div className="bg-black/80 p-5 rounded-2xl border border-emerald-400/50 space-y-1.5 shadow-xl text-left">
+                  <span className="text-xs font-mono text-emerald-300 font-black uppercase tracking-widest flex items-center gap-2">
+                    <Pin size={15} className="text-emerald-400 shrink-0" /> EVENTO PRINCIPAL EVALUADO:
+                  </span>
+                  <h4 className="font-serif text-xl sm:text-3xl font-black text-white leading-tight drop-shadow-md">
+                    "{selectedBiasComparison.title}"
+                  </h4>
+                </div>
               </div>
 
-              {/* GUÍA DEL ESPECTRO IDEOLÓGICO EVALUADO (SIN BORDES DORADOS & TIPOGRAFÍA DE ALTO CONTRASTE BLANCO) */}
+              {/* GUÍA DEL ESPECTRO IDEOLÓGICO EVALUADO */}
               <div 
                 className="p-5 rounded-2xl border border-white/30 space-y-3 shadow-2xl"
                 style={{
@@ -783,7 +789,7 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              {/* SÍNTESIS IMPARCIAL FACTUAL (SIN BORDES DORADOS & ALTO CONTRASTE BLANCO) */}
+              {/* SÍNTESIS IMPARCIAL FACTUAL */}
               <div 
                 className="p-5 rounded-2xl border-l-4 border-emerald-400 border border-emerald-500/40 space-y-2 shadow-2xl"
                 style={{
@@ -800,7 +806,7 @@ function NoticiasContent() {
                 </p>
               </div>
 
-              {/* VENTANAS DE CADA TITULAR (LAS 5 COBERTURAS - SIN BORDES DORADOS & TIPOGRAFÍA DE ALTO CONTRASTE BLANCO) */}
+              {/* VENTANAS DE CADA TITULAR (LAS 5 COBERTURAS) */}
               <div className="space-y-4 pt-2">
                 <h4 className="font-serif text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
                   <Scale size={16} className="text-emerald-400" /> COBERTURAS REGISTRADAS EN LOS 5 ESPECTROS IDEOLÓGICOS
@@ -844,7 +850,7 @@ function NoticiasContent() {
                           </h5>
                         </div>
 
-                        {/* Análisis de Intención & Encuadre con Alto Contraste */}
+                        {/* Análisis de Intención & Encuadre */}
                         <div 
                           className="p-3.5 rounded-xl border border-white/20 space-y-1 text-xs shadow-inner"
                           style={{
