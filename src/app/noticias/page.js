@@ -7,7 +7,7 @@ import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserChec
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
-// COMPONENTE DE DATOS Y MÉTRICAS BALANCEADO ESTILO PUBLISHER (4 CARDS PERFECTAMENTE ALINEADAS)
+// COMPONENTE DE DATOS Y MÉTRICAS BALANCEADO ESTILO PUBLISHER (4 CARDS PERFECTAMENTE ALINEADAS CON TRANSPARENCIA DEL 22%)
 function EventMetricsGrid({ metrics }) {
   if (!metrics || metrics.length === 0) return null;
 
@@ -18,8 +18,8 @@ function EventMetricsGrid({ metrics }) {
       className="p-5 rounded-2xl border border-[#D4AF37]/50 space-y-3.5 shadow-2xl"
       style={{
         backgroundColor: 'rgba(5, 12, 24, 0.22)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)'
+        backdropFilter: 'blur(22px)',
+        WebkitBackdropFilter: 'blur(22px)'
       }}
     >
       <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
@@ -35,7 +35,12 @@ function EventMetricsGrid({ metrics }) {
         {displayMetrics.map((item, idx) => (
           <div 
             key={idx}
-            className="p-4 rounded-xl border border-[#D4AF37]/30 space-y-1.5 shadow-md flex flex-col justify-between hover:border-[#D4AF37] transition-all bg-black/40"
+            className="p-4 rounded-xl border border-[#D4AF37]/30 space-y-1.5 shadow-md flex flex-col justify-between hover:border-[#D4AF37] transition-all"
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.22)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)'
+            }}
           >
             <span className="text-[9px] font-mono text-gray-400 font-bold uppercase tracking-wider block">
               {item.label}:
@@ -59,8 +64,8 @@ function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
       className="p-5 rounded-2xl border border-[#D4AF37]/50 space-y-3.5 shadow-2xl"
       style={{
         backgroundColor: 'rgba(5, 12, 24, 0.22)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)'
+        backdropFilter: 'blur(22px)',
+        WebkitBackdropFilter: 'blur(22px)'
       }}
     >
       <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
@@ -78,7 +83,14 @@ function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
 
       {/* DESGLOSE FACTORIAL CUANTITATIVO */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
-        <div className="p-3.5 rounded-xl bg-black/50 border border-white/15 space-y-1">
+        <div 
+          className="p-3.5 rounded-xl border border-white/15 space-y-1"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.22)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)'
+          }}
+        >
           <span className="text-gray-400 text-[10px] font-bold uppercase block">
             1. PONDERACIÓN LÍNEA EDITORIAL DEL MEDIO (F1):
           </span>
@@ -87,7 +99,14 @@ function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
           </strong>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-black/50 border border-white/15 space-y-1">
+        <div 
+          className="p-3.5 rounded-xl border border-white/15 space-y-1"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.22)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)'
+          }}
+        >
           <span className="text-gray-400 text-[10px] font-bold uppercase block">
             2. CARGA LÉXICA & ADJETIVACIÓN EN EL TITULAR (F2):
           </span>
@@ -98,7 +117,14 @@ function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
       </div>
 
       {/* RESULTADO FINAL DE LA FÓRMULA */}
-      <div className="p-3.5 rounded-xl bg-gradient-to-r from-[#D4AF37]/20 via-black/80 to-[#D4AF37]/20 border border-[#D4AF37] text-center font-mono text-xs font-bold text-white shadow-lg">
+      <div 
+        className="p-3.5 rounded-xl border border-[#D4AF37] text-center font-mono text-xs font-bold text-white shadow-lg"
+        style={{
+          backgroundColor: 'rgba(5, 12, 24, 0.22)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)'
+        }}
+      >
         <span className="text-[10px] text-[#D4AF37] font-black uppercase tracking-wider block mb-0.5">
           FÓRMULA DEL RESULTADO FINAL = (F1 MEDIO) + (F2 LÉXICO):
         </span>
@@ -110,7 +136,7 @@ function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
   );
 }
 
-// COMPONENTE DE ANÁLISIS ACADÉMICO UNIFICADO (SIN DUPLICACIONES)
+// COMPONENTE DE ANÁLISIS ACADÉMICO UNIFICADO (CON TRANSPARENCIA DEL 22%)
 function AcademicAnalysisSection({ analysis, title }) {
   if (!analysis) return null;
 
@@ -129,8 +155,8 @@ function AcademicAnalysisSection({ analysis, title }) {
         className="p-5 rounded-2xl border border-[#D4AF37]/35 space-y-2 shadow-2xl"
         style={{
           backgroundColor: 'rgba(5, 15, 30, 0.22)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)'
+          backdropFilter: 'blur(22px)',
+          WebkitBackdropFilter: 'blur(22px)'
         }}
       >
         <span className="text-[10px] font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
@@ -146,8 +172,8 @@ function AcademicAnalysisSection({ analysis, title }) {
         className="p-5 rounded-2xl border-l-4 border-[#D4AF37] border border-[#D4AF37]/35 space-y-2 shadow-2xl"
         style={{
           backgroundColor: 'rgba(20, 20, 10, 0.22)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)'
+          backdropFilter: 'blur(22px)',
+          WebkitBackdropFilter: 'blur(22px)'
         }}
       >
         <span className="text-[10px] font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
@@ -163,8 +189,8 @@ function AcademicAnalysisSection({ analysis, title }) {
         className="p-5 rounded-2xl border-l-4 border-emerald-400 border border-emerald-500/40 space-y-2 shadow-2xl"
         style={{
           backgroundColor: 'rgba(0, 35, 20, 0.22)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)'
+          backdropFilter: 'blur(22px)',
+          WebkitBackdropFilter: 'blur(22px)'
         }}
       >
         <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest flex items-center gap-2">
@@ -398,8 +424,15 @@ function NoticiasContent() {
       
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
 
-        {/* MASTHEAD PRINCIPAL CON CONTROL EDITORIAL PUBLISHER */}
-        <div className="leather-canvas-blue rounded-3xl p-6 md:p-10 backdrop-blur-2xl relative overflow-hidden space-y-6 border-2 border-[#D4AF37]/50 shadow-[0_20px_60px_rgba(0,0,0,0.9)]">
+        {/* MASTHEAD PRINCIPAL CON FONDO DE 22% TRANSPARENCIA Y 22PX BLUR DE ALTA GAMA */}
+        <div 
+          className="rounded-3xl p-6 md:p-10 relative overflow-hidden space-y-6 border-2 border-[#D4AF37]/50 shadow-[0_20px_80px_rgba(0,0,0,0.95)]"
+          style={{
+            backgroundColor: 'rgba(5, 12, 24, 0.22)',
+            backdropFilter: 'blur(22px)',
+            WebkitBackdropFilter: 'blur(22px)'
+          }}
+        >
           
           <div className="text-center space-y-4 border-b border-[#D4AF37]/35 pb-6">
             <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-gray-300 uppercase tracking-widest px-2 gap-2">
@@ -462,21 +495,52 @@ function NoticiasContent() {
             </div>
           </div>
 
-          {/* DASHBOARD INDICADORES DE PUBLISHER */}
+          {/* DASHBOARD INDICADORES DE PUBLISHER (22% TRANSPARENCIA) */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs text-center border-b border-white/10 pb-4">
-            <div className="p-3 bg-black/40 rounded-xl border border-white/10 space-y-0.5">
+            <div 
+              className="p-3 rounded-xl border border-white/10 space-y-0.5"
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)'
+              }}
+            >
               <span className="text-gray-400 text-[10px] uppercase font-bold block">Coberturas En Vivo</span>
               <strong className="text-white font-extrabold text-sm">{realtimeArticles.length} Medios Indexados</strong>
             </div>
-            <div className="p-3 bg-black/40 rounded-xl border border-white/10 space-y-0.5">
+
+            <div 
+              className="p-3 rounded-xl border border-white/10 space-y-0.5"
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)'
+              }}
+            >
               <span className="text-gray-400 text-[10px] uppercase font-bold block">Matriz Ideológica</span>
               <strong className="text-[#D4AF37] font-extrabold text-sm">5 Espectros Evaluados</strong>
             </div>
-            <div className="p-3 bg-black/40 rounded-xl border border-white/10 space-y-0.5">
+
+            <div 
+              className="p-3 rounded-xl border border-white/10 space-y-0.5"
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)'
+              }}
+            >
               <span className="text-gray-400 text-[10px] uppercase font-bold block">Punto Cero Neutral</span>
               <strong className="text-emerald-400 font-extrabold text-sm">0% Sesgo de Origen</strong>
             </div>
-            <div className="p-3 bg-black/40 rounded-xl border border-white/10 space-y-0.5">
+
+            <div 
+              className="p-3 rounded-xl border border-white/10 space-y-0.5"
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)'
+              }}
+            >
               <span className="text-gray-400 text-[10px] uppercase font-bold block">Diagnóstico de Integridad</span>
               <strong className="text-white font-extrabold text-sm">Análisis Activo</strong>
             </div>
@@ -513,10 +577,15 @@ function NoticiasContent() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               
-              {/* Noticia de Portada Principal (7 Cols) */}
+              {/* Noticia de Portada Principal (7 Cols con 22% Transparencia) */}
               {topNewsPrimary && (
                 <div 
-                  className="lg:col-span-7 leather-card-dark rounded-3xl p-6 shadow-2xl transition-all duration-500 space-y-4 hover:border-[#D4AF37] flex flex-col justify-between"
+                  className="lg:col-span-7 rounded-3xl p-6 shadow-2xl transition-all duration-500 space-y-4 hover:border-[#D4AF37] flex flex-col justify-between border border-[#D4AF37]/40"
+                  style={{
+                    backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                    backdropFilter: 'blur(22px)',
+                    WebkitBackdropFilter: 'blur(22px)'
+                  }}
                 >
                   <div className="space-y-3">
                     <MediaHeaderBadge 
@@ -555,12 +624,17 @@ function NoticiasContent() {
                 </div>
               )}
 
-              {/* Tendencias a la Derecha */}
+              {/* Tendencias a la Derecha (22% Transparencia) */}
               <div className="lg:col-span-5 space-y-3.5 flex flex-col justify-between">
                 {topNewsSecondary.map((secItem, idx) => (
                   <div
                     key={secItem.id}
-                    className="leather-card-dark rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all space-y-2 hover:border-[#D4AF37]"
+                    className="rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all space-y-2 hover:border-[#D4AF37] border border-[#D4AF37]/30"
+                    style={{
+                      backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)'
+                    }}
                   >
                     <div className="flex items-start gap-3.5 cursor-pointer" onClick={() => setSelectedArticle(secItem)}>
                       <div className="w-8 h-8 rounded-lg bg-white p-1 border border-[#D4AF37]/50 shrink-0 flex items-center justify-center shadow-sm">
@@ -599,7 +673,7 @@ function NoticiasContent() {
             </div>
           </div>
 
-          {/* MAIN GRID SEGÚN MODO PUBLISHER */}
+          {/* MAIN GRID SEGÚN MODO PUBLISHER (22% TRANSPARENCIA) */}
           <div className="pt-8 border-t border-white/15 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             <div className="lg:col-span-8 space-y-6">
@@ -614,7 +688,12 @@ function NoticiasContent() {
                 {filteredNews.slice(1, visibleNewsCount + 1).map(feedItem => (
                   <div
                     key={`feed-grid-${feedItem.id}`}
-                    className="leather-card-dark rounded-2xl p-5 shadow-lg transition-all space-y-3 hover:border-[#D4AF37] flex flex-col justify-between"
+                    className="rounded-2xl p-5 shadow-lg transition-all space-y-3 hover:border-[#D4AF37] flex flex-col justify-between border border-[#D4AF37]/30"
+                    style={{
+                      backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)'
+                    }}
                   >
                     <div className="space-y-2 cursor-pointer" onClick={() => setSelectedArticle(feedItem)}>
                       <MediaHeaderBadge 
@@ -657,8 +736,15 @@ function NoticiasContent() {
               </div>
             </div>
 
-            {/* SIDEBAR DE MEDIOS REGIONALES */}
-            <div className="lg:col-span-4 leather-card-dark rounded-3xl p-6 shadow-xl space-y-5 border border-[#D4AF37]/40">
+            {/* SIDEBAR DE MEDIOS REGIONALES (22% TRANSPARENCIA) */}
+            <div 
+              className="lg:col-span-4 rounded-3xl p-6 shadow-xl space-y-5 border border-[#D4AF37]/40"
+              style={{
+                backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                backdropFilter: 'blur(22px)',
+                WebkitBackdropFilter: 'blur(22px)'
+              }}
+            >
               <div className="space-y-1.5 border-b border-white/15 pb-4">
                 <span className="text-[10px] font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider block">
                   FILTRO PAÍS SELECCIONADO
@@ -718,7 +804,7 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA INTEGRADO CON BOTÓN INTERACTIVO PARA VER EL DOSSIER DEL AUTOR */}
+        {/* MODAL LECTURA INTEGRADO (CON TRANSPARENCIA DEL 22%) */}
         {selectedArticle && (
           <div 
             className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -730,12 +816,19 @@ function NoticiasContent() {
               bottom: 0,
               width: '100vw',
               height: '100vh',
-              backgroundColor: 'rgba(0, 0, 0, 0.22)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)'
+              backgroundColor: 'rgba(0, 0, 0, 0.45)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)'
             }}
           >
-            <div className="leather-canvas-blue text-white rounded-3xl max-w-5xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.5)] border-2 border-[#D4AF37] my-auto">
+            <div 
+              className="text-white rounded-3xl max-w-5xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.5)] border-2 border-[#D4AF37] my-auto"
+              style={{
+                backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                backdropFilter: 'blur(22px)',
+                WebkitBackdropFilter: 'blur(22px)'
+              }}
+            >
               
               <button
                 onClick={() => setSelectedArticle(null)}
@@ -820,7 +913,14 @@ function NoticiasContent() {
                   <FileText size={18} /> REPORTAJE COMPLETO & HECHOS DESARROLLADOS
                 </h4>
 
-                <div className="space-y-4 text-base leading-relaxed text-gray-100 font-sans bg-black/40 p-6 rounded-2xl border border-white/15 shadow-inner">
+                <div 
+                  className="space-y-4 text-base leading-relaxed text-gray-100 font-sans p-6 rounded-2xl border border-white/15 shadow-inner"
+                  style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)'
+                  }}
+                >
                   <p className="whitespace-pre-line leading-relaxed">{selectedArticle.fullContent}</p>
                 </div>
               </div>
@@ -847,7 +947,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN CON NAVEGACIÓN Y DESGLOSE MATEMÁTICO SIN DUPLICACIÓN */}
+        {/* MODAL DE COMPARACIÓN CON TRANSPARENCIA DEL 22% */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -864,7 +964,14 @@ function NoticiasContent() {
               WebkitBackdropFilter: 'blur(24px)'
             }}
           >
-            <div className="leather-canvas-blue text-white rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto">
+            <div 
+              className="text-white rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto"
+              style={{
+                backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                backdropFilter: 'blur(22px)',
+                WebkitBackdropFilter: 'blur(22px)'
+              }}
+            >
               
               <button
                 onClick={() => setSelectedBiasComparison(null)}
@@ -917,8 +1024,8 @@ function NoticiasContent() {
                       className="rounded-2xl p-5 border border-[#D4AF37]/35 space-y-3 shadow-2xl hover:border-[#D4AF37] hover:shadow-[0_0_30px_rgba(212,175,55,0.35)] transition-all flex flex-col justify-between group/card"
                       style={{
                         backgroundColor: 'rgba(5, 12, 24, 0.22)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)'
+                        backdropFilter: 'blur(22px)',
+                        WebkitBackdropFilter: 'blur(22px)'
                       }}
                     >
                       <div className="space-y-2.5">
@@ -1013,7 +1120,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL HOJA DE VIDA PÚBLICA & TRAYECTORIA PROFESIONAL DEL AUTOR */}
+        {/* MODAL HOJA DE VIDA PÚBLICA & TRAYECTORIA PROFESIONAL DEL AUTOR CON TRANSPARENCIA DEL 22% */}
         {selectedAuthor && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -1030,7 +1137,14 @@ function NoticiasContent() {
               WebkitBackdropFilter: 'blur(24px)'
             }}
           >
-            <div className="leather-canvas-blue text-white rounded-3xl max-w-2xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-8 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto">
+            <div 
+              className="text-white rounded-3xl max-w-2xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-8 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto"
+              style={{
+                backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                backdropFilter: 'blur(22px)',
+                WebkitBackdropFilter: 'blur(22px)'
+              }}
+            >
               
               <button
                 onClick={() => setSelectedAuthor(null)}
@@ -1084,7 +1198,14 @@ function NoticiasContent() {
                 <h4 className="font-serif text-sm font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
                   <FileText size={16} /> Biografía & Trayectoria Informativa
                 </h4>
-                <p className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed bg-black/40 p-4 rounded-2xl border border-white/10">
+                <p 
+                  className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed p-4 rounded-2xl border border-white/10"
+                  style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)'
+                  }}
+                >
                   {selectedAuthor.bio}
                 </p>
               </div>
@@ -1094,7 +1215,14 @@ function NoticiasContent() {
                 <h4 className="font-serif text-sm font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
                   <History size={16} /> Medios y Empresas Donde Ha Trabajado (Trayectoria Profesional)
                 </h4>
-                <div className="space-y-2 bg-black/40 p-4 rounded-2xl border border-white/10 font-mono text-xs">
+                <div 
+                  className="space-y-2 p-4 rounded-2xl border border-white/10 font-mono text-xs"
+                  style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)'
+                  }}
+                >
                   {selectedAuthor.previousWork.map((work, idx) => (
                     <div key={idx} className="flex items-center gap-2 text-gray-200">
                       <span className="w-2 h-2 rounded-full bg-[#D4AF37]"></span>
