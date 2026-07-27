@@ -20,7 +20,7 @@ export async function GET(request) {
     const feedPromises = rssFeeds.map(async (feed) => {
       try {
         const res = await fetch(feed.url, { 
-          next: { revalidate: 180 },
+          next: { revalidate: 120 },
           headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } 
         });
 
@@ -41,24 +41,13 @@ export async function GET(request) {
 
     const topArticles = rawArticles.slice(0, 30);
 
-    // RESOLVER REDIRECCIONES DE GOOGLE Y EXTRAER OG:IMAGE REAL DE LOS MEDIOS (LA REPÚBLICA, LATINUS, ETC)
+    // ESCANEAR CÓDIGO HTML ORIGINAL Y CONSOLA DE CADA MEDIO PARA EXTRAER LA FOTO EXACTA DE LA NOTICIA
     const enrichedArticles = await Promise.all(topArticles.map(async (article) => {
-      const resolved = await resolveRealPublisherUrlAndOgImage(article.originalUrl);
-      
-      if (resolved) {
-        if (resolved.finalUrl && !resolved.finalUrl.includes('google.com')) {
-          article.originalUrl = resolved.finalUrl;
-        }
-        if (resolved.imgUrl) {
-          article.image = resolved.imgUrl;
-        }
+      const scraped = await scrapeOriginalMediaImageAndUrl(article.originalUrl);
+      if (scraped) {
+        if (scraped.realArticleUrl) article.originalUrl = scraped.realArticleUrl;
+        if (scraped.realArticleImage) article.image = scraped.realArticleImage;
       }
-
-      // Si la imagen sigue siendo nula o logo de Google, usar imagen de prensa temática de alta definición
-      if (!article.image || article.image.includes('google') || article.image.includes('gstatic') || article.image.includes('logo')) {
-        article.image = getHighResCategoryFallbackImage(article.category, article.title);
-      }
-
       return article;
     }));
 
@@ -80,18 +69,22 @@ export async function GET(request) {
   }
 }
 
-// Resolver redirección de Google News al medio final y extraer og:image
-async function resolveRealPublisherUrlAndOgImage(articleUrl) {
+// Extractor profundo de la imagen principal del HTML original (amp-img, figure.main-photo, og:image, twitter:image)
+async function scrapeOriginalMediaImageAndUrl(googleRssUrl) {
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2800); // Timeout 2.8s
+    // Intentar decodificar la URL real embebida en la cadena de Google News
+    let targetUrl = decodeGoogleNewsUrl(googleRssUrl) || googleRssUrl;
 
-    const res = await fetch(articleUrl, {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500); // 3.5s timeout
+
+    const res = await fetch(targetUrl, {
       signal: controller.signal,
       redirect: 'follow',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'es-CO,es;q=0.9,en-US;q=0.8,en;q=0.7'
       }
     });
     clearTimeout(timeoutId);
@@ -100,51 +93,62 @@ async function resolveRealPublisherUrlAndOgImage(articleUrl) {
     const finalUrl = res.url;
     const html = await res.text();
 
+    let extractedImage = null;
+
+    // Patrón 1: meta og:image o twitter:image en la cabecera HTML
     const ogMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i) ||
                     html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i) ||
                     html.match(/<meta[^>]*name=["']twitter:image["'][^>]*content=["']([^"']+)["']/i);
 
     if (ogMatch && ogMatch[1]) {
-      let imgUrl = ogMatch[1].trim();
-      if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
-      
-      // Descartar favicons e íconos de Google
-      if (!imgUrl.includes('google') && !imgUrl.includes('gstatic') && !imgUrl.includes('favicon') && !imgUrl.includes('default')) {
-        return { finalUrl, imgUrl };
+      extractedImage = ogMatch[1].trim();
+    }
+
+    // Patrón 2: figure.main-photo / amp-img / article img (Específico para LatinUS, La República, etc., como figura en DevTools)
+    if (!extractedImage || extractedImage.includes('google') || extractedImage.includes('gstatic')) {
+      const ampImgMatch = html.match(/<figure[^>]*class=["'][^"']*main-photo[^"']*["'][^>]*>[\s\S]*?<amp-img[^>]*src=["']([^"']+)["']/i) ||
+                          html.match(/<amp-img[^>]*src=["']([^"']+)["'][^>]*class=["'][^"']*main[^"']*["']/i) ||
+                          html.match(/<figure[^>]*>[\s\S]*?<img[^>]*src=["']([^"']+)["']/i) ||
+                          html.match(/<article[^>]*>[\s\S]*?<img[^>]*src=["']([^"']+)["']/i);
+
+      if (ampImgMatch && ampImgMatch[1]) {
+        extractedImage = ampImgMatch[1].trim();
       }
     }
-    return { finalUrl, imgUrl: null };
+
+    if (extractedImage) {
+      // Resolver URLs relativas a absolutas (Ej: /fotografias/m/2026/7/26/f960x540.jpg -> https://latinus.us/fotografias/m/2026/7/26/f960x540.jpg)
+      try {
+        extractedImage = new URL(extractedImage, finalUrl).href;
+      } catch (e) {
+        if (extractedImage.startsWith('//')) extractedImage = 'https:' + extractedImage;
+      }
+
+      // Validar que no sea un ícono de Google o favicon
+      if (!extractedImage.includes('google') && !extractedImage.includes('gstatic') && !extractedImage.includes('favicon')) {
+        return { realArticleUrl: finalUrl, realArticleImage: extractedImage };
+      }
+    }
+
+    return { realArticleUrl: finalUrl, realArticleImage: null };
+
   } catch (e) {
     return null;
   }
 }
 
-// Helper de imágenes editoriales en alta definición según tema (evita logotipos o placeholders)
-function getHighResCategoryFallbackImage(category, title = '') {
-  const t = title.toLowerCase();
-  
-  if (t.includes('espriella') || t.includes('embajada') || t.includes('gobierno') || t.includes('presidente') || t.includes('politica')) {
-    return "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1200&q=85"; // Palacio de gobierno / prensa oficial
+// Decodificar Base64 embebido en la URL de Google News RSS
+function decodeGoogleNewsUrl(googleUrl) {
+  try {
+    const match = googleUrl.match(/articles\/([A-Za-z0-9_-]+)/);
+    if (!match) return null;
+    const base64Str = match[1].replace(/-/g, '+').replace(/_/g, '/');
+    const decoded = Buffer.from(base64Str, 'base64').toString('latin1');
+    const urlMatch = decoded.match(/https?:\/\/[^\s"'\\]+/);
+    return urlMatch ? urlMatch[0] : null;
+  } catch (e) {
+    return null;
   }
-  if (t.includes('hambruna') || t.includes('onu') || t.includes('latinoamerica') || t.includes('alimento')) {
-    return "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=85"; // Ayuda humanitaria y comunidades
-  }
-  if (t.includes('dolar') || t.includes('economia') || t.includes('banco') || t.includes('moneda')) {
-    return "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=85"; // Mercados financieros y divisas
-  }
-  if (category === 'Colombia') {
-    return "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=1200&q=85";
-  }
-  if (category === 'Economía') {
-    return "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=1200&q=85";
-  }
-  if (category === 'Cultura') {
-    return "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=85";
-  }
-  if (category === 'Ciencia y Salud') {
-    return "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=1200&q=85";
-  }
-  return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=85";
 }
 
 // Helper para parsear XML de RSS
@@ -164,7 +168,7 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
       let pubDateStr = pubDateMatch ? pubDateMatch[1] : new Date().toUTCString();
       let sourceName = sourceMatch ? sourceMatch[1].trim() : 'Agencia Periodística';
 
-      // Limpiar título de fuente repetida (Ej: "De la Espriella anunció el cierre... - La República" -> "De la Espriella anunció el cierre...")
+      // Limpiar título de fuente repetida (Ej: "De la Espriella anunció el cierre... - La República")
       if (rawTitle.includes(' - ')) {
         const parts = rawTitle.split(' - ');
         if (parts.length > 1) {
@@ -197,7 +201,7 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
         sourceName: sourceName,
         sourceLogo: sourceName,
         originalUrl: link,
-        image: null,
+        image: null, // Se extraera directamente del HTML original (amp-img / og:image)
         category: defaultCategory,
         country: defaultCountry,
         publishedAt: formattedExactDate,
