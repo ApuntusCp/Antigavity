@@ -416,7 +416,7 @@ function NoticiasContent() {
             <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
             <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-              "Perfil verificado de periodistas, maquetación editorial, trayectoria pública comprobada y monitoreo cuantitativo de 5 espectros."
+              "Perfil de periodistas con trayectoria pública verídica, maquetación editorial y monitoreo cuantitativo de 5 espectros."
             </p>
 
             {/* BARRA DE CONTROL PUBLISHER EDITORIAL */}
@@ -473,8 +473,8 @@ function NoticiasContent() {
               <strong className="text-emerald-400 font-extrabold text-sm">0% Sesgo de Origen</strong>
             </div>
             <div className="p-3 bg-black/40 rounded-xl border border-white/10 space-y-0.5">
-              <span className="text-gray-400 text-[10px] uppercase font-bold block">Autores Acreditados</span>
-              <strong className="text-white font-extrabold text-sm">Perfil Público Verificado</strong>
+              <span className="text-gray-400 text-[10px] uppercase font-bold block">Autores Periodísticos</span>
+              <strong className="text-white font-extrabold text-sm">Trayectoria Pública</strong>
             </div>
           </div>
 
@@ -759,7 +759,7 @@ function NoticiasContent() {
                     className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/50 hover:bg-[#D4AF37] hover:text-black transition-all group/author cursor-pointer text-left shadow-md"
                   >
                     <User size={15} className="text-[#D4AF37] group-hover/author:text-black transition-colors" />
-                    <span>Autor del Titular: <strong className="underline decoration-[#D4AF37] underline-offset-4">{selectedArticle.author}</strong></span>
+                    <span>Autor Periodístico: <strong className="underline decoration-[#D4AF37] underline-offset-4">{selectedArticle.author}</strong></span>
                     <BadgeCheck size={14} className="text-[#D4AF37] group-hover/author:text-black shrink-0" />
                     <span className="text-[9px] bg-black/60 group-hover/author:bg-black text-[#D4AF37] group-hover/author:text-white px-2 py-0.5 rounded-full font-bold">Ver Hoja de Vida</span>
                   </button>
@@ -1132,17 +1132,6 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs bg-black/50 p-4 rounded-2xl border border-white/10">
-                <div>
-                  <span className="text-gray-400 block text-[10px]">REGISTRO PERIODÍSTICO / CREDENCIAL:</span>
-                  <strong className="text-white font-bold">{selectedAuthor.tpNumber}</strong>
-                </div>
-                <div>
-                  <span className="text-gray-400 block text-[10px]">FECHA DE VERIFICACIÓN:</span>
-                  <strong className="text-[#D4AF37] font-bold">{selectedAuthor.verificationDate}</strong>
-                </div>
-              </div>
-
               <div className="space-y-2">
                 <h4 className="font-serif text-sm font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
                   <FileText size={16} /> Biografía & Trayectoria Informativa
@@ -1205,7 +1194,7 @@ export default function NoticiasPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#050A14] flex items-center justify-center text-white font-mono text-xs">
-        <RefreshCw className="animate-spin text-[#D4AF37] mb-[#D4AF37] mb-2" size={32} />
+        <RefreshCw className="animate-spin text-[#D4AF37] mb-2" size={32} />
       </div>
     }>
       <NoticiasContent />
