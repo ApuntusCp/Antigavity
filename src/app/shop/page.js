@@ -3,7 +3,7 @@ import Link from "next/link";
 import { fetchProducts, fetchCMSPage } from "../../utils/firebase";
 import PaymentMethodsBadge from "../../components/PaymentMethodsBadge";
 import ShopAddToCartButton from "../../components/ShopAddToCartButton";
-import { ShieldCheck, Sparkles, ShoppingBag, Tag, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, Sparkles } from "lucide-react";
 
 export const revalidate = 30; // ISR for shop page
 
@@ -25,14 +25,11 @@ export default async function ShopPage() {
   const text = headerBlock.text || "Nuestra selección exclusiva de formulaciones botánicas y extractos puros desarrollados con los más altos estándares de calidad colombiana e INVIMA.";
 
   return (
-    <div className="min-h-screen theme-tienda text-white pt-32 pb-28 px-4 sm:px-6 relative overflow-hidden">
+    <div className="min-h-screen pt-32 pb-28 px-4 sm:px-6 relative overflow-hidden">
       
-      {/* Background ambient botanical green lighting */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-full max-w-5xl h-96 bg-[#2D5016]/30 blur-[160px] pointer-events-none" />
-
       <div className="max-w-7xl mx-auto relative z-10 space-y-12">
         
-        {/* Header Centrado Estilo Luxury GranColinos Botánica */}
+        {/* Header Centrado Estilo Luxury GranColinos (Misma iluminación tenue del Inicio) */}
         <div className="text-center max-w-3xl mx-auto space-y-4 fade-in">
           <span className="text-[#D4AF37] text-xs font-mono font-extrabold tracking-[0.3em] uppercase block">
             • {subtitle} •
@@ -46,7 +43,7 @@ export default async function ShopPage() {
           </p>
         </div>
 
-        {/* CATÁLOGO ORDENADO Y CENTRADO EN PANTALLA SOBRE FONDO VERDE BOTÁNICO (FLEX JUSTIFY-CENTER) */}
+        {/* CATÁLOGO ORDENADO Y CENTRADO EN PANTALLA CON FONDO DE CUERO NATURAL */}
         <div className="flex flex-wrap justify-center items-stretch gap-8 max-w-7xl mx-auto">
           {products.length === 0 ? (
             <div className="w-full py-24 text-center border-2 border-dashed border-[#D4AF37]/40 bg-[#0A1408]/80 rounded-3xl backdrop-blur-xl">
@@ -67,7 +64,7 @@ export default async function ShopPage() {
               return (
                 <div 
                   key={product.id} 
-                  className="w-full sm:w-[320px] md:w-[340px] group bg-[#0A1408]/95 border-2 border-[#D4AF37]/40 hover:border-[#D4AF37] rounded-3xl overflow-hidden backdrop-blur-xl shadow-2xl transition-all duration-500 hover:shadow-[0_15px_45px_rgba(212,175,55,0.35)] flex flex-col justify-between hover:-translate-y-1.5"
+                  className="w-full sm:w-[320px] md:w-[340px] group bg-[#0A1408]/90 border-2 border-[#D4AF37]/40 hover:border-[#D4AF37] rounded-3xl overflow-hidden backdrop-blur-xl shadow-2xl transition-all duration-500 hover:shadow-[0_15px_45px_rgba(212,175,55,0.35)] flex flex-col justify-between hover:-translate-y-1.5"
                 >
                   <div className="flex flex-col flex-1">
                     
