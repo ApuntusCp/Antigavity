@@ -1,10 +1,110 @@
 import { NextResponse } from 'next/server';
 
+// DICCIONARIO DE LOGOTIPOS E IDENTIDAD VISUAL OFICIAL DE MEDIOS DE COMUNICACIÓN
+const MEDIA_LOGOS = {
+  "larepublica.co": {
+    name: "La República",
+    domain: "larepublica.co",
+    logoUrl: "https://www.google.com/s2/favicons?domain=larepublica.co&sz=256",
+    brandColor: "#D31227",
+    textColor: "#FFFFFF",
+    country: "Colombia"
+  },
+  "latinus.us": {
+    name: "LatinUS",
+    domain: "latinus.us",
+    logoUrl: "https://www.google.com/s2/favicons?domain=latinus.us&sz=256",
+    brandColor: "#E50914",
+    textColor: "#FFFFFF",
+    country: "México / EE.UU."
+  },
+  "semana.com": {
+    name: "Revista Semana",
+    domain: "semana.com",
+    logoUrl: "https://www.google.com/s2/favicons?domain=semana.com&sz=256",
+    brandColor: "#C8102E",
+    textColor: "#FFFFFF",
+    country: "Colombia"
+  },
+  "eltiempo.com": {
+    name: "El Tiempo",
+    domain: "eltiempo.com",
+    logoUrl: "https://www.google.com/s2/favicons?domain=eltiempo.com&sz=256",
+    brandColor: "#003366",
+    textColor: "#FFFFFF",
+    country: "Colombia"
+  },
+  "elespectador.com": {
+    name: "El Espectador",
+    domain: "elespectador.com",
+    logoUrl: "https://www.google.com/s2/favicons?domain=elespectador.com&sz=256",
+    brandColor: "#000000",
+    textColor: "#FFD700",
+    country: "Colombia"
+  },
+  "elheraldo.co": {
+    name: "El Heraldo",
+    domain: "elheraldo.co",
+    logoUrl: "https://www.google.com/s2/favicons?domain=elheraldo.co&sz=256",
+    brandColor: "#005691",
+    textColor: "#FFFFFF",
+    country: "Colombia"
+  },
+  "lasillavacia.com": {
+    name: "La Silla Vacía",
+    domain: "lasillavacia.com",
+    logoUrl: "https://www.google.com/s2/favicons?domain=lasillavacia.com&sz=256",
+    brandColor: "#F37021",
+    textColor: "#FFFFFF",
+    country: "Colombia"
+  },
+  "bbc.com": {
+    name: "BBC Mundo",
+    domain: "bbc.com",
+    logoUrl: "https://www.google.com/s2/favicons?domain=bbc.com&sz=256",
+    brandColor: "#B80000",
+    textColor: "#FFFFFF",
+    country: "Reino Unido / Global"
+  },
+  "nytimes.com": {
+    name: "The New York Times",
+    domain: "nytimes.com",
+    logoUrl: "https://www.google.com/s2/favicons?domain=nytimes.com&sz=256",
+    brandColor: "#121212",
+    textColor: "#FFFFFF",
+    country: "EE.UU. / Global"
+  },
+  "globo.com": {
+    name: "O Globo",
+    domain: "globo.com",
+    logoUrl: "https://www.google.com/s2/favicons?domain=globo.com&sz=256",
+    brandColor: "#00509D",
+    textColor: "#FFFFFF",
+    country: "Brasil"
+  },
+  "redmas.com.co": {
+    name: "Red+ Noticias",
+    domain: "redmas.com.co",
+    logoUrl: "https://www.google.com/s2/favicons?domain=redmas.com.co&sz=256",
+    brandColor: "#E30613",
+    textColor: "#FFFFFF",
+    country: "Colombia"
+  },
+  "oncubanews.com": {
+    name: "OnCuba News",
+    domain: "oncubanews.com",
+    logoUrl: "https://www.google.com/s2/favicons?domain=oncubanews.com&sz=256",
+    brandColor: "#00A896",
+    textColor: "#FFFFFF",
+    country: "Cuba / EE.UU."
+  }
+};
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const country = searchParams.get('pais') || 'co';
 
-  // 1. Fuentes RSS oficiales de noticias
+  // Fuentes RSS oficiales
   const rssFeeds = [
     { url: 'https://news.google.com/rss?hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Colombia' },
     { url: 'https://news.google.com/rss/search?q=economia+colombia&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Economía' },
@@ -16,11 +116,10 @@ export async function GET(request) {
   try {
     const rawArticles = [];
 
-    // Crawl RSS feeds en paralelo
     const feedPromises = rssFeeds.map(async (feed) => {
       try {
         const res = await fetch(feed.url, { 
-          next: { revalidate: 120 },
+          next: { revalidate: 180 },
           headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } 
         });
 
@@ -36,29 +135,21 @@ export async function GET(request) {
     const results = await Promise.all(feedPromises);
     results.forEach(items => rawArticles.push(...items));
 
-    // Ordenar por fecha de publicación (más reciente primero)
     rawArticles.sort((a, b) => new Date(b.pubDateRaw) - new Date(a.pubDateRaw));
+    const topArticles = rawArticles.slice(0, 35);
 
-    const topArticles = rawArticles.slice(0, 30);
-
-    // ESCANEAR CÓDIGO HTML ORIGINAL Y CONSOLA DE CADA MEDIO PARA EXTRAER LA FOTO EXACTA DE LA NOTICIA
-    const enrichedArticles = await Promise.all(topArticles.map(async (article) => {
-      const scraped = await scrapeOriginalMediaImageAndUrl(article.originalUrl);
-      if (scraped) {
-        if (scraped.realArticleUrl) article.originalUrl = scraped.realArticleUrl;
-        if (scraped.realArticleImage) {
-          // Servir a través de Proxy para omitir bloqueos por Hotlink / CORS
-          article.image = `/api/noticias/proxy-image?url=${encodeURIComponent(scraped.realArticleImage)}`;
-        }
-      }
-
-      // Si no se extrajo imagen, asignar imagen de respaldo en alta resolución
-      if (!article.image) {
-        article.image = getHighResCategoryFallbackImage(article.category, article.title);
-      }
-
-      return article;
-    }));
+    // ASIGNAR LOGOTIPO E IDENTIDAD OFICIAL DE CADA MEDIO DE COMUNICACIÓN
+    const articlesWithMediaLogos = topArticles.map(article => {
+      const mediaInfo = resolveMediaIdentity(article.sourceName, article.originalUrl);
+      
+      return {
+        ...article,
+        sourceLogoUrl: mediaInfo.logoUrl,
+        sourceBrandColor: mediaInfo.brandColor,
+        sourceDomain: mediaInfo.domain,
+        image: mediaInfo.logoUrl // El logo oficial reemplaza cualquier foto genérica
+      };
+    });
 
     return NextResponse.json({
       success: true,
@@ -69,8 +160,8 @@ export async function GET(request) {
         month: 'long',
         day: 'numeric'
       }).format(new Date()),
-      count: enrichedArticles.length,
-      articles: enrichedArticles
+      count: articlesWithMediaLogos.length,
+      articles: articlesWithMediaLogos
     });
 
   } catch (error) {
@@ -78,111 +169,33 @@ export async function GET(request) {
   }
 }
 
-// Extractor profundo de la imagen principal del HTML original
-async function scrapeOriginalMediaImageAndUrl(googleRssUrl) {
+// Resolver logo oficial y dominio del medio de comunicación
+function resolveMediaIdentity(sourceName, originalUrl) {
+  const name = (sourceName || '').toLowerCase();
+  const url = (originalUrl || '').toLowerCase();
+
+  for (const [key, data] of Object.entries(MEDIA_LOGOS)) {
+    if (url.includes(key) || name.includes(data.name.toLowerCase())) {
+      return data;
+    }
+  }
+
+  // Fallback si no está en la lista estática
+  let domain = 'prensa.org';
   try {
-    let targetUrl = decodeGoogleNewsUrl(googleRssUrl) || googleRssUrl;
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-    const res = await fetch(targetUrl, {
-      signal: controller.signal,
-      redirect: 'follow',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'es-CO,es;q=0.9,en-US;q=0.8,en;q=0.7'
-      }
-    });
-    clearTimeout(timeoutId);
-
-    if (!res.ok) return null;
-    const finalUrl = res.url;
-    const html = await res.text();
-
-    let extractedImage = null;
-
-    // Patrón 1: meta og:image o twitter:image en la cabecera HTML
-    const ogMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i) ||
-                    html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i) ||
-                    html.match(/<meta[^>]*name=["']twitter:image["'][^>]*content=["']([^"']+)["']/i);
-
-    if (ogMatch && ogMatch[1]) {
-      extractedImage = ogMatch[1].trim();
+    if (originalUrl && originalUrl.startsWith('http')) {
+      domain = new URL(originalUrl).hostname.replace('www.', '');
     }
+  } catch (e) {}
 
-    // Patrón 2: figure.main-photo / amp-img / article img (Específico para LatinUS, La República, etc.)
-    if (!extractedImage || extractedImage.includes('google') || extractedImage.includes('gstatic')) {
-      const ampImgMatch = html.match(/<figure[^>]*class=["'][^"']*main-photo[^"']*["'][^>]*>[\s\S]*?<amp-img[^>]*src=["']([^"']+)["']/i) ||
-                          html.match(/<amp-img[^>]*src=["']([^"']+)["'][^>]*class=["'][^"']*main[^"']*["']/i) ||
-                          html.match(/<figure[^>]*>[\s\S]*?<img[^>]*src=["']([^"']+)["']/i) ||
-                          html.match(/<article[^>]*>[\s\S]*?<img[^>]*src=["']([^"']+)["']/i);
-
-      if (ampImgMatch && ampImgMatch[1]) {
-        extractedImage = ampImgMatch[1].trim();
-      }
-    }
-
-    if (extractedImage) {
-      try {
-        extractedImage = new URL(extractedImage, finalUrl).href;
-      } catch (e) {
-        if (extractedImage.startsWith('//')) extractedImage = 'https:' + extractedImage;
-      }
-
-      if (!extractedImage.includes('google') && !extractedImage.includes('gstatic') && !extractedImage.includes('favicon')) {
-        return { realArticleUrl: finalUrl, realArticleImage: extractedImage };
-      }
-    }
-
-    return { realArticleUrl: finalUrl, realArticleImage: null };
-
-  } catch (e) {
-    return null;
-  }
-}
-
-// Decodificar Base64 embebido en la URL de Google News RSS
-function decodeGoogleNewsUrl(googleUrl) {
-  try {
-    const match = googleUrl.match(/articles\/([A-Za-z0-9_-]+)/);
-    if (!match) return null;
-    const base64Str = match[1].replace(/-/g, '+').replace(/_/g, '/');
-    const decoded = Buffer.from(base64Str, 'base64').toString('latin1');
-    const urlMatch = decoded.match(/https?:\/\/[^\s"'\\]+/);
-    return urlMatch ? urlMatch[0] : null;
-  } catch (e) {
-    return null;
-  }
-}
-
-// Helper de imágenes editoriales en alta definición según tema
-function getHighResCategoryFallbackImage(category, title = '') {
-  const t = title.toLowerCase();
-  
-  if (t.includes('espriella') || t.includes('embajada') || t.includes('gobierno') || t.includes('presidente') || t.includes('politica')) {
-    return "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1200&q=85";
-  }
-  if (t.includes('hambruna') || t.includes('onu') || t.includes('latinoamerica') || t.includes('alimento')) {
-    return "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=85";
-  }
-  if (t.includes('dolar') || t.includes('economia') || t.includes('banco') || t.includes('moneda')) {
-    return "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=85";
-  }
-  if (category === 'Colombia') {
-    return "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=1200&q=85";
-  }
-  if (category === 'Economía') {
-    return "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=1200&q=85";
-  }
-  if (category === 'Cultura') {
-    return "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=85";
-  }
-  if (category === 'Ciencia y Salud') {
-    return "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=1200&q=85";
-  }
-  return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=85";
+  return {
+    name: sourceName || "Medio Periodístico",
+    domain: domain,
+    logoUrl: `https://www.google.com/s2/favicons?domain=${domain}&sz=256`,
+    brandColor: "#D4AF37",
+    textColor: "#000000",
+    country: "Internacional"
+  };
 }
 
 // Helper para parsear XML de RSS
@@ -229,12 +242,10 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
         topicKey: rawTitle.toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 30),
         title: rawTitle,
         summary: `Cobertura periodística factual transmitida en vivo por ${sourceName}. Publicado hoy con verificación hemerográfica.`,
-        fullContent: `Noticia publicada originalmente por ${sourceName} el ${formattedExactDate}.\n\nEsta nota forma parte de la cobertura hemisférica indexada en tiempo real por el sistema de monitoreo periodístico de GranColinos Journal. Para consultar la investigación completa y la fotogalería de origen, accede directamente a la publicación oficial mediante el enlace provisto al pie.`,
+        fullContent: `Noticia publicada originalmente por ${sourceName} el ${formattedExactDate}.\n\nEsta nota forma parte de la cobertura hemisférica indexada en tiempo real por el sistema de monitoreo periodístico de GranColinos Journal. Para consultar el reportaje completo en la plataforma oficial del medio, presiona el botón inferior.`,
         author: `${sourceName} Redacción`,
         sourceName: sourceName,
-        sourceLogo: sourceName,
         originalUrl: link,
-        image: null,
         category: defaultCategory,
         country: defaultCountry,
         publishedAt: formattedExactDate,
