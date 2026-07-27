@@ -20,7 +20,7 @@ export async function GET(request) {
     const feedPromises = rssFeeds.map(async (feed) => {
       try {
         const res = await fetch(feed.url, { 
-          next: { revalidate: 180 }, // Revalidar cada 3 minutos
+          next: { revalidate: 180 },
           headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } 
         });
 
@@ -39,20 +39,24 @@ export async function GET(request) {
     // Ordenar por fecha de publicación (más reciente primero)
     rawArticles.sort((a, b) => new Date(b.pubDateRaw) - new Date(a.pubDateRaw));
 
-    // Tomar los 35 artículos principales
-    const topArticles = rawArticles.slice(0, 35);
+    const topArticles = rawArticles.slice(0, 30);
 
-    // EXTRACTOR EN PARALELO DE LA FOTOGRAFÍA ORIGINAL DE PRENSA (og:image) DE CADA MEDIO
+    // RESOLVER REDIRECCIONES DE GOOGLE Y EXTRAER OG:IMAGE REAL DE LOS MEDIOS (LA REPÚBLICA, LATINUS, ETC)
     const enrichedArticles = await Promise.all(topArticles.map(async (article) => {
-      // 1. Verificar si ya venía imagen en el RSS (media:content / enclosure)
-      if (article.image && !article.image.includes('unsplash.com')) {
-        return article;
+      const resolved = await resolveRealPublisherUrlAndOgImage(article.originalUrl);
+      
+      if (resolved) {
+        if (resolved.finalUrl && !resolved.finalUrl.includes('google.com')) {
+          article.originalUrl = resolved.finalUrl;
+        }
+        if (resolved.imgUrl) {
+          article.image = resolved.imgUrl;
+        }
       }
 
-      // 2. Extraer og:image original directamente del HTML del medio oficial
-      const realOgImage = await extractOgImage(article.originalUrl);
-      if (realOgImage) {
-        article.image = realOgImage;
+      // Si la imagen sigue siendo nula o logo de Google, usar imagen de prensa temática de alta definición
+      if (!article.image || article.image.includes('google') || article.image.includes('gstatic') || article.image.includes('logo')) {
+        article.image = getHighResCategoryFallbackImage(article.category, article.title);
       }
 
       return article;
@@ -76,14 +80,15 @@ export async function GET(request) {
   }
 }
 
-// Extractor de og:image original del medio oficial
-async function extractOgImage(articleUrl) {
+// Resolver redirección de Google News al medio final y extraer og:image
+async function resolveRealPublisherUrlAndOgImage(articleUrl) {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2200); // Timeout rápido 2.2s
+    const timeoutId = setTimeout(() => controller.abort(), 2800); // Timeout 2.8s
 
     const res = await fetch(articleUrl, {
       signal: controller.signal,
+      redirect: 'follow',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
@@ -92,9 +97,9 @@ async function extractOgImage(articleUrl) {
     clearTimeout(timeoutId);
 
     if (!res.ok) return null;
+    const finalUrl = res.url;
     const html = await res.text();
 
-    // Expresión regular para og:image o twitter:image
     const ogMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i) ||
                     html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["']/i) ||
                     html.match(/<meta[^>]*name=["']twitter:image["'][^>]*content=["']([^"']+)["']/i);
@@ -102,12 +107,44 @@ async function extractOgImage(articleUrl) {
     if (ogMatch && ogMatch[1]) {
       let imgUrl = ogMatch[1].trim();
       if (imgUrl.startsWith('//')) imgUrl = 'https:' + imgUrl;
-      return imgUrl;
+      
+      // Descartar favicons e íconos de Google
+      if (!imgUrl.includes('google') && !imgUrl.includes('gstatic') && !imgUrl.includes('favicon') && !imgUrl.includes('default')) {
+        return { finalUrl, imgUrl };
+      }
     }
+    return { finalUrl, imgUrl: null };
   } catch (e) {
-    // Timeout o error de red
+    return null;
   }
-  return null;
+}
+
+// Helper de imágenes editoriales en alta definición según tema (evita logotipos o placeholders)
+function getHighResCategoryFallbackImage(category, title = '') {
+  const t = title.toLowerCase();
+  
+  if (t.includes('espriella') || t.includes('embajada') || t.includes('gobierno') || t.includes('presidente') || t.includes('politica')) {
+    return "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1200&q=85"; // Palacio de gobierno / prensa oficial
+  }
+  if (t.includes('hambruna') || t.includes('onu') || t.includes('latinoamerica') || t.includes('alimento')) {
+    return "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=85"; // Ayuda humanitaria y comunidades
+  }
+  if (t.includes('dolar') || t.includes('economia') || t.includes('banco') || t.includes('moneda')) {
+    return "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=85"; // Mercados financieros y divisas
+  }
+  if (category === 'Colombia') {
+    return "https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=1200&q=85";
+  }
+  if (category === 'Economía') {
+    return "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&w=1200&q=85";
+  }
+  if (category === 'Cultura') {
+    return "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=85";
+  }
+  if (category === 'Ciencia y Salud') {
+    return "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=1200&q=85";
+  }
+  return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=85";
 }
 
 // Helper para parsear XML de RSS
@@ -121,17 +158,11 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
     const pubDateMatch = itemXml.match(/<pubDate>(.*?)<\/pubDate>/i);
     const sourceMatch = itemXml.match(/<source[^>]*>(.*?)<\/source>/i);
 
-    // Extraer imagen si viene en el XML directamente (media:content, media:thumbnail, enclosure)
-    const mediaContentMatch = itemXml.match(/<media:content[^>]*url=["']([^"']+)["']/i) ||
-                              itemXml.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i) ||
-                              itemXml.match(/<enclosure[^>]*url=["']([^"']+)["']/i);
-
     if (titleMatch && linkMatch) {
       let rawTitle = titleMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/gi, '$1').trim();
       let link = linkMatch[1].replace(/<!\[CDATA\[(.*?)\]\]>/gi, '$1').trim();
       let pubDateStr = pubDateMatch ? pubDateMatch[1] : new Date().toUTCString();
       let sourceName = sourceMatch ? sourceMatch[1].trim() : 'Agencia Periodística';
-      let rssImage = mediaContentMatch ? mediaContentMatch[1] : null;
 
       // Limpiar título de fuente repetida (Ej: "De la Espriella anunció el cierre... - La República" -> "De la Espriella anunció el cierre...")
       if (rawTitle.includes(' - ')) {
@@ -147,7 +178,6 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
 
       const pubDateObj = new Date(pubDateStr);
 
-      // Formato de fecha y hora exacta (Ej: "27 de julio de 2026 a las 01:11 p. m.")
       const formattedExactDate = new Intl.DateTimeFormat('es-CO', {
         day: 'numeric',
         month: 'long',
@@ -167,7 +197,7 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
         sourceName: sourceName,
         sourceLogo: sourceName,
         originalUrl: link,
-        image: rssImage || null, // Se rellenará con og:image real extraída del HTML oficial
+        image: null,
         category: defaultCategory,
         country: defaultCountry,
         publishedAt: formattedExactDate,
