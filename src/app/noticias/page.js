@@ -50,25 +50,25 @@ function EventMetricsGrid({ metrics }) {
   );
 }
 
-// COMPONENTE DE MAPA MENTAL CONCEPTUAL CON DIAGNÓSTICO ESPECÍFICO DE SESGO IDEOLÓGICO Y NEUTRALIDAD
-function AcademicMindMap({ nodes, title, biasLevel, verdictText, isNeutral }) {
-  if (!nodes || nodes.length === 0) return null;
+// COMPONENTE EXCLUSIVO PARA EL DIAGNÓSTICO EDITORIAL DE INTEGRIDAD (SIN MAPA MENTAL)
+function EditorialIntegrityDiagnosis({ biasLevel, verdictText, isNeutral }) {
+  if (!verdictText && !biasLevel) return null;
 
   return (
     <div 
-      className="p-5 rounded-2xl border border-[#D4AF37]/50 space-y-4 shadow-2xl"
+      className="p-5 rounded-2xl border border-[#D4AF37]/50 space-y-3 shadow-2xl"
       style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.22)',
+        backgroundColor: 'rgba(5, 12, 24, 0.22)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)'
       }}
     >
       <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-2.5 gap-2">
         <span className="text-xs font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
-          <BrainCircuit size={16} className="text-[#D4AF37]" /> MAPA MENTAL & DIAGNÓSTICO DE SESGO EN EL TITULAR
+          <ShieldCheck size={16} className="text-[#D4AF37]" /> DIAGNÓSTICO EDITORIAL DE INTEGRIDAD EN EL TITULAR
         </span>
         
-        {/* BADGE DE DIAGNÓSTICO DE NEUTRALIDAD */}
+        {/* BADGE DE SESGO/NEUTRALIDAD */}
         <span className={`text-[10px] font-mono font-bold px-3 py-1 rounded-full border shadow-md flex items-center gap-1.5 ${
           isNeutral 
             ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/60' 
@@ -79,72 +79,16 @@ function AcademicMindMap({ nodes, title, biasLevel, verdictText, isNeutral }) {
         </span>
       </div>
 
-      {/* VEREDICTO DE NEUTRALIDAD O SESGO IDEOLÓGICO */}
-      {verdictText && (
-        <div className={`p-3.5 rounded-xl border text-xs font-sans font-medium leading-relaxed shadow-inner ${
-          isNeutral
-            ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-100'
-            : 'bg-amber-950/40 border-amber-500/50 text-amber-100'
-        }`}>
-          <strong className="block font-mono text-[10px] uppercase font-black tracking-wider mb-0.5 text-gold-gradient">
-            [ DIAGNÓSTICO EDITORIAL DE INTEGRIDAD ]:
-          </strong>
-          {verdictText}
-        </div>
-      )}
-
-      {/* DIAGRAMA CONCEPTUAL CON CONEXIONES */}
-      <div className="space-y-4 pt-1">
-        
-        {/* NÚCLEO CENTRAL */}
-        <div className="p-4 rounded-xl bg-gradient-to-r from-[#D4AF37]/25 via-black/80 to-[#D4AF37]/25 border-2 border-[#D4AF37] text-center space-y-1 shadow-[0_0_25px_rgba(212,175,55,0.4)]">
-          <span className="text-[10px] font-mono text-[#D4AF37] font-black uppercase tracking-widest block">
-            [ NÚCLEO CENTRAL & NARRATIVA DEL TITULAR ]
-          </span>
-          <h5 className="font-serif text-sm sm:text-base font-extrabold text-white leading-snug">
-            "{nodes[0]?.desc || title}"
-          </h5>
-        </div>
-
-        {/* LÍNEAS DE CONEXIÓN HACIA RAMAS */}
-        <div className="w-0.5 h-6 bg-[#D4AF37] mx-auto opacity-70"></div>
-
-        {/* RAMAS CONCEPTUALES */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {nodes.slice(1).map((node, idx) => {
-            let borderColor = "border-lime-500/70";
-            let textColor = "text-lime-300";
-            let bgColor = "rgba(132, 204, 22, 0.22)";
-            
-            if (node.color === 'slate') {
-              borderColor = "border-slate-300/50";
-              textColor = "text-slate-200";
-              bgColor = "rgba(100, 116, 139, 0.22)";
-            } else if (node.color === 'red') {
-              borderColor = "border-red-500/70";
-              textColor = "text-red-300";
-              bgColor = "rgba(220, 38, 38, 0.22)";
-            }
-
-            return (
-              <div 
-                key={idx}
-                className={`p-3.5 rounded-xl border ${borderColor} space-y-1.5 text-xs shadow-lg flex flex-col justify-between`}
-                style={{ backgroundColor: bgColor, backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
-              >
-                <div className="space-y-1">
-                  <span className={`font-mono text-[10px] font-extrabold block ${textColor}`}>
-                    {node.label}
-                  </span>
-                  <p className="font-sans text-[11px] text-gray-200 leading-relaxed font-light">
-                    {node.desc}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
+      {/* VEREDICTO DE INTEGRIDAD EDITORIAL */}
+      <div className={`p-4 rounded-xl border text-xs md:text-sm font-sans font-medium leading-relaxed shadow-inner ${
+        isNeutral
+          ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-100'
+          : 'bg-amber-950/40 border-amber-500/50 text-amber-100'
+      }`}>
+        <strong className="block font-mono text-[10px] uppercase font-black tracking-wider mb-1 text-[#D4AF37]">
+          [ DIAGNÓSTICO EDITORIAL DE INTEGRIDAD ]:
+        </strong>
+        {verdictText}
       </div>
     </div>
   );
@@ -189,10 +133,8 @@ function AcademicAnalysisSection({ analysis, title }) {
         </p>
       </div>
 
-      {/* MAPA MENTAL CON DIAGNÓSTICO DE SESGO IDEOLÓGICO Y NEUTRALIDAD */}
-      <AcademicMindMap 
-        nodes={analysis.mapaMentalNodes} 
-        title={title} 
+      {/* DIAGNÓSTICO EDITORIAL DE INTEGRIDAD (SIN MAPA MENTAL) */}
+      <EditorialIntegrityDiagnosis 
         biasLevel={analysis.biasLevel}
         verdictText={analysis.verdictText}
         isNeutral={analysis.isNeutral}
@@ -451,7 +393,7 @@ function NoticiasContent() {
             <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
             <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-              "Diagnóstico hemerográfico de neutralidad vs sesgo ideológico, perfil de periodistas y monitoreo cuantitativo de 5 espectros."
+              "Diagnóstico de integridad editorial, perfil de periodistas y monitoreo cuantitativo de 5 espectros."
             </p>
 
             {/* BARRA DE CONTROL PUBLISHER EDITORIAL */}
@@ -508,8 +450,8 @@ function NoticiasContent() {
               <strong className="text-emerald-400 font-extrabold text-sm">0% Sesgo de Origen</strong>
             </div>
             <div className="p-3 bg-black/40 rounded-xl border border-white/10 space-y-0.5">
-              <span className="text-gray-400 text-[10px] uppercase font-bold block">Diagnóstico de Sesgos</span>
-              <strong className="text-white font-extrabold text-sm">Framing Activo</strong>
+              <span className="text-gray-400 text-[10px] uppercase font-bold block">Diagnóstico de Integridad</span>
+              <strong className="text-white font-extrabold text-sm">Análisis Activo</strong>
             </div>
           </div>
 
@@ -580,7 +522,7 @@ function NoticiasContent() {
                       className="w-full py-3 px-4 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-xs uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2 border border-white/30"
                     >
                       <Scale size={16} />
-                      <span>Ver Datos & Métricas + Mapa Mental + Conclusión Neutra</span>
+                      <span>Ver Datos & Métricas + Diagnóstico de Integridad</span>
                     </button>
                   </div>
                 </div>
@@ -671,7 +613,7 @@ function NoticiasContent() {
                         className="w-full py-2 px-3 bg-black/70 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-[#D4AF37]/40 flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         <Scale size={13} />
-                        <span>Abrir Noticia Completa + Métricas + Mapa Mental</span>
+                        <span>Abrir Noticia Completa + Métricas</span>
                       </button>
                     </div>
                   </div>
@@ -839,7 +781,7 @@ function NoticiasContent() {
               {/* SECCIÓN 1: DATOS Y MÉTRICAS CUANTITATIVAS BALANCEADAS */}
               <EventMetricsGrid metrics={selectedArticle.metricsData} />
 
-              {/* SECCIÓN 2: MARCO TEÓRICO, TESIS, MAPA MENTAL & CONCLUSIÓN IMPARCIAL */}
+              {/* SECCIÓN 2: MARCO TEÓRICO, TESIS & DIAGNÓSTICO EDITORIAL DE INTEGRIDAD */}
               <AcademicAnalysisSection 
                 analysis={selectedArticle.academicAnalysis} 
                 title={selectedArticle.title}
@@ -878,7 +820,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN CON DATOS, MÉTRICAS, MARCO TEÓRICO, TESIS, MAPA MENTAL Y CONCLUSIÓN IMPARCIAL */}
+        {/* MODAL DE COMPARACIÓN CON DATOS, MÉTRICAS, MARCO TEÓRICO, TESIS Y CONCLUSIÓN IMPARCIAL */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -908,7 +850,7 @@ function NoticiasContent() {
               <div className="space-y-3 border-b border-[#D4AF37]/30 pb-6 clear-both text-center sm:text-left">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#D4AF37] text-[10px] font-mono font-bold uppercase tracking-widest">
                   <Scale size={14} />
-                  <span>Análisis de Sesgos + Métricas + Mapa Mental + Conclusión Neutra</span>
+                  <span>Análisis de Sesgos + Métricas + Diagnóstico Editorial + Conclusión Neutra</span>
                 </div>
 
                 <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight">
@@ -985,7 +927,7 @@ function NoticiasContent() {
               {/* DATOS Y MÉTRICAS CUANTITATIVAS BALANCEADAS DEL EVENTO */}
               <EventMetricsGrid metrics={selectedBiasComparison.metricsData} />
 
-              {/* INTEGRACIÓN DEL ANÁLISIS ACADÉMICO: MARCO TEÓRICO, TESIS, MAPA MENTAL Y CONCLUSIÓN IMPARCIAL */}
+              {/* INTEGRACIÓN DEL ANÁLISIS ACADÉMICO Y DIAGNÓSTICO EDITORIAL DE INTEGRIDAD */}
               <AcademicAnalysisSection 
                 analysis={selectedBiasComparison.academicAnalysis} 
                 title={selectedBiasComparison.title}
