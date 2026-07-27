@@ -7,12 +7,8 @@ import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserChec
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
-// COMPONENTE DE TARJETA DE MARCA / LOGO OFICIAL CON DUCKDUCKGO Y UNAVATAR (0 LOGOS DE GOOGLE GE)
-function MediaBrandLogoCard({ sourceName, sourceDomain, logoUrl, fallbackFavicon, brandColor, className = "h-48 md:h-64" }) {
-  const [imgSrc, setImgSrc] = useState(null);
-  const [imgError, setImgError] = useState(false);
-
-  // Extraer dominio limpio (evitando google.com)
+// COMPONENTE DE INSIGNIA ELEGANTE COMPACTA DEL MEDIO DE COMUNICACIÓN
+function MediaHeaderBadge({ sourceName, sourceDomain, logoUrl, brandColor }) {
   const cleanDomain = React.useMemo(() => {
     if (sourceDomain && !sourceDomain.includes('google')) return sourceDomain;
     const name = (sourceName || '').toLowerCase();
@@ -29,70 +25,66 @@ function MediaBrandLogoCard({ sourceName, sourceDomain, logoUrl, fallbackFavicon
     return 'prensa.org';
   }, [sourceDomain, sourceName]);
 
-  useEffect(() => {
-    // Primer intento: DuckDuckGo ICO limpia de alta definición del dominio exacto del medio
-    setImgSrc(`https://icons.duckduckgo.com/ip3/${cleanDomain}.ico`);
-    setImgError(false);
-  }, [cleanDomain]);
-
-  const handlePrimaryError = () => {
-    // Segundo intento: Unavatar CDN del dominio del medio
-    if (imgSrc && imgSrc.includes('duckduckgo')) {
-      setImgSrc(`https://unavatar.io/${cleanDomain}`);
-    } else {
-      setImgError(true);
-    }
-  };
+  const favicon = logoUrl || `https://icons.duckduckgo.com/ip3/${cleanDomain}.ico`;
 
   return (
-    <div className={`relative w-full overflow-hidden rounded-2xl leather-canvas-blue border-2 border-[#D4AF37]/50 shadow-inner flex flex-col items-center justify-center p-6 space-y-3 group ${className}`}>
-      
-      {/* Fondo con resplandor suave de la marca del medio */}
-      <div 
-        className="absolute inset-0 opacity-25 group-hover:opacity-40 transition-opacity duration-500"
-        style={{
-          background: `radial-gradient(circle at center, ${brandColor || '#D4AF37'} 0%, transparent 70%)`
-        }}
-      ></div>
-
-      {/* Dominio Oficial */}
-      <div className="absolute top-3 left-3 bg-black/90 px-3 py-1 rounded-full border border-[#D4AF37]/40 text-[9px] font-mono font-extrabold text-[#D4AF37] uppercase tracking-widest flex items-center gap-1 shadow-md">
-        <BadgeCheck size={12} className="text-[#D4AF37]" />
-        <span>{cleanDomain}</span>
-      </div>
-
-      {/* Ícono de Logotipo Oficial del Medio de Comunicación */}
-      <div className="relative z-10 w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white p-3.5 border-2 border-[#D4AF37] shadow-[0_0_30px_rgba(212,175,55,0.4)] flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-        {!imgError ? (
+    <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-2.5 mb-3">
+      <div className="flex items-center gap-2 min-w-0">
+        <div className="w-6 h-6 rounded-md bg-white p-0.5 shrink-0 shadow-sm border border-[#D4AF37]/50 flex items-center justify-center">
           <img 
-            src={imgSrc} 
+            src={favicon} 
             alt={sourceName}
-            onError={handlePrimaryError}
-            className="w-full h-full object-contain filter drop-shadow-md"
+            onError={(e) => {
+              e.currentTarget.src = `https://unavatar.io/${cleanDomain}`;
+            }}
+            className="w-full h-full object-contain"
           />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-black font-black text-xs uppercase font-mono">
-            <Landmark size={32} className="text-[#D31227] mb-1" />
-            <span>{sourceName.slice(0, 3)}</span>
-          </div>
-        )}
+        </div>
+
+        <div className="flex flex-col min-w-0">
+          <span className="font-serif text-sm font-bold text-white leading-tight truncate group-hover:text-[#D4AF37] transition-colors">
+            {sourceName}
+          </span>
+          <span className="text-[9px] font-mono text-[#D4AF37] font-semibold tracking-wider truncate">
+            {cleanDomain}
+          </span>
+        </div>
       </div>
 
-      {/* Nombre del Medio de Comunicación */}
-      <div className="relative z-10 text-center space-y-0.5">
-        <h4 className="font-serif text-lg md:text-xl font-black text-white tracking-wide group-hover:text-[#D4AF37] transition-colors">
-          {sourceName}
-        </h4>
-        <span className="text-[10px] font-mono text-gray-300 font-bold uppercase tracking-wider block">
-          Medio de Comunicación Verificado
-        </span>
-      </div>
-
+      <span className="px-2.5 py-0.5 bg-black/60 text-[#D4AF37] border border-[#D4AF37]/40 rounded-full text-[9px] font-mono font-bold uppercase tracking-wider shrink-0">
+        Verificado
+      </span>
     </div>
   );
 }
 
-// BASE DE DATOS DE HOJAS DE VIDA Y DOSSIERS PROFESIONALES DE AUTORES Y PERIODISTAS
+// BARRAS DE SESGO IDEOLÓGICO DISCRETAS
+function PoliticalBiasBar({ biasScore, biasLabel }) {
+  const score = Math.max(5, Math.min(95, biasScore || 50));
+
+  return (
+    <div className="w-full space-y-1 mt-3 pt-2.5 border-t border-white/15 font-mono text-[10px]">
+      <div className="flex items-center justify-between text-gray-300">
+        <span className="flex items-center gap-1 font-semibold text-[#D4AF37] truncate">
+          <Scale size={12} className="text-[#D4AF37] shrink-0" />
+          <span>Sesgo:</span>
+          <strong className="text-white font-bold truncate">{biasLabel || 'Neutral / Centro'}</strong>
+        </span>
+        <span className="text-gray-400 font-bold shrink-0">{score}%</span>
+      </div>
+
+      <div className="relative w-full h-1.5 rounded-full bg-black/60 overflow-hidden border border-white/20">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-slate-200 to-amber-500 opacity-90"></div>
+        <div 
+          className="absolute top-0 bottom-0 w-2.5 bg-white border border-black shadow-[0_0_8px_rgba(255,255,255,0.9)] rounded-full -translate-x-1/2 transition-all duration-500"
+          style={{ left: `${score}%` }}
+        ></div>
+      </div>
+    </div>
+  );
+}
+
+// BASE DE DATOS DE AUTORES
 const AUTHORS_DATABASE = {
   "Lina María Orozco": {
     name: "Lina María Orozco",
@@ -157,22 +149,6 @@ const AUTHORS_DATABASE = {
     publishedCount: 230,
     contactEmail: "juliana.restrepo@eltiempo.com",
     networkProfile: "/servicios?autor=juliana-restrepo"
-  },
-  "Sarah Jenkins": {
-    name: "Sarah Jenkins",
-    title: "International Senior Science & Botanical Agriculture Reporter",
-    tpNumber: "PRESS-ID-NYT-9921",
-    institution: "Columbia University Graduate School of Journalism • New York",
-    verified: true,
-    verificationDate: "18 de Enero, 2025",
-    location: "New York, EE.UU.",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
-    bio: "Periodista de investigación científica galardonada. Especialista en la transición agrícola global hacia estándares orgánicos no sintéticos y trazabilidad de productos botánicos en América.",
-    specialties: ["Salud Ambiental & Biotecnología", "Trazabilidad de Derivados Botánicos", "Estándares Orgánicos USDA/EU", "Sostenibilidad de Suelos"],
-    awards: ["Pulitzer Prize Finalist in Explanatory Reporting 2022", "Society of Environmental Journalists Award 2023"],
-    publishedCount: 185,
-    contactEmail: "sarah.jenkins@nytimes.com",
-    networkProfile: "/servicios?autor=sarah-jenkins"
   }
 };
 
@@ -198,32 +174,6 @@ function getAuthorProfile(authorName) {
   };
 }
 
-// BARRAS DE SESGO IDEOLÓGICO
-function PoliticalBiasBar({ biasScore, biasLabel }) {
-  const score = Math.max(5, Math.min(95, biasScore || 50));
-
-  return (
-    <div className="w-full space-y-1 mt-3 pt-2.5 border-t border-white/15 group/bias relative font-mono text-[10px]">
-      <div className="flex items-center justify-between text-gray-300">
-        <span className="flex items-center gap-1 font-semibold text-[#D4AF37] truncate">
-          <Scale size={12} className="text-[#D4AF37] shrink-0" />
-          <span>Sesgo:</span>
-          <strong className="text-white font-bold truncate">{biasLabel || 'Neutral / Centro'}</strong>
-        </span>
-        <span className="text-gray-400 font-bold shrink-0">{score}%</span>
-      </div>
-
-      <div className="relative w-full h-1.5 rounded-full bg-black/60 overflow-hidden border border-white/20">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-slate-200 to-amber-500 opacity-90"></div>
-        <div 
-          className="absolute top-0 bottom-0 w-2.5 bg-white border border-black shadow-[0_0_8px_rgba(255,255,255,0.9)] rounded-full -translate-x-1/2 transition-all duration-500"
-          style={{ left: `${score}%` }}
-        ></div>
-      </div>
-    </div>
-  );
-}
-
 function NoticiasContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -231,7 +181,6 @@ function NoticiasContent() {
   const initialCountry = searchParams.get('pais') || 'co';
   const [activeCountry, setActiveCountry] = useState(initialCountry);
   const [activeCategoryTab, setActiveCategoryTab] = useState('ultimas');
-  const [activeUmmaCategory, setActiveUmmaCategory] = useState('co');
   
   // Modales
   const [selectedArticle, setSelectedArticle] = useState(null);
@@ -239,9 +188,8 @@ function NoticiasContent() {
   
   const [realtimeArticles, setRealtimeArticles] = useState([]);
   const [loadingFeed, setLoadingFeed] = useState(true);
-  const [visibleNewsCount, setVisibleNewsCount] = useState(6);
+  const [visibleNewsCount, setVisibleNewsCount] = useState(8);
 
-  // Fecha Actual Dinámica Formateada para el Día de Hoy
   const todayObj = new Date();
   const formattedDate = new Intl.DateTimeFormat('es-CO', {
     weekday: 'long',
@@ -273,7 +221,7 @@ function NoticiasContent() {
     { id: 'mundo', name: 'Mundo & América' },
     { id: 'economia', name: 'Economía & Negocios' },
     { id: 'cultura', name: 'Cultura & Sociedad' },
-    { id: 'salud', name: 'Ciencia, Salud & Botánica' }
+    { id: 'salud', name: 'Ciencia & Salud' }
   ];
 
   const countries = [
@@ -286,7 +234,7 @@ function NoticiasContent() {
     { id: 'cl', name: 'Chile' }
   ];
 
-  // Noticias de Respaldo con Identidad Oficial de Cada Medio
+  // Backup sin duplicados
   const fallbackGlobalNews = [
     {
       id: 'top-1',
@@ -298,38 +246,15 @@ function NoticiasContent() {
       sourceName: "La República",
       sourceDomain: "larepublica.co",
       sourceLogoUrl: "https://icons.duckduckgo.com/ip3/larepublica.co.ico",
-      fallbackFavicon: "https://unavatar.io/larepublica.co",
-      sourceBrandColor: "#D31227",
       originalUrl: "https://www.larepublica.co/economia/de-la-espriella-anuncio-el-cierre-de-14-embajadas-y-15-consulados-en-su-administracion-4444159",
       category: "Colombia",
       country: "co",
       publishedAt: `${dateDayMonthYear} a las 01:11 p. m.`,
       biasScore: 50,
-      biasLabel: "Imparcial / Verificado",
-      views: 34100
+      biasLabel: "Imparcial / Verificado"
     },
     {
       id: 'top-2',
-      topicKey: "hambruna-onu-latinus",
-      title: "Hambruna afecta a 645 millones de personas pese a que se redujo 4.8% en Latinoamérica: ONU",
-      summary: "Informe global de las Naciones Unidas sobre seguridad alimentaria e interrupción de la tendencia al alza del hambre.",
-      fullContent: `El informe global sobre seguridad alimentaria publicado por las Naciones Unidas señala que 645 millones de personas sufren hambruna en el mundo.\n\nPese al contexto global, la región latinoamericana registró una reducción del 4.8% en los índices de desnutrición.`,
-      author: "LatinUS Redacción",
-      sourceName: "LatinUS",
-      sourceDomain: "latinus.us",
-      sourceLogoUrl: "https://icons.duckduckgo.com/ip3/latinus.us.ico",
-      fallbackFavicon: "https://unavatar.io/latinus.us",
-      sourceBrandColor: "#E50914",
-      originalUrl: "https://latinus.us/mundo/2026/7/27/hambruna-afecta-a-645-millones-de-personas-pese-a-que-se-redujo-48-en-latinoamerica-onu-179966.html",
-      category: "Mundo",
-      country: "us",
-      publishedAt: `${dateDayMonthYear} a las 12:00 p. m.`,
-      biasScore: 50,
-      biasLabel: "Imparcial / Verificado",
-      views: 45200
-    },
-    {
-      id: 'top-3',
       topicKey: "dolar-casas-cambio-semana",
       title: "Dólar en casas de cambio: así está fluctuando la moneda este 27 de julio en Colombia",
       summary: "Análisis de divisas y cotización del dólar en el mercado cambiario colombiano.",
@@ -338,19 +263,33 @@ function NoticiasContent() {
       sourceName: "Revista Semana",
       sourceDomain: "semana.com",
       sourceLogoUrl: "https://icons.duckduckgo.com/ip3/semana.com.ico",
-      fallbackFavicon: "https://unavatar.io/semana.com",
-      sourceBrandColor: "#C8102E",
       originalUrl: "https://www.semana.com/economia/macroeconomia/",
       category: "Economía",
       country: "co",
       publishedAt: `${dateDayMonthYear} a las 12:54 p. m.`,
       biasScore: 60,
-      biasLabel: "Centro-Derecha",
-      views: 31200
+      biasLabel: "Centro-Derecha"
+    },
+    {
+      id: 'top-3',
+      topicKey: "hambruna-onu-latinus",
+      title: "Hambruna afecta a 645 millones de personas pese a que se redujo 4.8% en Latinoamérica: ONU",
+      summary: "Informe global de las Naciones Unidas sobre seguridad alimentaria e interrupción de la tendencia al alza del hambre.",
+      fullContent: `El informe global sobre seguridad alimentaria publicado por las Naciones Unidas señala que 645 millones de personas sufren hambruna en el mundo.\n\nPese al contexto global, la región latinoamericana registró una reducción del 4.8% en los índices de desnutrición.`,
+      author: "LatinUS Redacción",
+      sourceName: "LatinUS",
+      sourceDomain: "latinus.us",
+      sourceLogoUrl: "https://icons.duckduckgo.com/ip3/latinus.us.ico",
+      originalUrl: "https://latinus.us/mundo/2026/7/27/hambruna-afecta-a-645-millones-de-personas-pese-a-que-se-redujo-48-en-latinoamerica-onu-179966.html",
+      category: "Mundo",
+      country: "us",
+      publishedAt: `${dateDayMonthYear} a las 12:00 p. m.`,
+      biasScore: 50,
+      biasLabel: "Imparcial / Verificado"
     }
   ];
 
-  // CONSUMIR FEED DE NOTICIAS CON LOGOS OFICIALES DE CADA MEDIO
+  // CONSUMIR FEED CON DEDUPLICACIÓN
   useEffect(() => {
     setLoadingFeed(true);
     let isMounted = true;
@@ -362,7 +301,16 @@ function NoticiasContent() {
           const data = await response.json();
           if (data.success && data.articles && data.articles.length > 0) {
             if (isMounted) {
-              setRealtimeArticles(data.articles);
+              // Deduplicar títulos
+              const seen = new Set();
+              const cleanList = data.articles.filter(item => {
+                const norm = item.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 30);
+                if (seen.has(norm)) return false;
+                seen.add(norm);
+                return true;
+              });
+
+              setRealtimeArticles(cleanList);
               setLoadingFeed(false);
               return;
             }
@@ -411,15 +359,14 @@ function NoticiasContent() {
   return (
     <div className="min-h-screen theme-noticias text-white pt-28 pb-36 px-3 sm:px-6 relative overflow-hidden">
       
-      {/* CONTENEDOR PRINCIPAL CON TEXTURA DE CUERO AZUL NOCTURNO REAL */}
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
 
-        {/* MASTHEAD EDITORIAL CON LOGOS DE MEDIOS IDENTIFICABLES */}
+        {/* MASTHEAD PRINCIPAL */}
         <div className="leather-canvas-blue rounded-3xl p-6 md:p-10 backdrop-blur-2xl relative overflow-hidden space-y-6 border-2 border-[#D4AF37]/50 shadow-[0_20px_60px_rgba(0,0,0,0.9)]">
           
           <div className="text-center space-y-4 border-b border-[#D4AF37]/35 pb-6">
             <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-gray-300 uppercase tracking-widest px-2 gap-2">
-              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Monitoreo de Medios en Tiempo Real</span>
+              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Monitoreo de Prensa en Tiempo Real</span>
               
               <div className="inline-flex items-center gap-2 font-extrabold text-[#D4AF37] px-4 py-1.5 bg-black/80 rounded-full border border-[#D4AF37]/50 shadow-md">
                 <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
@@ -436,13 +383,13 @@ function NoticiasContent() {
             <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
             <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-              "Agregador oficial de prensa: Identifica a primera vista los logotipos de los medios más influyentes del país y el continente."
+              "Cobertura hemerográfica imparcial, organizada sin duplicaciones y verificado por fuentes matriz oficiales."
             </p>
 
             <div className="pt-1 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-950/80 border border-emerald-500/50 rounded-full text-[10px] font-mono text-emerald-300 font-bold">
                 <Radio size={12} className="animate-pulse text-emerald-400" />
-                <span>LOGOTIPOS DIRECTOS SIN DEPENDENCIAS DE GOOGLE NEWS ({dateDayMonthYear})</span>
+                <span>FEED ESTRUCTURADO SIN REPETICIONES ({dateDayMonthYear})</span>
               </div>
             </div>
           </div>
@@ -467,134 +414,127 @@ function NoticiasContent() {
             })}
           </nav>
 
-          {/* TOP NEWS — NOTICIA DESTACADA CON EL LOGO DEL MEDIO */}
+          {/* ESTRUCTURA ORGANIZADA 1: LEAD HERO + TRENDING LIST */}
           <div className="pt-2 space-y-5">
             <div className="flex items-center justify-between border-b border-white/15 pb-2">
-              <h2 className="font-serif text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
-                <span className="w-3.5 h-3.5 bg-[#D4AF37] rounded-full inline-block shadow-[0_0_15px_rgba(212,175,55,0.9)] animate-pulse"></span> TOP NEWS — NOTICIA PRINCIPAL
+              <h2 className="font-serif text-xl md:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
+                <span className="w-3.5 h-3.5 bg-[#D4AF37] rounded-full inline-block shadow-[0_0_15px_rgba(212,175,55,0.9)] animate-pulse"></span> NOTICIA DE PORTADA & TENDENCIAS
               </h2>
               <span className="text-xs font-mono text-[#D4AF37] font-bold">Fecha: {dateDayMonthYear}</span>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               
-              {/* Noticia Principal Destacada (7 Cols) */}
-              <div 
-                onClick={() => setSelectedArticle(topNewsPrimary)}
-                className="lg:col-span-7 leather-card-dark rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 group cursor-pointer space-y-4 p-5 hover:border-[#D4AF37] hover:-translate-y-1.5 flex flex-col justify-between"
-              >
-                <div className="space-y-4">
-                  {/* Tarjeta de Marca del Medio de Comunicación */}
-                  <MediaBrandLogoCard 
-                    sourceName={topNewsPrimary.sourceName}
-                    sourceDomain={topNewsPrimary.sourceDomain}
-                    logoUrl={topNewsPrimary.sourceLogoUrl}
-                    fallbackFavicon={topNewsPrimary.fallbackFavicon}
-                    brandColor={topNewsPrimary.sourceBrandColor}
-                    className="h-64 md:h-80"
-                  />
+              {/* Noticia de Portada Principal (7 Cols) */}
+              {topNewsPrimary && (
+                <div 
+                  onClick={() => setSelectedArticle(topNewsPrimary)}
+                  className="lg:col-span-7 leather-card-dark rounded-3xl p-6 shadow-2xl transition-all duration-500 group cursor-pointer space-y-4 hover:border-[#D4AF37] hover:-translate-y-1 flex flex-col justify-between"
+                >
+                  <div className="space-y-3">
+                    <MediaHeaderBadge 
+                      sourceName={topNewsPrimary.sourceName}
+                      sourceDomain={topNewsPrimary.sourceDomain}
+                      logoUrl={topNewsPrimary.sourceLogoUrl}
+                      brandColor={topNewsPrimary.sourceBrandColor}
+                    />
 
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-mono text-[#D4AF37] uppercase font-bold">
-                      <span className="px-3 py-1 bg-black/60 rounded-md border border-[#D4AF37]/30">{topNewsPrimary.sourceName}</span>
-                      <span>{topNewsPrimary.publishedAt}</span>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-[11px] font-mono text-[#D4AF37]">
+                        <span className="font-bold">{topNewsPrimary.category}</span>
+                        <span>{topNewsPrimary.publishedAt}</span>
+                      </div>
+
+                      <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight group-hover:text-[#D4AF37] transition-colors">
+                        {topNewsPrimary.title}
+                      </h3>
+                      
+                      <p className="text-gray-200 text-xs md:text-sm font-sans line-clamp-3 leading-relaxed font-light">
+                        {topNewsPrimary.summary}
+                      </p>
                     </div>
-
-                    <h3 className="font-serif text-2xl md:text-4xl font-extrabold text-white leading-tight group-hover:text-[#D4AF37] transition-colors">
-                      {topNewsPrimary.title}
-                    </h3>
-                    
-                    <p className="text-gray-200 text-xs md:text-sm font-sans line-clamp-3 leading-relaxed font-light">
-                      {topNewsPrimary.summary}
-                    </p>
                   </div>
+
+                  <PoliticalBiasBar biasScore={topNewsPrimary.biasScore} biasLabel={topNewsPrimary.biasLabel} />
                 </div>
+              )}
 
-                <PoliticalBiasBar biasScore={topNewsPrimary.biasScore} biasLabel={topNewsPrimary.biasLabel} />
-              </div>
-
-              {/* Columna de Noticias Secundarias con Logos de Medios (5 Cols) */}
-              <div className="lg:col-span-5 space-y-4 flex flex-col justify-between">
-                {topNewsSecondary.map(secItem => {
-                  const domain = secItem.sourceDomain || 'prensa.org';
-                  return (
-                    <div
-                      key={secItem.id}
-                      onClick={() => setSelectedArticle(secItem)}
-                      className="leather-card-dark rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-all cursor-pointer group flex items-center gap-4 hover:border-[#D4AF37]"
-                    >
-                      {/* Ícono de Logotipo del Medio desde DuckDuckGo IP3 */}
-                      <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-xl bg-white border border-[#D4AF37]/40 shadow-md flex items-center justify-center p-2 group-hover:scale-105 transition-transform">
-                        <img 
-                          src={`https://icons.duckduckgo.com/ip3/${domain}.ico`} 
-                          alt={secItem.sourceName}
-                          onError={(e) => {
-                            e.currentTarget.src = `https://unavatar.io/${domain}`;
-                          }}
-                          className="w-12 h-12 object-contain filter drop-shadow-md"
-                        />
-                      </div>
-
-                      <div className="space-y-1.5 flex-1 min-w-0">
-                        <div className="flex items-center justify-between text-[10px] font-mono">
-                          <span className="text-[#D4AF37] font-extrabold uppercase">{secItem.sourceName}</span>
-                          <span className="text-gray-400">{secItem.publishedAt}</span>
-                        </div>
-                        <h4 className="font-serif text-xs md:text-sm font-bold text-white line-clamp-2 leading-snug group-hover:text-[#D4AF37] transition-colors">
-                          {secItem.title}
-                        </h4>
-                        <span className="text-[10px] font-sans text-gray-300 line-clamp-1 italic">
-                          {secItem.summary}
-                        </span>
-                      </div>
+              {/* Lista de Tendencias a la Derecha (5 Cols) */}
+              <div className="lg:col-span-5 space-y-3.5 flex flex-col justify-between">
+                {topNewsSecondary.map((secItem, idx) => (
+                  <div
+                    key={secItem.id}
+                    onClick={() => setSelectedArticle(secItem)}
+                    className="leather-card-dark rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all cursor-pointer group flex items-start gap-3.5 hover:border-[#D4AF37]"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-white p-1 border border-[#D4AF37]/50 shrink-0 flex items-center justify-center shadow-sm">
+                      <img 
+                        src={secItem.sourceLogoUrl || `https://icons.duckduckgo.com/ip3/${secItem.sourceDomain || 'prensa.org'}.ico`}
+                        alt={secItem.sourceName}
+                        onError={(e) => {
+                          e.currentTarget.src = `https://unavatar.io/${secItem.sourceDomain || 'prensa.org'}`;
+                        }}
+                        className="w-full h-full object-contain"
+                      />
                     </div>
-                  );
-                })}
+
+                    <div className="space-y-1 flex-1 min-w-0">
+                      <div className="flex items-center justify-between text-[10px] font-mono">
+                        <span className="text-[#D4AF37] font-bold">#{idx + 1} • {secItem.sourceName}</span>
+                        <span className="text-gray-400">{secItem.publishedAt}</span>
+                      </div>
+                      <h4 className="font-serif text-xs md:text-sm font-bold text-white line-clamp-2 leading-snug group-hover:text-[#D4AF37] transition-colors">
+                        {secItem.title}
+                      </h4>
+                    </div>
+                  </div>
+                ))}
               </div>
 
             </div>
           </div>
 
-          {/* FEED GENERAL CON TARJETAS DE MARCA OFICIAL */}
+          {/* ESTRUCTURA ORGANIZADA 2: MAIN GRID LIMPIO (SIN REPETICIONES) */}
           <div className="pt-8 border-t border-white/15 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            {/* Contenido Principal de Noticias (8 Cols) */}
             <div className="lg:col-span-8 space-y-6">
-              <div className="border-b border-white/15 pb-2">
-                <h3 className="font-serif text-2xl font-bold text-white uppercase tracking-wider">
-                  MONITOREO DE PRENSA EN TIEMPO REAL
+              <div className="border-b border-white/15 pb-2 flex items-center justify-between">
+                <h3 className="font-serif text-xl font-bold text-white uppercase tracking-wider">
+                  COBERTURA DE PRENSA GENERAL
                 </h3>
+                <span className="text-xs font-mono text-gray-400">{filteredNews.length} Noticias Indexadas</span>
               </div>
 
-              {/* Grid de Tarjetas con Logo de Medios */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredNews.slice(0, visibleNewsCount).map(feedItem => (
+              {/* Grid 2 Columnas Estructurado */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {filteredNews.slice(1, visibleNewsCount + 1).map(feedItem => (
                   <div
                     key={`feed-grid-${feedItem.id}`}
                     onClick={() => setSelectedArticle(feedItem)}
-                    className="leather-card-dark rounded-2xl overflow-hidden shadow-lg transition-all cursor-pointer group space-y-3 p-4 hover:border-[#D4AF37]"
+                    className="leather-card-dark rounded-2xl p-5 shadow-lg transition-all cursor-pointer group space-y-3 hover:border-[#D4AF37] flex flex-col justify-between"
                   >
-                    <MediaBrandLogoCard 
-                      sourceName={feedItem.sourceName}
-                      sourceDomain={feedItem.sourceDomain}
-                      logoUrl={feedItem.sourceLogoUrl}
-                      fallbackFavicon={feedItem.fallbackFavicon}
-                      brandColor={feedItem.sourceBrandColor}
-                      className="h-44"
-                    />
-
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between text-[10px] font-mono text-[#D4AF37] font-bold">
-                        <span>{feedItem.sourceName}</span>
-                        <span>{feedItem.publishedAt}</span>
-                      </div>
+                    <div className="space-y-2">
+                      <MediaHeaderBadge 
+                        sourceName={feedItem.sourceName}
+                        sourceDomain={feedItem.sourceDomain}
+                        logoUrl={feedItem.sourceLogoUrl}
+                        brandColor={feedItem.sourceBrandColor}
+                      />
 
                       <h4 className="font-serif text-base font-bold text-white line-clamp-2 group-hover:text-[#D4AF37] transition-colors leading-snug">
                         {feedItem.title}
                       </h4>
-                      <p className="text-xs font-sans text-gray-300 line-clamp-2 font-light">
+                      
+                      <p className="text-xs font-sans text-gray-300 line-clamp-2 font-light leading-relaxed">
                         {feedItem.summary}
                       </p>
+                    </div>
+
+                    <div className="space-y-2 pt-2">
+                      <div className="flex items-center justify-between text-[10px] font-mono text-gray-400">
+                        <span>{feedItem.category}</span>
+                        <span className="text-[#D4AF37] font-semibold">{feedItem.publishedAt}</span>
+                      </div>
                       <PoliticalBiasBar biasScore={feedItem.biasScore} biasLabel={feedItem.biasLabel} />
                     </div>
                   </div>
@@ -606,12 +546,12 @@ function NoticiasContent() {
                   onClick={() => setVisibleNewsCount(prev => prev + 6)}
                   className="px-8 py-3 bg-[#D4AF37] text-black font-mono font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_25px_rgba(212,175,55,0.5)] border border-white/30"
                 >
-                  Ver Más Noticias de Medios
+                  Cargar Más Coberturas
                 </button>
               </div>
             </div>
 
-            {/* SIDEBAR DE MEDIOS REGIONALES (4 Cols) */}
+            {/* SIDEBAR DE MEDIOS REGIONALES */}
             <div className="lg:col-span-4 leather-card-dark rounded-3xl p-6 shadow-xl space-y-5 border border-[#D4AF37]/40">
               <div className="space-y-1.5 border-b border-white/15 pb-4">
                 <span className="text-[10px] font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider block">
@@ -634,7 +574,7 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              {/* Lista Numerada de Medios */}
+              {/* Lista Numerada Ordenada */}
               <div className="space-y-3 font-mono text-xs">
                 {countrySidebarNews.slice(0, 8).map((sideItem, idx) => {
                   const domain = sideItem.sourceDomain || 'prensa.org';
@@ -644,14 +584,14 @@ function NoticiasContent() {
                       onClick={() => setSelectedArticle(sideItem)}
                       className="p-3 hover:bg-white/10 rounded-xl transition-colors cursor-pointer border-b border-white/10 space-y-1 group flex items-center gap-3"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-white p-1 border border-[#D4AF37]/40 shrink-0 flex items-center justify-center">
+                      <div className="w-7 h-7 rounded-lg bg-white p-1 border border-[#D4AF37]/40 shrink-0 flex items-center justify-center">
                         <img 
                           src={`https://icons.duckduckgo.com/ip3/${domain}.ico`}
                           alt={sideItem.sourceName}
                           onError={(e) => {
                             e.currentTarget.src = `https://unavatar.io/${domain}`;
                           }}
-                          className="w-5 h-5 object-contain"
+                          className="w-full h-full object-contain"
                         />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -673,7 +613,7 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA CON LOGO OFICIAL DEL MEDIO */}
+        {/* MODAL LECTURA */}
         {selectedArticle && (
           <div 
             className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -701,11 +641,12 @@ function NoticiasContent() {
               </button>
 
               <div className="space-y-3 border-b border-[#D4AF37]/30 pb-4 clear-both">
-                <div className="flex flex-wrap items-center gap-2 font-mono text-xs text-[#D4AF37] font-extrabold uppercase tracking-wider">
-                  <span className="px-2.5 py-1 bg-[#D4AF37]/20 rounded-md border border-[#D4AF37]/40">{selectedArticle.sourceName}</span>
-                  <span>•</span>
-                  <span className="text-white">{selectedArticle.category}</span>
-                </div>
+                <MediaHeaderBadge 
+                  sourceName={selectedArticle.sourceName}
+                  sourceDomain={selectedArticle.sourceDomain}
+                  logoUrl={selectedArticle.sourceLogoUrl}
+                  brandColor={selectedArticle.sourceBrandColor}
+                />
 
                 <h2 className="font-serif text-2xl md:text-4xl font-extrabold text-white leading-tight drop-shadow-md">
                   {selectedArticle.title}
@@ -726,16 +667,6 @@ function NoticiasContent() {
                   </span>
                 </div>
               </div>
-
-              {/* Banner de Tarjeta con Logo del Medio en el Modal */}
-              <MediaBrandLogoCard 
-                sourceName={selectedArticle.sourceName}
-                sourceDomain={selectedArticle.sourceDomain}
-                logoUrl={selectedArticle.sourceLogoUrl}
-                fallbackFavicon={selectedArticle.fallbackFavicon}
-                brandColor={selectedArticle.sourceBrandColor}
-                className="h-56 md:h-72"
-              />
 
               <div className="space-y-4 font-sans text-sm text-gray-200 leading-relaxed font-light">
                 <div className="bg-black/60 p-5 rounded-2xl border-l-4 border-[#D4AF37] shadow-inner space-y-2">
@@ -774,7 +705,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE HOJA DE VIDA E INFORMACIÓN PROFESIONAL DEL AUTOR */}
+        {/* MODAL AUTOR */}
         {selectedAuthor && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -870,20 +801,6 @@ function NoticiasContent() {
                     <span key={i} className="px-3 py-1 rounded-lg bg-white/10 border border-white/15 text-xs font-mono font-semibold text-gray-200">
                       • {spec}
                     </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-serif text-sm font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
-                  <Award size={16} /> Premios & Distinciones
-                </h4>
-                <div className="space-y-1.5">
-                  {selectedAuthor.awards.map((award, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs font-sans text-gray-200 bg-black/30 p-2.5 rounded-xl border border-white/5">
-                      <CheckCircle2 size={14} className="text-[#D4AF37] shrink-0" />
-                      <span>{award}</span>
-                    </div>
                   ))}
                 </div>
               </div>

@@ -1,113 +1,88 @@
 import { NextResponse } from 'next/server';
 
-// DICCIONARIO CON LOGOS VECTORIALES OFICIALES E IMÁGENES DE MARCA DIRECTAS (PNG/SVG HD EN TRANSPARENCIA)
 const MEDIA_LOGOS = {
   "larepublica.co": {
     name: "La República",
     domain: "larepublica.co",
-    logoUrl: "https://unavatar.io/larepublica.co",
-    fallbackFavicon: "https://icons.duckduckgo.com/ip3/larepublica.co.ico",
+    logoUrl: "https://icons.duckduckgo.com/ip3/larepublica.co.ico",
     brandColor: "#D31227",
-    textColor: "#FFFFFF",
     country: "Colombia"
   },
   "latinus.us": {
     name: "LatinUS",
     domain: "latinus.us",
-    logoUrl: "https://unavatar.io/latinus.us",
-    fallbackFavicon: "https://icons.duckduckgo.com/ip3/latinus.us.ico",
+    logoUrl: "https://icons.duckduckgo.com/ip3/latinus.us.ico",
     brandColor: "#E50914",
-    textColor: "#FFFFFF",
     country: "México / EE.UU."
   },
   "semana.com": {
     name: "Revista Semana",
     domain: "semana.com",
-    logoUrl: "https://unavatar.io/semana.com",
-    fallbackFavicon: "https://icons.duckduckgo.com/ip3/semana.com.ico",
+    logoUrl: "https://icons.duckduckgo.com/ip3/semana.com.ico",
     brandColor: "#C8102E",
-    textColor: "#FFFFFF",
     country: "Colombia"
   },
   "eltiempo.com": {
     name: "El Tiempo",
     domain: "eltiempo.com",
-    logoUrl: "https://unavatar.io/eltiempo.com",
-    fallbackFavicon: "https://icons.duckduckgo.com/ip3/eltiempo.com.ico",
+    logoUrl: "https://icons.duckduckgo.com/ip3/eltiempo.com.ico",
     brandColor: "#003366",
-    textColor: "#FFFFFF",
     country: "Colombia"
   },
   "elespectador.com": {
     name: "El Espectador",
     domain: "elespectador.com",
-    logoUrl: "https://unavatar.io/elespectador.com",
-    fallbackFavicon: "https://icons.duckduckgo.com/ip3/elespectador.com.ico",
+    logoUrl: "https://icons.duckduckgo.com/ip3/elespectador.com.ico",
     brandColor: "#000000",
-    textColor: "#FFD700",
     country: "Colombia"
   },
   "elheraldo.co": {
     name: "El Heraldo",
     domain: "elheraldo.co",
-    logoUrl: "https://unavatar.io/elheraldo.co",
-    fallbackFavicon: "https://icons.duckduckgo.com/ip3/elheraldo.co.ico",
+    logoUrl: "https://icons.duckduckgo.com/ip3/elheraldo.co.ico",
     brandColor: "#005691",
-    textColor: "#FFFFFF",
     country: "Colombia"
   },
   "lasillavacia.com": {
     name: "La Silla Vacía",
     domain: "lasillavacia.com",
-    logoUrl: "https://unavatar.io/lasillavacia.com",
-    fallbackFavicon: "https://icons.duckduckgo.com/ip3/lasillavacia.com.ico",
+    logoUrl: "https://icons.duckduckgo.com/ip3/lasillavacia.com.ico",
     brandColor: "#F37021",
-    textColor: "#FFFFFF",
     country: "Colombia"
   },
   "bbc.com": {
     name: "BBC Mundo",
     domain: "bbc.com",
-    logoUrl: "https://unavatar.io/bbc.com",
-    fallbackFavicon: "https://icons.duckduckgo.com/ip3/bbc.com.ico",
+    logoUrl: "https://icons.duckduckgo.com/ip3/bbc.com.ico",
     brandColor: "#B80000",
-    textColor: "#FFFFFF",
     country: "Reino Unido / Global"
   },
   "nytimes.com": {
     name: "The New York Times",
     domain: "nytimes.com",
-    logoUrl: "https://unavatar.io/nytimes.com",
-    fallbackFavicon: "https://icons.duckduckgo.com/ip3/nytimes.com.ico",
+    logoUrl: "https://icons.duckduckgo.com/ip3/nytimes.com.ico",
     brandColor: "#121212",
-    textColor: "#FFFFFF",
     country: "EE.UU. / Global"
   },
   "globo.com": {
     name: "O Globo",
     domain: "globo.com",
-    logoUrl: "https://unavatar.io/globo.com",
-    fallbackFavicon: "https://icons.duckduckgo.com/ip3/globo.com.ico",
+    logoUrl: "https://icons.duckduckgo.com/ip3/globo.com.ico",
     brandColor: "#00509D",
-    textColor: "#FFFFFF",
     country: "Brasil"
   },
   "redmas.com.co": {
     name: "Red+ Noticias",
     domain: "redmas.com.co",
-    logoUrl: "https://unavatar.io/redmas.com.co",
-    fallbackFavicon: "https://icons.duckduckgo.com/ip3/redmas.com.co.ico",
+    logoUrl: "https://icons.duckduckgo.com/ip3/redmas.com.co.ico",
     brandColor: "#E30613",
-    textColor: "#FFFFFF",
     country: "Colombia"
   },
   "oncubanews.com": {
     name: "OnCuba News",
     domain: "oncubanews.com",
-    logoUrl: "https://unavatar.io/oncubanews.com",
-    fallbackFavicon: "https://icons.duckduckgo.com/ip3/oncubanews.com.ico",
+    logoUrl: "https://icons.duckduckgo.com/ip3/oncubanews.com.ico",
     brandColor: "#00A896",
-    textColor: "#FFFFFF",
     country: "Cuba / EE.UU."
   }
 };
@@ -116,7 +91,6 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const country = searchParams.get('pais') || 'co';
 
-  // Fuentes RSS oficiales
   const rssFeeds = [
     { url: 'https://news.google.com/rss?hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Colombia' },
     { url: 'https://news.google.com/rss/search?q=economia+colombia&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Economía' },
@@ -131,7 +105,7 @@ export async function GET(request) {
     const feedPromises = rssFeeds.map(async (feed) => {
       try {
         const res = await fetch(feed.url, { 
-          next: { revalidate: 120 },
+          next: { revalidate: 180 },
           headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } 
         });
 
@@ -147,20 +121,29 @@ export async function GET(request) {
     const results = await Promise.all(feedPromises);
     results.forEach(items => rawArticles.push(...items));
 
-    rawArticles.sort((a, b) => new Date(b.pubDateRaw) - new Date(a.pubDateRaw));
-    const topArticles = rawArticles.slice(0, 35);
+    // Deduplicar artículos por título normalizado
+    const seenTitles = new Set();
+    const uniqueArticles = [];
 
-    // ASIGNAR LOGOTIPO E IDENTIDAD OFICIAL DIRECTA DE CADA MEDIO (SIN USAR GOOGLE FAVICONS)
+    rawArticles.forEach(item => {
+      const normalizedTitle = item.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 35);
+      if (!seenTitles.has(normalizedTitle)) {
+        seenTitles.add(normalizedTitle);
+        uniqueArticles.push(item);
+      }
+    });
+
+    uniqueArticles.sort((a, b) => new Date(b.pubDateRaw) - new Date(a.pubDateRaw));
+    const topArticles = uniqueArticles.slice(0, 30);
+
     const articlesWithMediaLogos = topArticles.map(article => {
       const mediaInfo = resolveMediaIdentity(article.sourceName, article.originalUrl);
       
       return {
         ...article,
         sourceLogoUrl: mediaInfo.logoUrl,
-        fallbackFavicon: mediaInfo.fallbackFavicon,
         sourceBrandColor: mediaInfo.brandColor,
         sourceDomain: mediaInfo.domain,
-        image: mediaInfo.logoUrl
       };
     });
 
@@ -182,7 +165,6 @@ export async function GET(request) {
   }
 }
 
-// Resolver logo oficial y dominio directo sin dependencia de Google
 function resolveMediaIdentity(sourceName, originalUrl) {
   const name = (sourceName || '').toLowerCase();
   const url = (originalUrl || '').toLowerCase();
@@ -193,7 +175,6 @@ function resolveMediaIdentity(sourceName, originalUrl) {
     }
   }
 
-  // Extraer dominio limpio
   let domain = 'prensa.org';
   if (name.includes('la republica') || name.includes('larepublica')) domain = 'larepublica.co';
   else if (name.includes('semana')) domain = 'semana.com';
@@ -215,15 +196,12 @@ function resolveMediaIdentity(sourceName, originalUrl) {
   return {
     name: sourceName || "Medio Periodístico",
     domain: domain,
-    logoUrl: `https://unavatar.io/${domain}`,
-    fallbackFavicon: `https://icons.duckduckgo.com/ip3/${domain}.ico`,
+    logoUrl: `https://icons.duckduckgo.com/ip3/${domain}.ico`,
     brandColor: "#D4AF37",
-    textColor: "#FFFFFF",
     country: "Internacional"
   };
 }
 
-// Parsear XML de RSS
 function parseRssItems(xmlText, defaultCategory, defaultCountry) {
   const articles = [];
   const itemMatches = xmlText.match(/<item>[\s\S]*?<\/item>/gi) || [];
