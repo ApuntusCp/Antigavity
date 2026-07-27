@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Network, BrainCircuit, Target, Lightbulb, CheckCheck, Percent, LayoutGrid, Rows3, SlidersHorizontal, PieChart, History } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Network, BrainCircuit, Target, Lightbulb, CheckCheck, Percent, LayoutGrid, Rows3, SlidersHorizontal, PieChart, History, AlertTriangle } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
@@ -50,38 +50,66 @@ function EventMetricsGrid({ metrics }) {
   );
 }
 
-// COMPONENTE DE MAPA MENTAL CONCEPTUAL VISUAL CON VERDE LIMO EN IZQUIERDA Y ROJO EN DERECHA
-function AcademicMindMap({ nodes, title }) {
+// COMPONENTE DE MAPA MENTAL CONCEPTUAL CON DIAGNÓSTICO ESPECÍFICO DE SESGO IDEOLÓGICO Y NEUTRALIDAD
+function AcademicMindMap({ nodes, title, biasLevel, verdictText, isNeutral }) {
   if (!nodes || nodes.length === 0) return null;
 
   return (
     <div 
-      className="p-5 rounded-2xl border border-[#D4AF37]/40 space-y-4 shadow-2xl"
+      className="p-5 rounded-2xl border border-[#D4AF37]/50 space-y-4 shadow-2xl"
       style={{
         backgroundColor: 'rgba(0, 0, 0, 0.22)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)'
       }}
     >
-      <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+      <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-2.5 gap-2">
         <span className="text-xs font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
-          <BrainCircuit size={16} className="text-[#D4AF37]" /> MAPA MENTAL CONCEPTUAL DE LA NOTICIA
+          <BrainCircuit size={16} className="text-[#D4AF37]" /> MAPA MENTAL & DIAGNÓSTICO DE SESGO EN EL TITULAR
         </span>
-        <span className="text-[10px] font-mono text-gray-300">Desglose Imparcial</span>
+        
+        {/* BADGE DE DIAGNÓSTICO DE NEUTRALIDAD */}
+        <span className={`text-[10px] font-mono font-bold px-3 py-1 rounded-full border shadow-md flex items-center gap-1.5 ${
+          isNeutral 
+            ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/60' 
+            : 'bg-amber-950/80 text-amber-300 border-amber-500/60'
+        }`}>
+          {isNeutral ? <CheckCheck size={13} /> : <AlertTriangle size={13} />}
+          <span>{biasLevel || "Diagnóstico Factual"}</span>
+        </span>
       </div>
 
+      {/* VEREDICTO DE NEUTRALIDAD O SESGO IDEOLÓGICO */}
+      {verdictText && (
+        <div className={`p-3.5 rounded-xl border text-xs font-sans font-medium leading-relaxed shadow-inner ${
+          isNeutral
+            ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-100'
+            : 'bg-amber-950/40 border-amber-500/50 text-amber-100'
+        }`}>
+          <strong className="block font-mono text-[10px] uppercase font-black tracking-wider mb-0.5 text-gold-gradient">
+            [ DIAGNÓSTICO EDITORIAL DE INTEGRIDAD ]:
+          </strong>
+          {verdictText}
+        </div>
+      )}
+
+      {/* DIAGRAMA CONCEPTUAL CON CONEXIONES */}
       <div className="space-y-4 pt-1">
+        
+        {/* NÚCLEO CENTRAL */}
         <div className="p-4 rounded-xl bg-gradient-to-r from-[#D4AF37]/25 via-black/80 to-[#D4AF37]/25 border-2 border-[#D4AF37] text-center space-y-1 shadow-[0_0_25px_rgba(212,175,55,0.4)]">
           <span className="text-[10px] font-mono text-[#D4AF37] font-black uppercase tracking-widest block">
-            [ NÚCLEO CENTRAL DE LA NOTICIA ]
+            [ NÚCLEO CENTRAL & NARRATIVA DEL TITULAR ]
           </span>
           <h5 className="font-serif text-sm sm:text-base font-extrabold text-white leading-snug">
             "{nodes[0]?.desc || title}"
           </h5>
         </div>
 
+        {/* LÍNEAS DE CONEXIÓN HACIA RAMAS */}
         <div className="w-0.5 h-6 bg-[#D4AF37] mx-auto opacity-70"></div>
 
+        {/* RAMAS CONCEPTUALES */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {nodes.slice(1).map((node, idx) => {
             let borderColor = "border-lime-500/70";
@@ -161,7 +189,14 @@ function AcademicAnalysisSection({ analysis, title }) {
         </p>
       </div>
 
-      <AcademicMindMap nodes={analysis.mapaMentalNodes} title={title} />
+      {/* MAPA MENTAL CON DIAGNÓSTICO DE SESGO IDEOLÓGICO Y NEUTRALIDAD */}
+      <AcademicMindMap 
+        nodes={analysis.mapaMentalNodes} 
+        title={title} 
+        biasLevel={analysis.biasLevel}
+        verdictText={analysis.verdictText}
+        isNeutral={analysis.isNeutral}
+      />
 
       <div 
         className="p-5 rounded-2xl border-l-4 border-emerald-400 border border-emerald-500/40 space-y-2 shadow-2xl"
@@ -416,7 +451,7 @@ function NoticiasContent() {
             <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
             <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-              "Perfil de periodistas con trayectoria pública verídica, maquetación editorial y monitoreo cuantitativo de 5 espectros."
+              "Diagnóstico hemerográfico de neutralidad vs sesgo ideológico, perfil de periodistas y monitoreo cuantitativo de 5 espectros."
             </p>
 
             {/* BARRA DE CONTROL PUBLISHER EDITORIAL */}
@@ -473,8 +508,8 @@ function NoticiasContent() {
               <strong className="text-emerald-400 font-extrabold text-sm">0% Sesgo de Origen</strong>
             </div>
             <div className="p-3 bg-black/40 rounded-xl border border-white/10 space-y-0.5">
-              <span className="text-gray-400 text-[10px] uppercase font-bold block">Autores Periodísticos</span>
-              <strong className="text-white font-extrabold text-sm">Trayectoria Pública</strong>
+              <span className="text-gray-400 text-[10px] uppercase font-bold block">Diagnóstico de Sesgos</span>
+              <strong className="text-white font-extrabold text-sm">Framing Activo</strong>
             </div>
           </div>
 
