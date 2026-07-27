@@ -7,7 +7,7 @@ import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserChec
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
-// INSIGNIA ELEGANTE COMPACTA DEL MEDIO (CON DETALLES DE ORO LUJOSO RESTAURADOS)
+// INSIGNIA ELEGANTE COMPACTA DEL MEDIO
 function MediaHeaderBadge({ sourceName, sourceDomain, logoUrl }) {
   const cleanDomain = React.useMemo(() => {
     if (sourceDomain && !sourceDomain.includes('google')) return sourceDomain;
@@ -60,26 +60,42 @@ function MediaHeaderBadge({ sourceName, sourceDomain, logoUrl }) {
   );
 }
 
-// BARRA DE SESGO IDEOLÓGICO MATEMÁTICO
-function PoliticalBiasBar({ biasScore, biasLabel }) {
-  const score = Math.max(5, Math.min(95, biasScore || 50));
+// BARRA DE SESGO IDEOLÓGICO MATEMÁTICO CON ORIGEN EN CENTRO (0% PUNTO NEUTRO)
+function PoliticalBiasBar({ biasDirection, deviationPercent, biasLabel }) {
+  const dir = biasDirection || 'Centro';
+  const percent = deviationPercent !== undefined ? deviationPercent : 0;
+
+  // Posición visual en la barra (50% es el Centro 0)
+  let visualPos = 50;
+  if (dir === 'Izquierda') {
+    visualPos = 50 - (percent * 0.45);
+  } else if (dir === 'Derecha') {
+    visualPos = 50 + (percent * 0.45);
+  }
+
+  let displayText = "0% Sesgo (Punto Cero Neutral)";
+  if (dir === 'Izquierda') displayText = `${percent}% Sesgo Izquierda`;
+  else if (dir === 'Derecha') displayText = `${percent}% Sesgo Derecha`;
 
   return (
     <div className="w-full space-y-1 mt-3 pt-2.5 border-t border-white/15 font-mono text-[10px]">
       <div className="flex items-center justify-between text-gray-300">
         <span className="flex items-center gap-1 font-semibold text-[#D4AF37] truncate">
           <Scale size={12} className="text-[#D4AF37] shrink-0" />
-          <span>Espectro:</span>
-          <strong className="text-white font-bold truncate">{biasLabel || 'Neutral / Centro'}</strong>
+          <span>Calculo desde el Centro:</span>
         </span>
-        <span className="text-gray-400 font-bold shrink-0">{score}%</span>
+        <span className="text-[#D4AF37] font-bold shrink-0">{displayText}</span>
       </div>
 
-      <div className="relative w-full h-1.5 rounded-full bg-black/60 overflow-hidden border border-white/20">
-        <div className="absolute inset-0 bg-gradient-to-r from-red-600 via-blue-500 to-amber-500 opacity-90"></div>
+      <div className="relative w-full h-2 rounded-full bg-black/80 overflow-hidden border border-white/20">
+        <div className="absolute inset-0 bg-gradient-to-r from-red-600 via-slate-200 to-amber-500 opacity-90"></div>
+        {/* Marcador del Centro Cero (0%) */}
+        <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white/60 -translate-x-1/2 z-10"></div>
+        
+        {/* Indicador de Desviación */}
         <div 
-          className="absolute top-0 bottom-0 w-2.5 bg-white border border-black shadow-[0_0_8px_rgba(255,255,255,0.9)] rounded-full -translate-x-1/2 transition-all duration-500"
-          style={{ left: `${score}%` }}
+          className="absolute top-0 bottom-0 w-3 bg-white border border-black shadow-[0_0_8px_rgba(255,255,255,1)] rounded-full -translate-x-1/2 transition-all duration-500 z-20"
+          style={{ left: `${visualPos}%` }}
         ></div>
       </div>
     </div>
@@ -299,7 +315,7 @@ function NoticiasContent() {
           
           <div className="text-center space-y-4 border-b border-[#D4AF37]/35 pb-6">
             <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-gray-300 uppercase tracking-widest px-2 gap-2">
-              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Monitoreo Hemerográfico en los 5 Espectros Ideológicos</span>
+              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Cálculo de Desviación desde el Centro (0% Punto Cero Neutral)</span>
               
               <div className="inline-flex items-center gap-2 font-extrabold text-[#D4AF37] px-4 py-1.5 bg-black/80 rounded-full border border-[#D4AF37]/50 shadow-md">
                 <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
@@ -316,13 +332,13 @@ function NoticiasContent() {
             <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
             <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-              "Compara la misma noticia en los 5 espectros ideológicos (Izquierda, Centro-Izquierda, Centro, Centro-Derecha y Derecha). Analiza adjetivos, intención comunicativa y encuadre editorial sin tomar bandos."
+              "El sesgo ideológico se calcula desde el Centro (0% Punto Neutro). Entre más se aleja hacia la Izquierda o hacia la Derecha, mayor es el porcentaje de desviación de cada medio de comunicación."
             </p>
 
             <div className="pt-1 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-950/80 border border-emerald-500/50 rounded-full text-[10px] font-mono text-emerald-300 font-bold">
                 <Radio size={12} className="animate-pulse text-emerald-400" />
-                <span>ESTILO ORIGINAL RESTAURADO DE CUERO Y ORO CON EVENTO MATRIZ DESTACADO ({dateDayMonthYear})</span>
+                <span>CÁLCULO DESDE EL CENTRO FACTUAL (0%) ACTIVO ({dateDayMonthYear})</span>
               </div>
             </div>
           </div>
@@ -387,14 +403,14 @@ function NoticiasContent() {
                   </div>
 
                   <div className="space-y-3">
-                    <PoliticalBiasBar biasScore={topNewsPrimary.biasScore} biasLabel={topNewsPrimary.biasLabel} />
+                    <PoliticalBiasBar biasDirection={topNewsPrimary.biasDirection} deviationPercent={topNewsPrimary.deviationPercent} biasLabel={topNewsPrimary.biasLabel} />
 
                     <button
                       onClick={() => setSelectedBiasComparison(topNewsPrimary)}
                       className="w-full py-3 px-4 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-xs uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2 border border-white/30"
                     >
                       <Scale size={16} />
-                      <span>Ver Comparativa en los 5 Espectros Políticos (Izquierda a Derecha)</span>
+                      <span>Ver Comparativa de Desviación desde el Centro (0%)</span>
                     </button>
                   </div>
                 </div>
@@ -435,7 +451,7 @@ function NoticiasContent() {
                       className="w-full py-1.5 px-3 bg-white/10 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black font-mono font-bold text-[10px] uppercase tracking-wider rounded-lg transition-all border border-[#D4AF37]/30 flex items-center justify-center gap-1.5"
                     >
                       <GitCompare size={12} />
-                      <span>Comparar 5 Espectros de Titulares</span>
+                      <span>Comparar Desviación del Centro</span>
                     </button>
                   </div>
                 ))}
@@ -478,14 +494,14 @@ function NoticiasContent() {
                     </div>
 
                     <div className="space-y-2 pt-2">
-                      <PoliticalBiasBar biasScore={feedItem.biasScore} biasLabel={feedItem.biasLabel} />
+                      <PoliticalBiasBar biasDirection={feedItem.biasDirection} deviationPercent={feedItem.deviationPercent} biasLabel={feedItem.biasLabel} />
 
                       <button
                         onClick={() => setSelectedBiasComparison(feedItem)}
                         className="w-full py-2 px-3 bg-black/70 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-[#D4AF37]/40 flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         <Scale size={13} />
-                        <span>Ver Noticia en los 5 Espectros Ideológicos</span>
+                        <span>Ver Desviaciones desde el Centro (0%)</span>
                       </button>
                     </div>
                   </div>
@@ -628,10 +644,10 @@ function NoticiasContent() {
               >
                 <div className="space-y-1">
                   <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase flex items-center gap-1.5">
-                    <Scale size={14} /> Comparador de los 5 Espectros Ideológicos
+                    <Scale size={14} /> Comparador de Desviación desde el Centro (0%)
                   </span>
                   <p className="text-xs font-sans text-gray-300">
-                    Compara cómo titularon esta misma noticia medios de Izquierda, Centro y Derecha.
+                    Compara el porcentaje de distancia hacia la Izquierda o Derecha partiendo del Punto Neutro (0%).
                   </p>
                 </div>
 
@@ -644,7 +660,7 @@ function NoticiasContent() {
                   className="px-5 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] shrink-0 flex items-center gap-2 border border-white/30"
                 >
                   <Scale size={15} />
-                  <span>Comparar 5 Espectros</span>
+                  <span>Comparar Desviación del Centro</span>
                 </button>
               </div>
 
@@ -685,7 +701,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN RESTAURADO DE ALTA GAMA DE CUERO Y ORO + 22% TRANSPARENCIA CON EVENTO MATRIZ EN TAMAÑO AMPLIO */}
+        {/* MODAL DE COMPARACIÓN CON CÁLCULO DESDE EL CENTRO 0% Y GUÍA VISUAL NEUTRA */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -715,14 +731,14 @@ function NoticiasContent() {
               <div className="space-y-3 border-b border-[#D4AF37]/30 pb-6 clear-both text-center sm:text-left">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#D4AF37] text-[10px] font-mono font-bold uppercase tracking-widest">
                   <Scale size={14} />
-                  <span>Comparador Algorítmico de los 5 Espectros Políticos</span>
+                  <span>Cálculo de Desviación desde el Centro (0% Punto Cero)</span>
                 </div>
 
                 <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight">
-                  Misma Noticia — Cobertura en los 5 Espectros (Izquierda a Derecha)
+                  Misma Noticia — Cobertura en los 5 Espectros Politicos
                 </h3>
                 
-                {/* EVENTO MATRIZ EN TAMAÑO AMPLIO CON ESTILO LUJOSO INTEGRADO */}
+                {/* EVENTO MATRIZ DESTACADO EN GRANDE Y ELEGANTE */}
                 <div className="pt-2">
                   <span className="text-xs font-mono text-[#D4AF37] font-bold uppercase tracking-wider block">
                     Evento Matriz / Noticia Evaluada:
@@ -733,7 +749,7 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              {/* GUÍA DEL ESPECTRO IDEOLÓGICO EVALUADO CON 22% TRANSPARENCIA & BLUR */}
+              {/* GUÍA DEL ESPECTRO IDEOLÓGICO CALCULADO DESDE EL CENTRO (0%) CON 22% TRANSPARENCIA */}
               <div 
                 className="p-5 rounded-2xl border border-[#D4AF37]/40 space-y-3 shadow-2xl"
                 style={{
@@ -743,7 +759,7 @@ function NoticiasContent() {
                 }}
               >
                 <span className="text-[10px] font-mono text-[#D4AF37] uppercase font-extrabold tracking-widest flex items-center gap-1.5">
-                  <CompassIcon size={14} /> GUÍA DEL ESPECTRO IDEOLÓGICO EVALUADO:
+                  <CompassIcon size={14} /> GUÍA DEL ESPECTRO (DISTANCIA DESDE EL CENTRO 0% NEUTRAL):
                 </span>
                 
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-[10px] font-mono text-center font-bold">
@@ -752,7 +768,7 @@ function NoticiasContent() {
                     style={{ backgroundColor: 'rgba(180, 20, 20, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
                     <span className="w-2.5 h-2.5 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
-                    <span>1. Izquierda (20%)</span>
+                    <span>1. Izquierda (75% Sesgo Izq)</span>
                   </div>
 
                   <div 
@@ -760,7 +776,7 @@ function NoticiasContent() {
                     style={{ backgroundColor: 'rgba(20, 80, 180, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
                     <span className="w-2.5 h-2.5 bg-blue-400 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"></span>
-                    <span>2. Centro-Izquierda (38%)</span>
+                    <span>2. Centro-Izquierda (30% Sesgo Izq)</span>
                   </div>
 
                   <div 
@@ -768,7 +784,7 @@ function NoticiasContent() {
                     style={{ backgroundColor: 'rgba(100, 116, 139, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
                     <span className="w-2.5 h-2.5 bg-slate-200 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"></span>
-                    <span>3. Centro Factual (50%)</span>
+                    <span>3. Centro Factual (0% Punto Cero)</span>
                   </div>
 
                   <div 
@@ -776,7 +792,7 @@ function NoticiasContent() {
                     style={{ backgroundColor: 'rgba(180, 130, 20, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
                     <span className="w-2.5 h-2.5 bg-amber-400 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span>
-                    <span>4. Centro-Derecha (64%)</span>
+                    <span>4. Centro-Derecha (32% Sesgo Der)</span>
                   </div>
 
                   <div 
@@ -784,12 +800,12 @@ function NoticiasContent() {
                     style={{ backgroundColor: 'rgba(194, 65, 12, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
                     <span className="w-2.5 h-2.5 bg-orange-500 rounded-full shadow-[0_0_8px_rgba(249,115,22,0.8)]"></span>
-                    <span>5. Derecha (82%)</span>
+                    <span>5. Derecha (80% Sesgo Der)</span>
                   </div>
                 </div>
               </div>
 
-              {/* SÍNTESIS IMPARCIAL FACTUAL CON 22% TRANSPARENCIA */}
+              {/* SÍNTESIS IMPARCIAL FACTUAL */}
               <div 
                 className="p-5 rounded-2xl border-l-4 border-emerald-400 border border-emerald-500/30 space-y-2 shadow-2xl"
                 style={{
@@ -802,14 +818,14 @@ function NoticiasContent() {
                   <ShieldCheck size={14} /> SÍNTESIS IMPARCIAL FACTUAL (GRANCOLINOS JOURNAL):
                 </span>
                 <p className="font-sans text-xs md:text-sm text-gray-100 leading-relaxed font-light">
-                  {selectedBiasComparison.neutralSynthesis || `Síntesis Factual: Diversas salas de redacción cubren el acontecimiento aplicando distintos encuadres del lenguaje. El desglose inferior muestra los 5 espectros políticos.`}
+                  {selectedBiasComparison.neutralSynthesis || `Síntesis Factual: Cobertura objetiva. El cálculo evalúa la distancia porcentual desde el Centro Factual (0% Punto Cero Neutro) hacia ambos polos ideológicos.`}
                 </p>
               </div>
 
-              {/* VENTANAS DE CADA TITULAR (LAS 5 COBERTURAS) CON 22% TRANSPARENCIA & BORDES DE ORO EMANANTE */}
+              {/* VENTANAS DE CADA TITULAR CON DISTANCIA DESDE EL CENTRO (0%) */}
               <div className="space-y-4 pt-2">
                 <h4 className="font-serif text-base font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
-                  <Scale size={16} /> COBERTURAS REGISTRADAS EN LOS 5 ESPECTROS IDEOLÓGICOS
+                  <Scale size={16} /> COBERTURAS Y DESVIACIONES DESDE EL CENTRO (0%)
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -850,7 +866,7 @@ function NoticiasContent() {
                           </h5>
                         </div>
 
-                        {/* Análisis de Intención & Encuadre con Transparencia 22% */}
+                        {/* Análisis de Intención & Encuadre */}
                         <div 
                           className="p-3 rounded-xl border border-white/15 space-y-1 text-xs shadow-inner"
                           style={{
@@ -868,9 +884,9 @@ function NoticiasContent() {
                         </div>
                       </div>
 
-                      {/* Barra de Sesgo Ideológico */}
+                      {/* Barra de Sesgo Ideológico Calculado desde el Centro (0%) */}
                       <div className="space-y-2 pt-2">
-                        <PoliticalBiasBar biasScore={coverage.biasScore} biasLabel={coverage.biasLabel} />
+                        <PoliticalBiasBar biasDirection={coverage.biasDirection} deviationPercent={coverage.deviationPercent} biasLabel={coverage.biasLabel} />
 
                         <a
                           href={coverage.originalUrl || selectedBiasComparison.originalUrl}

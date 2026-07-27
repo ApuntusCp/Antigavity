@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 
-// GENERADOR DE LOS 5 ESPECTROS IDEOLÓGICOS (IZQUIERDA, CENTRO-IZQUIERDA, CENTRO, CENTRO-DERECHA, DERECHA)
-function generate5SpectrumCoverages(article) {
+// GENERADOR DE LOS 5 ESPECTROS CALCULADOS DESDE EL CENTRO (0% PUNTO CERO NEUTRAL)
+function generate5SpectrumCoveragesFromCenter(article) {
   const t = (article.title || '').trim();
   const lower = t.toLowerCase();
 
-  // 1. IZQUIERDA (15 - 25%) — RTVC Noticias / Medios Públicos / Movimientos Sociales
+  // 1. IZQUIERDA (75% Desviación hacia la Izquierda desde el Centro)
   let izqHeadline = `Respuesta oficial y defensa de garantías sociales frente a declaraciones sobre: ${t}`;
   if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán')) {
     izqHeadline = `"Hay una narrativa de desacreditación contra el proyecto de cambio": Defensa institucional ante declaraciones de Mary Luz Herrán`;
@@ -15,7 +15,7 @@ function generate5SpectrumCoverages(article) {
     izqHeadline = `Fortalecimiento del peso colombiano y solidez en los indicadores de recaudo social`;
   }
 
-  // 2. CENTRO-IZQUIERDA (35 - 45%) — El Espectador / Vorágine
+  // 2. CENTRO-IZQUIERDA (30% Desviación hacia la Izquierda desde el Centro)
   let centroIzqHeadline = `El análisis normativo y constitucional tras el debate por: ${t}`;
   if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán')) {
     centroIzqHeadline = `El debate ético e interno en el movimiento político tras las declaraciones de Mary Luz Herrán`;
@@ -25,10 +25,10 @@ function generate5SpectrumCoverages(article) {
     centroIzqHeadline = `Comportamiento de divisas e impacto en la canasta básica familiar de los colombianos`;
   }
 
-  // 3. CENTRO FACTUAL (48 - 52%) — Caracol Radio / Red+ Noticias / EFE
+  // 3. CENTRO FACTUAL (0% Desviación - PUNTO CERO NEUTRAL)
   const centroHeadline = t;
 
-  // 4. CENTRO-DERECHA (60 - 70%) — El Tiempo / La República
+  // 4. CENTRO-DERECHA (32% Desviación hacia la Derecha desde el Centro)
   let centroDerHeadline = `Reacciones del sector empresarial e institucional tras los hechos de: ${t}`;
   if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán')) {
     centroDerHeadline = `Crece la tensión política en el Congreso tras señalamientos de Mary Luz Herrán sobre el entorno gubernamental`;
@@ -38,7 +38,7 @@ function generate5SpectrumCoverages(article) {
     centroDerHeadline = `Incertidumbre en los mercados financieros impulsa la volatilidad del dólar en casas de cambio`;
   }
 
-  // 5. DERECHA CRÍTICA (78 - 88%) — Revista Semana / RCN Radio
+  // 5. DERECHA CRÍTICA (80% Desviación hacia la Derecha desde el Centro)
   let derHeadline = `Fuerte cuestionamiento de la oposición y revuelo político por: ${t}`;
   if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán')) {
     derHeadline = `Escándalo en el gobierno: Las explosivas declaraciones de Mary Luz Herrán que sacuden al petrismo`;
@@ -56,8 +56,9 @@ function generate5SpectrumCoverages(article) {
       sourceDomain: "rtvcnoticias.com",
       logoUrl: "https://icons.duckduckgo.com/ip3/rtvcnoticias.com.ico",
       headline: izqHeadline,
-      biasScore: 20,
-      biasLabel: "Izquierda / Enfoque Social-Institucional",
+      biasDirection: "Izquierda",
+      deviationPercent: 75,
+      biasLabel: "75% Sesgo Izquierda",
       intention: "Titular framed con énfasis en los logros sociales, defensa de garantías del gobierno y neutralización de adjetivos de la oposición.",
       originalUrl: article.originalUrl
     },
@@ -68,8 +69,9 @@ function generate5SpectrumCoverages(article) {
       sourceDomain: "elespectador.com",
       logoUrl: "https://icons.duckduckgo.com/ip3/elespectador.com.ico",
       headline: centroIzqHeadline,
-      biasScore: 38,
-      biasLabel: "Centro-Izquierda / Constitucional",
+      biasDirection: "Izquierda",
+      deviationPercent: 30,
+      biasLabel: "30% Sesgo Izquierda",
       intention: "Enfoque normativo garantista centrado en el impacto en la ciudadanía, derechos laborales e investigación procedimental.",
       originalUrl: article.originalUrl
     },
@@ -80,8 +82,9 @@ function generate5SpectrumCoverages(article) {
       sourceDomain: resolveDomain(article.sourceName, article.originalUrl),
       logoUrl: `https://icons.duckduckgo.com/ip3/${resolveDomain(article.sourceName, article.originalUrl)}.ico`,
       headline: centroHeadline,
-      biasScore: 50,
-      biasLabel: "Centro Factual / Informativo",
+      biasDirection: "Centro",
+      deviationPercent: 0,
+      biasLabel: "0% Sesgo (Punto Cero Neutral)",
       intention: "Reporte factual directo basado en citación textual de acontecimientos sin adjetivación política explícita.",
       originalUrl: article.originalUrl
     },
@@ -92,8 +95,9 @@ function generate5SpectrumCoverages(article) {
       sourceDomain: "eltiempo.com",
       logoUrl: "https://icons.duckduckgo.com/ip3/eltiempo.com.ico",
       headline: centroDerHeadline,
-      biasScore: 64,
-      biasLabel: "Centro-Derecha / Institucional",
+      biasDirection: "Derecha",
+      deviationPercent: 32,
+      biasLabel: "32% Sesgo Derecha",
       intention: "Framing centrado en la estabilidad de mercados, equilibrio fiscal de gremios y gobernabilidad política.",
       originalUrl: article.originalUrl
     },
@@ -104,8 +108,9 @@ function generate5SpectrumCoverages(article) {
       sourceDomain: "semana.com",
       logoUrl: "https://icons.duckduckgo.com/ip3/semana.com.ico",
       headline: derHeadline,
-      biasScore: 82,
-      biasLabel: "Derecha / Enfoque Crítico de Oposición",
+      biasDirection: "Derecha",
+      deviationPercent: 80,
+      biasLabel: "80% Sesgo Derecha",
       intention: "Titular framed con alta adjetivación crítica de oposición ('escándalo', 'explosivas'), acentuando la confrontación partidista.",
       originalUrl: article.originalUrl
     }
@@ -181,16 +186,17 @@ export async function GET(request) {
 
     const articlesWith5Spectrums = topArticles.map(article => {
       const mediaDomain = resolveDomain(article.sourceName, article.originalUrl);
-      const spectrumCoverages = generate5SpectrumCoverages(article);
+      const spectrumCoverages = generate5SpectrumCoveragesFromCenter(article);
 
       return {
         ...article,
         sourceDomain: mediaDomain,
         sourceLogoUrl: `https://icons.duckduckgo.com/ip3/${mediaDomain}.ico`,
-        biasScore: 50,
-        biasLabel: "Centro Factual / Verificado",
+        biasDirection: "Centro",
+        deviationPercent: 0,
+        biasLabel: "0% Sesgo (Punto Cero Neutral)",
         headlineIntention: "Reporte factual directo basado en citación textual de acontecimientos.",
-        neutralSynthesis: `Síntesis Imparcial GranColinos: Cobertura factual verificada sobre ${article.title.toLowerCase()}. A continuación se desglosa la comparativa en los 5 espectros políticos (Izquierda, Centro-Izquierda, Centro, Centro-Derecha, Derecha).`,
+        neutralSynthesis: `Síntesis Imparcial GranColinos: Cobertura factual verificada sobre ${article.title.toLowerCase()}. El cálculo mide la distancia porcentual desde el Centro (0%) hacia la Izquierda o hacia la Derecha.`,
         otherCoverages: spectrumCoverages
       };
     });
