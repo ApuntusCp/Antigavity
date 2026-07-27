@@ -65,7 +65,6 @@ function PoliticalBiasBar({ biasDirection, deviationPercent, biasLabel }) {
   const dir = biasDirection || 'Centro';
   const percent = deviationPercent !== undefined ? deviationPercent : 0;
 
-  // Posición visual en la barra (50% es el Centro 0)
   let visualPos = 50;
   if (dir === 'Izquierda') {
     visualPos = 50 - (percent * 0.45);
@@ -82,17 +81,15 @@ function PoliticalBiasBar({ biasDirection, deviationPercent, biasLabel }) {
       <div className="flex items-center justify-between text-gray-300">
         <span className="flex items-center gap-1 font-semibold text-[#D4AF37] truncate">
           <Scale size={12} className="text-[#D4AF37] shrink-0" />
-          <span>Calculo desde el Centro:</span>
+          <span>Calculo desde el C{percent}%:</span>
         </span>
         <span className="text-[#D4AF37] font-bold shrink-0">{displayText}</span>
       </div>
 
       <div className="relative w-full h-2 rounded-full bg-black/80 overflow-hidden border border-white/20">
         <div className="absolute inset-0 bg-gradient-to-r from-red-600 via-slate-200 to-amber-500 opacity-90"></div>
-        {/* Marcador del Centro Cero (0%) */}
         <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white/60 -translate-x-1/2 z-10"></div>
         
-        {/* Indicador de Desviación */}
         <div 
           className="absolute top-0 bottom-0 w-3 bg-white border border-black shadow-[0_0_8px_rgba(255,255,255,1)] rounded-full -translate-x-1/2 transition-all duration-500 z-20"
           style={{ left: `${visualPos}%` }}
@@ -310,12 +307,12 @@ function NoticiasContent() {
       
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
 
-        {/* MASTHEAD PRINCIPAL RESTAURADO DE ALTA GAMA DE CUERO Y ORO */}
+        {/* MASTHEAD PRINCIPAL */}
         <div className="leather-canvas-blue rounded-3xl p-6 md:p-10 backdrop-blur-2xl relative overflow-hidden space-y-6 border-2 border-[#D4AF37]/50 shadow-[0_20px_60px_rgba(0,0,0,0.9)]">
           
           <div className="text-center space-y-4 border-b border-[#D4AF37]/35 pb-6">
             <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-gray-300 uppercase tracking-widest px-2 gap-2">
-              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Cálculo de Desviación desde el Centro (0% Punto Cero Neutral)</span>
+              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Monitoreo Hemerográfico en los 5 Espectros Ideológicos</span>
               
               <div className="inline-flex items-center gap-2 font-extrabold text-[#D4AF37] px-4 py-1.5 bg-black/80 rounded-full border border-[#D4AF37]/50 shadow-md">
                 <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
@@ -332,13 +329,13 @@ function NoticiasContent() {
             <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
             <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-              "El sesgo ideológico se calcula desde el Centro (0% Punto Neutro). Entre más se aleja hacia la Izquierda o hacia la Derecha, mayor es el porcentaje de desviación de cada medio de comunicación."
+              "Compara la misma noticia en los 5 espectros ideológicos. Accede al medio específico de cada espectro o a la Noticia Oficial Matriz."
             </p>
 
             <div className="pt-1 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-950/80 border border-emerald-500/50 rounded-full text-[10px] font-mono text-emerald-300 font-bold">
                 <Radio size={12} className="animate-pulse text-emerald-400" />
-                <span>CÁLCULO DESDE EL CENTRO FACTUAL (0%) ACTIVO ({dateDayMonthYear})</span>
+                <span>DOBLE BOTÓN ACTIVADO: LEER EN MEDIO ESPECÍFICO & NOTICIA OFICIAL ({dateDayMonthYear})</span>
               </div>
             </div>
           </div>
@@ -451,7 +448,7 @@ function NoticiasContent() {
                       className="w-full py-1.5 px-3 bg-white/10 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black font-mono font-bold text-[10px] uppercase tracking-wider rounded-lg transition-all border border-[#D4AF37]/30 flex items-center justify-center gap-1.5"
                     >
                       <GitCompare size={12} />
-                      <span>Comparar Desviación del Centro</span>
+                      <span>Comparar 5 Espectros de Titulares</span>
                     </button>
                   </div>
                 ))}
@@ -501,7 +498,7 @@ function NoticiasContent() {
                         className="w-full py-2 px-3 bg-black/70 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-[#D4AF37]/40 flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         <Scale size={13} />
-                        <span>Ver Desviaciones desde el Centro (0%)</span>
+                        <span>Ver Noticia en los 5 Espectros Ideológicos</span>
                       </button>
                     </div>
                   </div>
@@ -660,7 +657,7 @@ function NoticiasContent() {
                   className="px-5 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] shrink-0 flex items-center gap-2 border border-white/30"
                 >
                   <Scale size={15} />
-                  <span>Comparar Desviación del Centro</span>
+                  <span>Comparar 5 Espectros</span>
                 </button>
               </div>
 
@@ -686,7 +683,7 @@ function NoticiasContent() {
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_25px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2 border border-white/30"
                 >
-                  <span>Ir al Reportaje Completo en {selectedArticle.sourceName}</span>
+                  <span>Ir a la Noticia Oficial Matriz</span>
                   <ExternalLink size={15} />
                 </a>
 
@@ -701,7 +698,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN CON CÁLCULO DESDE EL CENTRO 0% Y GUÍA VISUAL NEUTRA */}
+        {/* MODAL DE COMPARACIÓN CON DOS BOTONES DISTINTOS POR TARJETA: LEER NOTICIA EN {MEDIO} & NOTICIA OFICIAL */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -735,10 +732,10 @@ function NoticiasContent() {
                 </div>
 
                 <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight">
-                  Misma Noticia — Cobertura en los 5 Espectros Politicos
+                  Misma Noticia — Cobertura en los 5 Espectros Políticos
                 </h3>
                 
-                {/* EVENTO MATRIZ DESTACADO EN GRANDE Y ELEGANTE */}
+                {/* EVENTO MATRIZ DESTACADO */}
                 <div className="pt-2">
                   <span className="text-xs font-mono text-[#D4AF37] font-bold uppercase tracking-wider block">
                     Evento Matriz / Noticia Evaluada:
@@ -749,7 +746,7 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              {/* GUÍA DEL ESPECTRO IDEOLÓGICO CALCULADO DESDE EL CENTRO (0%) CON 22% TRANSPARENCIA */}
+              {/* GUÍA DEL ESPECTRO IDEOLÓGICO */}
               <div 
                 className="p-5 rounded-2xl border border-[#D4AF37]/40 space-y-3 shadow-2xl"
                 style={{
@@ -818,11 +815,11 @@ function NoticiasContent() {
                   <ShieldCheck size={14} /> SÍNTESIS IMPARCIAL FACTUAL (GRANCOLINOS JOURNAL):
                 </span>
                 <p className="font-sans text-xs md:text-sm text-gray-100 leading-relaxed font-light">
-                  {selectedBiasComparison.neutralSynthesis || `Síntesis Factual: Cobertura objetiva. El cálculo evalúa la distancia porcentual desde el Centro Factual (0% Punto Cero Neutro) hacia ambos polos ideológicos.`}
+                  {selectedBiasComparison.neutralSynthesis || `Síntesis Factual: Cobertura objetiva. Haz clic en "LEER NOTICIA EN {MEDIO}" para abrir la sala del medio de ese espectro, o en "NOTICIA OFICIAL" para abrir la fuente matriz.`}
                 </p>
               </div>
 
-              {/* VENTANAS DE CADA TITULAR CON DISTANCIA DESDE EL CENTRO (0%) */}
+              {/* VENTANAS DE CADA TITULAR CON DOS BOTONES CLAROS Y DIFERENCIADOS */}
               <div className="space-y-4 pt-2">
                 <h4 className="font-serif text-base font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
                   <Scale size={16} /> COBERTURAS Y DESVIACIONES DESDE EL CENTRO (0%)
@@ -884,19 +881,35 @@ function NoticiasContent() {
                         </div>
                       </div>
 
-                      {/* Barra de Sesgo Ideológico Calculado desde el Centro (0%) */}
-                      <div className="space-y-2 pt-2">
+                      {/* Barra de Sesgo & DOS BOTONES DISTINTOS */}
+                      <div className="space-y-2.5 pt-2">
                         <PoliticalBiasBar biasDirection={coverage.biasDirection} deviationPercent={coverage.deviationPercent} biasLabel={coverage.biasLabel} />
 
-                        <a
-                          href={coverage.originalUrl || selectedBiasComparison.originalUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-full py-2 px-3 bg-white/10 hover:bg-[#D4AF37] text-white hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-white/20 flex items-center justify-center gap-1.5 shadow-md"
-                        >
-                          <span>LEER NOTICIA EN {coverage.sourceName}</span>
-                          <ExternalLink size={12} />
-                        </a>
+                        <div className="grid grid-cols-1 gap-1.5 font-mono text-[10px]">
+                          {/* BOTÓN 1: LEER NOTICIA EN EL MEDIO ESPECÍFICO DEL ESPECTRO (RTVC, Semana, El Espectador, etc.) */}
+                          <a
+                            href={coverage.outletUrl || `https://${coverage.sourceDomain}/`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full py-2 px-3 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all shadow-md hover:bg-white flex items-center justify-center gap-1.5"
+                          >
+                            <span>LEER NOTICIA EN {coverage.sourceName}</span>
+                            <ExternalLink size={11} />
+                          </a>
+
+                          {/* BOTÓN 2: NOTICIA OFICIAL MATRIZ (fuente de origen como bogota.gov.co o nota de origen) */}
+                          <a
+                            href={coverage.officialMatrixUrl || selectedBiasComparison.originalUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full py-1.5 px-3 bg-white/10 hover:bg-white/20 text-gray-200 font-mono font-bold text-[9px] uppercase tracking-wider rounded-xl transition-all border border-white/20 flex items-center justify-center gap-1"
+                          >
+                            <Globe size={11} className="text-[#D4AF37]" />
+                            <span>NOTICIA OFICIAL MATRIZ</span>
+                            <ExternalLink size={10} />
+                          </a>
+                        </div>
+
                       </div>
                     </div>
                   ))}

@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 
-// GENERADOR DE LOS 5 ESPECTROS CALCULADOS DESDE EL CENTRO (0% PUNTO CERO NEUTRAL)
+// GENERADOR DE LOS 5 ESPECTROS CON ENLACES INDIVIDUALES POR MEDIO Y ENLACE OFICIAL MATRIZ
 function generate5SpectrumCoveragesFromCenter(article) {
   const t = (article.title || '').trim();
   const lower = t.toLowerCase();
+  const searchQuery = encodeURIComponent(t.slice(0, 40));
 
-  // 1. IZQUIERDA (75% Desviación hacia la Izquierda desde el Centro)
+  // 1. IZQUIERDA (75% Desviación Izquierda) — RTVC Noticias
   let izqHeadline = `Respuesta oficial y defensa de garantías sociales frente a declaraciones sobre: ${t}`;
   if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán')) {
     izqHeadline = `"Hay una narrativa de desacreditación contra el proyecto de cambio": Defensa institucional ante declaraciones de Mary Luz Herrán`;
@@ -15,7 +16,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
     izqHeadline = `Fortalecimiento del peso colombiano y solidez en los indicadores de recaudo social`;
   }
 
-  // 2. CENTRO-IZQUIERDA (30% Desviación hacia la Izquierda desde el Centro)
+  // 2. CENTRO-IZQUIERDA (30% Desviación Izquierda) — El Espectador
   let centroIzqHeadline = `El análisis normativo y constitucional tras el debate por: ${t}`;
   if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán')) {
     centroIzqHeadline = `El debate ético e interno en el movimiento político tras las declaraciones de Mary Luz Herrán`;
@@ -25,10 +26,10 @@ function generate5SpectrumCoveragesFromCenter(article) {
     centroIzqHeadline = `Comportamiento de divisas e impacto en la canasta básica familiar de los colombianos`;
   }
 
-  // 3. CENTRO FACTUAL (0% Desviación - PUNTO CERO NEUTRAL)
+  // 3. CENTRO FACTUAL (0% Desviación) — Caracol Radio / Red+
   const centroHeadline = t;
 
-  // 4. CENTRO-DERECHA (32% Desviación hacia la Derecha desde el Centro)
+  // 4. CENTRO-DERECHA (32% Desviación Derecha) — El Tiempo
   let centroDerHeadline = `Reacciones del sector empresarial e institucional tras los hechos de: ${t}`;
   if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán')) {
     centroDerHeadline = `Crece la tensión política en el Congreso tras señalamientos de Mary Luz Herrán sobre el entorno gubernamental`;
@@ -38,7 +39,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
     centroDerHeadline = `Incertidumbre en los mercados financieros impulsa la volatilidad del dólar en casas de cambio`;
   }
 
-  // 5. DERECHA CRÍTICA (80% Desviación hacia la Derecha desde el Centro)
+  // 5. DERECHA CRÍTICA (80% Desviación Derecha) — Revista Semana
   let derHeadline = `Fuerte cuestionamiento de la oposición y revuelo político por: ${t}`;
   if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán')) {
     derHeadline = `Escándalo en el gobierno: Las explosivas declaraciones de Mary Luz Herrán que sacuden al petrismo`;
@@ -47,6 +48,8 @@ function generate5SpectrumCoveragesFromCenter(article) {
   } else if (lower.includes('dolar') || lower.includes('economia')) {
     derHeadline = `Disparada del dólar en Colombia genera alarma en gremios y sectores económicos`;
   }
+
+  const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
 
   return [
     {
@@ -60,7 +63,8 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: 75,
       biasLabel: "75% Sesgo Izquierda",
       intention: "Titular framed con énfasis en los logros sociales, defensa de garantías del gobierno y neutralización de adjetivos de la oposición.",
-      originalUrl: article.originalUrl
+      outletUrl: `https://www.rtvcnoticias.com/?s=${searchQuery}`,
+      officialMatrixUrl: article.originalUrl
     },
     {
       spectrumGroup: "Centro-Izquierda",
@@ -73,20 +77,22 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: 30,
       biasLabel: "30% Sesgo Izquierda",
       intention: "Enfoque normativo garantista centrado en el impacto en la ciudadanía, derechos laborales e investigación procedimental.",
-      originalUrl: article.originalUrl
+      outletUrl: `https://www.elespectador.com/buscadorgeneral/?q=${searchQuery}`,
+      officialMatrixUrl: article.originalUrl
     },
     {
       spectrumGroup: "Centro",
       spectrumBadge: "Centro Factual",
       sourceName: article.sourceName || "Caracol Radio",
-      sourceDomain: resolveDomain(article.sourceName, article.originalUrl),
-      logoUrl: `https://icons.duckduckgo.com/ip3/${resolveDomain(article.sourceName, article.originalUrl)}.ico`,
+      sourceDomain: primaryDomain,
+      logoUrl: `https://icons.duckduckgo.com/ip3/${primaryDomain}.ico`,
       headline: centroHeadline,
       biasDirection: "Centro",
       deviationPercent: 0,
       biasLabel: "0% Sesgo (Punto Cero Neutral)",
       intention: "Reporte factual directo basado en citación textual de acontecimientos sin adjetivación política explícita.",
-      originalUrl: article.originalUrl
+      outletUrl: `https://${primaryDomain}/`,
+      officialMatrixUrl: article.originalUrl
     },
     {
       spectrumGroup: "Centro-Derecha",
@@ -99,7 +105,8 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: 32,
       biasLabel: "32% Sesgo Derecha",
       intention: "Framing centrado en la estabilidad de mercados, equilibrio fiscal de gremios y gobernabilidad política.",
-      originalUrl: article.originalUrl
+      outletUrl: `https://www.eltiempo.com/buscar?q=${searchQuery}`,
+      officialMatrixUrl: article.originalUrl
     },
     {
       spectrumGroup: "Derecha",
@@ -112,7 +119,8 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: 80,
       biasLabel: "80% Sesgo Derecha",
       intention: "Titular framed con alta adjetivación crítica de oposición ('escándalo', 'explosivas'), acentuando la confrontación partidista.",
-      originalUrl: article.originalUrl
+      outletUrl: `https://www.semana.com/buscador/?query=${searchQuery}`,
+      officialMatrixUrl: article.originalUrl
     }
   ];
 }
@@ -196,7 +204,7 @@ export async function GET(request) {
         deviationPercent: 0,
         biasLabel: "0% Sesgo (Punto Cero Neutral)",
         headlineIntention: "Reporte factual directo basado en citación textual de acontecimientos.",
-        neutralSynthesis: `Síntesis Imparcial GranColinos: Cobertura factual verificada sobre ${article.title.toLowerCase()}. El cálculo mide la distancia porcentual desde el Centro (0%) hacia la Izquierda o hacia la Derecha.`,
+        neutralSynthesis: `Síntesis Imparcial GranColinos: Cobertura factual verificada sobre ${article.title.toLowerCase()}. El botón LEER NOTICIA EN abre el medio de cada espectro, mientras que NOTICIA OFICIAL abre la fuente matriz.`,
         otherCoverages: spectrumCoverages
       };
     });
