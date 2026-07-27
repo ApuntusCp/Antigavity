@@ -25,14 +25,14 @@ export default async function ShopPage() {
   const text = headerBlock.text || "Nuestra selección exclusiva de formulaciones botánicas y extractos puros desarrollados con los más altos estándares de calidad colombiana e INVIMA.";
 
   return (
-    <div className="min-h-screen theme-noticias text-white pt-32 pb-28 px-4 sm:px-6 relative overflow-hidden">
+    <div className="min-h-screen theme-tienda text-white pt-32 pb-28 px-4 sm:px-6 relative overflow-hidden">
       
-      {/* Background ambient lighting */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-full max-w-5xl h-96 bg-[#D4AF37]/10 blur-[150px] pointer-events-none" />
+      {/* Background ambient botanical green lighting */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-full max-w-5xl h-96 bg-[#2D5016]/30 blur-[160px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10 space-y-12">
         
-        {/* Header Centrado Estilo Luxury GranColinos */}
+        {/* Header Centrado Estilo Luxury GranColinos Botánica */}
         <div className="text-center max-w-3xl mx-auto space-y-4 fade-in">
           <span className="text-[#D4AF37] text-xs font-mono font-extrabold tracking-[0.3em] uppercase block">
             • {subtitle} •
@@ -46,10 +46,10 @@ export default async function ShopPage() {
           </p>
         </div>
 
-        {/* CATÁLOGO ORDENADO Y CENTRADO EN PANTALLA (FLEX JUSTIFY-CENTER) */}
+        {/* CATÁLOGO ORDENADO Y CENTRADO EN PANTALLA SOBRE FONDO VERDE BOTÁNICO (FLEX JUSTIFY-CENTER) */}
         <div className="flex flex-wrap justify-center items-stretch gap-8 max-w-7xl mx-auto">
           {products.length === 0 ? (
-            <div className="w-full py-24 text-center border-2 border-dashed border-[#D4AF37]/40 bg-black/60 rounded-3xl backdrop-blur-xl">
+            <div className="w-full py-24 text-center border-2 border-dashed border-[#D4AF37]/40 bg-[#0A1408]/80 rounded-3xl backdrop-blur-xl">
               <Sparkles size={36} className="text-[#D4AF37] mx-auto mb-3 animate-pulse" />
               <p className="text-[#D4AF37] font-mono tracking-widest uppercase text-xs font-extrabold">
                 El catálogo se está actualizando desde GC Admin.
@@ -67,7 +67,7 @@ export default async function ShopPage() {
               return (
                 <div 
                   key={product.id} 
-                  className="w-full sm:w-[320px] md:w-[340px] group bg-[#050C18]/90 border-2 border-[#D4AF37]/40 hover:border-[#D4AF37] rounded-3xl overflow-hidden backdrop-blur-xl shadow-2xl transition-all duration-500 hover:shadow-[0_15px_45px_rgba(212,175,55,0.35)] flex flex-col justify-between hover:-translate-y-1.5"
+                  className="w-full sm:w-[320px] md:w-[340px] group bg-[#0A1408]/95 border-2 border-[#D4AF37]/40 hover:border-[#D4AF37] rounded-3xl overflow-hidden backdrop-blur-xl shadow-2xl transition-all duration-500 hover:shadow-[0_15px_45px_rgba(212,175,55,0.35)] flex flex-col justify-between hover:-translate-y-1.5"
                 >
                   <div className="flex flex-col flex-1">
                     
@@ -103,7 +103,7 @@ export default async function ShopPage() {
                             className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
                           />
                         ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 bg-[#050A14]">
+                          <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 bg-[#050A04]">
                             <Sparkles size={32} className="text-[#D4AF37] mb-2" />
                             <span className="text-[10px] font-mono tracking-widest uppercase text-gray-400">GranColinos Botánica</span>
                           </div>
@@ -111,7 +111,7 @@ export default async function ShopPage() {
                       </Link>
                     </div>
                     
-                    {/* CUERPO ORDENADO Y ELEGANTE DE LA FICHA */}
+                    {/* CUERPO ORDENADO Y ELEGANTE DE LA FICHA EN VERDE BOTÁNICO */}
                     <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">

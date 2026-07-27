@@ -102,6 +102,19 @@ body {
   background-position: center;
 }
 
+/* FONDO COMPLETO DE LA TIENDA CON TEXTURA BOTÁNICA DE CUERO VERDE ESMERALDA Y DORADO */
+.theme-tienda {
+  background-color: #040903;
+  background-image: 
+    radial-gradient(ellipse at 50% 15%, rgba(212, 175, 55, 0.35) 0%, transparent 65%),
+    radial-gradient(circle at 50% 85%, rgba(45, 80, 22, 0.6) 0%, transparent 70%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leatherGreen'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.35' intercept='0.05'/%3E%3CfeFuncG type='linear' slope='0.5' intercept='0.1'/%3E%3CfeFuncB type='linear' slope='0.35' intercept='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leatherGreen)' opacity='0.55'/%3E%3C/svg%3E"),
+    url('/images/bg_leather.jpg');
+  background-attachment: fixed;
+  background-size: auto, auto, 220px 220px, cover;
+  background-position: center;
+}
+
 /* Gold Gradient Text */
 .text-gold-gradient {
   background: linear-gradient(135deg, #FFF5C0 0%, #D4AF37 55%, #A8810A 100%);
