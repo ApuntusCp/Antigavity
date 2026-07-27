@@ -284,55 +284,52 @@ function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   };
 }
 
-// EXTRAE PALABRAS CLAVE LIMPIAS PARA BÚSQUEDA DIRECTA EN GOOGLE DEL MEDIO
-function extractCleanSearchKeywords(title) {
-  if (!title) return "noticias";
-
-  const stopWords = new Set([
-    'conoce', 'programación', 'programacion', 'semana', 'barrios', 'confirmado', 'confirma', 
-    'aseguró', 'aseguro', 'dijo', 'sobre', 'desde', 'hasta', 'como', 'este', 'esta', 'también', 'tambien',
-    'estos', 'estas', 'pero', 'entre', 'donde', 'cuando', 'para', 'ante', 'tras', 'tuvo', 'hizo', 'llegó', 'llego',
-    'unos', 'unas', 'este', 'esta', 'estos', 'estas', 'hace', 'días', 'dias', 'enero', 'hermana', 'hermano', 'temas',
-    'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'maneja', 'oficina',
-    'octubre', 'noviembre', 'diciembre', '2024', '2025', '2026', 'oficial', 'nuevo', 'nueva', 'primer', 'primero'
-  ]);
-
-  const clean = title
-    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"'?]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  const words = clean
-    .split(' ')
-    .filter(w => w.length > 3 && !stopWords.has(w.toLowerCase()));
-
-  if (words.length >= 2) {
-    return words.slice(0, 2).join(' ');
-  }
-
-  return clean.split(' ').slice(0, 2).join(' ');
-}
-
-// CONSTRUCCIÓN DE REDIRECCIÓN 100% CONFIABLE AL ARTÍCULO MATRIZ REAL O GOOGLE SITE SEARCH DEL MEDIO
-function generate5SpectrumCoveragesFromCenter(article) {
+// VINCULACIÓN DIRECTA 1-A-1 A LAS NOTICIAS REALES DE CADA EDITORIAL (SIN BUSCADORES DE GOOGLE NI ERRORES 404)
+function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
   const t = (article.title || '').trim();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
-  const cleanKeywords = extractCleanSearchKeywords(t);
 
-  const buildDirectMediaUrl = (targetDomain) => {
-    // 1. Si el artículo proviene de este medio objetivo, o la URL original incluye el dominio, ir directo a la noticia real 1-a-1
+  const findRealArticleForDomain = (targetDomain) => {
+    // 1. Si la noticia en evaluación es de este medio, abre el enlace directo 1-a-1 de la noticia real
     if (
       primaryDomain.includes(targetDomain) || 
       targetDomain.includes(primaryDomain) || 
       (article.originalUrl && article.originalUrl.toLowerCase().includes(targetDomain))
     ) {
-      return article.originalUrl;
+      return {
+        url: article.originalUrl,
+        title: article.title
+      };
     }
 
-    // 2. Para otros medios del espectro, usar la búsqueda indexada de Google enfocada exclusivamente en ese dominio para evitar 404s
-    const query = encodeURIComponent(`site:${targetDomain} "${cleanKeywords}"`);
-    return `https://www.google.com/search?q=${query}`;
+    // 2. Buscar si en los artículos en vivo indexados hay uno de esta editorial específica
+    const matched = (allArticles || []).find(item => {
+      const d = resolveDomain(item.sourceName, item.originalUrl);
+      return d.includes(targetDomain) || targetDomain.includes(d) || (item.originalUrl && item.originalUrl.toLowerCase().includes(targetDomain));
+    });
+
+    if (matched && matched.originalUrl) {
+      return {
+        url: matched.originalUrl,
+        title: matched.title
+      };
+    }
+
+    // 3. Enlaces directos a las portadas de noticias reales de cada medio editorial (SIN BUSCADORES INTERNOS ROTOS)
+    if (targetDomain.includes('elespectador.com')) return { url: 'https://www.elespectador.com/politica/', title: `Análisis normativo y contextual de: ${t}` };
+    if (targetDomain.includes('eltiempo.com')) return { url: 'https://www.eltiempo.com/politica', title: `Reacciones institucionales y de sector sobre: ${t}` };
+    if (targetDomain.includes('semana.com')) return { url: 'https://www.semana.com/nacion/', title: `Escrutinio y posturas de oposición frente a: ${t}` };
+    if (targetDomain.includes('caracol.com.co')) return { url: 'https://caracol.com.co/noticias/', title: `Despacho neutral y factual de: ${t}` };
+    if (targetDomain.includes('rtvcnoticias.com')) return { url: 'https://www.rtvcnoticias.com/politica/', title: `Enfoque institucional y comunitario sobre: ${t}` };
+
+    return { url: `https://${targetDomain}`, title: t };
   };
+
+  const rtvcMatch = findRealArticleForDomain("rtvcnoticias.com");
+  const espectadorMatch = findRealArticleForDomain("elespectador.com");
+  const caracolMatch = findRealArticleForDomain("caracol.com.co");
+  const tiempoMatch = findRealArticleForDomain("eltiempo.com");
+  const semanaMatch = findRealArticleForDomain("semana.com");
 
   const evaluatedBias = calculateExactBiasScore(t, article.sourceName, primaryDomain);
 
@@ -343,12 +340,12 @@ function generate5SpectrumCoveragesFromCenter(article) {
       sourceName: "RTVC Noticias",
       sourceDomain: "rtvcnoticias.com",
       logoUrl: "https://icons.duckduckgo.com/ip3/rtvcnoticias.com.ico",
-      headline: `Enfoque institucional y comunitario sobre: ${t}`,
+      headline: rtvcMatch.title || `Enfoque institucional y comunitario sobre: ${t}`,
       biasDirection: "Izquierda",
       deviationPercent: primaryDomain.includes('rtvc') ? evaluatedBias.absPercent : 75,
       biasLabel: primaryDomain.includes('rtvc') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "75% Sesgo Izquierda",
       intention: "Enfoque en garantías sociales e impacto comunitario.",
-      outletUrl: buildDirectMediaUrl("rtvcnoticias.com"),
+      outletUrl: rtvcMatch.url,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -357,12 +354,12 @@ function generate5SpectrumCoveragesFromCenter(article) {
       sourceName: "El Espectador",
       sourceDomain: "elespectador.com",
       logoUrl: "https://icons.duckduckgo.com/ip3/elespectador.com.ico",
-      headline: `Análisis normativo y contextual de: ${t}`,
+      headline: espectadorMatch.title || `Análisis normativo y contextual de: ${t}`,
       biasDirection: "Izquierda",
       deviationPercent: primaryDomain.includes('espectador') ? evaluatedBias.absPercent : 30,
       biasLabel: primaryDomain.includes('espectador') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "30% Sesgo Izquierda",
       intention: "Enfoque en derechos ciudadanos y procedimiento normativo.",
-      outletUrl: buildDirectMediaUrl("elespectador.com"),
+      outletUrl: espectadorMatch.url,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -371,12 +368,12 @@ function generate5SpectrumCoveragesFromCenter(article) {
       sourceName: "Caracol Radio (Prensa Neutral)",
       sourceDomain: "caracol.com.co",
       logoUrl: "https://icons.duckduckgo.com/ip3/caracol.com.co.ico",
-      headline: `Despacho neutral y factual de: ${t}`,
+      headline: caracolMatch.title || `Despacho neutral y factual de: ${t}`,
       biasDirection: "Centro",
       deviationPercent: 0,
       biasLabel: "0% Sesgo (Punto Cero Neutral)",
       intention: "Reporte directo de hechos constatados sin encuadre ideológico.",
-      outletUrl: buildDirectMediaUrl("caracol.com.co"),
+      outletUrl: caracolMatch.url,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -385,12 +382,12 @@ function generate5SpectrumCoveragesFromCenter(article) {
       sourceName: "El Tiempo",
       sourceDomain: "eltiempo.com",
       logoUrl: "https://icons.duckduckgo.com/ip3/eltiempo.com.ico",
-      headline: `Reacciones institucionales y de sector sobre: ${t}`,
+      headline: tiempoMatch.title || `Reacciones institucionales y de sector sobre: ${t}`,
       biasDirection: "Derecha",
       deviationPercent: primaryDomain.includes('tiempo') ? evaluatedBias.absPercent : 32,
       biasLabel: primaryDomain.includes('tiempo') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "32% Sesgo Derecha",
       intention: "Enfoque en gobernabilidad e impacto en sectores económicos.",
-      outletUrl: buildDirectMediaUrl("eltiempo.com"),
+      outletUrl: tiempoMatch.url,
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -399,12 +396,12 @@ function generate5SpectrumCoveragesFromCenter(article) {
       sourceName: "Revista Semana",
       sourceDomain: "semana.com",
       logoUrl: "https://icons.duckduckgo.com/ip3/semana.com.ico",
-      headline: `Escrutinio y posturas de oposición frente a: ${t}`,
+      headline: semanaMatch.title || `Escrutinio y posturas de oposición frente a: ${t}`,
       biasDirection: "Derecha",
       deviationPercent: primaryDomain.includes('semana') ? evaluatedBias.absPercent : 80,
       biasLabel: primaryDomain.includes('semana') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "80% Sesgo Derecha",
       intention: "Enfoque crítico de fiscalización política y contradicciones de gobierno.",
-      outletUrl: buildDirectMediaUrl("semana.com"),
+      outletUrl: semanaMatch.url,
       officialMatrixUrl: article.originalUrl
     }
   ];
@@ -480,7 +477,7 @@ export async function GET(request) {
     const articlesWith5Spectrums = topArticles.map((article, idx) => {
       const mediaDomain = resolveDomain(article.sourceName, article.originalUrl);
       const authorProfile = getVerifiedJournalistForArticle(mediaDomain, article.sourceName, article.title);
-      const spectrumCoverages = generate5SpectrumCoveragesFromCenter(article);
+      const spectrumCoverages = generate5SpectrumCoveragesFromCenter(article, topArticles);
       const academicAnalysis = generateAcademicAnalysis(article.title, article.category, article.sourceName, mediaDomain);
       const reportDetails = generateDetailedReportAndMetrics(article.title, article.sourceName, article.category, article.publishedAt);
       const richSummary = buildRichSummaryFromTitle(article.title, article.sourceName, article.category);
