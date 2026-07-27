@@ -282,7 +282,7 @@ function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   if (biasCalc.isNeutral) {
     conclusionText = `El reporte presenta datos 100% objetivos (0% Sesgo) emitidos por ${sourceName}. No se identifican encuadres tendenciosos.`;
   } else {
-    conclusionText = `Se recomienda contrastar la perspectiva de ${sourceName} (${biasCalc.biasBadgeText}) con las coberturas complementarias de los otros medios para obtener un criterio neutro.`;
+    conclusionText = `Se recomienda contrastar la perspectiva de ${sourceName} (${biasCalc.biasBadgeText}) with las coberturas complementarias de los otros medios para obtener un criterio neutro.`;
   }
 
   return {
@@ -297,7 +297,7 @@ function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   };
 }
 
-// FUNCIÓN AUXILIAR PARA EXTRAER PALABRAS CLAVE LIMPIAS DE BÚSQUEDA
+// EXTRAE 2 TÉRMINOS CLAVE PRECISOS PARA MÁXIMA COMPATIBILIDAD EN BUSCADORES DE MEDIOS
 function extractCleanSearchKeywords(title) {
   if (!title) return "noticias";
   const clean = title
@@ -305,18 +305,21 @@ function extractCleanSearchKeywords(title) {
     .replace(/\s+/g, " ")
     .trim();
 
-  const words = clean.split(' ').filter(w => w.length > 3 && !['para', 'sobre', 'desde', 'hasta', 'como', 'este', 'esta', 'estos', 'estas', 'pero', 'entre', 'donde', 'cuando'].includes(w.toLowerCase()));
-  return words.slice(0, 4).join(' ');
+  const words = clean.split(' ').filter(w => w.length > 3 && !['para', 'sobre', 'desde', 'hasta', 'como', 'este', 'esta', 'estos', 'estas', 'pero', 'entre', 'donde', 'cuando', 'confirmado', 'confirma', 'aseguro', 'dijo'].includes(w.toLowerCase()));
+  return words.slice(0, 2).join(' ');
 }
 
-// GENERADOR DE ENLACES DIRECTOS A LOS SITIOS OFICIALES DE CADA MEDIO DE COMUNICACIÓN
+// ENLACES DIRECTOS 1-A-1 AL MEDIO EMISOR Y A SUS BUSCADORES INTERNOS CON 2 PALABRAS CLAVE
 function generate5SpectrumCoveragesFromCenter(article) {
   const t = (article.title || '').trim();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
   const cleanKeywords = extractCleanSearchKeywords(t);
 
   const buildDirectMediaUrl = (domain) => {
-    if (primaryDomain === domain) return article.originalUrl;
+    // Si la tarjeta corresponde al medio original emisor de la noticia, abre la NOTICIA EXACTA directamente
+    if (primaryDomain.includes(domain) || domain.includes(primaryDomain)) {
+      return article.originalUrl;
+    }
 
     const keywords = encodeURIComponent(cleanKeywords);
 
@@ -356,7 +359,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: primaryDomain.includes('rtvc') ? evaluatedBias.absPercent : 75,
       biasLabel: primaryDomain.includes('rtvc') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "75% Sesgo Izquierda",
       intention: "Enfoque en garantías sociales e impacto comunitario.",
-      outletUrl: primaryDomain.includes('rtvc') ? article.originalUrl : buildDirectMediaUrl("rtvcnoticias.com"),
+      outletUrl: buildDirectMediaUrl("rtvcnoticias.com"),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -370,7 +373,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: primaryDomain.includes('espectador') ? evaluatedBias.absPercent : 30,
       biasLabel: primaryDomain.includes('espectador') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "30% Sesgo Izquierda",
       intention: "Enfoque en derechos ciudadanos y procedimiento normativo.",
-      outletUrl: primaryDomain.includes('espectador') ? article.originalUrl : buildDirectMediaUrl("elespectador.com"),
+      outletUrl: buildDirectMediaUrl("elespectador.com"),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -384,7 +387,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: 0,
       biasLabel: "0% Sesgo (Punto Cero Neutral)",
       intention: "Reporte directo de hechos constatados sin encuadre ideológico.",
-      outletUrl: primaryDomain.includes('caracol') ? article.originalUrl : buildDirectMediaUrl("caracol.com.co"),
+      outletUrl: buildDirectMediaUrl("caracol.com.co"),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -398,7 +401,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: primaryDomain.includes('tiempo') ? evaluatedBias.absPercent : 32,
       biasLabel: primaryDomain.includes('tiempo') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "32% Sesgo Derecha",
       intention: "Enfoque en gobernabilidad e impacto en sectores económicos.",
-      outletUrl: primaryDomain.includes('tiempo') ? article.originalUrl : buildDirectMediaUrl("eltiempo.com"),
+      outletUrl: buildDirectMediaUrl("eltiempo.com"),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -412,7 +415,7 @@ function generate5SpectrumCoveragesFromCenter(article) {
       deviationPercent: primaryDomain.includes('semana') ? evaluatedBias.absPercent : 80,
       biasLabel: primaryDomain.includes('semana') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "80% Sesgo Derecha",
       intention: "Enfoque crítico de fiscalización política y contradicciones de gobierno.",
-      outletUrl: primaryDomain.includes('semana') ? article.originalUrl : buildDirectMediaUrl("semana.com"),
+      outletUrl: buildDirectMediaUrl("semana.com"),
       officialMatrixUrl: article.originalUrl
     }
   ];
