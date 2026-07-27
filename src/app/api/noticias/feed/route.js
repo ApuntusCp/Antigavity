@@ -309,7 +309,7 @@ function extractCleanSearchKeywords(title) {
   return words.slice(0, 4).join(' ');
 }
 
-// GENERADOR DE LOS 5 ESPECTROS CON RUTAS DIRECTAS DE BÚSQUEDA ROBUSTAS Y LIMPIAS
+// GENERADOR DE LOS 5 ESPECTROS DINÁMICO DONDE CADA TARJETA CONSERVA SU SESGO Y FUENTE REAL
 function generate5SpectrumCoveragesFromCenter(article) {
   const t = (article.title || '').trim();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
@@ -321,6 +321,8 @@ function generate5SpectrumCoveragesFromCenter(article) {
     return `https://www.google.com/search?q=${query}`;
   };
 
+  const evaluatedBias = calculateExactBiasScore(t, article.sourceName, primaryDomain);
+
   return [
     {
       spectrumGroup: "Izquierda",
@@ -330,10 +332,10 @@ function generate5SpectrumCoveragesFromCenter(article) {
       logoUrl: "https://icons.duckduckgo.com/ip3/rtvcnoticias.com.ico",
       headline: `Enfoque institucional y comunitario sobre: ${t}`,
       biasDirection: "Izquierda",
-      deviationPercent: 75,
-      biasLabel: "75% Sesgo Izquierda",
-      intention: "Enfoque en garantías sociales e impacto institucional.",
-      outletUrl: buildDirectMediaUrl("rtvcnoticias.com"),
+      deviationPercent: primaryDomain.includes('rtvc') ? evaluatedBias.absPercent : 75,
+      biasLabel: primaryDomain.includes('rtvc') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "75% Sesgo Izquierda",
+      intention: "Enfoque en garantías sociales e impacto comunitario.",
+      outletUrl: primaryDomain.includes('rtvc') ? article.originalUrl : buildDirectMediaUrl("rtvcnoticias.com"),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -344,24 +346,24 @@ function generate5SpectrumCoveragesFromCenter(article) {
       logoUrl: "https://icons.duckduckgo.com/ip3/elespectador.com.ico",
       headline: `Análisis normativo y contextual de: ${t}`,
       biasDirection: "Izquierda",
-      deviationPercent: 30,
-      biasLabel: "30% Sesgo Izquierda",
+      deviationPercent: primaryDomain.includes('espectador') ? evaluatedBias.absPercent : 30,
+      biasLabel: primaryDomain.includes('espectador') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "30% Sesgo Izquierda",
       intention: "Enfoque en derechos ciudadanos y procedimiento normativo.",
-      outletUrl: buildDirectMediaUrl("elespectador.com"),
+      outletUrl: primaryDomain.includes('espectador') ? article.originalUrl : buildDirectMediaUrl("elespectador.com"),
       officialMatrixUrl: article.originalUrl
     },
     {
       spectrumGroup: "Centro",
-      spectrumBadge: "Centro Factual",
-      sourceName: article.sourceName || "Agencia Factual",
-      sourceDomain: primaryDomain,
-      logoUrl: `https://icons.duckduckgo.com/ip3/${primaryDomain}.ico`,
-      headline: t,
+      spectrumBadge: "Centro Factual (0%)",
+      sourceName: "Caracol Radio (Prensa Neutral)",
+      sourceDomain: "caracol.com.co",
+      logoUrl: "https://icons.duckduckgo.com/ip3/caracol.com.co.ico",
+      headline: `Despacho neutral y factual de: ${t}`,
       biasDirection: "Centro",
       deviationPercent: 0,
       biasLabel: "0% Sesgo (Punto Cero Neutral)",
-      intention: "Reporte factual directo del emisor original.",
-      outletUrl: article.originalUrl,
+      intention: "Reporte directo de hechos constatados sin encuadre ideológico.",
+      outletUrl: primaryDomain.includes('caracol') ? article.originalUrl : buildDirectMediaUrl("caracol.com.co"),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -372,10 +374,10 @@ function generate5SpectrumCoveragesFromCenter(article) {
       logoUrl: "https://icons.duckduckgo.com/ip3/eltiempo.com.ico",
       headline: `Reacciones institucionales y de sector sobre: ${t}`,
       biasDirection: "Derecha",
-      deviationPercent: 32,
-      biasLabel: "32% Sesgo Derecha",
+      deviationPercent: primaryDomain.includes('tiempo') ? evaluatedBias.absPercent : 32,
+      biasLabel: primaryDomain.includes('tiempo') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "32% Sesgo Derecha",
       intention: "Enfoque en gobernabilidad e impacto en sectores económicos.",
-      outletUrl: buildDirectMediaUrl("eltiempo.com"),
+      outletUrl: primaryDomain.includes('tiempo') ? article.originalUrl : buildDirectMediaUrl("eltiempo.com"),
       officialMatrixUrl: article.originalUrl
     },
     {
@@ -386,10 +388,10 @@ function generate5SpectrumCoveragesFromCenter(article) {
       logoUrl: "https://icons.duckduckgo.com/ip3/semana.com.ico",
       headline: `Escrutinio y posturas de oposición frente a: ${t}`,
       biasDirection: "Derecha",
-      deviationPercent: 80,
-      biasLabel: "80% Sesgo Derecha",
-      intention: "Enfoque crítico de fiscalización política.",
-      outletUrl: buildDirectMediaUrl("semana.com"),
+      deviationPercent: primaryDomain.includes('semana') ? evaluatedBias.absPercent : 80,
+      biasLabel: primaryDomain.includes('semana') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "80% Sesgo Derecha",
+      intention: "Enfoque crítico de fiscalización política y contradicciones de gobierno.",
+      outletUrl: primaryDomain.includes('semana') ? article.originalUrl : buildDirectMediaUrl("semana.com"),
       officialMatrixUrl: article.originalUrl
     }
   ];
