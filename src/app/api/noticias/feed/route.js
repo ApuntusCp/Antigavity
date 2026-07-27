@@ -284,7 +284,7 @@ function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   };
 }
 
-// EXTRAE PALABRAS CLAVE LIMPIAS (2 SUSTANTIVOS RELEVANTES) PARA BUSCADORES OFICIALES
+// EXTRAE PALABRAS CLAVE LIMPIAS PARA BÚSQUEDA DIRECTA EN GOOGLE DEL MEDIO
 function extractCleanSearchKeywords(title) {
   if (!title) return "noticias";
 
@@ -306,7 +306,6 @@ function extractCleanSearchKeywords(title) {
     .split(' ')
     .filter(w => w.length > 3 && !stopWords.has(w.toLowerCase()));
 
-  // Priorizar sustantivos clave principales (ej: "Juliana Guerrero")
   if (words.length >= 2) {
     return words.slice(0, 2).join(' ');
   }
@@ -314,14 +313,14 @@ function extractCleanSearchKeywords(title) {
   return clean.split(' ').slice(0, 2).join(' ');
 }
 
-// GENERACIÓN DE REDIRECCIONES DE ALTA CONFIABILIDAD SIN ERRORES 404
+// CONSTRUCCIÓN DE REDIRECCIÓN 100% CONFIABLE AL ARTÍCULO MATRIZ REAL O GOOGLE SITE SEARCH DEL MEDIO
 function generate5SpectrumCoveragesFromCenter(article) {
   const t = (article.title || '').trim();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
   const cleanKeywords = extractCleanSearchKeywords(t);
 
   const buildDirectMediaUrl = (targetDomain) => {
-    // Si la noticia pertenece a este medio o la URL original es de este emisor, redirige directamente al Artículo Matriz Real
+    // 1. Si el artículo proviene de este medio objetivo, o la URL original incluye el dominio, ir directo a la noticia real 1-a-1
     if (
       primaryDomain.includes(targetDomain) || 
       targetDomain.includes(primaryDomain) || 
@@ -330,29 +329,9 @@ function generate5SpectrumCoveragesFromCenter(article) {
       return article.originalUrl;
     }
 
-    const keywords = encodeURIComponent(cleanKeywords);
-
-    if (targetDomain.includes('elespectador.com')) {
-      return `https://www.elespectador.com/buscador/${keywords}/`;
-    }
-    if (targetDomain.includes('eltiempo.com')) {
-      return `https://www.eltiempo.com/buscar?q=${keywords}`;
-    }
-    if (targetDomain.includes('semana.com')) {
-      return `https://www.semana.com/buscador/?query=${keywords}`;
-    }
-    if (targetDomain.includes('caracol.com.co')) {
-      // BUSCADOR OFICIAL DE CARACOL RADIO (SIN ERRORES 404 DE RUTAS ANTIGUAS)
-      return `https://caracol.com.co/radio/buscador/?texto=${keywords}`;
-    }
-    if (targetDomain.includes('rtvcnoticias.com')) {
-      return `https://www.rtvcnoticias.com/?s=${keywords}`;
-    }
-    if (targetDomain.includes('larepublica.co')) {
-      return `https://www.larepublica.co/buscar?q=${keywords}`;
-    }
-
-    return `https://${targetDomain}`;
+    // 2. Para otros medios del espectro, usar la búsqueda indexada de Google enfocada exclusivamente en ese dominio para evitar 404s
+    const query = encodeURIComponent(`site:${targetDomain} "${cleanKeywords}"`);
+    return `https://www.google.com/search?q=${query}`;
   };
 
   const evaluatedBias = calculateExactBiasScore(t, article.sourceName, primaryDomain);
