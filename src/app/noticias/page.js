@@ -7,7 +7,7 @@ import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserChec
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
-// COMPONENTE DE DATOS Y MÉTRICAS BALANCEADO ESTILO PUBLISHER (4 CARDS PERFECTAMENTE ALINEADAS CON TRANSPARENCIA DEL 22%)
+// COMPONENTE DE DATOS Y MÉTRICAS BALANCEADO (TRANSPARENCIA DEL 69% CON BLUR Y TIPOGRAFÍA INTELIGENTE)
 function EventMetricsGrid({ metrics }) {
   if (!metrics || metrics.length === 0) return null;
 
@@ -15,37 +15,37 @@ function EventMetricsGrid({ metrics }) {
 
   return (
     <div 
-      className="p-5 rounded-2xl border border-[#D4AF37]/50 space-y-3.5 shadow-2xl"
+      className="p-5 sm:p-6 rounded-2xl border border-[#D4AF37]/50 space-y-4 shadow-2xl"
       style={{
-        backgroundColor: 'rgba(5, 12, 24, 0.22)',
-        backdropFilter: 'blur(22px)',
-        WebkitBackdropFilter: 'blur(22px)'
+        backgroundColor: 'rgba(5, 12, 24, 0.69)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)'
       }}
     >
-      <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
-        <span className="text-xs font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
-          <BarChart3 size={16} className="text-[#D4AF37]" /> DATOS & MÉTRICAS CUANTITATIVAS DEL EVENTO
+      <div className="flex items-center justify-between border-b border-white/15 pb-3">
+        <span className="text-xs sm:text-sm font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider flex items-center gap-2">
+          <BarChart3 size={18} className="text-[#D4AF37]" /> DATOS & MÉTRICAS CUANTITATIVAS DEL EVENTO
         </span>
-        <span className="text-[10px] font-mono text-[#D4AF37] font-bold px-2.5 py-0.5 rounded-full bg-black/60 border border-[#D4AF37]/40">
+        <span className="text-[10px] sm:text-xs font-mono text-[#D4AF37] font-extrabold px-3 py-1 rounded-full bg-black/70 border border-[#D4AF37]/50 shadow-md">
           Métricas Verificadas
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         {displayMetrics.map((item, idx) => (
           <div 
             key={idx}
-            className="p-4 rounded-xl border border-[#D4AF37]/30 space-y-1.5 shadow-md flex flex-col justify-between hover:border-[#D4AF37] transition-all"
+            className="p-4 rounded-xl border border-[#D4AF37]/35 space-y-1.5 shadow-md flex flex-col justify-between hover:border-[#D4AF37] transition-all"
             style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.22)',
+              backgroundColor: 'rgba(0, 0, 0, 0.45)',
               backdropFilter: 'blur(16px)',
               WebkitBackdropFilter: 'blur(16px)'
             }}
           >
-            <span className="text-[9px] font-mono text-gray-400 font-bold uppercase tracking-wider block">
+            <span className="text-[10px] font-mono text-gray-400 font-extrabold uppercase tracking-wider block">
               {item.label}:
             </span>
-            <strong className="font-serif text-sm font-black text-white block leading-snug">
+            <strong className="font-serif text-sm sm:text-base font-black text-white block leading-snug">
               {item.value}
             </strong>
           </div>
@@ -55,80 +55,80 @@ function EventMetricsGrid({ metrics }) {
   );
 }
 
-// COMPONENTE PARA EL DESGLOSE MATEMÁTICO TRANSPARENTE DEL CÁLCULO DE SESGO (F1 + F2)
+// COMPONENTE PARA EL DESGLOSE MATEMÁTICO DEL CÁLCULO DE SESGO (69% TRANSPARENCIA + TIPOGRAFÍA INTELIGENTE)
 function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
   if (!formulaBreakdown) return null;
 
   return (
     <div 
-      className="p-5 rounded-2xl border border-[#D4AF37]/50 space-y-3.5 shadow-2xl"
+      className="p-5 sm:p-6 rounded-2xl border border-[#D4AF37]/50 space-y-4 shadow-2xl"
       style={{
-        backgroundColor: 'rgba(5, 12, 24, 0.22)',
-        backdropFilter: 'blur(22px)',
-        WebkitBackdropFilter: 'blur(22px)'
+        backgroundColor: 'rgba(5, 12, 24, 0.69)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)'
       }}
     >
-      <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
-        <span className="text-xs font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
-          <Calculator size={16} className="text-[#D4AF37]" /> FÓRMULA MATEMÁTICA Y DESGLOSE EXACTO DEL CÁLCULO
+      <div className="flex flex-wrap items-center justify-between border-b border-white/15 pb-3 gap-2">
+        <span className="text-xs sm:text-sm font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider flex items-center gap-2">
+          <Calculator size={18} className="text-[#D4AF37]" /> FÓRMULA MATEMÁTICA Y DESGLOSE EXACTO DEL CÁLCULO
         </span>
-        <span className={`text-[10px] font-mono font-extrabold px-3 py-1 rounded-full border shadow-md flex items-center gap-1.5 ${
+        <span className={`text-[11px] font-mono font-black px-3.5 py-1 rounded-full border shadow-md flex items-center gap-1.5 ${
           isNeutral 
-            ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/60' 
-            : 'bg-amber-950/80 text-amber-300 border-amber-500/60'
+            ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/70' 
+            : 'bg-amber-950/90 text-amber-300 border-amber-500/70'
         }`}>
           <span>{biasLevel || "0% Sesgo (Neutral)"}</span>
         </span>
       </div>
 
-      {/* DESGLOSE FACTORIAL CUANTITATIVO */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+      {/* DESGLOSE FACTORIAL CUANTITATIVO CON TIPOGRAFÍA AJUSTADA */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 font-mono">
         <div 
-          className="p-3.5 rounded-xl border border-white/15 space-y-1"
+          className="p-4 rounded-xl border border-white/20 space-y-1.5"
           style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.22)',
+            backgroundColor: 'rgba(0, 0, 0, 0.45)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)'
           }}
         >
-          <span className="text-gray-400 text-[10px] font-bold uppercase block">
+          <span className="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider block">
             1. PONDERACIÓN LÍNEA EDITORIAL DEL MEDIO (F1):
           </span>
-          <strong className="text-white text-xs block font-serif">
+          <strong className="text-white text-xs sm:text-sm block font-serif font-bold leading-relaxed">
             {formulaBreakdown.f1_label}
           </strong>
         </div>
 
         <div 
-          className="p-3.5 rounded-xl border border-white/15 space-y-1"
+          className="p-4 rounded-xl border border-white/20 space-y-1.5"
           style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.22)',
+            backgroundColor: 'rgba(0, 0, 0, 0.45)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)'
           }}
         >
-          <span className="text-gray-400 text-[10px] font-bold uppercase block">
+          <span className="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider block">
             2. CARGA LÉXICA & ADJETIVACIÓN EN EL TITULAR (F2):
           </span>
-          <strong className="text-white text-xs block font-serif">
+          <strong className="text-white text-xs sm:text-sm block font-serif font-bold leading-relaxed">
             {formulaBreakdown.f2_label}
           </strong>
         </div>
       </div>
 
-      {/* RESULTADO FINAL DE LA FÓRMULA */}
+      {/* RESULTADO FINAL DE LA FÓRMULA EN TIPOGRAFÍA DESTACADA */}
       <div 
-        className="p-3.5 rounded-xl border border-[#D4AF37] text-center font-mono text-xs font-bold text-white shadow-lg"
+        className="p-4 rounded-xl border border-[#D4AF37] text-center font-mono text-xs sm:text-sm font-bold text-white shadow-xl"
         style={{
-          backgroundColor: 'rgba(5, 12, 24, 0.22)',
+          backgroundColor: 'rgba(5, 12, 24, 0.69)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)'
         }}
       >
-        <span className="text-[10px] text-[#D4AF37] font-black uppercase tracking-wider block mb-0.5">
+        <span className="text-[10px] sm:text-xs text-[#D4AF37] font-black uppercase tracking-wider block mb-1">
           FÓRMULA DEL RESULTADO FINAL = (F1 MEDIO) + (F2 LÉXICO):
         </span>
-        <span className="text-sm font-black text-gold-gradient">
+        <span className="text-sm sm:text-base font-black text-gold-gradient tracking-wide">
           {formulaBreakdown.formulaText}
         </span>
       </div>
@@ -136,12 +136,12 @@ function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
   );
 }
 
-// COMPONENTE DE ANÁLISIS ACADÉMICO UNIFICADO (CON TRANSPARENCIA DEL 22%)
+// COMPONENTE DE ANÁLISIS ACADÉMICO UNIFICADO (TRANSPARENCIA DEL 69% Y TIPOGRAFÍA INTELIGENTE)
 function AcademicAnalysisSection({ analysis, title }) {
   if (!analysis) return null;
 
   return (
-    <div className="space-y-5 pt-2">
+    <div className="space-y-6 pt-2">
       
       {/* 1. FÓRMULA MATEMÁTICA Y DESGLOSE EXACTO DEL CÁLCULO */}
       <MathematicalBiasBreakdown 
@@ -152,51 +152,51 @@ function AcademicAnalysisSection({ analysis, title }) {
 
       {/* 2. MARCO TEÓRICO */}
       <div 
-        className="p-5 rounded-2xl border border-[#D4AF37]/35 space-y-2 shadow-2xl"
+        className="p-5 sm:p-6 rounded-2xl border border-[#D4AF37]/45 space-y-2.5 shadow-2xl"
         style={{
-          backgroundColor: 'rgba(5, 15, 30, 0.22)',
-          backdropFilter: 'blur(22px)',
-          WebkitBackdropFilter: 'blur(22px)'
+          backgroundColor: 'rgba(5, 12, 24, 0.69)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)'
         }}
       >
-        <span className="text-[10px] font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
-          <BookOpen size={15} /> MARCO TEÓRICO & ESTRUCTURA NORMATIVA:
+        <span className="text-xs sm:text-sm font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider flex items-center gap-2">
+          <BookOpen size={16} /> MARCO TEÓRICO & ESTRUCTURA NORMATIVA:
         </span>
-        <p className="font-sans text-xs md:text-sm text-gray-100 leading-relaxed font-light">
+        <p className="font-sans text-xs sm:text-sm md:text-base text-gray-100 leading-relaxed font-normal tracking-wide">
           {analysis.marcoTeorico}
         </p>
       </div>
 
       {/* 3. TESIS CENTRAL */}
       <div 
-        className="p-5 rounded-2xl border-l-4 border-[#D4AF37] border border-[#D4AF37]/35 space-y-2 shadow-2xl"
+        className="p-5 sm:p-6 rounded-2xl border-l-4 border-[#D4AF37] border border-[#D4AF37]/40 space-y-2.5 shadow-2xl"
         style={{
-          backgroundColor: 'rgba(20, 20, 10, 0.22)',
-          backdropFilter: 'blur(22px)',
-          WebkitBackdropFilter: 'blur(22px)'
+          backgroundColor: 'rgba(5, 12, 24, 0.69)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)'
         }}
       >
-        <span className="text-[10px] font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
-          <Target size={15} /> TESIS CENTRAL FACTUAL DEL ARTÍCULO:
+        <span className="text-xs sm:text-sm font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider flex items-center gap-2">
+          <Target size={16} /> TESIS CENTRAL FACTUAL DEL ARTÍCULO:
         </span>
-        <p className="font-serif text-sm md:text-base text-white leading-relaxed font-bold italic">
+        <p className="font-serif text-sm sm:text-base md:text-lg text-amber-100 leading-relaxed font-bold italic">
           "{analysis.tesisCentral}"
         </p>
       </div>
 
-      {/* 4. CONCLUSIÓN DEFINITIVA DE INTEGRIDAD EDITORIAL (ÚNICA) */}
+      {/* 4. CONCLUSIÓN DEFINITIVA DE INTEGRIDAD EDITORIAL */}
       <div 
-        className="p-5 rounded-2xl border-l-4 border-emerald-400 border border-emerald-500/40 space-y-2 shadow-2xl"
+        className="p-5 sm:p-6 rounded-2xl border-l-4 border-emerald-400 border border-emerald-500/50 space-y-2.5 shadow-2xl"
         style={{
-          backgroundColor: 'rgba(0, 35, 20, 0.22)',
-          backdropFilter: 'blur(22px)',
-          WebkitBackdropFilter: 'blur(22px)'
+          backgroundColor: 'rgba(5, 12, 24, 0.69)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)'
         }}
       >
-        <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest flex items-center gap-2">
-          <CheckCheck size={16} /> CONCLUSIÓN IMPARCIAL DE INTEGRIDAD EDITORIAL:
+        <span className="text-xs sm:text-sm font-mono text-emerald-400 font-extrabold uppercase tracking-wider flex items-center gap-2">
+          <CheckCheck size={18} /> CONCLUSIÓN IMPARCIAL DE INTEGRIDAD EDITORIAL:
         </span>
-        <p className="font-sans text-xs md:text-sm text-emerald-100 leading-relaxed font-normal">
+        <p className="font-sans text-xs sm:text-sm md:text-base text-emerald-100 leading-relaxed font-medium">
           {analysis.conclusionImparcial}
         </p>
       </div>
@@ -271,14 +271,14 @@ function PoliticalBiasBar({ biasDirection, deviationPercent, biasLabel }) {
   }
 
   let displayText = "0% Sesgo (Punto Cero Neutral)";
-  let textColorClass = "text-[#D4AF37]"; // Amarillo Dorado por defecto en el Centro
+  let textColorClass = "text-[#D4AF37]";
 
   if (dir === 'Izquierda') {
     displayText = `${percent}% Sesgo Izquierda`;
-    textColorClass = "text-emerald-400"; // Verde
+    textColorClass = "text-emerald-400";
   } else if (dir === 'Derecha') {
     displayText = `${percent}% Sesgo Derecha`;
-    textColorClass = "text-orange-400"; // Naranja Intenso
+    textColorClass = "text-orange-400";
   }
 
   return (
@@ -291,7 +291,6 @@ function PoliticalBiasBar({ biasDirection, deviationPercent, biasLabel }) {
         <span className={`font-black shrink-0 ${textColorClass}`}>{displayText}</span>
       </div>
 
-      {/* BARRA TRICOLOR: VERDE (IZQ) -> AMARILLO DORADO (CENTRO) -> NARANJA INTENSO (DER) */}
       <div className="relative w-full h-2.5 rounded-full bg-black/90 overflow-hidden border border-white/20 shadow-inner">
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-[#D4AF37] to-orange-500 opacity-95"></div>
         <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white -translate-x-1/2 z-10"></div>
@@ -424,7 +423,7 @@ function NoticiasContent() {
       
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
 
-        {/* MASTHEAD PRINCIPAL CON FONDO DE 22% TRANSPARENCIA Y FECHA SIN ANIMACIÓN DE PUNTO VERDE */}
+        {/* MASTHEAD PRINCIPAL CON TRANSPARENCIA Y FECHA SIN ANIMACIÓN */}
         <div 
           className="rounded-3xl p-6 md:p-10 relative overflow-hidden space-y-6 border-2 border-[#D4AF37]/50 shadow-[0_20px_80px_rgba(0,0,0,0.95)]"
           style={{
@@ -438,7 +437,6 @@ function NoticiasContent() {
             <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-gray-300 uppercase tracking-widest px-2 gap-2">
               <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Mesa Editorial GranColinos • Publisher News Engine</span>
               
-              {/* INSIGNIA FECHA LIMPIA SIN ANIMACIÓN DE PUNTO VERDE */}
               <div className="inline-flex items-center font-extrabold text-[#D4AF37] px-4 py-1.5 bg-black/80 rounded-full border border-[#D4AF37]/50 shadow-md">
                 <span>{formattedDate}</span>
               </div>
@@ -456,7 +454,6 @@ function NoticiasContent() {
               "Diagnóstico de integridad editorial, perfil de periodistas y monitoreo cuantitativo de 5 espectros."
             </p>
 
-            {/* BARRA DE CONTROL PUBLISHER EDITORIAL */}
             <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
               <div className="inline-flex items-center gap-1.5 p-1 bg-black/80 rounded-2xl border border-[#D4AF37]/50 shadow-xl font-mono text-xs font-bold">
                 <button
@@ -495,7 +492,6 @@ function NoticiasContent() {
             </div>
           </div>
 
-          {/* DASHBOARD INDICADORES DE PUBLISHER (22% TRANSPARENCIA) */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs text-center border-b border-white/10 pb-4">
             <div 
               className="p-3 rounded-xl border border-white/10 space-y-0.5"
@@ -546,7 +542,6 @@ function NoticiasContent() {
             </div>
           </div>
 
-          {/* Navegación por Categorías */}
           <nav className="flex items-center justify-center gap-2 md:gap-4 overflow-x-auto scrollbar-none font-mono text-xs border-b border-white/10 pb-3">
             {categoryTabs.map(tab => {
               const isActive = activeCategoryTab === tab.id;
@@ -566,7 +561,6 @@ function NoticiasContent() {
             })}
           </nav>
 
-          {/* HERO SECCIÓN: TARJETA PRINCIPAL CON LA NOTICIA MÁS VIRAL Y RESUMEN COMPLETO QUE RELLENA EL ESPACIO */}
           <div className="pt-2 space-y-5">
             <div className="flex items-center justify-between border-b border-white/15 pb-2">
               <h2 className="font-serif text-xl md:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -577,7 +571,6 @@ function NoticiasContent() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               
-              {/* Noticia de Portada Principal: NOTICIA MÁS VIRAL DEL DÍA CON RESUMEN COMPLETO Y RELLENO PERFECTO */}
               {topNewsPrimary && (
                 <div 
                   className="lg:col-span-7 rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-500 space-y-4 hover:border-[#D4AF37] flex flex-col justify-between border-2 border-[#D4AF37]/60"
@@ -606,7 +599,6 @@ function NoticiasContent() {
                         {topNewsPrimary.title}
                       </h3>
 
-                      {/* RESUMEN COMPLETO QUE RELLENA EL ESPACIO VACÍO DE LA TARJETA */}
                       <div 
                         className="p-4 rounded-2xl border border-[#D4AF37]/30 space-y-2 shadow-inner"
                         style={{
@@ -639,7 +631,6 @@ function NoticiasContent() {
                 </div>
               )}
 
-              {/* Tendencias a la Derecha (22% Transparencia) */}
               <div className="lg:col-span-5 space-y-3.5 flex flex-col justify-between">
                 {topNewsSecondary.map((secItem, idx) => (
                   <div
@@ -688,7 +679,6 @@ function NoticiasContent() {
             </div>
           </div>
 
-          {/* MAIN GRID SEGÚN MODO PUBLISHER (22% TRANSPARENCIA) */}
           <div className="pt-8 border-t border-white/15 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             <div className="lg:col-span-8 space-y-6">
@@ -751,7 +741,6 @@ function NoticiasContent() {
               </div>
             </div>
 
-            {/* SIDEBAR DE MEDIOS REGIONALES (22% TRANSPARENCIA) */}
             <div 
               className="lg:col-span-4 rounded-3xl p-6 shadow-xl space-y-5 border border-[#D4AF37]/40"
               style={{
@@ -819,7 +808,7 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA INTEGRADO (CON TRANSPARENCIA DEL 22%) */}
+        {/* MODAL LECTURA INTEGRADO CON TRANSPARENCIA DEL 69% Y TIPOGRAFÍA INTELIGENTE */}
         {selectedArticle && (
           <div 
             className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -831,71 +820,69 @@ function NoticiasContent() {
               bottom: 0,
               width: '100vw',
               height: '100vh',
-              backgroundColor: 'rgba(0, 0, 0, 0.45)',
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)'
+              backgroundColor: 'rgba(0, 0, 0, 0.65)',
+              backdropFilter: 'blur(28px)',
+              WebkitBackdropFilter: 'blur(28px)'
             }}
           >
             <div 
-              className="text-white rounded-3xl max-w-5xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.5)] border-2 border-[#D4AF37] my-auto"
+              className="text-white rounded-3xl max-w-5xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto"
               style={{
-                backgroundColor: 'rgba(5, 12, 24, 0.22)',
-                backdropFilter: 'blur(22px)',
-                WebkitBackdropFilter: 'blur(22px)'
+                backgroundColor: 'rgba(5, 12, 24, 0.69)',
+                backdropFilter: 'blur(24px)',
+                WebkitBackdropFilter: 'blur(24px)'
               }}
             >
               
               <button
                 onClick={() => setSelectedArticle(null)}
-                className="sticky top-0 float-right z-50 text-gray-300 hover:text-white bg-black/90 hover:bg-[#D4AF37] hover:text-black w-9 h-9 rounded-full border border-white/30 flex items-center justify-center font-bold transition-all shadow-lg"
+                className="sticky top-0 float-right z-50 text-gray-300 hover:text-white bg-black/90 hover:bg-[#D4AF37] hover:text-black w-9 h-9 rounded-full border border-white/40 flex items-center justify-center font-bold transition-all shadow-lg"
                 title="Cerrar Lectura"
               >
                 ✕
               </button>
 
-              <div className="space-y-3 border-b border-[#D4AF37]/30 pb-4 clear-both">
+              <div className="space-y-3 border-b border-[#D4AF37]/35 pb-5 clear-both">
                 <MediaHeaderBadge 
                   sourceName={selectedArticle.sourceName}
                   sourceDomain={selectedArticle.sourceDomain}
                   logoUrl={selectedArticle.sourceLogoUrl}
                 />
 
-                <h2 className="font-serif text-2xl md:text-4xl font-extrabold text-white leading-tight drop-shadow-md">
+                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-extrabold text-white leading-snug drop-shadow-md">
                   {selectedArticle.title}
                 </h2>
 
-                <div className="flex flex-wrap items-center justify-between text-xs font-mono text-gray-300 pt-1">
-                  {/* BOTÓN INTERACTIVO PARA ABRIR HOJA DE VIDA Y TRAYECTORIA DEL AUTOR */}
+                <div className="flex flex-wrap items-center justify-between text-xs font-mono text-gray-200 pt-2 gap-2">
                   <button 
                     onClick={() => setSelectedAuthor(selectedArticle.authorProfile)}
-                    className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/50 hover:bg-[#D4AF37] hover:text-black transition-all group/author cursor-pointer text-left shadow-md"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#D4AF37]/25 border border-[#D4AF37]/60 hover:bg-[#D4AF37] hover:text-black transition-all group/author cursor-pointer text-left shadow-md"
                   >
-                    <User size={15} className="text-[#D4AF37] group-hover/author:text-black transition-colors" />
-                    <span>Autor Periodístico: <strong className="underline decoration-[#D4AF37] underline-offset-4">{selectedArticle.author}</strong></span>
-                    <BadgeCheck size={14} className="text-[#D4AF37] group-hover/author:text-black shrink-0" />
-                    <span className="text-[9px] bg-black/60 group-hover/author:bg-black text-[#D4AF37] group-hover/author:text-white px-2 py-0.5 rounded-full font-bold">Ver Hoja de Vida</span>
+                    <User size={16} className="text-[#D4AF37] group-hover/author:text-black transition-colors" />
+                    <span className="font-mono text-xs">Autor Periodístico: <strong className="underline decoration-[#D4AF37] underline-offset-4">{selectedArticle.author}</strong></span>
+                    <BadgeCheck size={15} className="text-[#D4AF37] group-hover/author:text-black shrink-0" />
+                    <span className="text-[10px] bg-black/70 group-hover/author:bg-black text-[#D4AF37] group-hover/author:text-white px-2.5 py-0.5 rounded-full font-bold">Ver Hoja de Vida</span>
                   </button>
 
-                  <span className="flex items-center gap-1.5 font-bold text-[#D4AF37]">
-                    <Clock size={14} className="text-[#D4AF37]" /> {selectedArticle.publishedAt}
+                  <span className="flex items-center gap-1.5 font-bold text-[#D4AF37] text-xs">
+                    <Clock size={15} className="text-[#D4AF37]" /> {selectedArticle.publishedAt}
                   </span>
                 </div>
               </div>
 
-              {/* ACCESO A COMPARADOR DE ESPECTROS */}
               <div 
-                className="p-4 rounded-2xl border border-[#D4AF37]/50 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl"
+                className="p-4 sm:p-5 rounded-2xl border border-[#D4AF37]/60 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xl"
                 style={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.45)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)'
                 }}
               >
                 <div className="space-y-1">
-                  <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase flex items-center gap-1.5">
-                    <Scale size={14} /> Comparador de Espectros Politicos (0% Centro)
+                  <span className="text-xs sm:text-sm font-mono font-bold text-[#D4AF37] uppercase flex items-center gap-1.5">
+                    <Scale size={16} /> Comparador de Espectros Politicos (0% Centro)
                   </span>
-                  <p className="text-xs font-sans text-gray-300">
+                  <p className="text-xs sm:text-sm font-sans text-gray-200 leading-relaxed font-light">
                     Inspecciona la misma noticia bajo la narrativa de los 5 medios de comunicación.
                   </p>
                 </div>
@@ -913,25 +900,22 @@ function NoticiasContent() {
                 </button>
               </div>
 
-              {/* SECCIÓN 1: DATOS Y MÉTRICAS CUANTITATIVAS BALANCEADAS */}
               <EventMetricsGrid metrics={selectedArticle.metricsData} />
 
-              {/* SECCIÓN 2: MARCO TEÓRICO, TESIS, FÓRMULA MATEMÁTICA & DIAGNÓSTICO EDITORIAL DE INTEGRIDAD */}
               <AcademicAnalysisSection 
                 analysis={selectedArticle.academicAnalysis} 
                 title={selectedArticle.title}
               />
 
-              {/* SECCIÓN 3: REPORTAJE COMPLETO DETALLADO DEL EVENTO */}
               <div className="space-y-4 font-sans text-sm text-gray-200 leading-relaxed font-light pt-4 border-t border-white/15">
                 <h4 className="font-serif text-lg font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
                   <FileText size={18} /> REPORTAJE COMPLETO & HECHOS DESARROLLADOS
                 </h4>
 
                 <div 
-                  className="space-y-4 text-base leading-relaxed text-gray-100 font-sans p-6 rounded-2xl border border-white/15 shadow-inner"
+                  className="space-y-4 text-sm sm:text-base leading-relaxed text-gray-100 font-sans p-6 rounded-2xl border border-white/15 shadow-inner"
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
                     backdropFilter: 'blur(16px)',
                     WebkitBackdropFilter: 'blur(16px)'
                   }}
@@ -962,7 +946,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN CON TRANSPARENCIA DEL 22% */}
+        {/* MODAL DE COMPARACIÓN DE 5 ESPECTROS CON TRANSPARENCIA DEL 69% Y BLUR ELEGANTE */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -974,17 +958,17 @@ function NoticiasContent() {
               bottom: 0,
               width: '100vw',
               height: '100vh',
-              backgroundColor: 'rgba(0, 0, 0, 0.45)',
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)'
+              backgroundColor: 'rgba(0, 0, 0, 0.65)',
+              backdropFilter: 'blur(28px)',
+              WebkitBackdropFilter: 'blur(28px)'
             }}
           >
             <div 
               className="text-white rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto"
               style={{
-                backgroundColor: 'rgba(5, 12, 24, 0.22)',
-                backdropFilter: 'blur(22px)',
-                WebkitBackdropFilter: 'blur(22px)'
+                backgroundColor: 'rgba(5, 12, 24, 0.69)',
+                backdropFilter: 'blur(24px)',
+                WebkitBackdropFilter: 'blur(24px)'
               }}
             >
               
@@ -996,28 +980,29 @@ function NoticiasContent() {
                 ✕
               </button>
 
-              <div className="space-y-3 border-b border-[#D4AF37]/30 pb-6 clear-both text-center sm:text-left">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#D4AF37] text-[10px] font-mono font-bold uppercase tracking-widest">
-                  <Scale size={14} />
-                  <span>Análisis de Sesgos + Métricas + Diagnóstico Editorial + Conclusión Neutra</span>
+              {/* ENCABEZADO Y TIPOGRAFÍA INTELIGENTE AJUSTADA */}
+              <div className="space-y-4 border-b border-[#D4AF37]/35 pb-6 clear-both text-center sm:text-left">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#D4AF37]/25 border border-[#D4AF37]/60 text-[#D4AF37] text-xs font-mono font-extrabold uppercase tracking-widest shadow-md">
+                  <Scale size={16} />
+                  <span>ANÁLISIS DE SESGOS + MÉTRICAS + DIAGNÓSTICO EDITORIAL + CONCLUSIÓN NEUTRA</span>
                 </div>
 
-                <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight">
+                <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight drop-shadow-md">
                   Misma Noticia — Cobertura en los 5 Espectros Políticos
                 </h3>
                 
-                {/* EVENTO MATRIZ DESTACADO */}
+                {/* EVENTO MATRIZ DESTACADO CON TIPOGRAFÍA DE ALTO IMPACTO */}
                 <div className="pt-2">
-                  <span className="text-xs font-mono text-[#D4AF37] font-bold uppercase tracking-wider block">
-                    Evento Matriz / Noticia Evaluada:
+                  <span className="text-xs font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider block">
+                    EVENTO MATRIZ / NOTICIA EVALUADA:
                   </span>
-                  <h4 className="font-serif text-xl sm:text-3xl font-black text-white leading-snug mt-1 text-gold-gradient drop-shadow-md">
+                  <h4 className="font-serif text-xl sm:text-2xl md:text-3xl font-black text-white leading-snug mt-1 text-gold-gradient drop-shadow-md">
                     "{selectedBiasComparison.title}"
                   </h4>
                 </div>
               </div>
 
-              {/* DATOS Y MÉTRICAS CUANTITATIVAS BALANCEADAS DEL EVENTO */}
+              {/* DATOS Y MÉTRICAS CUANTITATIVAS (69% TRANSPARENCIA) */}
               <EventMetricsGrid metrics={selectedBiasComparison.metricsData} />
 
               {/* INTEGRACIÓN DEL ANÁLISIS ACADÉMICO Y FÓRMULA MATEMÁTICA UNIFICADA */}
@@ -1026,26 +1011,25 @@ function NoticiasContent() {
                 title={selectedBiasComparison.title}
               />
 
-              {/* VENTANAS DE CADA TITULAR CON DOS BOTONES CLAROS Y DIFERENCIADOS */}
+              {/* TARJETAS DE LOS 5 ESPECTROS CON TRANSPARENCIA DEL 69% Y TIPOGRAFÍA AJUSTADA */}
               <div className="space-y-4 pt-4 border-t border-white/15">
-                <h4 className="font-serif text-base font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
-                  <Scale size={16} /> COBERTURAS Y DESVIACIONES DESDE EL CENTRO (0%)
+                <h4 className="font-serif text-lg font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
+                  <Scale size={18} /> COBERTURAS Y DESVIACIONES DESDE EL CENTRO (0%)
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {(selectedBiasComparison.otherCoverages || []).map((coverage, idx) => (
                     <div 
                       key={idx}
-                      className="rounded-2xl p-5 border border-[#D4AF37]/35 space-y-3 shadow-2xl hover:border-[#D4AF37] hover:shadow-[0_0_30px_rgba(212,175,55,0.35)] transition-all flex flex-col justify-between group/card"
+                      className="rounded-2xl p-5 border border-[#D4AF37]/45 space-y-3.5 shadow-2xl hover:border-[#D4AF37] hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all flex flex-col justify-between group/card"
                       style={{
-                        backgroundColor: 'rgba(5, 12, 24, 0.22)',
-                        backdropFilter: 'blur(22px)',
-                        WebkitBackdropFilter: 'blur(22px)'
+                        backgroundColor: 'rgba(5, 12, 24, 0.69)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)'
                       }}
                     >
-                      <div className="space-y-2.5">
-                        {/* Cabecera del Espectro */}
-                        <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between border-b border-white/15 pb-2.5">
                           <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-md bg-white p-0.5 border border-[#D4AF37]/50 flex items-center justify-center shrink-0 shadow-sm">
                               <img 
@@ -1057,61 +1041,58 @@ function NoticiasContent() {
                             <span className="font-serif text-sm font-bold text-white group-hover/card:text-[#D4AF37] transition-colors">{coverage.sourceName}</span>
                           </div>
                           
-                          <span className="text-[9px] font-mono text-[#D4AF37] bg-black/70 px-2.5 py-1 rounded-full border border-[#D4AF37]/40 font-extrabold">
+                          <span className="text-[9px] font-mono text-[#D4AF37] bg-black/80 px-2.5 py-1 rounded-full border border-[#D4AF37]/50 font-extrabold">
                             {coverage.spectrumBadge || `Espectro ${idx + 1}`}
                           </span>
                         </div>
 
-                        {/* Titular utilizado por el Medio */}
                         <div>
-                          <span className="text-[9px] font-mono text-gray-400 uppercase block">TITULAR DEL MEDIO:</span>
-                          <h5 className="font-serif text-sm font-bold text-white leading-snug mt-0.5 group-hover/card:text-[#D4AF37] transition-colors">
+                          <span className="text-[9px] font-mono text-gray-400 font-bold uppercase block tracking-wider">TITULAR DEL MEDIO:</span>
+                          <h5 className="font-serif text-sm sm:text-base font-bold text-white leading-snug mt-1 group-hover/card:text-[#D4AF37] transition-colors">
                             "{coverage.headline}"
                           </h5>
                         </div>
 
-                        {/* Análisis de Intención & Encuadre */}
                         <div 
-                          className="p-3 rounded-xl border border-white/15 space-y-1 text-xs shadow-inner"
+                          className="p-3.5 rounded-xl border border-white/15 space-y-1 text-xs shadow-inner"
                           style={{
-                            backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                            backgroundColor: 'rgba(0, 0, 0, 0.45)',
                             backdropFilter: 'blur(16px)',
                             WebkitBackdropFilter: 'blur(16px)'
                           }}
                         >
-                          <span className="text-[9px] font-mono text-[#D4AF37] font-bold uppercase block">
+                          <span className="text-[9px] font-mono text-[#D4AF37] font-extrabold uppercase block tracking-wider">
                             ANÁLISIS DE INTENCIÓN & ENCUADRE:
                           </span>
-                          <p className="font-sans text-[11px] text-gray-200 leading-relaxed italic">
+                          <p className="font-sans text-xs text-gray-200 leading-relaxed italic font-light">
                             "{coverage.intention}"
                           </p>
                         </div>
                       </div>
 
-                      {/* Barra de Sesgo & DOS BOTONES DISTINTOS */}
-                      <div className="space-y-2.5 pt-2">
+                      <div className="space-y-3 pt-2">
                         <PoliticalBiasBar biasDirection={coverage.biasDirection} deviationPercent={coverage.deviationPercent} biasLabel={coverage.biasLabel} />
 
-                        <div className="grid grid-cols-1 gap-1.5 font-mono text-[10px]">
+                        <div className="grid grid-cols-1 gap-2 font-mono text-[10px]">
                           <a
                             href={coverage.outletUrl || `https://${coverage.sourceDomain}/`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-2 px-3 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all shadow-md hover:bg-white flex items-center justify-center gap-1.5"
+                            className="w-full py-2.5 px-3 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all shadow-md hover:bg-white flex items-center justify-center gap-1.5"
                           >
                             <span>LEER NOTICIA EN {coverage.sourceName}</span>
-                            <ExternalLink size={11} />
+                            <ExternalLink size={12} />
                           </a>
 
                           <a
                             href={coverage.officialMatrixUrl || selectedBiasComparison.originalUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-1.5 px-3 bg-white/10 hover:bg-white/20 text-gray-200 font-mono font-bold text-[9px] uppercase tracking-wider rounded-xl transition-all border border-white/20 flex items-center justify-center gap-1"
+                            className="w-full py-2 px-3 bg-white/10 hover:bg-white/20 text-gray-200 font-mono font-bold text-[9px] uppercase tracking-wider rounded-xl transition-all border border-white/20 flex items-center justify-center gap-1"
                           >
-                            <Globe size={11} className="text-[#D4AF37]" />
+                            <Globe size={12} className="text-[#D4AF37]" />
                             <span>NOTICIA OFICIAL MATRIZ</span>
-                            <ExternalLink size={10} />
+                            <ExternalLink size={11} />
                           </a>
                         </div>
 
@@ -1121,11 +1102,10 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              {/* Botón de Cierre */}
               <div className="pt-4 border-t border-white/20 text-right">
                 <button
                   onClick={() => setSelectedBiasComparison(null)}
-                  className="px-6 py-2.5 bg-white/10 text-white hover:bg-white/20 font-mono font-bold text-xs uppercase rounded-xl transition-all border border-white/20"
+                  className="px-8 py-3 bg-white/10 text-white hover:bg-white/20 font-mono font-bold text-xs uppercase rounded-xl transition-all border border-white/20"
                 >
                   CERRAR COMPARADOR
                 </button>
@@ -1135,7 +1115,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL HOJA DE VIDA PÚBLICA & TRAYECTORIA PROFESIONAL DEL AUTOR CON TRANSPARENCIA DEL 22% */}
+        {/* MODAL HOJA DE VIDA DEL AUTOR (69% TRANSPARENCIA + BLUR) */}
         {selectedAuthor && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -1147,17 +1127,17 @@ function NoticiasContent() {
               bottom: 0,
               width: '100vw',
               height: '100vh',
-              backgroundColor: 'rgba(0, 0, 0, 0.45)',
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)'
+              backgroundColor: 'rgba(0, 0, 0, 0.65)',
+              backdropFilter: 'blur(28px)',
+              WebkitBackdropFilter: 'blur(28px)'
             }}
           >
             <div 
               className="text-white rounded-3xl max-w-2xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-8 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.6)] border-2 border-[#D4AF37] my-auto"
               style={{
-                backgroundColor: 'rgba(5, 12, 24, 0.22)',
-                backdropFilter: 'blur(22px)',
-                WebkitBackdropFilter: 'blur(22px)'
+                backgroundColor: 'rgba(5, 12, 24, 0.69)',
+                backdropFilter: 'blur(24px)',
+                WebkitBackdropFilter: 'blur(24px)'
               }}
             >
               
@@ -1216,7 +1196,7 @@ function NoticiasContent() {
                 <p 
                   className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed p-4 rounded-2xl border border-white/10"
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
                     backdropFilter: 'blur(16px)',
                     WebkitBackdropFilter: 'blur(16px)'
                   }}
@@ -1225,7 +1205,6 @@ function NoticiasContent() {
                 </p>
               </div>
 
-              {/* TRAYECTORIA DE MEDIOS Y EMPRESAS DONDE HA TRABAJADO */}
               <div className="space-y-2">
                 <h4 className="font-serif text-sm font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
                   <History size={16} /> Medios y Empresas Donde Ha Trabajado (Trayectoria Profesional)
@@ -1233,7 +1212,7 @@ function NoticiasContent() {
                 <div 
                   className="space-y-2 p-4 rounded-2xl border border-white/10 font-mono text-xs"
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.22)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.45)',
                     backdropFilter: 'blur(16px)',
                     WebkitBackdropFilter: 'blur(16px)'
                   }}
