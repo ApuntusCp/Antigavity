@@ -1,11 +1,64 @@
 import { NextResponse } from 'next/server';
 
+// GENERADOR DE ANÁLISIS ACADÉMICO: MARCO TEÓRICO, TESIS CENTRAL, MAPA MENTAL Y CONCLUSIÓN IMPARCIAL
+function generateAcademicAnalysis(title, category, sourceName) {
+  const t = (title || '').trim();
+  const lower = t.toLowerCase();
+
+  let marcoTeorico = `El presente acontecimiento se enmarca en la teoría de la agenda mediática y la economía política institucional. Analiza los mecanismos de gobernabilidad, la asignación de recursos públicos y el impacto en los derechos constitucionales de la ciudadanía.`;
+  let tesisCentral = `Tesis Factual: El evento reportado representa un punto de inflexión donde convergen tensiones de política pública, fiscalización institucional e impacto socio-económico directo en la población.`;
+  let conclusionImparcial = `Conclusión Imparcial GranColinos: Al abstraer los adjetivos de confrontación política, la evidencia hemerográfica demuestra que el hecho exige soluciones institucionales fundamentadas en la transparencia y la primacía del interés general sobre agendas partidistas.`;
+
+  if (lower.includes('agua') || lower.includes('bogot') || lower.includes('servicio')) {
+    marcoTeorico = `Marco Teórico de Infraestructura Urbana y Gestión de Recursos Hídricos: Evalúa los modelos de mantenimiento preventivo, seguridad hídrica metropolitana y la resiliencia de la red de acueducto frente al crecimiento demográfico y variaciones climáticas en la Sabana de Bogotá.`;
+    tesisCentral = `Tesis Factual: Las interrupciones programadas constituyen procedimientos operativos indispensables para garantizar la integridad estructural de las tuberías matrices y prevenir emergencias mayores en el suministro domiciliario.`;
+    conclusionImparcial = `Conclusión Imparcial GranColinos: Las obras de acueducto responden a requerimientos técnicos rigurosos. Se concluye de forma neutral la necesidad de planificación comunitaria de almacenamiento sin instrumentalizar el servicio público con sesgos políticos.`;
+  } else if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán') || lower.includes('politica')) {
+    marcoTeorico = `Marco Teórico de Gobernabilidad y Ciencia Política: Basado en el análisis de dinámicas de coalición, comunicación gubernamental y teoría de la contienda política en regímenes de equilibrio de poderes.`;
+    tesisCentral = `Tesis Factual: Las declaraciones e investigaciones en la esfera gubernamental reflejan la fricción inherente entre la ejecución del programa de reforma y el escrutinio de los entes de control institucionales.`;
+    conclusionImparcial = `Conclusión Imparcial GranColinos: La institucionalidad democrática exige la verificación de hechos por encima de la polarización retórica. La conclusión neutra establece que los procesos judiciales y administrativos deben avanzar con rigurosidad probatoria.`;
+  } else if (lower.includes('dolar') || lower.includes('banco') || lower.includes('ingresos') || lower.includes('economia')) {
+    marcoTeorico = `Marco Teórico de Macroeconomía y Desarrollo Comparado: Centrado en la teoría del crecimiento exógeno, flujos de capital internacional, tasas de interés interbancarias y clasificación de ingresos por poder de compra (PIB per cápita PPA).`;
+    tesisCentral = `Tesis Factual: Los indicadores económicos regionales responden a choques externos de divisas, políticas monetarias centrales y al atractivo de inversión extranjera directa en América Latina.`;
+    conclusionImparcial = `Conclusión Imparcial GranColinos: La solidez macroeconómica requiere disciplina fiscal sostenida y productividad real. La síntesis objetiva indica que el comportamiento de los mercados debe evaluarse mediante datos técnicos sin sesgos ideológicos.`;
+  }
+
+  const mapaMentalNodes = [
+    {
+      label: "NÚCLEO DEL HECHO FACTUAL",
+      desc: t,
+      color: "gold"
+    },
+    {
+      label: "🔴 ENFOQUE SOCIAL & INSTITUCIONAL (IZQUIERDA)",
+      desc: "Énfasis en la protección de derechos comunitarios, garantías laborales e intervención del Estado para atenuar desigualdades.",
+      color: "red"
+    },
+    {
+      label: "⚪ DATOS DUROS & EVIDENCIA OFICIAL (CENTRO)",
+      desc: "Reporte numérico, fechas de ejecución, normatividad técnica vigente y registros de la autoridad matriz.",
+      color: "slate"
+    },
+    {
+      label: "🟠 ENFOQUE DE MERCADO & FISCALIZACIÓN (DERECHA)",
+      desc: "Evaluación de costos fiscales, sostenibilidad financiera, libre competencia y eficiencia en la gestión de recursos.",
+      color: "orange"
+    }
+  ];
+
+  return {
+    marcoTeorico,
+    tesisCentral,
+    conclusionImparcial,
+    mapaMentalNodes
+  };
+}
+
 // GENERADOR DE LOS 5 ESPECTROS CON RUTAS DIRECTAS DE NOTICIA POR MEDIO SIN PÁGINAS 404
 function generate5SpectrumCoveragesFromCenter(article) {
   const t = (article.title || '').trim();
   const lower = t.toLowerCase();
 
-  // 1. IZQUIERDA (75% Desviación Izquierda) — RTVC Noticias
   let izqHeadline = `Respuesta oficial y defensa de garantías sociales frente a declaraciones sobre: ${t}`;
   if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán')) {
     izqHeadline = `"Hay una narrativa de desacreditación contra el proyecto de cambio": Defensa institucional ante declaraciones de Mary Luz Herrán`;
@@ -15,7 +68,6 @@ function generate5SpectrumCoveragesFromCenter(article) {
     izqHeadline = `Fortalecimiento del peso colombiano y solidez en los indicadores de recaudo social`;
   }
 
-  // 2. CENTRO-IZQUIERDA (30% Desviación Izquierda) — El Espectador
   let centroIzqHeadline = `El análisis normativo y constitucional tras el debate por: ${t}`;
   if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán')) {
     centroIzqHeadline = `El debate ético e interno en el movimiento político tras las declaraciones de Mary Luz Herrán`;
@@ -25,10 +77,8 @@ function generate5SpectrumCoveragesFromCenter(article) {
     centroIzqHeadline = `Comportamiento de divisas e impacto en la canasta básica familiar de los colombianos`;
   }
 
-  // 3. CENTRO FACTUAL (0% Desviación) — Caracol Radio / Red+
   const centroHeadline = t;
 
-  // 4. CENTRO-DERECHA (32% Desviación Derecha) — El Tiempo
   let centroDerHeadline = `Reacciones del sector empresarial e institucional tras los hechos de: ${t}`;
   if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán')) {
     centroDerHeadline = `Crece la tensión política en el Congreso tras señalamientos de Mary Luz Herrán sobre el entorno gubernamental`;
@@ -38,7 +88,6 @@ function generate5SpectrumCoveragesFromCenter(article) {
     centroDerHeadline = `Incertidumbre en los mercados financieros impulsa la volatilidad del dólar en casas de cambio`;
   }
 
-  // 5. DERECHA CRÍTICA (80% Desviación Derecha) — Revista Semana
   let derHeadline = `Fuerte cuestionamiento de la oposición y revuelo político por: ${t}`;
   if (lower.includes('petro') || lower.includes('gobierno') || lower.includes('herrán')) {
     derHeadline = `Escándalo en el gobierno: Las explosivas declaraciones de Mary Luz Herrán que sacuden al petrismo`;
@@ -50,7 +99,6 @@ function generate5SpectrumCoveragesFromCenter(article) {
 
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
 
-  // Helper para generar URL directa sin error 404
   const buildDirectMediaUrl = (domain, headlineText) => {
     if (primaryDomain === domain) return article.originalUrl;
     const query = encodeURIComponent(`site:${domain} ${headlineText.slice(0, 50)}`);
@@ -201,6 +249,7 @@ export async function GET(request) {
     const articlesWith5Spectrums = topArticles.map(article => {
       const mediaDomain = resolveDomain(article.sourceName, article.originalUrl);
       const spectrumCoverages = generate5SpectrumCoveragesFromCenter(article);
+      const academicAnalysis = generateAcademicAnalysis(article.title, article.category, article.sourceName);
 
       return {
         ...article,
@@ -210,7 +259,8 @@ export async function GET(request) {
         deviationPercent: 0,
         biasLabel: "0% Sesgo (Punto Cero Neutral)",
         headlineIntention: "Reporte factual directo basado en citación textual de acontecimientos.",
-        neutralSynthesis: `Síntesis Imparcial GranColinos: Cobertura factual verificada sobre ${article.title.toLowerCase()}. Al pulsar en LEER NOTICIA EN {MEDIO} se abrirá la nota directa de ese medio, y en NOTICIA OFICIAL la fuente de origen.`,
+        neutralSynthesis: `Síntesis Imparcial GranColinos: Cobertura factual verificada sobre ${article.title.toLowerCase()}. Se añade marco teórico, tesis del artículo, mapa mental conceptual y conclusión neutra sin bandos.`,
+        academicAnalysis: academicAnalysis,
         otherCoverages: spectrumCoverages
       };
     });

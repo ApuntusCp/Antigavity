@@ -3,9 +3,150 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon } from 'lucide-react';
+import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Network, BrainCircuit, Target, Lightbulb, CheckCheck } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
+
+// COMPONENTE DE MAPA MENTAL CONCEPTUAL VISUAL
+function AcademicMindMap({ nodes, title }) {
+  if (!nodes || nodes.length === 0) return null;
+
+  return (
+    <div 
+      className="p-5 rounded-2xl border border-[#D4AF37]/40 space-y-4 shadow-2xl"
+      style={{
+        backgroundColor: 'rgba(0, 0, 0, 0.22)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)'
+      }}
+    >
+      <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+        <span className="text-xs font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
+          <BrainCircuit size={16} className="text-[#D4AF37]" /> MAPA MENTAL CONCEPTUAL DE LA NOTICIA
+        </span>
+        <span className="text-[10px] font-mono text-gray-300">Desglose Imparcial</span>
+      </div>
+
+      {/* DIAGRAMA CONCEPTUAL CON CONEXIONES */}
+      <div className="space-y-4 pt-1">
+        
+        {/* NÚCLEO CENTRAL */}
+        <div className="p-4 rounded-xl bg-gradient-to-r from-[#D4AF37]/25 via-black/80 to-[#D4AF37]/25 border-2 border-[#D4AF37] text-center space-y-1 shadow-[0_0_25px_rgba(212,175,55,0.4)]">
+          <span className="text-[10px] font-mono text-[#D4AF37] font-black uppercase tracking-widest block">
+            [ NÚCLEO CENTRAL DE LA NOTICIA ]
+          </span>
+          <h5 className="font-serif text-sm sm:text-base font-extrabold text-white leading-snug">
+            "{nodes[0]?.desc || title}"
+          </h5>
+        </div>
+
+        {/* LÍNEAS DE CONEXIÓN HACIA RAMAS */}
+        <div className="w-0.5 h-6 bg-[#D4AF37] mx-auto opacity-70"></div>
+
+        {/* RAMAS CONCEPTUALES */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {nodes.slice(1).map((node, idx) => {
+            let borderColor = "border-red-500/50";
+            let textColor = "text-red-300";
+            let bgColor = "rgba(180, 20, 20, 0.22)";
+            if (node.color === 'slate') {
+              borderColor = "border-slate-300/50";
+              textColor = "text-slate-200";
+              bgColor = "rgba(100, 116, 139, 0.22)";
+            } else if (node.color === 'orange') {
+              borderColor = "border-orange-500/50";
+              textColor = "text-orange-300";
+              bgColor = "rgba(194, 65, 12, 0.22)";
+            }
+
+            return (
+              <div 
+                key={idx}
+                className={`p-3.5 rounded-xl border ${borderColor} space-y-1.5 text-xs shadow-lg flex flex-col justify-between`}
+                style={{ backgroundColor: bgColor, backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+              >
+                <div className="space-y-1">
+                  <span className={`font-mono text-[10px] font-extrabold block ${textColor}`}>
+                    {node.label}
+                  </span>
+                  <p className="font-sans text-[11px] text-gray-200 leading-relaxed font-light">
+                    {node.desc}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+// COMPONENTE DE ANÁLISIS COMPLETO (MARCO TEÓRICO, TESIS Y CONCLUSIÓN NEUTRA)
+function AcademicAnalysisSection({ analysis, title }) {
+  if (!analysis) return null;
+
+  return (
+    <div className="space-y-5 pt-2">
+      
+      {/* MARCO TEÓRICO */}
+      <div 
+        className="p-5 rounded-2xl border border-[#D4AF37]/35 space-y-2 shadow-2xl"
+        style={{
+          backgroundColor: 'rgba(5, 15, 30, 0.22)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)'
+        }}
+      >
+        <span className="text-[10px] font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
+          <BookOpen size={15} /> MARCO TEÓRICO & ESTRUCTURA NORMATIVA:
+        </span>
+        <p className="font-sans text-xs md:text-sm text-gray-100 leading-relaxed font-light">
+          {analysis.marcoTeorico}
+        </p>
+      </div>
+
+      {/* TESIS CENTRAL FACTUAL */}
+      <div 
+        className="p-5 rounded-2xl border-l-4 border-[#D4AF37] border border-[#D4AF37]/35 space-y-2 shadow-2xl"
+        style={{
+          backgroundColor: 'rgba(20, 20, 10, 0.22)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)'
+        }}
+      >
+        <span className="text-[10px] font-mono text-[#D4AF37] font-extrabold uppercase tracking-widest flex items-center gap-2">
+          <Target size={15} /> TESIS CENTRAL FACTUAL DEL ARTÍCULO:
+        </span>
+        <p className="font-serif text-sm md:text-base text-white leading-relaxed font-bold italic">
+          "{analysis.tesisCentral}"
+        </p>
+      </div>
+
+      {/* MAPA MENTAL CONCEPTUAL */}
+      <AcademicMindMap nodes={analysis.mapaMentalNodes} title={title} />
+
+      {/* CONCLUSIÓN IMPARCIAL DEFINITIVA */}
+      <div 
+        className="p-5 rounded-2xl border-l-4 border-emerald-400 border border-emerald-500/40 space-y-2 shadow-2xl"
+        style={{
+          backgroundColor: 'rgba(0, 35, 20, 0.22)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)'
+        }}
+      >
+        <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest flex items-center gap-2">
+          <CheckCheck size={16} /> CONCLUSIÓN DEFINITIVA SIN SESGOS NI BANDOS:
+        </span>
+        <p className="font-sans text-xs md:text-sm text-emerald-100 leading-relaxed font-normal">
+          {analysis.conclusionImparcial}
+        </p>
+      </div>
+
+    </div>
+  );
+}
 
 // INSIGNIA ELEGANTE COMPACTA DEL MEDIO
 function MediaHeaderBadge({ sourceName, sourceDomain, logoUrl }) {
@@ -81,7 +222,7 @@ function PoliticalBiasBar({ biasDirection, deviationPercent, biasLabel }) {
       <div className="flex items-center justify-between text-gray-300">
         <span className="flex items-center gap-1 font-semibold text-[#D4AF37] truncate">
           <Scale size={12} className="text-[#D4AF37] shrink-0" />
-          <span>Calculo desde el C{percent}%:</span>
+          <span>Calculo desde el Centro:</span>
         </span>
         <span className="text-[#D4AF37] font-bold shrink-0">{displayText}</span>
       </div>
@@ -312,7 +453,7 @@ function NoticiasContent() {
           
           <div className="text-center space-y-4 border-b border-[#D4AF37]/35 pb-6">
             <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-gray-300 uppercase tracking-widest px-2 gap-2">
-              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Monitoreo Hemerográfico en los 5 Espectros Ideológicos</span>
+              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Monitoreo Hemerográfico • Marco Teórico • Mapas Mentales • Tesis & Conclusión Sin Bandos</span>
               
               <div className="inline-flex items-center gap-2 font-extrabold text-[#D4AF37] px-4 py-1.5 bg-black/80 rounded-full border border-[#D4AF37]/50 shadow-md">
                 <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
@@ -329,13 +470,13 @@ function NoticiasContent() {
             <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
             <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-              "Compara la misma noticia en los 5 espectros ideológicos. Accede al medio específico de cada espectro o a la Noticia Oficial Matriz."
+              "Análisis hemerográfico integral: Marco Teórico, Tesis del Artículo, Mapa Mental Conceptual y Conclusión Neutral Imparcial sin sesgos ni bandos políticos."
             </p>
 
             <div className="pt-1 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-950/80 border border-emerald-500/50 rounded-full text-[10px] font-mono text-emerald-300 font-bold">
-                <Radio size={12} className="animate-pulse text-emerald-400" />
-                <span>DOBLE BOTÓN ACTIVADO: LEER EN MEDIO ESPECÍFICO & NOTICIA OFICIAL ({dateDayMonthYear})</span>
+                <BrainCircuit size={13} className="animate-pulse text-emerald-400" />
+                <span>MARCO TEÓRICO, TESIS, MAPA MENTAL & CONCLUSIÓN SIN BANDOS ACTIVO ({dateDayMonthYear})</span>
               </div>
             </div>
           </div>
@@ -407,7 +548,7 @@ function NoticiasContent() {
                       className="w-full py-3 px-4 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-xs uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2 border border-white/30"
                     >
                       <Scale size={16} />
-                      <span>Ver Comparativa de Desviación desde el Centro (0%)</span>
+                      <span>Ver Comparativa + Mapa Mental + Conclusión Neutra</span>
                     </button>
                   </div>
                 </div>
@@ -448,7 +589,7 @@ function NoticiasContent() {
                       className="w-full py-1.5 px-3 bg-white/10 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black font-mono font-bold text-[10px] uppercase tracking-wider rounded-lg transition-all border border-[#D4AF37]/30 flex items-center justify-center gap-1.5"
                     >
                       <GitCompare size={12} />
-                      <span>Comparar 5 Espectros de Titulares</span>
+                      <span>Comparar 5 Espectros + Mapa Mental</span>
                     </button>
                   </div>
                 ))}
@@ -498,7 +639,7 @@ function NoticiasContent() {
                         className="w-full py-2 px-3 bg-black/70 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-[#D4AF37]/40 flex items-center justify-center gap-1.5 shadow-sm"
                       >
                         <Scale size={13} />
-                        <span>Ver Noticia en los 5 Espectros Ideológicos</span>
+                        <span>Análisis de Tesis + Mapa Mental + Conclusión</span>
                       </button>
                     </div>
                   </div>
@@ -576,7 +717,7 @@ function NoticiasContent() {
 
         </div>
 
-        {/* MODAL LECTURA */}
+        {/* MODAL LECTURA INTEGRADO CON MARCO TEÓRICO, MAPA MENTAL Y TESIS */}
         {selectedArticle && (
           <div 
             className="fixed inset-0 z-[99999] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -593,7 +734,7 @@ function NoticiasContent() {
               WebkitBackdropFilter: 'blur(20px)'
             }}
           >
-            <div className="leather-canvas-blue text-white rounded-3xl max-w-4xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.5)] border-2 border-[#D4AF37] my-auto">
+            <div className="leather-canvas-blue text-white rounded-3xl max-w-5xl w-full max-h-[88vh] overflow-y-auto p-6 md:p-10 space-y-6 relative shadow-[0_0_120px_rgba(212,175,55,0.5)] border-2 border-[#D4AF37] my-auto">
               
               <button
                 onClick={() => setSelectedArticle(null)}
@@ -641,10 +782,10 @@ function NoticiasContent() {
               >
                 <div className="space-y-1">
                   <span className="text-xs font-mono font-bold text-[#D4AF37] uppercase flex items-center gap-1.5">
-                    <Scale size={14} /> Comparador de Desviación desde el Centro (0%)
+                    <Scale size={14} /> Comparador + Mapa Mental Conceptual
                   </span>
                   <p className="text-xs font-sans text-gray-300">
-                    Compara el porcentaje de distancia hacia la Izquierda o Derecha partiendo del Punto Neutro (0%).
+                    Compara el porcentaje de distancia desde el Centro (0%) e inspecciona la conclusión imparcial.
                   </p>
                 </div>
 
@@ -656,12 +797,18 @@ function NoticiasContent() {
                   }}
                   className="px-5 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.4)] shrink-0 flex items-center gap-2 border border-white/30"
                 >
-                  <Scale size={15} />
-                  <span>Comparar 5 Espectros</span>
+                  <BrainCircuit size={15} />
+                  <span>Ver Mapa Mental & Conclusión Imparcial</span>
                 </button>
               </div>
 
-              <div className="space-y-4 font-sans text-sm text-gray-200 leading-relaxed font-light">
+              {/* SECCIÓN DE MARCO TEÓRICO, MAPA MENTAL & TESIS INTEGRADA EN LA NOTICIA */}
+              <AcademicAnalysisSection 
+                analysis={selectedArticle.academicAnalysis} 
+                title={selectedArticle.title}
+              />
+
+              <div className="space-y-4 font-sans text-sm text-gray-200 leading-relaxed font-light pt-2">
                 <div className="bg-black/60 p-5 rounded-2xl border-l-4 border-[#D4AF37] shadow-inner space-y-2">
                   <span className="text-[10px] font-mono text-[#D4AF37] uppercase font-bold tracking-widest block">
                     Síntesis Oficial ({selectedArticle.sourceName}):
@@ -698,7 +845,7 @@ function NoticiasContent() {
           </div>
         )}
 
-        {/* MODAL DE COMPARACIÓN CON DOS BOTONES DISTINTOS POR TARJETA: LEER NOTICIA EN {MEDIO} & NOTICIA OFICIAL */}
+        {/* MODAL DE COMPARACIÓN CON MARCO TEÓRICO, TESIS, MAPA MENTAL Y CONCLUSIÓN IMPARCIAL */}
         {selectedBiasComparison && (
           <div 
             className="fixed inset-0 z-[100000] flex items-center justify-center p-4 md:p-6 animate-in fade-in overflow-y-auto"
@@ -728,7 +875,7 @@ function NoticiasContent() {
               <div className="space-y-3 border-b border-[#D4AF37]/30 pb-6 clear-both text-center sm:text-left">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#D4AF37] text-[10px] font-mono font-bold uppercase tracking-widest">
                   <Scale size={14} />
-                  <span>Cálculo de Desviación desde el Centro (0% Punto Cero)</span>
+                  <span>Análisis de Sesgos + Mapa Mental + Conclusión Neutra</span>
                 </div>
 
                 <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight">
@@ -802,25 +949,14 @@ function NoticiasContent() {
                 </div>
               </div>
 
-              {/* SÍNTESIS IMPARCIAL FACTUAL */}
-              <div 
-                className="p-5 rounded-2xl border-l-4 border-emerald-400 border border-emerald-500/30 space-y-2 shadow-2xl"
-                style={{
-                  backgroundColor: 'rgba(0, 30, 20, 0.22)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)'
-                }}
-              >
-                <span className="text-[10px] font-mono text-emerald-400 font-extrabold uppercase tracking-widest flex items-center gap-1.5">
-                  <ShieldCheck size={14} /> SÍNTESIS IMPARCIAL FACTUAL (GRANCOLINOS JOURNAL):
-                </span>
-                <p className="font-sans text-xs md:text-sm text-gray-100 leading-relaxed font-light">
-                  {selectedBiasComparison.neutralSynthesis || `Síntesis Factual: Cobertura objetiva. Haz clic en "LEER NOTICIA EN {MEDIO}" para abrir la sala del medio de ese espectro, o en "NOTICIA OFICIAL" para abrir la fuente matriz.`}
-                </p>
-              </div>
+              {/* INTEGRACIÓN DEL ANÁLISIS ACADÉMICO: MARCO TEÓRICO, TESIS, MAPA MENTAL Y CONCLUSIÓN IMPARCIAL */}
+              <AcademicAnalysisSection 
+                analysis={selectedBiasComparison.academicAnalysis} 
+                title={selectedBiasComparison.title}
+              />
 
               {/* VENTANAS DE CADA TITULAR CON DOS BOTONES CLAROS Y DIFERENCIADOS */}
-              <div className="space-y-4 pt-2">
+              <div className="space-y-4 pt-4 border-t border-white/15">
                 <h4 className="font-serif text-base font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
                   <Scale size={16} /> COBERTURAS Y DESVIACIONES DESDE EL CENTRO (0%)
                 </h4>
@@ -886,7 +1022,6 @@ function NoticiasContent() {
                         <PoliticalBiasBar biasDirection={coverage.biasDirection} deviationPercent={coverage.deviationPercent} biasLabel={coverage.biasLabel} />
 
                         <div className="grid grid-cols-1 gap-1.5 font-mono text-[10px]">
-                          {/* BOTÓN 1: LEER NOTICIA EN EL MEDIO ESPECÍFICO DEL ESPECTRO (RTVC, Semana, El Espectador, etc.) */}
                           <a
                             href={coverage.outletUrl || `https://${coverage.sourceDomain}/`}
                             target="_blank"
@@ -897,7 +1032,6 @@ function NoticiasContent() {
                             <ExternalLink size={11} />
                           </a>
 
-                          {/* BOTÓN 2: NOTICIA OFICIAL MATRIZ (fuente de origen como bogota.gov.co o nota de origen) */}
                           <a
                             href={coverage.officialMatrixUrl || selectedBiasComparison.originalUrl}
                             target="_blank"
