@@ -7,7 +7,7 @@ import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserChec
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
 
-// COMPONENTE DE MAPA MENTAL CONCEPTUAL VISUAL
+// COMPONENTE DE MAPA MENTAL CONCEPTUAL VISUAL CON VERDE LIMO EN IZQUIERDA Y ROJO EN DERECHA
 function AcademicMindMap({ nodes, title }) {
   if (!nodes || nodes.length === 0) return null;
 
@@ -46,17 +46,19 @@ function AcademicMindMap({ nodes, title }) {
         {/* RAMAS CONCEPTUALES */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {nodes.slice(1).map((node, idx) => {
-            let borderColor = "border-red-500/50";
-            let textColor = "text-red-300";
-            let bgColor = "rgba(180, 20, 20, 0.22)";
+            // IZQUIERDA = VERDE LIMO, DERECHA = ROJO
+            let borderColor = "border-lime-500/70";
+            let textColor = "text-lime-300";
+            let bgColor = "rgba(132, 204, 22, 0.22)";
+            
             if (node.color === 'slate') {
               borderColor = "border-slate-300/50";
               textColor = "text-slate-200";
               bgColor = "rgba(100, 116, 139, 0.22)";
-            } else if (node.color === 'orange') {
-              borderColor = "border-orange-500/50";
-              textColor = "text-orange-300";
-              bgColor = "rgba(194, 65, 12, 0.22)";
+            } else if (node.color === 'red') {
+              borderColor = "border-red-500/70";
+              textColor = "text-red-300";
+              bgColor = "rgba(220, 38, 38, 0.22)";
             }
 
             return (
@@ -124,7 +126,7 @@ function AcademicAnalysisSection({ analysis, title }) {
         </p>
       </div>
 
-      {/* MAPA MENTAL CONCEPTUAL */}
+      {/* MAPA MENTAL CONCEPTUAL CON IZQUIERDA EN VERDE LIMO Y DERECHA EN ROJO */}
       <AcademicMindMap nodes={analysis.mapaMentalNodes} title={title} />
 
       {/* CONCLUSIÓN IMPARCIAL DEFINITIVA */}
@@ -228,7 +230,7 @@ function PoliticalBiasBar({ biasDirection, deviationPercent, biasLabel }) {
       </div>
 
       <div className="relative w-full h-2 rounded-full bg-black/80 overflow-hidden border border-white/20">
-        <div className="absolute inset-0 bg-gradient-to-r from-red-600 via-slate-200 to-amber-500 opacity-90"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#84cc16] via-slate-200 to-red-600 opacity-90"></div>
         <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white/60 -translate-x-1/2 z-10"></div>
         
         <div 
@@ -453,7 +455,7 @@ function NoticiasContent() {
           
           <div className="text-center space-y-4 border-b border-[#D4AF37]/35 pb-6">
             <div className="flex flex-wrap items-center justify-between text-[11px] font-mono text-gray-300 uppercase tracking-widest px-2 gap-2">
-              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Monitoreo Hemerográfico • Marco Teórico • Mapas Mentales • Tesis & Conclusión Sin Bandos</span>
+              <span className="hidden sm:inline font-bold text-[#D4AF37]/90">Monitoreo Hemerográfico • Izquierda (Verde Limo) & Derecha (Rojo)</span>
               
               <div className="inline-flex items-center gap-2 font-extrabold text-[#D4AF37] px-4 py-1.5 bg-black/80 rounded-full border border-[#D4AF37]/50 shadow-md">
                 <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
@@ -470,13 +472,13 @@ function NoticiasContent() {
             <div className="w-36 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_10px_rgba(212,175,55,0.8)]"></div>
             
             <p className="text-xs md:text-sm font-serif italic text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-              "Análisis hemerográfico integral: Marco Teórico, Tesis del Artículo, Mapa Mental Conceptual y Conclusión Neutral Imparcial sin sesgos ni bandos políticos."
+              "Análisis de mapa mental conceptual: Izquierda identificada en Verde Limo (🟢) y Derecha identificada en Rojo (🔴) para una lectura visual rápida."
             </p>
 
             <div className="pt-1 flex items-center justify-center">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-950/80 border border-emerald-500/50 rounded-full text-[10px] font-mono text-emerald-300 font-bold">
                 <BrainCircuit size={13} className="animate-pulse text-emerald-400" />
-                <span>MARCO TEÓRICO, TESIS, MAPA MENTAL & CONCLUSIÓN SIN BANDOS ACTIVO ({dateDayMonthYear})</span>
+                <span>MAPA CONCEPTUAL: IZQUIERDA (VERDE LIMO) & DERECHA (ROJO) ACTIVO ({dateDayMonthYear})</span>
               </div>
             </div>
           </div>
@@ -908,18 +910,18 @@ function NoticiasContent() {
                 
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-[10px] font-mono text-center font-bold">
                   <div 
-                    className="p-2.5 rounded-xl border border-red-500/50 text-red-300 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(180, 20, 20, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                    className="p-2.5 rounded-xl border border-lime-500/60 text-lime-300 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(132, 204, 22, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
-                    <span className="w-2.5 h-2.5 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
+                    <span className="w-2.5 h-2.5 bg-[#84cc16] rounded-full shadow-[0_0_8px_rgba(132,204,22,0.8)]"></span>
                     <span>1. Izquierda (75% Sesgo Izq)</span>
                   </div>
 
                   <div 
-                    className="p-2.5 rounded-xl border border-blue-400/50 text-blue-300 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(20, 80, 180, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                    className="p-2.5 rounded-xl border border-lime-400/50 text-lime-200 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(100, 180, 20, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
-                    <span className="w-2.5 h-2.5 bg-blue-400 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"></span>
+                    <span className="w-2.5 h-2.5 bg-[#a3e635] rounded-full shadow-[0_0_8px_rgba(163,230,53,0.8)]"></span>
                     <span>2. Centro-Izquierda (30% Sesgo Izq)</span>
                   </div>
 
@@ -932,18 +934,18 @@ function NoticiasContent() {
                   </div>
 
                   <div 
-                    className="p-2.5 rounded-xl border border-amber-400/50 text-amber-300 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(180, 130, 20, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                    className="p-2.5 rounded-xl border border-red-400/50 text-red-200 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(180, 40, 40, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
-                    <span className="w-2.5 h-2.5 bg-amber-400 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span>
+                    <span className="w-2.5 h-2.5 bg-red-400 rounded-full shadow-[0_0_8px_rgba(248,113,113,0.8)]"></span>
                     <span>4. Centro-Derecha (32% Sesgo Der)</span>
                   </div>
 
                   <div 
-                    className="p-2.5 rounded-xl border border-orange-500/50 text-orange-300 flex flex-col items-center justify-center gap-1 shadow-md"
-                    style={{ backgroundColor: 'rgba(194, 65, 12, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+                    className="p-2.5 rounded-xl border border-red-600/60 text-red-300 flex flex-col items-center justify-center gap-1 shadow-md"
+                    style={{ backgroundColor: 'rgba(220, 38, 38, 0.22)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
                   >
-                    <span className="w-2.5 h-2.5 bg-orange-500 rounded-full shadow-[0_0_8px_rgba(249,115,22,0.8)]"></span>
+                    <span className="w-2.5 h-2.5 bg-red-600 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
                     <span>5. Derecha (80% Sesgo Der)</span>
                   </div>
                 </div>

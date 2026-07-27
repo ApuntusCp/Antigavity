@@ -20,7 +20,7 @@ function generateAcademicAnalysis(title, category, sourceName) {
   } else if (lower.includes('dolar') || lower.includes('banco') || lower.includes('ingresos') || lower.includes('economia')) {
     marcoTeorico = `Marco Teórico de Macroeconomía y Desarrollo Comparado: Centrado en la teoría del crecimiento exógeno, flujos de capital internacional, tasas de interés interbancarias y clasificación de ingresos por poder de compra (PIB per cápita PPA).`;
     tesisCentral = `Tesis Factual: Los indicadores económicos regionales responden a choques externos de divisas, políticas monetarias centrales y al atractivo de inversión extranjera directa en América Latina.`;
-    conclusionImparcial = `Conclusión Imparcial GranColinos: La solidez macroeconómica requiere disciplina fiscal sostenida y productividad real. La síntesis objetiva indica que el comportamiento de los mercados debe evaluarse mediante datos técnicos sin sesgos ideológicos.`;
+    conclusionImparcial = `Conclusión Imparcial GranColinos: La solidez macroeconómica requiere disciplina fiscal sustained y productividad real. La síntesis objetiva indica que el comportamiento de los mercados debe evaluarse mediante datos técnicos sin sesgos ideológicos.`;
   }
 
   const mapaMentalNodes = [
@@ -30,9 +30,9 @@ function generateAcademicAnalysis(title, category, sourceName) {
       color: "gold"
     },
     {
-      label: "🔴 ENFOQUE SOCIAL & INSTITUCIONAL (IZQUIERDA)",
+      label: "🟢 ENFOQUE SOCIAL & INSTITUCIONAL (IZQUIERDA)",
       desc: "Énfasis en la protección de derechos comunitarios, garantías laborales e intervención del Estado para atenuar desigualdades.",
-      color: "red"
+      color: "lime"
     },
     {
       label: "⚪ DATOS DUROS & EVIDENCIA OFICIAL (CENTRO)",
@@ -40,9 +40,9 @@ function generateAcademicAnalysis(title, category, sourceName) {
       color: "slate"
     },
     {
-      label: "🟠 ENFOQUE DE MERCADO & FISCALIZACIÓN (DERECHA)",
+      label: "🔴 ENFOQUE DE MERCADO & FISCALIZACIÓN (DERECHA)",
       desc: "Evaluación de costos fiscales, sostenibilidad financiera, libre competencia y eficiencia en la gestión de recursos.",
-      color: "orange"
+      color: "red"
     }
   ];
 
@@ -259,7 +259,7 @@ export async function GET(request) {
         deviationPercent: 0,
         biasLabel: "0% Sesgo (Punto Cero Neutral)",
         headlineIntention: "Reporte factual directo basado en citación textual de acontecimientos.",
-        neutralSynthesis: `Síntesis Imparcial GranColinos: Cobertura factual verificada sobre ${article.title.toLowerCase()}. Se añade marco teórico, tesis del artículo, mapa mental conceptual y conclusión neutra sin bandos.`,
+        neutralSynthesis: `Síntesis Imparcial GranColinos: Cobertura factual verificada sobre ${article.title.toLowerCase()}. El mapa mental diferencia la Izquierda (Verde Limo) de la Derecha (Rojo).`,
         academicAnalysis: academicAnalysis,
         otherCoverages: spectrumCoverages
       };
