@@ -35,10 +35,11 @@
 }
 
 body {
-  background-color: #040903;
+  background-color: #020502;
   background-image: 
-    radial-gradient(ellipse at 50% 15%, rgba(212, 175, 55, 0.22) 0%, transparent 60%),
-    radial-gradient(circle at 50% 85%, rgba(45, 80, 22, 0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 15%, rgba(212, 175, 55, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 50% 85%, rgba(15, 30, 10, 0.25) 0%, transparent 60%),
+    linear-gradient(rgba(2, 5, 2, 0.75), rgba(2, 5, 2, 0.75)),
     url('/images/bg_leather.jpg');
   background-size: cover;
   background-position: center;
@@ -52,26 +53,27 @@ body {
 
 /* TEXTURA DE CUERO AZUL NOCTURNO REAL EMBOSADA EN EL CANVAS CENTRAL (ALTA GAMA / LUXURY EDITORIAL) */
 .leather-canvas-blue {
-  background-color: #071120;
+  background-color: #03070D;
   background-image: 
-    radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.4) 0%, transparent 65%),
-    radial-gradient(ellipse at 50% 100%, rgba(14, 28, 54, 0.95) 0%, transparent 75%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leatherGrain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.35' intercept='0.05'/%3E%3CfeFuncG type='linear' slope='0.4' intercept='0.08'/%3E%3CfeFuncB type='linear' slope='0.55' intercept='0.15'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leatherGrain)' opacity='0.5'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.12) 0%, transparent 65%),
+    radial-gradient(ellipse at 50% 100%, rgba(6, 12, 24, 0.95) 0%, transparent 75%),
+    linear-gradient(rgba(3, 7, 13, 0.65), rgba(3, 7, 13, 0.65)),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leatherGrain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.35' intercept='0.05'/%3E%3CfeFuncG type='linear' slope='0.4' intercept='0.08'/%3E%3CfeFuncB type='linear' slope='0.55' intercept='0.15'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leatherGrain)' opacity='0.2'/%3E%3C/svg%3E"),
     url('/images/bg_leather.jpg');
-  background-size: auto, auto, 220px 220px, cover;
+  background-size: auto, auto, auto, 220px 220px, cover;
   background-position: center;
-  border: 1px solid rgba(212, 175, 55, 0.65);
+  border: 1px solid rgba(212, 175, 55, 0.5);
   box-shadow: 
-    inset 0 0 80px rgba(0, 0, 0, 0.95),
-    inset 0 0 25px rgba(212, 175, 55, 0.4),
-    0 25px 70px rgba(0, 0, 0, 0.95);
+    inset 0 0 80px rgba(0, 0, 0, 0.98),
+    inset 0 0 25px rgba(212, 175, 55, 0.2),
+    0 25px 70px rgba(0, 0, 0, 0.98);
 }
 
 .leather-card-dark {
-  background-color: rgba(9, 18, 35, 0.92);
+  background-color: rgba(4, 9, 16, 0.94);
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 70%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='cardLeather'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23cardLeather)' opacity='0.3'/%3E%3C/svg%3E");
+    radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 70%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='cardLeather'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23cardLeather)' opacity='0.2'/%3E%3C/svg%3E");
   background-size: auto, 150px 150px;
   border: 1px solid rgba(212, 175, 55, 0.28);
   box-shadow: 
@@ -89,29 +91,31 @@ body {
     0 15px 45px rgba(212, 175, 55, 0.22);
 }
 
-/* FONDO COMPLETO DE LA PÁGINA NOTICIAS (OUTER VIEWPORT) CON TEXTURA BOTÁNICA DE CUERO VERDE ESMERALDA Y DORADO GRANCOLINOS */
+/* FONDO COMPLETO DE LA PÁGINA NOTICIAS (OUTER VIEWPORT) CON TEXTURA BOTÁNICA OSCURA DE CUERO VERDE ESMERALDA Y DORADO GRANCOLINOS */
 .theme-noticias {
-  background-color: #040A04;
+  background-color: #020502;
   background-image: 
-    radial-gradient(ellipse at 50% 15%, rgba(212, 175, 55, 0.32) 0%, transparent 65%),
-    radial-gradient(circle at 50% 85%, rgba(35, 75, 20, 0.65) 0%, transparent 70%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leatherGreenNoticias'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.35' intercept='0.05'/%3E%3CfeFuncG type='linear' slope='0.5' intercept='0.1'/%3E%3CfeFuncB type='linear' slope='0.35' intercept='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leatherGreenNoticias)' opacity='0.55'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 50% 15%, rgba(212, 175, 55, 0.10) 0%, transparent 60%),
+    radial-gradient(circle at 50% 85%, rgba(12, 28, 9, 0.30) 0%, transparent 70%),
+    linear-gradient(rgba(2, 5, 2, 0.75), rgba(2, 5, 2, 0.75)),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leatherGreenNoticias'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.35' intercept='0.05'/%3E%3CfeFuncG type='linear' slope='0.5' intercept='0.1'/%3E%3CfeFuncB type='linear' slope='0.35' intercept='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leatherGreenNoticias)' opacity='0.2'/%3E%3C/svg%3E"),
     url('/images/bg_leather.jpg');
   background-attachment: fixed;
-  background-size: auto, auto, 220px 220px, cover;
+  background-size: auto, auto, auto, 220px 220px, cover;
   background-position: center;
 }
 
-/* FONDO COMPLETO DE LA TIENDA CON TEXTURA BOTÁNICA DE CUERO VERDE ESMERALDA Y DORADO */
+/* FONDO COMPLETO DE LA TIENDA CON TEXTURA BOTÁNICA OSCURA DE CUERO VERDE ESMERALDA Y DORADO */
 .theme-tienda {
-  background-color: #040903;
+  background-color: #020502;
   background-image: 
-    radial-gradient(ellipse at 50% 15%, rgba(212, 175, 55, 0.35) 0%, transparent 65%),
-    radial-gradient(circle at 50% 85%, rgba(45, 80, 22, 0.6) 0%, transparent 70%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leatherGreen'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.35' intercept='0.05'/%3E%3CfeFuncG type='linear' slope='0.5' intercept='0.1'/%3E%3CfeFuncB type='linear' slope='0.35' intercept='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leatherGreen)' opacity='0.55'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 50% 15%, rgba(212, 175, 55, 0.10) 0%, transparent 60%),
+    radial-gradient(circle at 50% 85%, rgba(12, 28, 9, 0.30) 0%, transparent 70%),
+    linear-gradient(rgba(2, 5, 2, 0.75), rgba(2, 5, 2, 0.75)),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leatherGreen'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.35' intercept='0.05'/%3E%3CfeFuncG type='linear' slope='0.5' intercept='0.1'/%3E%3CfeFuncB type='linear' slope='0.35' intercept='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leatherGreen)' opacity='0.2'/%3E%3C/svg%3E"),
     url('/images/bg_leather.jpg');
   background-attachment: fixed;
-  background-size: auto, auto, 220px 220px, cover;
+  background-size: auto, auto, auto, 220px 220px, cover;
   background-position: center;
 }
 

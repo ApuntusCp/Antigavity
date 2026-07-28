@@ -479,8 +479,8 @@ function NoticiasContent() {
         <div 
           className="rounded-3xl p-6 md:p-10 relative overflow-hidden space-y-6 border-2 border-[#D4AF37]/50 shadow-[0_20px_80px_rgba(0,0,0,0.95)]"
           style={{
-            backgroundColor: 'rgba(7, 20, 10, 0.55)',
-            backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.22) 0%, transparent 70%), radial-gradient(circle at 50% 100%, rgba(35, 75, 20, 0.4) 0%, transparent 70%)',
+            backgroundColor: 'rgba(4, 12, 6, 0.85)',
+            backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.15) 0%, transparent 70%), radial-gradient(circle at 50% 100%, rgba(20, 45, 12, 0.3) 0%, transparent 70%)',
             backdropFilter: 'blur(22px)',
             WebkitBackdropFilter: 'blur(22px)'
           }}
@@ -671,8 +671,8 @@ function NoticiasContent() {
                 <div 
                   className="lg:col-span-7 rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-500 space-y-4 hover:border-[#D4AF37] flex flex-col justify-between border-2 border-[#D4AF37]/60"
                   style={{
-                    backgroundColor: 'rgba(7, 20, 10, 0.55)',
-                    backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.18) 0%, transparent 70%)',
+                    backgroundColor: 'rgba(4, 12, 6, 0.85)',
+                    backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.12) 0%, transparent 70%)',
                     backdropFilter: 'blur(22px)',
                     WebkitBackdropFilter: 'blur(22px)'
                   }}
@@ -734,7 +734,7 @@ function NoticiasContent() {
                     key={secItem.id}
                     className="rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all space-y-2 hover:border-[#D4AF37] border border-[#D4AF37]/30"
                     style={{
-                      backgroundColor: 'rgba(7, 20, 10, 0.55)',
+                      backgroundColor: 'rgba(4, 12, 6, 0.85)',
                       backdropFilter: 'blur(20px)',
                       WebkitBackdropFilter: 'blur(20px)'
                     }}
@@ -812,7 +812,7 @@ function NoticiasContent() {
                               key={`media-note-${noteItem.id}`}
                               className="w-72 shrink-0 rounded-2xl p-4 shadow-lg transition-all space-y-3 hover:border-[#D4AF37] flex flex-col justify-between border border-[#D4AF37]/30"
                               style={{
-                                backgroundColor: 'rgba(7, 20, 10, 0.55)',
+                                backgroundColor: 'rgba(4, 12, 6, 0.85)',
                                 backdropFilter: 'blur(20px)',
                                 WebkitBackdropFilter: 'blur(20px)'
                               }}
@@ -857,7 +857,7 @@ function NoticiasContent() {
                       key={`feed-grid-${feedItem.id}`}
                       className="rounded-2xl p-5 shadow-lg transition-all space-y-3 hover:border-[#D4AF37] flex flex-col justify-between border border-[#D4AF37]/30"
                       style={{
-                        backgroundColor: 'rgba(7, 20, 10, 0.55)',
+                        backgroundColor: 'rgba(4, 12, 6, 0.85)',
                         backdropFilter: 'blur(20px)',
                         WebkitBackdropFilter: 'blur(20px)'
                       }}
@@ -899,7 +899,7 @@ function NoticiasContent() {
             <div 
               className="lg:col-span-4 rounded-3xl p-6 shadow-xl space-y-5 border border-[#D4AF37]/40"
                 style={{
-                  backgroundColor: 'rgba(7, 20, 10, 0.55)',
+                  backgroundColor: 'rgba(4, 12, 6, 0.85)',
                   backdropFilter: 'blur(22px)',
                   WebkitBackdropFilter: 'blur(22px)'
                 }}
