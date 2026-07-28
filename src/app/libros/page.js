@@ -879,34 +879,36 @@ function LibrosContent() {
               </div>
             ) : isBookCopyrighted ? (
               /* CASO OBRA COMERCIAL CON DESCARGA DIRECTA TRANSPARENTE AL ORDENADOR */
-              <div className="flex flex-col items-center justify-center flex-1 p-8 sm:p-12 text-center max-w-3xl mx-auto space-y-6">
-                <div className="w-16 h-16 rounded-3xl bg-[#D4AF37]/10 border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] shadow-2xl">
-                  <Lock size={32} />
+              <div className="flex-1 overflow-y-auto p-6 sm:p-12 flex flex-col items-center justify-center text-center max-w-3xl mx-auto space-y-6 w-full custom-scrollbar my-auto">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-3xl bg-[#D4AF37]/10 border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] shadow-2xl shrink-0">
+                  <Lock size={30} />
                 </div>
 
-                <div className="space-y-3">
-                  <span className="px-3 py-1 bg-amber-950/80 text-amber-300 text-[10px] font-bold uppercase tracking-widest rounded-full border border-amber-500/40">
+                <div className="space-y-3 w-full">
+                  <span className="px-3 py-1 bg-amber-950/80 text-amber-300 text-[10px] font-bold uppercase tracking-widest rounded-full border border-amber-500/40 inline-block">
                     Propiedad Intelectual & Copyright Activo
                   </span>
-                  <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">{readingBook.titulo}</h3>
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-white leading-snug max-w-2xl mx-auto break-words">
+                    {readingBook.titulo}
+                  </h3>
                   <p className="text-xs font-mono text-[#D4AF37]">Por {(readingBook.autores || []).join(', ')} • {readingBook.fuente_original}</p>
                   
-                  <p className="text-gray-300 text-xs font-light leading-relaxed max-w-xl mx-auto pt-2">
+                  <p className="text-gray-300 text-xs sm:text-sm font-light leading-relaxed max-w-xl mx-auto pt-2">
                     {readingBook.resumen || readingBook.subtitulo}
                   </p>
                 </div>
 
-                <div className="p-6 bg-white/5 rounded-2xl border border-white/10 text-left font-sans text-xs space-y-3 w-full">
+                <div className="p-5 sm:p-6 bg-white/5 rounded-2xl border border-white/10 text-left font-sans text-xs space-y-2 w-full">
                   <p className="font-bold flex items-center gap-1.5 text-[#D4AF37]">
                     <ShieldCheck size={16} /> Cumplimiento de Licencias de Derechos de Autor
                   </p>
                   <p className="opacity-80 leading-relaxed text-[11px]">
-                    Esta obra cuenta con derechos de autor vigentes. En estricto cumplimiento con las leyes de propiedad intelectual, GranColinos indexa sus metadatos y te proporciona el enlace directo para su lectura o adquisición oficial en distribuidores autorizados.
+                    Esta obra cuenta con derechos de autor o registro histórico vigente. En estricto cumplimiento con las leyes de propiedad intelectual, GranColinos indexa sus metadatos y te proporciona el enlace directo para su lectura o adquisición oficial en distribuidores autorizados.
                   </p>
                 </div>
 
                 {/* BOTÓN ÚNICO: IR A LA PÁGINA OFICIAL PARA DESCARGAR */}
-                <div className="flex justify-center w-full pt-2">
+                <div className="flex justify-center w-full pt-2 shrink-0">
                   <a
                     href={readingBook.enlaces_descarga?.pdf || readingBook.enlaces_descarga?.epub || readingBook.url_fuente || readingBook.url_original || 'https://www.gutenberg.org'}
                     target="_blank"
