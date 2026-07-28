@@ -284,7 +284,6 @@ function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   };
 }
 
-// EXTRAER ENTIDADES/PALABRAS CLAVE RELEVANTES DEL TÍTULO EVALUADO
 function extractKeyEntities(title) {
   if (!title) return [];
 
@@ -308,7 +307,6 @@ function extractKeyEntities(title) {
     .map(w => w.toLowerCase());
 }
 
-// ALGORITMO RIGUROSO DE VERIFICACIÓN DE COBERTURA SOBRE EL MISMO TEMA
 function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
   const domain = domainKey.toLowerCase();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
@@ -363,7 +361,6 @@ function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
   };
 }
 
-// GENERACIÓN DE LOS 5 ESPECTROS CON REGLA ESTRICTA DE COBERTURA SOBRE EL MISMO TEMA
 function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
   const t = (article.title || '').trim();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
@@ -465,7 +462,6 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
   ];
 }
 
-// ALGORITMO DE RESOLUCIÓN RIGUROSA DE DOMINIOS COLOMBIANOS
 function resolveDomain(sourceName, originalUrl) {
   const name = (sourceName || '').toLowerCase();
   const url = (originalUrl || '').toLowerCase();
@@ -482,7 +478,6 @@ function resolveDomain(sourceName, originalUrl) {
   if (url.includes('rcnradio.com') || name.includes('rcn')) return 'rcnradio.com';
   if (url.includes('caracol.com.co') || name.includes('caracol')) return 'caracol.com.co';
   
-  // NUNCA MÁS DEFAULT FIX A CARACOL: Si no coincide, extrae el dominio real del URL o del nombre
   try {
     if (originalUrl) {
       const hostname = new URL(originalUrl).hostname.replace('www.', '');
@@ -493,11 +488,9 @@ function resolveDomain(sourceName, originalUrl) {
   return 'prensa-independiente.co';
 }
 
-// FASE 1.3 — INTERCALADO ANTI-REPETICIÓN (ROUND-ROBIN DE RELEVANCIA)
 function construirFeedDiversificado(articlesList) {
-  if (!articlesList || articlesList.length === 0) return [];
+  if (!articlesList || !Array.isArray(articlesList) || articlesList.length === 0) return [];
 
-  // 1. Agrupar notas por medio de origen (sourceDomain)
   const mediaMap = {};
   
   articlesList.forEach((article, index) => {
@@ -506,28 +499,26 @@ function construirFeedDiversificado(articlesList) {
       mediaMap[domain] = [];
     }
 
-    // FASE 1.1: Score de Relevancia (Recencia + CoberturaCruzada + Posición)
-    const recencyHours = (Date.now() - new Date(article.pubDateRaw).getTime()) / (1000 * 60 * 60);
-    const recencyScore = Math.max(0, 1 - (recencyHours / 48)); // 0 a 1
-    const crossCoverageScore = (article.otherCoverages || []).filter(c => c.hasCoverage).length / 5; // 0 a 1
+    const pubTime = new Date(article.pubDateRaw || Date.now()).getTime();
+    const validPubTime = isNaN(pubTime) ? Date.now() : pubTime;
+    const recencyHours = Math.max(0, (Date.now() - validPubTime) / (1000 * 60 * 60));
+    const recencyScore = Math.max(0, 1 - (recencyHours / 48));
+    const crossCoverageScore = (article.otherCoverages || []).filter(c => c && c.hasCoverage).length / 5;
     const positionScore = Math.max(0, 1 - (index / articlesList.length));
 
-    // Weight formula: 0.45 Recencia + 0.45 CoberturaCruzada + 0.10 Posición
     const totalScore = (0.45 * recencyScore) + (0.45 * crossCoverageScore) + (0.10 * positionScore);
     
     mediaMap[domain].push({
       ...article,
       sourceDomain: domain,
-      relevanceScore: totalScore
+      relevanceScore: totalScore || 0.5
     });
   });
 
-  // Ordenar notas dentro de cada medio por Score descendente
   Object.keys(mediaMap).forEach(domain => {
-    mediaMap[domain].sort((a, b) => b.relevanceScore - a.relevanceScore);
+    mediaMap[domain].sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
   });
 
-  // 2. Intercalado Anti-Repetición Round-Robin
   const diversifiedFeed = [];
   const domains = Object.keys(mediaMap);
   let hasMore = true;
@@ -535,9 +526,8 @@ function construirFeedDiversificado(articlesList) {
 
   while (hasMore) {
     hasMore = false;
-    // Iterar en ronda por cada medio distinto
     domains.forEach(domain => {
-      if (mediaMap[domain][roundIndex]) {
+      if (mediaMap[domain] && mediaMap[domain][roundIndex]) {
         diversifiedFeed.push(mediaMap[domain][roundIndex]);
         hasMore = true;
       }
@@ -549,8 +539,6 @@ function construirFeedDiversificado(articlesList) {
 }
 
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-
   const rssFeeds = [
     { url: 'https://news.google.com/rss?hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Colombia' },
     { url: 'https://news.google.com/rss/search?q=site:eltiempo.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'El Tiempo' },
@@ -580,22 +568,27 @@ export async function GET(request) {
     });
 
     const results = await Promise.all(feedPromises);
-    results.forEach(items => rawArticles.push(...items));
+    results.forEach(items => {
+      if (Array.isArray(items)) {
+        rawArticles.push(...items);
+      }
+    });
 
     const seenTitles = new Set();
     const uniqueArticles = [];
 
     rawArticles.forEach(item => {
-      const normalizedTitle = item.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 35);
-      if (!seenTitles.has(normalizedTitle)) {
-        seenTitles.add(normalizedTitle);
-        uniqueArticles.push(item);
+      if (item && item.title) {
+        const normalizedTitle = item.title.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 35);
+        if (!seenTitles.has(normalizedTitle)) {
+          seenTitles.add(normalizedTitle);
+          uniqueArticles.push(item);
+        }
       }
     });
 
-    uniqueArticles.sort((a, b) => new Date(b.pubDateRaw) - new Date(a.pubDateRaw));
+    uniqueArticles.sort((a, b) => new Date(b.pubDateRaw).getTime() - new Date(a.pubDateRaw).getTime());
 
-    // Procesar enriquecimiento y 5 espectros para cada noticia
     const processedArticles = uniqueArticles.map((article, idx) => {
       const mediaDomain = resolveDomain(article.sourceName, article.originalUrl);
       const authorProfile = getVerifiedJournalistForArticle(mediaDomain, article.sourceName, article.title);
@@ -623,15 +616,12 @@ export async function GET(request) {
       };
     });
 
-    // FASE 1.3: CONSTRUIR FEED DIVERSIFICADO MULTI-MEDIO
     const diversifiedFeed = construirFeedDiversificado(processedArticles);
 
-    // Marcar la noticia #1 del feed diversificado como la noticia más viral
     if (diversifiedFeed.length > 0) {
       diversifiedFeed[0].isViral = true;
     }
 
-    // FASE 2: AGRUPAMIENTO CRUDO POR MEDIO PARA LOS CARRUSELES DEDICADOS
     const ALL_INDEXED_MEDIA = [
       { name: "El Tiempo", domain: "eltiempo.com", logo: "https://icons.duckduckgo.com/ip3/eltiempo.com.ico" },
       { name: "Revista Semana", domain: "semana.com", logo: "https://icons.duckduckgo.com/ip3/semana.com.ico" },
@@ -704,6 +694,7 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
       }
 
       const pubDateObj = new Date(pubDateStr);
+      const validDate = isNaN(pubDateObj.getTime()) ? new Date() : pubDateObj;
 
       const formattedExactDate = new Intl.DateTimeFormat('es-CO', {
         day: 'numeric',
@@ -712,7 +703,7 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
         hour: '2-digit',
         minute: '2-digit',
         hour12: true
-      }).format(isNaN(pubDateObj) ? new Date() : pubDateObj);
+      }).format(validDate);
 
       articles.push({
         id: `rss-${index}-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
@@ -724,7 +715,7 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
         category: defaultCategory,
         country: defaultCountry,
         publishedAt: formattedExactDate,
-        pubDateRaw: pubDateObj.toISOString(),
+        pubDateRaw: validDate.toISOString(),
         views: 12000 + index * 450
       });
     }

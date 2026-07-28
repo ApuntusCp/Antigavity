@@ -698,7 +698,7 @@ function NoticiasContent() {
               </div>
 
               {/* FASE 4 — CARRUSELES DEDICADOS POR MEDIO INDEXADO */}
-              {newsData?.groupedByMedia ? (
+              {newsData && newsData.groupedByMedia && typeof newsData.groupedByMedia === 'object' ? (
                 <div className="space-y-8">
                   {Object.values(newsData.groupedByMedia).map((mediaGroup) => (
                     <div key={`media-carousel-${mediaGroup.domain}`} className="space-y-3.5">
@@ -709,16 +709,16 @@ function NoticiasContent() {
                           </div>
                           <h4 className="font-serif text-base font-bold text-white uppercase tracking-wide">{mediaGroup.name}</h4>
                           <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/40 font-bold">
-                            {mediaGroup.count} {mediaGroup.count === 1 ? 'Nota' : 'Notas'}
+                            {mediaGroup.count || 0} {mediaGroup.count === 1 ? 'Nota' : 'Notas'}
                           </span>
                         </div>
 
                         <span className="text-[10px] font-mono text-gray-400 uppercase">Carrusel de Editorial</span>
                       </div>
 
-                      {mediaGroup.hasUpdates ? (
+                      {mediaGroup.hasUpdates && mediaGroup.notes && mediaGroup.notes.length > 0 ? (
                         <div className="flex gap-4 overflow-x-auto scrollbar-none pb-2 pt-1">
-                          {mediaGroup.notes.map(noteItem => (
+                          {(mediaGroup.notes || []).map(noteItem => (
                             <div
                               key={`media-note-${noteItem.id}`}
                               className="w-72 shrink-0 rounded-2xl p-4 shadow-lg transition-all space-y-3 hover:border-[#D4AF37] flex flex-col justify-between border border-[#D4AF37]/30"
