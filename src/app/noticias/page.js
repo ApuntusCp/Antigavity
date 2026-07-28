@@ -319,6 +319,7 @@ function NoticiasContent() {
   const [selectedBiasComparison, setSelectedBiasComparison] = useState(null);
   
   const [realtimeArticles, setRealtimeArticles] = useState([]);
+  const [newsData, setNewsData] = useState(null);
   const [loadingFeed, setLoadingFeed] = useState(true);
   const [visibleNewsCount, setVisibleNewsCount] = useState(8);
 
@@ -375,23 +376,30 @@ function NoticiasContent() {
         const response = await fetch('/api/noticias/feed?pais=' + activeCountry);
         if (response.ok) {
           const data = await response.json();
-          if (data.success && data.articles && data.articles.length > 0) {
-            if (isMounted) {
+          if (isMounted && data.success) {
+            setNewsData(data);
+            if (data.articles && data.articles.length > 0) {
               setRealtimeArticles(data.articles);
-              setLoadingFeed(false);
-              return;
             }
+            setLoadingFeed(false);
+            return;
           }
         }
       } catch (err) {
         console.error("Error al sincronizar feed de medios:", err);
+      } finally {
+        if (isMounted) setLoadingFeed(false);
       }
     }
 
     fetchLiveNewsFeed();
 
+    // Auto-polling cada 30 segundos para actualización en tiempo real (Fase 5)
+    const pollInterval = setInterval(fetchLiveNewsFeed, 30000);
+
     return () => {
       isMounted = false;
+      clearInterval(pollInterval);
     };
   }, [activeCountry]);
 
