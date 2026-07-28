@@ -654,13 +654,14 @@ function NoticiasContent() {
               </button>
             </div>
           ) : (
-            <div className="pt-2 space-y-5">
-              <div className="flex items-center justify-between border-b border-white/15 pb-2">
-                <h2 className="font-serif text-xl md:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
-                  <Flame size={20} className="text-amber-400 fill-amber-400 animate-pulse" /> NOTICIA MÁS VIRAL DEL DÍA & ANÁLISIS DE TITULARES
-                </h2>
-                <span className="text-xs font-mono text-[#D4AF37] font-bold">Fecha: {dateDayMonthYear}</span>
-              </div>
+            <>
+              <div className="pt-2 space-y-5">
+                <div className="flex items-center justify-between border-b border-white/15 pb-2">
+                  <h2 className="font-serif text-xl md:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
+                    <Flame size={20} className="text-amber-400 fill-amber-400 animate-pulse" /> NOTICIA MÁS VIRAL DEL DÍA & ANÁLISIS DE TITULARES
+                  </h2>
+                  <span className="text-xs font-mono text-[#D4AF37] font-bold">Fecha: {dateDayMonthYear}</span>
+                </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               
@@ -956,8 +957,8 @@ function NoticiasContent() {
             </div>
 
           </div>
-
-        )}
+            </>
+          )}
 
         {/* MODAL LECTURA CON TEMA VERDE BOTÁNICO Y DORADO LUXURY (69% TRANSPARENCIA + BLUR) */}
         {selectedArticle && (
