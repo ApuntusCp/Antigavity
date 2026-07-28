@@ -13,10 +13,19 @@ export const metadata = {
 };
 
 export default async function ShopPage() {
-  const [products, cmsConfig] = await Promise.all([
-    fetchProducts(),
-    fetchCMSPage('shop')
-  ]);
+  let products = [];
+  let cmsConfig = null;
+
+  try {
+    const [fetchedProducts, fetchedCms] = await Promise.all([
+      fetchProducts(),
+      fetchCMSPage('shop')
+    ]);
+    products = fetchedProducts || [];
+    cmsConfig = fetchedCms || null;
+  } catch (err) {
+    console.error("Error loading shop page:", err);
+  }
 
   const headerBlock = cmsConfig?.blocks?.find(b => b.type === 'shop_header')?.content || {};
   

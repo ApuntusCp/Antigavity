@@ -21,16 +21,34 @@ export const storage = getStorage(app);
 // Fetch products from Firebase Firestore
 export async function fetchProducts() {
   try {
-    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
-    const snapshot = await getDocs(q);
+    const snapshot = await getDocs(collection(db, 'products'));
     
-    return snapshot.docs.map(doc => {
+    const products = snapshot.docs.map(doc => {
       const data = doc.data();
       return {
         id: doc.id,
+        sku: data.sku || doc.id,
+        name: data.name || data.title || 'Producto GranColinos',
+        title: data.name || data.title || 'Producto GranColinos',
+        price: data.price || 0,
+        discountPrice: data.discountPrice || null,
+        category: data.category || 'BIENESTAR',
+        categoryGroup: data.categoryGroup || 'RELAJANTES MUSCULARES',
+        stock: data.stock ?? 100,
+        images: data.images && data.images.length > 0 ? data.images : (data.imageUrl ? [data.imageUrl] : []),
+        imageUrl: data.images && data.images.length > 0 ? data.images[0] : (data.imageUrl || ''),
+        description: data.description || 'Fórmula botánica premium desarrollada con los más altos estándares de calidad colombiana.',
         ...data
       };
     });
+
+    products.sort((a, b) => {
+      const timeA = a.createdAt?.seconds || (typeof a.createdAt === 'number' ? a.createdAt : 0);
+      const timeB = b.createdAt?.seconds || (typeof b.createdAt === 'number' ? b.createdAt : 0);
+      return timeB - timeA;
+    });
+
+    return products;
   } catch (error) {
     console.error("Error fetching products from Firebase:", error);
     return [];
