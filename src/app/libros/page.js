@@ -718,55 +718,13 @@ function LibrosContent() {
                       <span className="text-gray-400">{book.paginas_aprox || '220 págs'}</span>
                     </div>
 
-                    <div className="flex flex-col gap-2 pt-1">
-                      {book.licencia === 'copyright_externo' ? (
-                        <div className="flex flex-col gap-2">
-                          <a
-                            href={book.url_fuente || 'https://www.amazon.com'}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1.5"
-                          >
-                            <span>Comprar en Tienda Oficial</span>
-                            <ExternalLink size={13} />
-                          </a>
-
-                          <button
-                            onClick={() => handleDownloadAcademicPdf(book)}
-                            className="w-full py-2 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 font-bold text-[10px] uppercase tracking-wider rounded-xl hover:bg-emerald-900 transition-all flex items-center justify-center gap-1 cursor-pointer"
-                            title="Descargar libro en formato PDF directamente al ordenador"
-                          >
-                            <Download size={13} />
-                            <span>Descargar Libro PDF (Directo)</span>
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => openReaderModal(book)}
-                              className="flex-1 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1"
-                            >
-                              <BookOpen size={13} /> Leer Libro Completo
-                            </button>
-
-                            <button
-                              onClick={() => handleDownloadAcademicPdf(book)}
-                              className="py-2.5 px-3 bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/40 font-bold text-[11px] rounded-xl hover:bg-white hover:text-black transition-all flex items-center justify-center gap-1"
-                              title="Descargar archivo PDF directamente al ordenador"
-                            >
-                              <Download size={14} />
-                            </button>
-                          </div>
-
-                          <button
-                            onClick={() => handleDownloadAcademicPdf(book)}
-                            className="w-full py-1.5 bg-emerald-950/60 text-emerald-300 border border-emerald-500/30 font-semibold text-[10px] uppercase tracking-wider rounded-xl hover:bg-emerald-900 transition-all flex items-center justify-center gap-1 cursor-pointer"
-                          >
-                            <Download size={12} /> Descargar Libro PDF (Directo)
-                          </button>
-                        </>
-                      )}
+                    <div className="pt-1">
+                      <button
+                        onClick={() => openReaderModal(book)}
+                        className="w-full py-3 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <BookOpen size={15} /> LEER LIBRO COMPLETO
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -882,6 +840,17 @@ function LibrosContent() {
                   </div>
                 )}
 
+                <a
+                  href={readingBook.enlaces_descarga?.pdf || readingBook.enlaces_descarga?.epub || readingBook.url_fuente || readingBook.url_original || 'https://www.gutenberg.org'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 bg-[#D4AF37]/20 hover:bg-[#D4AF37] hover:text-black text-[#D4AF37] text-xs font-mono font-bold uppercase rounded-xl border border-[#D4AF37]/40 transition-all flex items-center gap-1.5 shrink-0"
+                  title="Abrir página oficial del repositorio para descargar la obra"
+                >
+                  <span>Descargar en Fuente Oficial</span>
+                  <ExternalLink size={13} />
+                </a>
+
                 <button
                   onClick={() => setIsFullscreenReader(!isFullscreenReader)}
                   className="p-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-gray-300 hover:text-white transition-all"
@@ -936,26 +905,17 @@ function LibrosContent() {
                   </p>
                 </div>
 
-                {/* BOTONES DUALES: ADQUIRIR EDICIÓN OFICIAL + DESCARGAR PDF DIRECTO AL DISPOSITIVO */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full pt-2">
+                {/* BOTÓN ÚNICO: IR A LA PÁGINA OFICIAL PARA DESCARGAR */}
+                <div className="flex justify-center w-full pt-2">
                   <a
-                    href={readingBook.url_fuente || 'https://www.amazon.com'}
+                    href={readingBook.enlaces_descarga?.pdf || readingBook.enlaces_descarga?.epub || readingBook.url_fuente || readingBook.url_original || 'https://www.gutenberg.org'}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 py-4 px-6 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-widest rounded-2xl hover:bg-white transition-all shadow-xl flex items-center justify-center gap-2"
+                    className="w-full max-w-md py-4 px-6 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-widest rounded-2xl hover:bg-white transition-all shadow-xl flex items-center justify-center gap-2"
                   >
-                    <span>Adquirir / Leer Edición Oficial</span>
+                    <span>Ir a la Página Oficial para Descargar</span>
                     <ExternalLink size={15} />
                   </a>
-
-                  <button
-                    onClick={() => handleDownloadAcademicPdf(readingBook)}
-                    className="flex-1 py-4 px-6 bg-emerald-950 text-emerald-300 border border-emerald-500/50 font-extrabold text-xs uppercase tracking-widest rounded-2xl hover:bg-emerald-900 transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
-                    title="Descargar archivo PDF directamente al ordenador sin páginas intermedias"
-                  >
-                    <Download size={16} />
-                    <span>Descargar Libro PDF (Directo)</span>
-                  </button>
                 </div>
               </div>
             ) : (
