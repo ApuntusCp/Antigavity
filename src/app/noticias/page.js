@@ -55,6 +55,50 @@ function EventMetricsGrid({ metrics }) {
   );
 }
 
+// COMPONENTE SKELETON DE ALTA FIDELIDAD BOTANICAL GOLD (EVITA CLS Y MOSTRAR "0 COBERTURAS")
+function NewsFeedSkeleton() {
+  return (
+    <div className="space-y-8 animate-pulse pt-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <div 
+          className="lg:col-span-7 rounded-3xl p-6 md:p-8 space-y-4 border-2 border-[#D4AF37]/30 min-h-[380px] flex flex-col justify-between"
+          style={{ backgroundColor: 'rgba(5, 12, 24, 0.35)', backdropFilter: 'blur(22px)' }}
+        >
+          <div className="space-y-3">
+            <div className="h-6 w-36 bg-[#D4AF37]/30 rounded-full"></div>
+            <div className="h-10 w-5/6 bg-white/15 rounded-xl"></div>
+            <div className="h-24 w-full bg-black/40 rounded-2xl border border-white/5"></div>
+          </div>
+          <div className="h-12 w-full bg-gradient-to-r from-[#D4AF37]/40 to-[#AA7C11]/40 rounded-xl"></div>
+        </div>
+
+        <div className="lg:col-span-5 space-y-3.5 flex flex-col justify-between">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="rounded-2xl p-4 border border-[#D4AF37]/20 space-y-3 min-h-[110px] bg-white/5 flex flex-col justify-between">
+              <div className="h-4 w-1/3 bg-[#D4AF37]/30 rounded-md"></div>
+              <div className="h-5 w-full bg-white/10 rounded-md"></div>
+              <div className="h-6 w-full bg-white/10 rounded-lg"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div className="h-6 w-56 bg-[#D4AF37]/30 rounded-lg"></div>
+        <div className="flex gap-4 overflow-hidden pb-2">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="w-72 h-48 rounded-2xl border border-[#D4AF37]/20 bg-white/5 shrink-0 p-4 space-y-3 flex flex-col justify-between">
+              <div className="h-4 w-24 bg-[#D4AF37]/30 rounded-md"></div>
+              <div className="h-10 w-full bg-white/10 rounded-md"></div>
+              <div className="h-8 w-full bg-white/10 rounded-xl"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // COMPONENTE PARA EL DESGLOSE MATEMÁTICO DEL CÁLCULO DE SESGO (TEMA VERDE BOTÁNICO + DORADO LUXURY)
 function MathematicalBiasBreakdown({ formulaBreakdown, biasLevel, isNeutral }) {
   if (!formulaBreakdown) return null;
@@ -510,7 +554,13 @@ function NoticiasContent() {
               }}
             >
               <span className="text-gray-400 text-[10px] uppercase font-bold block">Coberturas En Vivo</span>
-              <strong className="text-white font-extrabold text-sm">{newsData?.count || realtimeArticles.length} Coberturas</strong>
+              <strong className="text-white font-extrabold text-sm">
+                {loadingFeed && realtimeArticles.length === 0 ? (
+                  <span className="text-[#D4AF37] animate-pulse">Sincronizando...</span>
+                ) : (
+                  `${newsData?.count || realtimeArticles.length} Coberturas`
+                )}
+              </strong>
             </div>
 
             <div 
@@ -522,7 +572,13 @@ function NoticiasContent() {
               }}
             >
               <span className="text-gray-400 text-[10px] uppercase font-bold block">Medios Indexados</span>
-              <strong className="text-[#D4AF37] font-extrabold text-sm">{newsData?.activeMediaCount || 5} Medios Activos</strong>
+              <strong className="text-[#D4AF37] font-extrabold text-sm">
+                {loadingFeed && realtimeArticles.length === 0 ? (
+                  <span className="text-[#D4AF37] animate-pulse">Indexando...</span>
+                ) : (
+                  `${newsData?.activeMediaCount || 5} Medios Activos`
+                )}
+              </strong>
             </div>
 
             <div 
@@ -569,13 +625,42 @@ function NoticiasContent() {
             })}
           </nav>
 
-          <div className="pt-2 space-y-5">
-            <div className="flex items-center justify-between border-b border-white/15 pb-2">
-              <h2 className="font-serif text-xl md:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
-                <Flame size={20} className="text-amber-400 fill-amber-400 animate-pulse" /> NOTICIA MÁS VIRAL DEL DÍA & ANÁLISIS DE TITULARES
-              </h2>
-              <span className="text-xs font-mono text-[#D4AF37] font-bold">Fecha: {dateDayMonthYear}</span>
+          {/* ESTADO DE CARGA SKELETON EN LUGAR DE CERO SECO */}
+          {loadingFeed && realtimeArticles.length === 0 ? (
+            <NewsFeedSkeleton />
+          ) : !loadingFeed && realtimeArticles.length === 0 ? (
+            <div className="p-8 rounded-3xl border border-[#D4AF37]/40 bg-[#050C18]/60 backdrop-blur-xl text-center space-y-4 my-6 shadow-2xl">
+              <AlertTriangle size={32} className="text-[#D4AF37] mx-auto animate-bounce" />
+              <h3 className="font-serif text-xl font-bold text-white uppercase">Sincronizando Feed Periodístico en Tiempo Real</h3>
+              <p className="text-xs font-sans text-gray-300 max-w-md mx-auto">
+                No se han recibido despachos para la región seleccionada. Haz clic a continuación para refrescar la mesa de noticias.
+              </p>
+              <button
+                onClick={() => {
+                  setLoadingFeed(true);
+                  fetch('/api/noticias/feed?pais=' + activeCountry)
+                    .then(res => res.json())
+                    .then(data => {
+                      if (data.success) {
+                        setNewsData(data);
+                        setRealtimeArticles(data.articles || []);
+                      }
+                    })
+                    .finally(() => setLoadingFeed(false));
+                }}
+                className="px-6 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-mono font-extrabold text-xs uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-lg"
+              >
+                Reintentar Sincronización
+              </button>
             </div>
+          ) : (
+            <div className="pt-2 space-y-5">
+              <div className="flex items-center justify-between border-b border-white/15 pb-2">
+                <h2 className="font-serif text-xl md:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2">
+                  <Flame size={20} className="text-amber-400 fill-amber-400 animate-pulse" /> NOTICIA MÁS VIRAL DEL DÍA & ANÁLISIS DE TITULARES
+                </h2>
+                <span className="text-xs font-mono text-[#D4AF37] font-bold">Fecha: {dateDayMonthYear}</span>
+              </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               
@@ -872,7 +957,7 @@ function NoticiasContent() {
 
           </div>
 
-        </div>
+        )}
 
         {/* MODAL LECTURA CON TEMA VERDE BOTÁNICO Y DORADO LUXURY (69% TRANSPARENCIA + BLUR) */}
         {selectedArticle && (

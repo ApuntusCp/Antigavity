@@ -1,5 +1,12 @@
 import { NextResponse } from 'next/server';
 
+// IN-MEMORY SERVER CACHE ENGINE FOR HIGH-PERFORMANCE LOW-LATENCY RESPONSES
+let FEED_CACHE = {
+  data: null,
+  timestamp: 0
+};
+const CACHE_TTL_MS = 3 * 60 * 1000; // 3 Minutos
+
 // BASE DE DATOS DE PERIODISTAS Y AUTORES PÚBLICOS VERIFICADOS
 const VERIFIED_JOURNALISTS_DB = {
   "semana.com": [
@@ -109,7 +116,6 @@ function getVerifiedJournalistForArticle(sourceDomain, sourceName, title) {
   };
 }
 
-// RESÚMENES EJECUTIVOS RICOS E INFORMATIVOS
 function buildRichSummaryFromTitle(title, sourceName, category) {
   const t = (title || '').trim();
   const lower = t.toLowerCase();
@@ -130,7 +136,6 @@ function buildRichSummaryFromTitle(title, sourceName, category) {
   return `Despacho noticioso de alto impacto publicado por ${sourceName} en la categoría de ${category || 'Noticias'}. Incluye verificación de premisas informativas y seguimiento hemerográfico a los hechos acontecidos en el territorio.`;
 }
 
-// CÁLCULO MATEMÁTICO CUANTITATIVO DE SESGO
 function calculateExactBiasScore(title, sourceName, mediaDomain) {
   const t = (title || '').trim();
   const lower = t.toLowerCase();
@@ -216,7 +221,6 @@ function calculateExactBiasScore(title, sourceName, mediaDomain) {
   };
 }
 
-// GENERADOR DE DATOS Y MÉTRICAS
 function generateDetailedReportAndMetrics(title, sourceName, category, publishedAt) {
   const t = (title || '').trim();
   const lower = t.toLowerCase();
@@ -539,6 +543,20 @@ function construirFeedDiversificado(articlesList) {
 }
 
 export async function GET(request) {
+  // FASE 4.1 — VERIFICAR Y SERVIR CACHÉ EN MEMORIA PARA TTFB CASI INSTANTÁNEO (< 5ms)
+  const now = Date.now();
+  if (FEED_CACHE.data && (now - FEED_CACHE.timestamp) < CACHE_TTL_MS) {
+    return NextResponse.json({
+      ...FEED_CACHE.data,
+      cached: true,
+      cacheAgeSeconds: Math.round((now - FEED_CACHE.timestamp) / 1000)
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=180, stale-while-revalidate=60'
+      }
+    });
+  }
+
   const rssFeeds = [
     { url: 'https://news.google.com/rss?hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Colombia' },
     { url: 'https://news.google.com/rss/search?q=site:eltiempo.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'El Tiempo' },
@@ -553,10 +571,15 @@ export async function GET(request) {
 
     const feedPromises = rssFeeds.map(async (feed) => {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
+
         const res = await fetch(feed.url, { 
           next: { revalidate: 180 },
+          signal: controller.signal,
           headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } 
         });
+        clearTimeout(timeoutId);
 
         if (!res.ok) return [];
 
@@ -645,7 +668,7 @@ export async function GET(request) {
 
     const activeMediaCount = ALL_INDEXED_MEDIA.filter(m => groupedByMedia[m.domain].hasUpdates).length;
 
-    return NextResponse.json({
+    const responseData = {
       success: true,
       updatedAt: new Date().toISOString(),
       dateFormatted: new Intl.DateTimeFormat('es-CO', {
@@ -659,9 +682,29 @@ export async function GET(request) {
       totalIndexedMedia: ALL_INDEXED_MEDIA.length,
       articles: diversifiedFeed,
       groupedByMedia: groupedByMedia
+    };
+
+    // ALMACENAR EN CACHÉ DE MEMORIA
+    FEED_CACHE = {
+      data: responseData,
+      timestamp: Date.now()
+    };
+
+    return NextResponse.json(responseData, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=180, stale-while-revalidate=60'
+      }
     });
 
   } catch (error) {
+    if (FEED_CACHE.data) {
+      return NextResponse.json({
+        ...FEED_CACHE.data,
+        cached: true,
+        staleFallback: true
+      });
+    }
+
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
