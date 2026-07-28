@@ -502,7 +502,7 @@ function NoticiasContent() {
               }}
             >
               <span className="text-gray-400 text-[10px] uppercase font-bold block">Coberturas En Vivo</span>
-              <strong className="text-white font-extrabold text-sm">{realtimeArticles.length} Medios Indexados</strong>
+              <strong className="text-white font-extrabold text-sm">{newsData?.count || articles.length} Coberturas</strong>
             </div>
 
             <div 
@@ -513,8 +513,8 @@ function NoticiasContent() {
                 WebkitBackdropFilter: 'blur(16px)'
               }}
             >
-              <span className="text-gray-400 text-[10px] uppercase font-bold block">Matriz Ideológica</span>
-              <strong className="text-[#D4AF37] font-extrabold text-sm">5 Espectros Evaluados</strong>
+              <span className="text-gray-400 text-[10px] uppercase font-bold block">Medios Indexados</span>
+              <strong className="text-[#D4AF37] font-extrabold text-sm">{newsData?.activeMediaCount || 5} Medios Activos</strong>
             </div>
 
             <div 
@@ -538,7 +538,7 @@ function NoticiasContent() {
               }}
             >
               <span className="text-gray-400 text-[10px] uppercase font-bold block">Diagnóstico de Integridad</span>
-              <strong className="text-white font-extrabold text-sm">Análisis Activo</strong>
+              <strong className="text-white font-extrabold text-sm">Análisis Diversificado</strong>
             </div>
           </div>
 
@@ -681,66 +681,124 @@ function NoticiasContent() {
 
           <div className="pt-8 border-t border-white/15 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <div className="lg:col-span-8 space-y-6">
+            <div className="lg:col-span-8 space-y-8">
               <div className="border-b border-white/15 pb-2 flex items-center justify-between">
-                <h3 className="font-serif text-xl font-bold text-white uppercase tracking-wider">
-                  MONITOREO MULTIMEDIOS & ANÁLISIS DE INTENCIÓN ({publisherLayoutMode.toUpperCase()})
+                <h3 className="font-serif text-xl font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <Globe size={20} className="text-[#D4AF37]" /> MONITOREO MULTIMEDIOS & ANÁLISIS DE INTENCIÓN (DIARIO)
                 </h3>
-                <span className="text-xs font-mono text-gray-400">{filteredNews.length} Coberturas</span>
+                <span className="text-xs font-mono text-[#D4AF37] font-bold">{filteredNews.length} Coberturas Indexadas</span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {filteredNews.slice(1, visibleNewsCount + 1).map(feedItem => (
-                  <div
-                    key={`feed-grid-${feedItem.id}`}
-                    className="rounded-2xl p-5 shadow-lg transition-all space-y-3 hover:border-[#D4AF37] flex flex-col justify-between border border-[#D4AF37]/30"
-                    style={{
-                      backgroundColor: 'rgba(5, 12, 24, 0.22)',
-                      backdropFilter: 'blur(20px)',
-                      WebkitBackdropFilter: 'blur(20px)'
-                    }}
-                  >
-                    <div className="space-y-2 cursor-pointer" onClick={() => setSelectedArticle(feedItem)}>
-                      <MediaHeaderBadge 
-                        sourceName={feedItem.sourceName}
-                        sourceDomain={feedItem.sourceDomain}
-                        logoUrl={feedItem.sourceLogoUrl}
-                      />
+              {/* FASE 4 — CARRUSELES DEDICADOS POR MEDIO INDEXADO */}
+              {newsData?.groupedByMedia ? (
+                <div className="space-y-8">
+                  {Object.values(newsData.groupedByMedia).map((mediaGroup) => (
+                    <div key={`media-carousel-${mediaGroup.domain}`} className="space-y-3.5">
+                      <div className="flex items-center justify-between border-b border-[#D4AF37]/30 pb-2">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-6 h-6 rounded-md bg-white p-0.5 border border-[#D4AF37]/50 flex items-center justify-center shrink-0 shadow-sm">
+                            <img src={mediaGroup.logo} alt={mediaGroup.name} className="w-full h-full object-contain" />
+                          </div>
+                          <h4 className="font-serif text-base font-bold text-white uppercase tracking-wide">{mediaGroup.name}</h4>
+                          <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/40 font-bold">
+                            {mediaGroup.count} {mediaGroup.count === 1 ? 'Nota' : 'Notas'}
+                          </span>
+                        </div>
 
-                      <h4 className="font-serif text-base font-bold text-white line-clamp-2 hover:text-[#D4AF37] transition-colors leading-snug">
-                        {feedItem.title}
-                      </h4>
-                      
-                      <p className="text-xs font-sans text-gray-300 line-clamp-2 font-light leading-relaxed">
-                        {feedItem.summary}
-                      </p>
+                        <span className="text-[10px] font-mono text-gray-400 uppercase">Carrusel de Editorial</span>
+                      </div>
+
+                      {mediaGroup.hasUpdates ? (
+                        <div className="flex gap-4 overflow-x-auto scrollbar-none pb-2 pt-1">
+                          {mediaGroup.notes.map(noteItem => (
+                            <div
+                              key={`media-note-${noteItem.id}`}
+                              className="w-72 shrink-0 rounded-2xl p-4 shadow-lg transition-all space-y-3 hover:border-[#D4AF37] flex flex-col justify-between border border-[#D4AF37]/30"
+                              style={{
+                                backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                                backdropFilter: 'blur(20px)',
+                                WebkitBackdropFilter: 'blur(20px)'
+                              }}
+                            >
+                              <div className="space-y-2 cursor-pointer" onClick={() => setSelectedArticle(noteItem)}>
+                                <span className="text-[10px] font-mono text-[#D4AF37] block">{noteItem.publishedAt}</span>
+                                <h5 className="font-serif text-sm font-bold text-white line-clamp-2 hover:text-[#D4AF37] transition-colors leading-snug">
+                                  {noteItem.title}
+                                </h5>
+                                <p className="text-xs font-sans text-gray-300 line-clamp-2 font-light leading-relaxed">
+                                  {noteItem.summary}
+                                </p>
+                              </div>
+
+                              <div className="space-y-2 pt-2 border-t border-white/10">
+                                <PoliticalBiasBar biasDirection={noteItem.biasDirection} deviationPercent={noteItem.deviationPercent} biasLabel={noteItem.biasLabel} />
+
+                                <button
+                                  onClick={() => setSelectedBiasComparison(noteItem)}
+                                  className="w-full py-2 px-3 bg-black/70 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-[#D4AF37]/40 flex items-center justify-center gap-1.5 shadow-sm"
+                                >
+                                  <Scale size={13} />
+                                  <span>Abrir Noticia Completa</span>
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-950/20 text-amber-300/80 font-mono text-xs flex items-center gap-2">
+                          <AlertTriangle size={14} className="text-amber-400 shrink-0" />
+                          <span>Sin publicaciones recientes en este ciclo de ingesta para {mediaGroup.name}.</span>
+                        </div>
+                      )}
                     </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {filteredNews.slice(1, visibleNewsCount + 1).map(feedItem => (
+                    <div
+                      key={`feed-grid-${feedItem.id}`}
+                      className="rounded-2xl p-5 shadow-lg transition-all space-y-3 hover:border-[#D4AF37] flex flex-col justify-between border border-[#D4AF37]/30"
+                      style={{
+                        backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)'
+                      }}
+                    >
+                      <div className="space-y-2 cursor-pointer" onClick={() => setSelectedArticle(feedItem)}>
+                        <MediaHeaderBadge 
+                          sourceName={feedItem.sourceName}
+                          sourceDomain={feedItem.sourceDomain}
+                          logoUrl={feedItem.sourceLogoUrl}
+                        />
 
-                    <div className="space-y-2 pt-2">
-                      <PoliticalBiasBar biasDirection={feedItem.biasDirection} deviationPercent={feedItem.deviationPercent} biasLabel={feedItem.biasLabel} />
+                        <h4 className="font-serif text-base font-bold text-white line-clamp-2 hover:text-[#D4AF37] transition-colors leading-snug">
+                          {feedItem.title}
+                        </h4>
+                        
+                        <p className="text-xs font-sans text-gray-300 line-clamp-2 font-light leading-relaxed">
+                          {feedItem.summary}
+                        </p>
+                      </div>
 
-                      <button
-                        onClick={() => setSelectedBiasComparison(feedItem)}
-                        className="w-full py-2 px-3 bg-black/70 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-[#D4AF37]/40 flex items-center justify-center gap-1.5 shadow-sm"
-                      >
-                        <Scale size={13} />
-                        <span>Abrir Noticia Completa + Métricas</span>
-                      </button>
+                      <div className="space-y-2 pt-2">
+                        <PoliticalBiasBar biasDirection={feedItem.biasDirection} deviationPercent={feedItem.deviationPercent} biasLabel={feedItem.biasLabel} />
+
+                        <button
+                          onClick={() => setSelectedBiasComparison(feedItem)}
+                          className="w-full py-2 px-3 bg-black/70 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-black font-mono font-extrabold text-[10px] uppercase tracking-wider rounded-xl transition-all border border-[#D4AF37]/40 flex items-center justify-center gap-1.5 shadow-sm"
+                        >
+                          <Scale size={13} />
+                          <span>Abrir Noticia Completa + Métricas</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="text-center pt-4">
-                <button
-                  onClick={() => setVisibleNewsCount(prev => prev + 6)}
-                  className="px-8 py-3 bg-[#D4AF37] text-black font-mono font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_25px_rgba(212,175,55,0.5)] border border-white/30"
-                >
-                  Cargar Más Coberturas
-                </button>
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
+            {/* FASE 5 — BARRA LATERAL DERECHA (TICKER DIVERSIFICADO EN TIEMPO REAL) */}
             <div 
               className="lg:col-span-4 rounded-3xl p-6 shadow-xl space-y-5 border border-[#D4AF37]/40"
               style={{
@@ -771,15 +829,15 @@ function NoticiasContent() {
               </div>
 
               <div className="space-y-3 font-mono text-xs">
-                {countrySidebarNews.slice(0, 8).map((sideItem, idx) => {
+                {countrySidebarNews.slice(0, 10).map((sideItem, idx) => {
                   const domain = sideItem.sourceDomain || 'prensa.org';
                   return (
                     <div
                       key={`sidebar-${sideItem.id}`}
-                      className="p-3 hover:bg-white/10 rounded-xl transition-colors cursor-pointer border-b border-white/10 space-y-1 group flex items-center gap-3"
+                      className="p-3 hover:bg-white/10 rounded-xl transition-colors cursor-pointer border-b border-white/10 space-y-1 group flex items-start gap-3"
                       onClick={() => setSelectedArticle(sideItem)}
                     >
-                      <div className="w-7 h-7 rounded-lg bg-white p-1 border border-[#D4AF37]/40 shrink-0 flex items-center justify-center">
+                      <div className="w-7 h-7 rounded-lg bg-white p-1 border border-[#D4AF37]/40 shrink-0 flex items-center justify-center mt-0.5">
                         <img 
                           src={`https://icons.duckduckgo.com/ip3/${domain}.ico`}
                           alt={sideItem.sourceName}
@@ -789,12 +847,12 @@ function NoticiasContent() {
                           className="w-full h-full object-contain"
                         />
                       </div>
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0 space-y-1">
                         <div className="flex items-center justify-between text-[10px] text-gray-400">
                           <span className="font-bold text-[#D4AF37]">#{idx + 1} • {sideItem.sourceName}</span>
-                          <span>{sideItem.publishedAt}</span>
+                          <span className="text-[9px]">{sideItem.publishedAt}</span>
                         </div>
-                        <p className="font-serif font-bold text-white leading-snug line-clamp-1 group-hover:text-[#D4AF37]">
+                        <p className="font-serif font-bold text-white text-xs leading-snug line-clamp-2 group-hover:text-[#D4AF37] transition-colors">
                           {sideItem.title}
                         </p>
                       </div>

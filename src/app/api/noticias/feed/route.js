@@ -313,7 +313,6 @@ function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
   const domain = domainKey.toLowerCase();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
 
-  // 1. Si el propio artículo en evaluación pertenece a este medio emisor, es cobertura 100% real confirmada
   if (
     primaryDomain.includes(domain) || 
     domain.includes(primaryDomain) || 
@@ -327,7 +326,6 @@ function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
     };
   }
 
-  // 2. Extraer palabras clave del tema de la noticia evaluada
   const keyEntities = extractKeyEntities(article.title);
 
   if (keyEntities.length === 0) {
@@ -339,14 +337,12 @@ function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
     };
   }
 
-  // 3. Buscar en los artículos indexados de esa editorial si existe uno que contenga AL MENOS UNA PALABRA CLAVE del tema
   const matchedArticle = (allArticles || []).find(item => {
     const itemDomain = resolveDomain(item.sourceName, item.originalUrl);
     const isDomainMatch = itemDomain.includes(domain) || domain.includes(itemDomain) || (item.originalUrl && item.originalUrl.toLowerCase().includes(domain));
     if (!isDomainMatch) return false;
 
     const itemTitleLower = (item.title || '').toLowerCase();
-    // Debe coincidir con alguna de las entidades clave del tema (ej: "juliana", "guerrero", "contratos")
     return keyEntities.some(entity => itemTitleLower.includes(entity));
   });
 
@@ -359,7 +355,6 @@ function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
     };
   }
 
-  // 4. REGLA ESTRICTA SOLICITADA POR EL USUARIO: Si este medio NO tocó el tema, se marca como SIN REGISTRO
   return {
     hasCoverage: false,
     title: "No hay registros de este hecho en esta editorial",
@@ -470,28 +465,91 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
   ];
 }
 
+// ALGORITMO DE RESOLUCIÓN RIGUROSA DE DOMINIOS COLOMBIANOS
 function resolveDomain(sourceName, originalUrl) {
   const name = (sourceName || '').toLowerCase();
   const url = (originalUrl || '').toLowerCase();
 
-  if (url.includes('larepublica.co') || name.includes('republica')) return 'larepublica.co';
-  if (url.includes('semana.com') || name.includes('semana')) return 'semana.com';
-  if (url.includes('latinus.us') || name.includes('latinus')) return 'latinus.us';
   if (url.includes('eltiempo.com') || name.includes('tiempo')) return 'eltiempo.com';
   if (url.includes('elespectador.com') || name.includes('espectador')) return 'elespectador.com';
+  if (url.includes('semana.com') || name.includes('semana')) return 'semana.com';
+  if (url.includes('rtvcnoticias.com') || name.includes('rtvc')) return 'rtvcnoticias.com';
+  if (url.includes('larepublica.co') || name.includes('republica')) return 'larepublica.co';
+  if (url.includes('portafolio.co') || name.includes('portafolio')) return 'portafolio.co';
+  if (url.includes('elcolombiano.com') || name.includes('colombiano')) return 'elcolombiano.com';
   if (url.includes('elheraldo.co') || name.includes('heraldo')) return 'elheraldo.co';
-  if (url.includes('lasillavacia.com') || name.includes('silla')) return 'lasillavacia.com';
+  if (url.includes('bluradio.com') || name.includes('blu')) return 'bluradio.com';
+  if (url.includes('rcnradio.com') || name.includes('rcn')) return 'rcnradio.com';
   if (url.includes('caracol.com.co') || name.includes('caracol')) return 'caracol.com.co';
-  if (url.includes('bbc.com') || name.includes('bbc')) return 'bbc.com';
-  if (url.includes('nytimes.com') || name.includes('york')) return 'nytimes.com';
-  if (url.includes('mundoejecutivo.com.mx') || name.includes('mundo ejecutivo')) return 'mundoejecutivo.com.mx';
   
-  return 'caracol.com.co';
+  // NUNCA MÁS DEFAULT FIX A CARACOL: Si no coincide, extrae el dominio real del URL o del nombre
+  try {
+    if (originalUrl) {
+      const hostname = new URL(originalUrl).hostname.replace('www.', '');
+      if (hostname) return hostname;
+    }
+  } catch (e) {}
+
+  return 'prensa-independiente.co';
+}
+
+// FASE 1.3 — INTERCALADO ANTI-REPETICIÓN (ROUND-ROBIN DE RELEVANCIA)
+function construirFeedDiversificado(articlesList) {
+  if (!articlesList || articlesList.length === 0) return [];
+
+  // 1. Agrupar notas por medio de origen (sourceDomain)
+  const mediaMap = {};
+  
+  articlesList.forEach((article, index) => {
+    const domain = article.sourceDomain || resolveDomain(article.sourceName, article.originalUrl);
+    if (!mediaMap[domain]) {
+      mediaMap[domain] = [];
+    }
+
+    // FASE 1.1: Score de Relevancia (Recencia + CoberturaCruzada + Posición)
+    const recencyHours = (Date.now() - new Date(article.pubDateRaw).getTime()) / (1000 * 60 * 60);
+    const recencyScore = Math.max(0, 1 - (recencyHours / 48)); // 0 a 1
+    const crossCoverageScore = (article.otherCoverages || []).filter(c => c.hasCoverage).length / 5; // 0 a 1
+    const positionScore = Math.max(0, 1 - (index / articlesList.length));
+
+    // Weight formula: 0.45 Recencia + 0.45 CoberturaCruzada + 0.10 Posición
+    const totalScore = (0.45 * recencyScore) + (0.45 * crossCoverageScore) + (0.10 * positionScore);
+    
+    mediaMap[domain].push({
+      ...article,
+      sourceDomain: domain,
+      relevanceScore: totalScore
+    });
+  });
+
+  // Ordenar notas dentro de cada medio por Score descendente
+  Object.keys(mediaMap).forEach(domain => {
+    mediaMap[domain].sort((a, b) => b.relevanceScore - a.relevanceScore);
+  });
+
+  // 2. Intercalado Anti-Repetición Round-Robin
+  const diversifiedFeed = [];
+  const domains = Object.keys(mediaMap);
+  let hasMore = true;
+  let roundIndex = 0;
+
+  while (hasMore) {
+    hasMore = false;
+    // Iterar en ronda por cada medio distinto
+    domains.forEach(domain => {
+      if (mediaMap[domain][roundIndex]) {
+        diversifiedFeed.push(mediaMap[domain][roundIndex]);
+        hasMore = true;
+      }
+    });
+    roundIndex++;
+  }
+
+  return diversifiedFeed;
 }
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const country = searchParams.get('pais') || 'co';
 
   const rssFeeds = [
     { url: 'https://news.google.com/rss?hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Colombia' },
@@ -536,9 +594,9 @@ export async function GET(request) {
     });
 
     uniqueArticles.sort((a, b) => new Date(b.pubDateRaw) - new Date(a.pubDateRaw));
-    const topArticles = uniqueArticles.slice(0, 30);
 
-    const articlesWith5Spectrums = topArticles.map((article, idx) => {
+    // Procesar enriquecimiento y 5 espectros para cada noticia
+    const processedArticles = uniqueArticles.map((article, idx) => {
       const mediaDomain = resolveDomain(article.sourceName, article.originalUrl);
       const authorProfile = getVerifiedJournalistForArticle(mediaDomain, article.sourceName, article.title);
       const spectrumCoverages = generate5SpectrumCoveragesFromCenter(article, uniqueArticles);
@@ -548,7 +606,7 @@ export async function GET(request) {
 
       return {
         ...article,
-        isViral: idx === 0,
+        isViral: false,
         sourceDomain: mediaDomain,
         sourceLogoUrl: `https://icons.duckduckgo.com/ip3/${mediaDomain}.ico`,
         author: authorProfile.name,
@@ -565,6 +623,38 @@ export async function GET(request) {
       };
     });
 
+    // FASE 1.3: CONSTRUIR FEED DIVERSIFICADO MULTI-MEDIO
+    const diversifiedFeed = construirFeedDiversificado(processedArticles);
+
+    // Marcar la noticia #1 del feed diversificado como la noticia más viral
+    if (diversifiedFeed.length > 0) {
+      diversifiedFeed[0].isViral = true;
+    }
+
+    // FASE 2: AGRUPAMIENTO CRUDO POR MEDIO PARA LOS CARRUSELES DEDICADOS
+    const ALL_INDEXED_MEDIA = [
+      { name: "El Tiempo", domain: "eltiempo.com", logo: "https://icons.duckduckgo.com/ip3/eltiempo.com.ico" },
+      { name: "Revista Semana", domain: "semana.com", logo: "https://icons.duckduckgo.com/ip3/semana.com.ico" },
+      { name: "El Espectador", domain: "elespectador.com", logo: "https://icons.duckduckgo.com/ip3/elespectador.com.ico" },
+      { name: "Caracol Radio", domain: "caracol.com.co", logo: "https://icons.duckduckgo.com/ip3/caracol.com.co.ico" },
+      { name: "RTVC Noticias", domain: "rtvcnoticias.com", logo: "https://icons.duckduckgo.com/ip3/rtvcnoticias.com.ico" }
+    ];
+
+    const groupedByMedia = {};
+    ALL_INDEXED_MEDIA.forEach(media => {
+      const mediaNotes = processedArticles.filter(item => item.sourceDomain === media.domain);
+      groupedByMedia[media.domain] = {
+        name: media.name,
+        domain: media.domain,
+        logo: media.logo,
+        count: mediaNotes.length,
+        hasUpdates: mediaNotes.length > 0,
+        notes: mediaNotes
+      };
+    });
+
+    const activeMediaCount = ALL_INDEXED_MEDIA.filter(m => groupedByMedia[m.domain].hasUpdates).length;
+
     return NextResponse.json({
       success: true,
       updatedAt: new Date().toISOString(),
@@ -574,8 +664,11 @@ export async function GET(request) {
         month: 'long',
         day: 'numeric'
       }).format(new Date()),
-      count: articlesWith5Spectrums.length,
-      articles: articlesWith5Spectrums
+      count: diversifiedFeed.length,
+      activeMediaCount: activeMediaCount,
+      totalIndexedMedia: ALL_INDEXED_MEDIA.length,
+      articles: diversifiedFeed,
+      groupedByMedia: groupedByMedia
     });
 
   } catch (error) {
