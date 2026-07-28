@@ -5,12 +5,12 @@ import { ShieldCheck, Globe, ExternalLink, FileText, BookOpen, Award } from 'luc
 
 export default function AcademicTrustBadge() {
   return (
-    <div className="w-full bg-[#0A1424]/90 border border-[#00F0FF]/35 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-[0_0_50px_rgba(0,240,255,0.15)] my-10 space-y-6">
+    <div className="w-full bg-[#051208]/85 border border-[#D4AF37]/40 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl my-10 space-y-6">
       
       {/* Top Banner — Open Access & Global Indexing */}
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 border-b border-[#00F0FF]/20 pb-6">
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 border-b border-white/10 pb-6">
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-[#00F0FF]/15 flex items-center justify-center text-[#00F0FF] border border-[#00F0FF]/40 shadow-inner">
+          <div className="w-11 h-11 rounded-2xl bg-[#D4AF37]/15 flex items-center justify-center text-[#D4AF37] border border-[#D4AF37]/40 shadow-inner">
             <Globe size={22} />
           </div>
           <div>
@@ -25,7 +25,7 @@ export default function AcademicTrustBadge() {
 
         {/* Academic Source Badges */}
         <div className="flex flex-wrap items-center gap-2 justify-center font-mono text-[10px] font-bold">
-          <span className="px-3 py-1.5 bg-[#00F0FF]/10 text-[#00F0FF] rounded-xl border border-[#00F0FF]/30">
+          <span className="px-3 py-1.5 bg-[#D4AF37]/15 text-[#D4AF37] rounded-xl border border-[#D4AF37]/35">
             OpenAlex Catalog
           </span>
           <span className="px-3 py-1.5 bg-white/10 text-white rounded-xl border border-white/20">
@@ -34,7 +34,7 @@ export default function AcademicTrustBadge() {
           <span className="px-3 py-1.5 bg-white/10 text-white rounded-xl border border-white/20">
             arXiv Repository
           </span>
-          <span className="px-3 py-1.5 bg-[#00F0FF]/10 text-[#00F0FF] rounded-xl border border-[#00F0FF]/30">
+          <span className="px-3 py-1.5 bg-[#D4AF37]/15 text-[#D4AF37] rounded-xl border border-[#D4AF37]/35">
             SciELO & Redalyc
           </span>
         </div>
@@ -42,8 +42,8 @@ export default function AcademicTrustBadge() {
 
       {/* 3 Academic Trust Columns */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-        <div className="flex items-start gap-3 p-3 bg-black/40 rounded-2xl border border-white/5">
-          <ShieldCheck className="text-[#00F0FF] shrink-0 mt-0.5" size={22} />
+        <div className="flex items-start gap-3 p-3.5 bg-black/40 rounded-2xl border border-white/10">
+          <ShieldCheck className="text-[#D4AF37] shrink-0 mt-0.5" size={22} />
           <div className="space-y-0.5">
             <h5 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
               Fuentes Científicas Acreditadas
@@ -54,8 +54,8 @@ export default function AcademicTrustBadge() {
           </div>
         </div>
 
-        <div className="flex items-start gap-3 p-3 bg-black/40 rounded-2xl border border-white/5">
-          <ExternalLink className="text-[#00F0FF] shrink-0 mt-0.5" size={22} />
+        <div className="flex items-start gap-3 p-3.5 bg-black/40 rounded-2xl border border-white/10">
+          <ExternalLink className="text-[#D4AF37] shrink-0 mt-0.5" size={22} />
           <div className="space-y-0.5">
             <h5 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
               Derechos de Autor Respetados
@@ -66,8 +66,8 @@ export default function AcademicTrustBadge() {
           </div>
         </div>
 
-        <div className="flex items-start gap-3 p-3 bg-black/40 rounded-2xl border border-white/5">
-          <FileText className="text-[#00F0FF] shrink-0 mt-0.5" size={22} />
+        <div className="flex items-start gap-3 p-3.5 bg-black/40 rounded-2xl border border-white/10">
+          <FileText className="text-[#D4AF37] shrink-0 mt-0.5" size={22} />
           <div className="space-y-0.5">
             <h5 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
               Motor de Citación APA 7 & ICONTEC
