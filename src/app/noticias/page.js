@@ -510,7 +510,7 @@ function NoticiasContent() {
               }}
             >
               <span className="text-gray-400 text-[10px] uppercase font-bold block">Coberturas En Vivo</span>
-              <strong className="text-white font-extrabold text-sm">{newsData?.count || articles.length} Coberturas</strong>
+              <strong className="text-white font-extrabold text-sm">{newsData?.count || realtimeArticles.length} Coberturas</strong>
             </div>
 
             <div 
