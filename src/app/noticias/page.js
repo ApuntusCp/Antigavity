@@ -62,7 +62,7 @@ function NewsFeedSkeleton() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         <div 
           className="lg:col-span-7 rounded-3xl p-6 md:p-8 space-y-4 border-2 border-[#D4AF37]/30 min-h-[380px] flex flex-col justify-between"
-          style={{ backgroundColor: 'rgba(5, 12, 24, 0.35)', backdropFilter: 'blur(22px)' }}
+          style={{ backgroundColor: 'rgba(7, 20, 10, 0.55)', backdropFilter: 'blur(22px)' }}
         >
           <div className="space-y-3">
             <div className="h-6 w-36 bg-[#D4AF37]/30 rounded-full"></div>
@@ -479,7 +479,8 @@ function NoticiasContent() {
         <div 
           className="rounded-3xl p-6 md:p-10 relative overflow-hidden space-y-6 border-2 border-[#D4AF37]/50 shadow-[0_20px_80px_rgba(0,0,0,0.95)]"
           style={{
-            backgroundColor: 'rgba(5, 12, 24, 0.22)',
+            backgroundColor: 'rgba(7, 20, 10, 0.55)',
+            backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.22) 0%, transparent 70%), radial-gradient(circle at 50% 100%, rgba(35, 75, 20, 0.4) 0%, transparent 70%)',
             backdropFilter: 'blur(22px)',
             WebkitBackdropFilter: 'blur(22px)'
           }}
@@ -630,7 +631,7 @@ function NoticiasContent() {
           {loadingFeed && realtimeArticles.length === 0 ? (
             <NewsFeedSkeleton />
           ) : !loadingFeed && realtimeArticles.length === 0 ? (
-            <div className="p-8 rounded-3xl border border-[#D4AF37]/40 bg-[#050C18]/60 backdrop-blur-xl text-center space-y-4 my-6 shadow-2xl">
+            <div className="p-8 rounded-3xl border border-[#D4AF37]/40 bg-[#051208]/80 backdrop-blur-xl text-center space-y-4 my-6 shadow-2xl">
               <AlertTriangle size={32} className="text-[#D4AF37] mx-auto animate-bounce" />
               <h3 className="font-serif text-xl font-bold text-white uppercase">Sincronizando Feed Periodístico en Tiempo Real</h3>
               <p className="text-xs font-sans text-gray-300 max-w-md mx-auto">
@@ -670,7 +671,8 @@ function NoticiasContent() {
                 <div 
                   className="lg:col-span-7 rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-500 space-y-4 hover:border-[#D4AF37] flex flex-col justify-between border-2 border-[#D4AF37]/60"
                   style={{
-                    backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                    backgroundColor: 'rgba(7, 20, 10, 0.55)',
+                    backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.18) 0%, transparent 70%)',
                     backdropFilter: 'blur(22px)',
                     WebkitBackdropFilter: 'blur(22px)'
                   }}
@@ -732,7 +734,7 @@ function NoticiasContent() {
                     key={secItem.id}
                     className="rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all space-y-2 hover:border-[#D4AF37] border border-[#D4AF37]/30"
                     style={{
-                      backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                      backgroundColor: 'rgba(7, 20, 10, 0.55)',
                       backdropFilter: 'blur(20px)',
                       WebkitBackdropFilter: 'blur(20px)'
                     }}
@@ -810,7 +812,7 @@ function NoticiasContent() {
                               key={`media-note-${noteItem.id}`}
                               className="w-72 shrink-0 rounded-2xl p-4 shadow-lg transition-all space-y-3 hover:border-[#D4AF37] flex flex-col justify-between border border-[#D4AF37]/30"
                               style={{
-                                backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                                backgroundColor: 'rgba(7, 20, 10, 0.55)',
                                 backdropFilter: 'blur(20px)',
                                 WebkitBackdropFilter: 'blur(20px)'
                               }}
@@ -855,7 +857,7 @@ function NoticiasContent() {
                       key={`feed-grid-${feedItem.id}`}
                       className="rounded-2xl p-5 shadow-lg transition-all space-y-3 hover:border-[#D4AF37] flex flex-col justify-between border border-[#D4AF37]/30"
                       style={{
-                        backgroundColor: 'rgba(5, 12, 24, 0.22)',
+                        backgroundColor: 'rgba(7, 20, 10, 0.55)',
                         backdropFilter: 'blur(20px)',
                         WebkitBackdropFilter: 'blur(20px)'
                       }}
@@ -896,32 +898,32 @@ function NoticiasContent() {
             {/* FASE 5 — BARRA LATERAL DERECHA (TICKER DIVERSIFICADO EN TIEMPO REAL) */}
             <div 
               className="lg:col-span-4 rounded-3xl p-6 shadow-xl space-y-5 border border-[#D4AF37]/40"
-              style={{
-                backgroundColor: 'rgba(5, 12, 24, 0.22)',
-                backdropFilter: 'blur(22px)',
-                WebkitBackdropFilter: 'blur(22px)'
-              }}
-            >
-              <div className="space-y-1.5 border-b border-white/15 pb-4">
-                <span className="text-[10px] font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider block">
-                  FILTRO PAÍS SELECCIONADO
-                </span>
-                <div className="flex items-center justify-between">
-                  <h3 className="font-serif text-xl font-bold text-white uppercase">
-                    MEDIOS DE {countries.find(c => c.id === activeCountry)?.name || 'COLOMBIA'}
-                  </h3>
-                  
-                  <select
-                    value={activeCountry}
-                    onChange={(e) => handleCountryChange(e.target.value)}
-                    className="bg-black/70 text-[#D4AF37] text-xs font-mono font-bold py-1.5 px-3 rounded-xl border border-[#D4AF37]/50 focus:outline-none shadow-sm"
-                  >
-                    {countries.map(c => (
-                      <option key={c.id} value={c.id} className="bg-[#07101E] text-white">{c.name}</option>
-                    ))}
-                  </select>
+                style={{
+                  backgroundColor: 'rgba(7, 20, 10, 0.55)',
+                  backdropFilter: 'blur(22px)',
+                  WebkitBackdropFilter: 'blur(22px)'
+                }}
+              >
+                <div className="space-y-1.5 border-b border-white/15 pb-4">
+                  <span className="text-[10px] font-mono text-[#D4AF37] font-extrabold uppercase tracking-wider block">
+                    FILTRO PAÍS SELECCIONADO
+                  </span>
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-serif text-xl font-bold text-white uppercase">
+                      MEDIOS DE {countries.find(c => c.id === activeCountry)?.name || 'COLOMBIA'}
+                    </h3>
+                    
+                    <select
+                      value={activeCountry}
+                      onChange={(e) => handleCountryChange(e.target.value)}
+                      className="bg-black/70 text-[#D4AF37] text-xs font-mono font-bold py-1.5 px-3 rounded-xl border border-[#D4AF37]/50 focus:outline-none shadow-sm"
+                    >
+                      {countries.map(c => (
+                        <option key={c.id} value={c.id} className="bg-[#051208] text-white">{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              </div>
 
               <div className="space-y-3 font-mono text-xs">
                 {countrySidebarNews.slice(0, 10).map((sideItem, idx) => {
