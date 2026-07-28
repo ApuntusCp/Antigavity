@@ -7,13 +7,15 @@ import { Playfair_Display, Inter } from 'next/font/google';
 import BlueprintSVG from '@/components/BlueprintSVG';
 import { db } from '@/utils/firebase';
 import { doc, onSnapshot, collection } from 'firebase/firestore';
-import { Compass, Sparkles, Building2, Trees, Ruler, ArrowUpRight, Phone, Mail, Award, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Compass, Sparkles, Building2, Trees, Ruler, ArrowUpRight, Phone, Mail, Award, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react';
 
 const playfair = Playfair_Display({ subsets: ['latin'] });
 const inter = Inter({ subsets: ['latin'] });
 
 export default function GCAClient() {
-  // Real-time Firestore states - NO generic stock images initial state!
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Real-time Firestore states - NO generic/dummy hardcoded fallbacks!
   const [branding, setBranding] = useState({
     showHero: true,
     showStats: true,
@@ -33,7 +35,10 @@ export default function GCAClient() {
     ceoImageUrl: '',
     statProjects: '45+',
     statMeters: '120.000m²',
-    statExperience: '8+ Años'
+    statExperience: '8+ Años',
+    servicesTitle: 'Nuestros Servicios de Firma',
+    servicesSubtitle: 'Ejecutados con estándares de precisión internacional y atención personalizada en cada fase.',
+    services: [] // Default empty array, NO hardcoded sample cards!
   });
 
   const [contact, setContact] = useState({
@@ -48,15 +53,19 @@ export default function GCAClient() {
 
   // Set up real-time Firebase subscriptions
   useEffect(() => {
-    // 1. Subscribe to Branding/CEO settings
+    // 1. Subscribe to Branding/CEO/Services settings
     const unsubBranding = onSnapshot(
       doc(db, 'settings', 'gca_branding'),
       (snapshot) => {
         if (snapshot.exists()) {
           setBranding(prev => ({ ...prev, ...snapshot.data() }));
         }
+        setIsLoaded(true);
       },
-      (err) => console.log("Branding snapshot sub:", err)
+      (err) => {
+        console.log("Branding snapshot sub:", err);
+        setIsLoaded(true);
+      }
     );
 
     // 2. Subscribe to Contact settings
@@ -99,8 +108,26 @@ export default function GCAClient() {
   const cleanPhone = contact.phone ? contact.phone.replace(/[^0-9]/g, '') : '573027697935';
   const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(contact.whatsappMessage || 'Hola Gran Colina Arquitectos')}`;
 
+  // While loading initial real-time data from Firestore, show a sleek luxury black loading screen with animated gold compass
+  if (!isLoaded) {
+    return (
+      <main className="min-h-screen bg-[#040806] flex flex-col items-center justify-center text-[#D4AF37] space-y-6">
+        <div className="relative flex items-center justify-center">
+          <Compass size={56} className="animate-spin text-[#D4AF37]" style={{ animationDuration: '8s' }} />
+          <div className="absolute inset-0 rounded-full border border-[#D4AF37]/30 animate-ping opacity-25" />
+        </div>
+        <div className="text-center space-y-2">
+          <h2 className={`${playfair.className} text-xl font-bold tracking-[0.3em] uppercase text-[#FFF5D0]`}>
+            Gran Colina Arquitectos
+          </h2>
+          <p className="text-xs text-gray-400 font-mono tracking-widest uppercase">Cargando Estudio Directivo...</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-[#040806] text-[#E2E8F0] selection:bg-[#D4AF37] selection:text-black overflow-hidden">
+    <main className="min-h-screen bg-[#040806] text-[#E2E8F0] selection:bg-[#D4AF37] selection:text-black overflow-hidden animate-fadeIn">
 
       {/* HERO CINEMATOGRÁFICO CON BLUEPRINT ANIMADO */}
       {branding.showHero !== false && (
@@ -293,40 +320,42 @@ export default function GCAClient() {
               )}
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
-              {(branding.services || [
-                { id: 's1', title: 'Diseño de Interiores', desc: 'Atmósferas donde la iluminación arquitectónica, los materiales nobles y la integración botánica crean espacios habitables de máximo confort.', icon: 'Sparkles' },
-                { id: 's2', title: 'Arquitectura Paisajística', desc: 'Diseño de entornos exteriores vivos. Conectamos estructuras construidas con jardines botánicos privados, agua y topografía natural.', icon: 'Trees' },
-                { id: 's3', title: 'Construcción a Gran Escala', desc: 'Desarrollo integral de proyectos comerciales, industriales y residenciales. Gestión técnica de obra asegurando rigor estructural y acabados de lujo.', icon: 'Building2' }
-              ]).map((service, i) => {
-                const getIcon = (iconName) => {
-                  switch (iconName) {
-                    case 'Sparkles': return <Sparkles size={28} />;
-                    case 'Trees': return <Trees size={28} />;
-                    case 'Building2': return <Building2 size={28} />;
-                    case 'Compass': return <Compass size={28} />;
-                    case 'Wrench': return <Ruler size={28} />;
-                    default: return <Sparkles size={28} />;
-                  }
-                };
+            {branding.services && branding.services.length > 0 ? (
+              <div className="grid md:grid-cols-3 gap-8">
+                {branding.services.map((service, i) => {
+                  const getIcon = (iconName) => {
+                    switch (iconName) {
+                      case 'Sparkles': return <Sparkles size={28} />;
+                      case 'Trees': return <Trees size={28} />;
+                      case 'Building2': return <Building2 size={28} />;
+                      case 'Compass': return <Compass size={28} />;
+                      case 'Wrench': return <Ruler size={28} />;
+                      default: return <Sparkles size={28} />;
+                    }
+                  };
 
-                return (
-                  <div key={service.id || i} className="bg-[#040806] p-8 border border-[#D4AF37]/20 hover:border-[#D4AF37] transition-all duration-500 rounded-sm group relative overflow-hidden flex flex-col justify-between">
-                    <div>
-                      <div className="w-14 h-14 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] mb-8 group-hover:scale-110 transition-transform">
-                        {getIcon(service.icon)}
+                  return (
+                    <div key={service.id || i} className="bg-[#040806] p-8 border border-[#D4AF37]/20 hover:border-[#D4AF37] transition-all duration-500 rounded-sm group relative overflow-hidden flex flex-col justify-between">
+                      <div>
+                        <div className="w-14 h-14 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] mb-8 group-hover:scale-110 transition-transform">
+                          {getIcon(service.icon)}
+                        </div>
+                        <h3 className={`${playfair.className} text-2xl text-white font-bold mb-4 group-hover:text-[#D4AF37] transition-colors`}>
+                          {service.title}
+                        </h3>
+                        <p className="text-gray-400 font-light text-sm leading-relaxed">
+                          {service.desc}
+                        </p>
                       </div>
-                      <h3 className={`${playfair.className} text-2xl text-white font-bold mb-4 group-hover:text-[#D4AF37] transition-colors`}>
-                        {service.title}
-                      </h3>
-                      <p className="text-gray-400 font-light text-sm leading-relaxed">
-                        {service.desc}
-                      </p>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12 p-8 border border-white/5 rounded-2xl bg-[#060B08]">
+                <p className="text-gray-400 text-sm">Configura tus servicios desde GC Admin para verlos aquí.</p>
+              </div>
+            )}
 
           </div>
         </section>
