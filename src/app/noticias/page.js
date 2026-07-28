@@ -624,8 +624,9 @@ function NoticiasContent() {
               );
             })}
           </nav>
+        </div>
 
-          {/* ESTADO DE CARGA SKELETON EN LUGAR DE CERO SECO */}
+        {/* ESTADO DE CARGA SKELETON EN LUGAR DE CERO SECO */}
           {loadingFeed && realtimeArticles.length === 0 ? (
             <NewsFeedSkeleton />
           ) : !loadingFeed && realtimeArticles.length === 0 ? (
