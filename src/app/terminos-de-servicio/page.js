@@ -8,7 +8,7 @@ export default function TermsPage() {
     <div className="min-h-screen bg-brand-light dark:bg-brand-dark pt-32 pb-24 px-6">
       <div className="max-w-3xl mx-auto prose dark:prose-invert prose-brand">
         <h1 className="font-playfair text-4xl mb-8">Términos de Servicio</h1>
-        <p className="text-sm text-gray-500 mb-8">Última actualización: {new Date().toLocaleDateString('es-CO')}</p>
+        <p className="text-sm text-gray-500 mb-8" suppressHydrationWarning>Última actualización: {new Date().toLocaleDateString('es-CO')}</p>
         
         <h2 className="text-xl font-bold mt-8 mb-4">1. Aceptación de los Términos</h2>
         <p className="mb-4">

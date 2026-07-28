@@ -45,12 +45,19 @@ export default function InformacionPage() {
     setPqrTicketId(ticketId);
 
     try {
-      await fetch('/api/informacion/pqr', {
+      const res = await fetch('/api/informacion/pqr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...pqrForm, ticketId })
       });
-    } catch (e) {}
+      if (!res.ok) {
+        throw new Error(`API respondió con status ${res.status}`);
+      }
+    } catch (e) {
+      console.error('[PQR] Error enviando solicitud:', e);
+      showToast('Hubo un error al enviar tu solicitud. Por favor intenta de nuevo o contáctanos directamente.');
+      return; // No marcar como enviado si la API falló
+    }
 
     setPqrSent(true);
     showToast(`PQR enviada con éxito. Número de Radicado: ${ticketId}. Plazo legal de respuesta: máximo 15 días hábiles.`);

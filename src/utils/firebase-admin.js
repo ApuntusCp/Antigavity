@@ -10,15 +10,36 @@ if (!getApps().length) {
         credential: cert(serviceAccount)
       });
     } else {
-      // Fallback: This works perfectly if the local gcloud is authenticated
-      // or if deployed on Vercel/GCP with GOOGLE_APPLICATION_CREDENTIALS
+      // Fallback: funciona si gcloud local está autenticado
+      // o si está desplegado en Vercel/GCP con GOOGLE_APPLICATION_CREDENTIALS
       initializeApp({
-        projectId: "aponte-sas",
+        projectId: process.env.FIREBASE_PROJECT_ID || "aponte-sas",
       });
     }
   } catch (error) {
-    console.error('Firebase admin initialization error', error.stack);
+    console.error('[firebase-admin] Error de inicialización:', error.stack);
   }
 }
 
-export const adminDb = getFirestore();
+// ── Lazy getter para Firestore Admin ────────────────────────────────────────
+// getFirestore() ahora está dentro de una función para evitar que un error de
+// inicialización crashee el módulo completo al importarlo.
+let _adminDb = null;
+function getAdminDb() {
+  if (!_adminDb) {
+    try {
+      _adminDb = getFirestore();
+    } catch (error) {
+      console.error('[firebase-admin] No se pudo obtener Firestore:', error.message);
+      throw error;
+    }
+  }
+  return _adminDb;
+}
+
+// Exportar como proxy para mantener compatibilidad con el código existente
+export const adminDb = new Proxy({}, {
+  get(_, prop) {
+    return getAdminDb()[prop];
+  }
+});

@@ -421,9 +421,13 @@ export default function CheckoutPage() {
                   <span className="text-gray-500">Subtotal</span>
                   <span className="font-mono">{new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(cartTotal)}</span>
                 </div>
-                {discount > 0 && (
+                {discount.value > 0 && (
                   <div className="flex justify-between text-sm text-brand-gold">
-                    <span>Descuento ({discount * 100}%)</span>
+                    <span>
+                      {discount.type === 'PERCENTAGE'
+                        ? `Descuento (${discount.value}%)`
+                        : 'Descuento aplicado'}
+                    </span>
                     <span className="font-mono">- {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(discountAmount)}</span>
                   </div>
                 )}

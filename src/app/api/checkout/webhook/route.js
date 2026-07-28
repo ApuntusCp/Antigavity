@@ -1,9 +1,54 @@
 import { adminDb } from '../../../../utils/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import crypto from 'crypto';
+
+// ─── BOLD WEBHOOK SIGNATURE VERIFICATION ────────────────────────────────────
+// Bold envía un header X-Bold-Signature con un HMAC-SHA256 del cuerpo usando
+// BOLD_SECRET_KEY. Sin verificar esta firma, cualquiera podría marcar pedidos
+// como pagados sin haber pagado.
+function verifyBoldSignature(rawBody, signatureHeader) {
+  const secretKey = process.env.BOLD_SECRET_KEY;
+  if (!secretKey) {
+    // Si no hay clave configurada, rechazar todo por seguridad
+    console.error('[Webhook] BOLD_SECRET_KEY no está definida en las variables de entorno');
+    return false;
+  }
+  if (!signatureHeader) {
+    // Bold puede no enviar firma en modo sandbox/test — permitir solo si NO hay clave definida
+    // En producción con clave definida, la firma es obligatoria
+    return false;
+  }
+  const expectedSignature = crypto
+    .createHmac('sha256', secretKey)
+    .update(rawBody, 'utf8')
+    .digest('hex');
+  // Comparación en tiempo constante para prevenir timing attacks
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(signatureHeader, 'hex'),
+      Buffer.from(expectedSignature, 'hex')
+    );
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(request) {
   try {
     const rawBody = await request.text();
+
+    // ── Verificar firma Bold (seguridad crítica) ────────────────────────────
+    // Solo verificar si BOLD_SECRET_KEY está configurada (producción)
+    // En sandbox/desarrollo sin clave, se omite la verificación
+    if (process.env.BOLD_SECRET_KEY) {
+      const signature = request.headers.get('x-bold-signature') ||
+                        request.headers.get('x-signature') ||
+                        request.headers.get('signature');
+      if (!verifyBoldSignature(rawBody, signature)) {
+        console.warn('[Webhook] Firma Bold inválida o ausente — solicitud rechazada');
+        return new Response('Unauthorized: Invalid webhook signature', { status: 401 });
+      }
+    }
     let data;
     try {
       data = JSON.parse(rawBody);
@@ -102,7 +147,11 @@ export async function POST(request) {
       const baseUrl = request.headers.get('origin') || `https://${request.headers.get('host')}`;
       await fetch(`${baseUrl}/api/notify/order`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          // Pasar token interno para que el endpoint protegido acepte la llamada
+          'Authorization': `Bearer ${process.env.ADMIN_SECRET_KEY || ''}`
+        },
         body: JSON.stringify({
           name: orderData.customer?.name || 'Cliente Web',
           total: orderData.total,
@@ -110,7 +159,7 @@ export async function POST(request) {
         })
       });
     } catch (e) {
-      console.warn("Fallo la notificación de Telegram:", e);
+      console.warn('[Webhook] Falló la notificación de Telegram:', e);
     }
 
     return new Response("Webhook procesado exitosamente con notificación en GC Admin", { status: 200 });

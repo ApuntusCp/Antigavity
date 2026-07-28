@@ -26,28 +26,36 @@ export function AuthProvider({ children }) {
           setLoading(false);
         });
       } else if (currentUser) {
-        // Fetch custom user profile from Firestore
-        const userDocRef = doc(db, 'clients', currentUser.uid);
-        let userDocSnap = await getDoc(userDocRef);
-        
-        let customData = {};
-        if (userDocSnap.exists()) {
-          customData = userDocSnap.data();
-        } else {
-          // Si no existe, inicializar con rangos básicos de Gamificación
-          customData = {
-            email: currentUser.email,
-            ecoPoints: 0,
-            vipLevel: 'Bronce',
-            createdAt: new Date().toISOString()
-          };
-          await setDoc(userDocRef, customData);
-        }
+        // ── try-catch-finally garantiza que setLoading(false) siempre se ejecute
+        // Antes: si Firestore fallaba, la app quedaba congelada en loading para siempre
+        try {
+          const userDocRef = doc(db, 'clients', currentUser.uid);
+          const userDocSnap = await getDoc(userDocRef);
 
-        // Attach custom data to currentUser object for the app to consume
-        currentUser.customProfile = customData;
-        setUser(currentUser);
-        setLoading(false);
+          let customData = {};
+          if (userDocSnap.exists()) {
+            customData = userDocSnap.data();
+          } else {
+            // Si no existe, inicializar con rangos básicos de Gamificación
+            customData = {
+              email: currentUser.email,
+              ecoPoints: 0,
+              vipLevel: 'Bronce',
+              createdAt: new Date().toISOString()
+            };
+            await setDoc(userDocRef, customData);
+          }
+
+          // Attach custom data to currentUser object for the app to consume
+          currentUser.customProfile = customData;
+          setUser(currentUser);
+        } catch (error) {
+          console.error('[AuthProvider] Error al cargar perfil de usuario:', error);
+          // Aun así asignamos el usuario base para que la app no quede bloqueada
+          setUser(currentUser);
+        } finally {
+          setLoading(false);
+        }
       } else {
         setUser(null);
         setLoading(false);

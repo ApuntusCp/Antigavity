@@ -1,15 +1,28 @@
 import { NextResponse } from 'next/server';
+import { adminDb } from '../../../../utils/firebase-admin';
 
 export async function POST(request) {
   try {
     const body = await request.json();
     const { tipo, nombre, email, telefono, numeroOrden, mensaje, ticketId } = body;
 
-    console.log(`[PQR Radicada en Sistema] Ticket ${ticketId}:`, {
-      tipo,
+    // Validar campos obligatorios
+    if (!nombre || !email || !mensaje) {
+      return NextResponse.json({ success: false, error: 'Faltan campos obligatorios' }, { status: 400 });
+    }
+
+    // ── Guardar en Firestore (antes solo se logueaba, datos se perdían) ──────
+    // Sin esto, los clientes recibían un "éxito" falso y sus solicitudes se perdían
+    await adminDb.collection('pqrs').add({
+      ticketId: ticketId || `PQR-${Date.now()}`,
+      tipo: tipo || 'Petición',
       nombre,
       email,
-      fechaRadicado: new Date().toISOString(),
+      telefono: telefono || '',
+      numeroOrden: numeroOrden || '',
+      mensaje,
+      estado: 'pendiente',
+      fechaRadicado: new Date(),
       plazoMaximoRespuesta: '15 días hábiles (Ley 1755 de 2015)'
     });
 
@@ -21,7 +34,7 @@ export async function POST(request) {
     });
 
   } catch (error) {
-    console.error("Error al procesar PQR:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error('[PQR] Error al procesar:', error);
+    return NextResponse.json({ success: false, error: 'Error interno al procesar la solicitud' }, { status: 500 });
   }
 }

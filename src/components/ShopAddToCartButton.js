@@ -1,31 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useCart } from './CartContext';
 import { ShoppingCart, Check } from 'lucide-react';
-import toast from 'react-hot-toast';
 
 export default function ShopAddToCartButton({ product }) {
-  const { addToCart, setIsCartOpen } = useCart();
+  const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
+  const timerRef = useRef(null);
+
+  // Limpiar timeout si el componente se desmonta (memory leak fix)
+  useEffect(() => {
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, []);
 
   const handleAdd = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    // addToCart() ya muestra el toast internamente en CartContext
+    // No duplicar el toast aquí
     addToCart(product, 1);
     setAdded(true);
-    toast.success(`${product.name || product.title} añadido al carrito`, {
-      style: {
-        background: '#0A1408',
-        color: '#D4AF37',
-        border: '1px solid rgba(212, 175, 55, 0.4)',
-      },
-      iconTheme: {
-        primary: '#D4AF37',
-        secondary: '#0A1408',
-      },
-    });
-    setTimeout(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
       setAdded(false);
     }, 1800);
   };
@@ -33,6 +30,7 @@ export default function ShopAddToCartButton({ product }) {
   return (
     <button
       onClick={handleAdd}
+      aria-label={`Añadir ${product.name || product.title || 'producto'} al carrito`}
       className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 ${
         added
           ? 'bg-green-600 text-white shadow-[0_0_15px_rgba(76,175,80,0.5)]'
@@ -51,3 +49,4 @@ export default function ShopAddToCartButton({ product }) {
     </button>
   );
 }
+

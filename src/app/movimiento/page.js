@@ -1,6 +1,4 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Leaf, Cpu, Sun, Sprout, ShieldCheck, TrendingUp, Sparkles } from "lucide-react";
+import { Leaf, Cpu, Sun, ShieldCheck, TrendingUp, Sparkles } from "lucide-react";
 import { fetchCMSPage } from "../../utils/firebase";
 import JoinMovementButton from "../../components/JoinMovementButton";
 
@@ -12,7 +10,13 @@ export const metadata = {
 };
 
 export default async function MovimientoPage() {
-  const cmsConfig = await fetchCMSPage('movimiento');
+  // ── try-catch: si Firebase falla, la página carga con contenido por defecto
+  let cmsConfig = null;
+  try {
+    cmsConfig = await fetchCMSPage('movimiento');
+  } catch (error) {
+    console.error('[Movimiento] Error cargando CMS:', error);
+  }
   const blocks = cmsConfig?.blocks || [];
   
   const heroBlock = blocks.find(b => b.type === 'movimiento_hero')?.content || {};

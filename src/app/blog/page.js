@@ -9,7 +9,13 @@ export const metadata = {
 };
 
 export default async function BlogIndex() {
-  const posts = await fetchBlogPosts('tienda');
+  // ── try-catch: si Firestore falla, mostrar página vacía en lugar de error 500
+  let posts = [];
+  try {
+    posts = await fetchBlogPosts('tienda');
+  } catch (error) {
+    console.error('[Blog] Error cargando posts:', error);
+  }
   return (
     <div className="max-w-7xl mx-auto px-6 py-20">
       <div className="text-center mb-24 fade-in">

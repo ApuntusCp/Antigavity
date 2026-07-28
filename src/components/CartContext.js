@@ -32,27 +32,30 @@ export function CartProvider({ children }) {
   }, [cart, isLoaded]);
 
   const addToCart = (product, quantity = 1) => {
+    // ── Toast FUERA del state updater ───────────────────────────────────────
+    // En React 18 Strict Mode los updaters se ejecutan 2 veces (para detectar
+    // side effects). Poner toast aquí previene notificaciones duplicadas.
+    let isUpdate = false;
     setCart((prevCart) => {
       const existingProductIndex = prevCart.findIndex(
         (item) => item.id === product.id || item.sku === product.sku
       );
 
       if (existingProductIndex >= 0) {
-        // Update quantity if already in cart
+        isUpdate = true;
         const newCart = [...prevCart];
         newCart[existingProductIndex] = {
           ...newCart[existingProductIndex],
           quantity: newCart[existingProductIndex].quantity + quantity,
         };
-        toast.success('Cantidad actualizada');
         return newCart;
       } else {
-        // Add new item
-        toast.success('Añadido al carrito');
         return [...prevCart, { ...product, quantity }];
       }
     });
-    setIsCartOpen(true); // Open the cart drawer when adding an item
+    // Mostrar toast después del setState, no dentro
+    toast.success(isUpdate ? 'Cantidad actualizada' : 'Añadido al carrito');
+    setIsCartOpen(true);
   };
 
   const removeFromCart = (idOrSku) => {
@@ -72,7 +75,12 @@ export function CartProvider({ children }) {
     setCart([]);
   };
 
-  const cartTotal = cart.reduce((total, item) => total + ((item.discountPrice || item.price) * item.quantity), 0);
+  // Guard contra NaN: si price/discountPrice es undefined o no numérico, usa 0
+  const cartTotal = cart.reduce((total, item) => {
+    const price = Number(item.discountPrice || item.price) || 0;
+    const qty = Number(item.quantity) || 0;
+    return total + (price * qty);
+  }, 0);
   const cartItemCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   return (

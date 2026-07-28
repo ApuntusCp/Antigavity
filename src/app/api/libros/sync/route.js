@@ -3,6 +3,13 @@ import { fetchAll20OpenSources, syncBooksToFirestore } from '../../../../utils/l
 
 export async function POST(request) {
   try {
+    // ── Verificación de token de administrador ─────────────────────────────────
+    // Sin esto, cualquiera puede disparar scraping masivo y escrituras en DB
+    const authHeader = request.headers.get('authorization') || '';
+    const adminSecret = process.env.ADMIN_SECRET_KEY;
+    if (!adminSecret || authHeader !== `Bearer ${adminSecret}`) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
     const { query = 'cervantes' } = await request.json().catch(() => ({ query: 'cervantes' }));
 
     console.log(`Starting 20-Source Open Data ETL sync for query: "${query}"...`);

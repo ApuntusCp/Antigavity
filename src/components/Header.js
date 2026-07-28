@@ -3,10 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "./CartContext";
 import { useAuth } from "./AuthProvider";
-import { User, LogOut, ShoppingCart, Menu, X, Search, ChevronDown, MoreHorizontal } from "lucide-react";
+import { User, LogOut, ShoppingCart, X, Search } from "lucide-react";
 import {
   IconTienda,
   IconNoticias,
@@ -31,9 +31,9 @@ const DOCK_ITEMS = [
 
 export default function Header({ headerConfig = {} }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { cartItemCount, setIsCartOpen } = useCart();
   const { user, logout } = useAuth();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCenterIndex, setActiveCenterIndex] = useState(0);
@@ -125,7 +125,8 @@ export default function Header({ headerConfig = {} }) {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && searchQuery.trim()) {
-                        window.location.href = `/shop?q=${encodeURIComponent(searchQuery)}`;
+                        router.push(`/shop?q=${encodeURIComponent(searchQuery)}`);
+                        setShowSearch(false);
                       }
                     }}
                     className="bg-transparent text-xs text-white placeholder-gray-400 focus:outline-none w-28 md:w-40"

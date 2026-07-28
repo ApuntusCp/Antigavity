@@ -26,12 +26,16 @@ export default function BlogComments({ postId }) {
         return {
           id: doc.id,
           ...data,
-          // Fallback para createdAt localmente antes de sincronizar
-          createdAt: data.createdAt ? data.createdAt : { toDate: () => new Date() }
+          // Guard contra null: serverTimestamp() puede ser null antes de sincronizar
+          createdAt: data.createdAt ?? { toDate: () => new Date() }
         };
       });
-      msgs.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
+      // Optional chaining previene crash si createdAt.toDate es undefined
+      msgs.sort((a, b) => (b.createdAt?.toDate?.() ?? new Date()) - (a.createdAt?.toDate?.() ?? new Date()));
       setComments(msgs);
+    }, (error) => {
+      // Captura errores de índice faltante en Firestore o problemas de permisos
+      console.error('[BlogComments] Error en listener Firestore:', error.message);
     });
 
     return () => unsubscribe();

@@ -1,5 +1,53 @@
 import { NextResponse } from 'next/server';
 
+// ─── LISTA BLANCA DE DOMINIOS PERMITIDOS ────────────────────────────────────
+// SSRF Fix: Solo se permite hacer fetch de imágenes de dominios conocidos y
+// confiables. Cualquier otro dominio (incluyendo IPs locales, metadata cloud
+// como 169.254.169.254, localhost, redes internas) es bloqueado.
+const ALLOWED_IMAGE_DOMAINS = [
+  'firebasestorage.googleapis.com',
+  'storage.googleapis.com',
+  'lh3.googleusercontent.com',
+  'eltiempo.com',
+  'semana.com',
+  'elespectador.com',
+  'rcnradio.com',
+  'caracoltv.com',
+  'noticias.caracoltv.com',
+  'lafm.com.co',
+  'lasillavacia.com',
+  'icons.duckduckgo.com',
+  'external-content.duckduckgo.com',
+  'upload.wikimedia.org',
+  'www.bluradio.com',
+  'img.bluradio.com',
+  'i.imgur.com',
+];
+
+function isAllowedDomain(urlString) {
+  try {
+    const parsed = new URL(urlString);
+    // Bloquear explícitamente IPs privadas y localhost (defensa adicional)
+    const hostname = parsed.hostname.toLowerCase();
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname.startsWith('192.168.') ||
+      hostname.startsWith('10.') ||
+      hostname.startsWith('172.') ||
+      hostname === '169.254.169.254' || // AWS/GCP metadata
+      hostname === '0.0.0.0'
+    ) {
+      return false;
+    }
+    return ALLOWED_IMAGE_DOMAINS.some(
+      (domain) => hostname === domain || hostname.endsWith(`.${domain}`)
+    );
+  } catch {
+    return false;
+  }
+}
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const imageUrl = searchParams.get('url');
@@ -8,12 +56,12 @@ export async function GET(request) {
     return new NextResponse('Missing url parameter', { status: 400 });
   }
 
-  try {
-    // Si la URL es relativa o no empieza por http, retornar error
-    if (!imageUrl.startsWith('http')) {
-      return new NextResponse('Invalid URL format', { status: 400 });
-    }
+  // ── Validar dominio contra lista blanca ───────────────────────────────────
+  if (!imageUrl.startsWith('http') || !isAllowedDomain(imageUrl)) {
+    return new NextResponse('Domain not allowed', { status: 403 });
+  }
 
+  try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 4000); // 4s timeout
 
@@ -31,7 +79,12 @@ export async function GET(request) {
       return new NextResponse('Failed to fetch image', { status: imageRes.status });
     }
 
-    const contentType = imageRes.headers.get('content-type') || 'image/jpeg';
+    // Verificar que la respuesta es realmente una imagen
+    const contentType = imageRes.headers.get('content-type') || '';
+    if (!contentType.startsWith('image/')) {
+      return new NextResponse('Response is not an image', { status: 400 });
+    }
+
     const blob = await imageRes.arrayBuffer();
 
     return new NextResponse(blob, {

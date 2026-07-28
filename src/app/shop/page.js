@@ -155,10 +155,18 @@ export default async function ShopPage() {
                           )}
                         </div>
 
-                        <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400">
-                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                          <span>Unidades disponibles para envío</span>
-                        </div>
+                        {(product.stock === undefined || product.stock > 0) && (
+                          <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>Unidades disponibles para envío</span>
+                          </div>
+                        )}
+                        {product.stock === 0 && (
+                          <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-red-400">
+                            <span className="w-2 h-2 rounded-full bg-red-400"></span>
+                            <span>Agotado temporalmente</span>
+                          </div>
+                        )}
                       </div>
 
                     </div>

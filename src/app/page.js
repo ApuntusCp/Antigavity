@@ -5,15 +5,23 @@ import NewsletterForm from "../components/NewsletterForm";
 import HeroSection from "../components/HeroSection";
 import FadeInWhenVisible from "../components/FadeInWhenVisible";
 import PaymentMethodsBadge from "../components/PaymentMethodsBadge";
+import ShopAddToCartButton from "../components/ShopAddToCartButton";
 
 export const revalidate = 30; // ISR: check for new CMS publishes every 30 seconds
 
 export default async function Home() {
-  const [products, cmsConfig, clientTestimonials] = await Promise.all([
-    fetchProducts(),
-    fetchHomeCMSConfig(),
-    fetchClientTestimonials(),
-  ]);
+  // ── try-catch garantiza que un fallo de Firebase no crashee la página entera
+  let products = [], cmsConfig = null, clientTestimonials = [];
+  try {
+    [products, cmsConfig, clientTestimonials] = await Promise.all([
+      fetchProducts(),
+      fetchHomeCMSConfig(),
+      fetchClientTestimonials(),
+    ]);
+  } catch (error) {
+    console.error('[Home] Error cargando datos de Firebase:', error);
+    // La página renderiza con arrays vacíos como fallback
+  }
 
   // Extraer configuración de testimonios del CMS
   let testimonialsData = [

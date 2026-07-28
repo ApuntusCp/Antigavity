@@ -55,8 +55,8 @@ export default function CartDrawer() {
             </div>
           ) : (
             <div className="space-y-6">
-              {cart.map((item) => (
-                <div key={item.sku} className="flex gap-4 group">
+              {cart.map((item, index) => (
+                <div key={item.id || item.sku || index} className="flex gap-4 group">
                   {/* Item Image */}
                   <div className="w-20 h-24 bg-gray-100 dark:bg-gray-800 relative shrink-0">
                     {item.images && item.images.length > 0 ? (
@@ -94,7 +94,8 @@ export default function CartDrawer() {
                         </div>
                       </div>
                       <button 
-                        onClick={() => removeFromCart(item.sku)}
+                        onClick={() => removeFromCart(item.id || item.sku)}
+                        aria-label={`Eliminar ${item.title || item.name || 'producto'} del carrito`}
                         className="text-gray-400 hover:text-red-500 transition-colors p-1"
                       >
                         <Trash2 size={16} />
@@ -105,14 +106,16 @@ export default function CartDrawer() {
                     <div className="flex items-center gap-4 mt-2">
                       <div className="flex items-center border border-gray-200 dark:border-white/10 rounded-sm">
                         <button 
-                          onClick={() => updateQuantity(item.sku, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.id || item.sku, item.quantity - 1)}
+                          aria-label="Disminuir cantidad"
                           className="px-3 py-1 text-gray-500 hover:text-brand-gold transition-colors"
                         >
                           <Minus size={14} />
                         </button>
                         <span className="w-8 text-center text-sm font-mono">{item.quantity}</span>
                         <button 
-                          onClick={() => updateQuantity(item.sku, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.id || item.sku, item.quantity + 1)}
+                          aria-label="Aumentar cantidad"
                           className="px-3 py-1 text-gray-500 hover:text-brand-gold transition-colors"
                         >
                           <Plus size={14} />
