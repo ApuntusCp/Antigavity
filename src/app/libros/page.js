@@ -6,10 +6,10 @@ import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, 
 // Componente Especial de Garantía y Acceso Abierto para la Biblioteca
 function LibraryTrustBadge() {
   return (
-    <div className="w-full bg-[#0A0E0C]/90 border border-[#F3E5AB]/30 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl my-12">
+    <div className="w-full bg-[#051208]/85 border border-[#D4AF37]/40 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl my-12">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-[#F3E5AB]/10 border border-[#F3E5AB]/30 flex items-center justify-center text-[#F3E5AB] shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/35 flex items-center justify-center text-[#D4AF37] shrink-0">
             <Globe size={22} />
           </div>
           <div>
@@ -19,7 +19,7 @@ function LibraryTrustBadge() {
         </div>
 
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-[#F3E5AB]/10 border border-[#F3E5AB]/30 flex items-center justify-center text-[#F3E5AB] shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/35 flex items-center justify-center text-[#D4AF37] shrink-0">
             <BookOpen size={22} />
           </div>
           <div>
@@ -29,7 +29,7 @@ function LibraryTrustBadge() {
         </div>
 
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-[#F3E5AB]/10 border border-[#F3E5AB]/30 flex items-center justify-center text-[#F3E5AB] shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/35 flex items-center justify-center text-[#D4AF37] shrink-0">
             <ShieldCheck size={22} />
           </div>
           <div>
@@ -167,7 +167,7 @@ function LibrosContent() {
 
   // Lápiz Libre de Dibujo y Subrayado Canvas
   const [isPenActive, setIsPenActive] = useState(false);
-  const [penColor, setPenColor] = useState('#F3E5AB');
+  const [penColor, setPenColor] = useState('#D4AF37');
   const [penStrokeWidth, setPenStrokeWidth] = useState(8);
   const [isEraser, setIsEraser] = useState(false);
 
@@ -186,7 +186,7 @@ function LibrosContent() {
 
   // Paleta de Colores
   const highlightColorStyles = {
-    gold: { name: 'Dorado', hex: '#F3E5AB', bg: 'bg-[#F3E5AB]/30 text-white border-[#F3E5AB]/60 shadow-[0_0_12px_rgba(243,229,171,0.2)]', dot: 'bg-[#F3E5AB]' },
+    gold: { name: 'Dorado', hex: '#D4AF37', bg: 'bg-[#D4AF37]/30 text-white border-[#D4AF37]/60 shadow-[0_0_12px_rgba(212,175,55,0.2)]', dot: 'bg-[#D4AF37]' },
     emerald: { name: 'Esmeralda', hex: '#10B981', bg: 'bg-emerald-500/30 text-emerald-100 border-emerald-400/60 shadow-[0_0_12px_rgba(16,185,129,0.2)]', dot: 'bg-emerald-400' },
     cyan: { name: 'Cian', hex: '#06B6D4', bg: 'bg-cyan-500/30 text-cyan-100 border-cyan-400/60 shadow-[0_0_12px_rgba(6,182,212,0.2)]', dot: 'bg-cyan-400' },
     purple: { name: 'Púrpura', hex: '#A855F7', bg: 'bg-purple-500/30 text-purple-100 border-purple-400/60 shadow-[0_0_12px_rgba(168,85,247,0.2)]', dot: 'bg-purple-400' },
@@ -511,18 +511,22 @@ function LibrosContent() {
 
   return (
     <div className="min-h-screen theme-libros text-white pt-32 pb-44 px-4 sm:px-6 relative overflow-hidden select-none">
+      
+      {/* Fondo de Estética Cuero Botánico Verde Esmeralda & Dorado GranColinos */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-[#D4AF37]/15 via-[#020502] to-black opacity-90 pointer-events-none" />
+
       <div className="max-w-7xl mx-auto relative z-10 space-y-12">
         
         {/* Main Header */}
         <div className="text-center fade-in">
-          <span className="text-[#F3E5AB] text-xs font-bold tracking-[0.3em] uppercase mb-3 inline-flex items-center gap-2 bg-[#F3E5AB]/10 px-4 py-1.5 rounded-full border border-[#F3E5AB]/30">
-            <Globe size={16} className="text-[#F3E5AB]" /> HEMEROTECA DIGITAL LEGAL & AUDIOLIBROS (+70,000 OBRAS EN DOMINIO PÚBLICO)
+          <span className="text-[#D4AF37] text-xs font-mono font-extrabold tracking-[0.3em] uppercase mb-3 inline-flex items-center gap-2 bg-[#D4AF37]/15 px-4 py-1.5 rounded-full border border-[#D4AF37]/40 shadow-md">
+            <Globe size={16} className="text-[#D4AF37]" /> HEMEROTECA DIGITAL LEGAL & AUDIOLIBROS (+70,000 OBRAS EN DOMINIO PÚBLICO)
           </span>
-          <h1 className="font-serif text-4xl md:text-6xl text-[#F3E5AB] mb-6 drop-shadow-md">
+          <h1 className="font-serif text-4xl md:text-6xl font-black text-gold-gradient uppercase tracking-tight drop-shadow-[0_4px_30px_rgba(212,175,55,0.4)] mb-6">
             Biblioteca Digital GranColinos
           </h1>
-          <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#F3E5AB] to-transparent mx-auto mb-6"></div>
-          <p className="text-gray-300 max-w-3xl mx-auto font-light leading-relaxed text-sm md:text-base">
+          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mb-6 rounded-full shadow-[0_0_12px_rgba(212,175,55,0.8)]"></div>
+          <p className="text-gray-200 max-w-3xl mx-auto font-light leading-relaxed text-sm md:text-base">
             Acceso libre y 100% legal a más de 70,000 libros de dominio público de Project Gutenberg, Standard Ebooks, Internet Archive y audiolibros LibriVox.
           </p>
 
@@ -530,7 +534,7 @@ function LibrosContent() {
             <button
               onClick={() => handleTriggerEtlSync()}
               disabled={isSyncing}
-              className="px-4 py-2 bg-[#F3E5AB]/15 hover:bg-[#F3E5AB] hover:text-black text-[#F3E5AB] text-xs font-mono font-bold uppercase tracking-wider rounded-xl border border-[#F3E5AB]/40 transition-all flex items-center gap-2 shadow-lg"
+              className="px-5 py-2.5 bg-[#D4AF37]/15 hover:bg-gradient-to-r hover:from-[#D4AF37] hover:to-[#AA7C11] hover:text-black text-[#D4AF37] text-xs font-mono font-extrabold uppercase tracking-wider rounded-xl border border-[#D4AF37]/40 transition-all flex items-center gap-2 shadow-lg"
               title="Ejecutar ingesta ETL y sincronizar catálogos de Gutenberg y Open Library"
             >
               {isSyncing ? <RefreshCw className="animate-spin" size={14} /> : <Database size={14} />}
@@ -539,16 +543,14 @@ function LibrosContent() {
           </div>
 
           {syncStatusMsg && (
-            <p className="text-xs font-mono text-[#F3E5AB] bg-black/80 px-4 py-2 rounded-xl inline-block border border-[#F3E5AB]/40 mt-3 animate-in fade-in shadow-xl">
+            <p className="text-xs font-mono text-[#D4AF37] bg-[#030904]/90 px-4 py-2 rounded-xl inline-block border border-[#D4AF37]/40 mt-3 animate-in fade-in shadow-xl">
               {syncStatusMsg}
             </p>
           )}
         </div>
 
-
-
         {/* BUSCADOR Y MATRIZ DE FILTROS PARA EL CATÁLOGO MASIVO */}
-        <div className="bg-black/50 border border-white/15 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl space-y-6">
+        <div className="bg-[#051208]/85 border border-[#D4AF37]/40 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl space-y-6">
           
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-white/10 pb-6">
             <div className="relative w-full md:w-2/3">
@@ -557,9 +559,9 @@ function LibrosContent() {
                 placeholder="Buscar autores u obras (ej. Sócrates, Platón, Cervantes, Darwin, Shakespeare)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#0D120E] text-white placeholder-gray-400 text-xs sm:text-sm py-3.5 px-4 pl-11 rounded-2xl border border-white/20 focus:outline-none focus:border-[#F3E5AB] transition-all shadow-inner"
+                className="w-full bg-[#030904] text-white placeholder-gray-400 text-xs sm:text-sm py-3.5 px-4 pl-11 rounded-2xl border border-white/20 focus:outline-none focus:border-[#D4AF37] transition-all shadow-inner font-mono"
               />
-              <Search className="absolute left-3.5 top-3.5 text-[#F3E5AB]" size={18} />
+              <Search className="absolute left-3.5 top-3.5 text-[#D4AF37]" size={18} />
               {searchQuery && (
                 <button 
                   onClick={() => setSearchQuery('')}
@@ -571,7 +573,7 @@ function LibrosContent() {
             </div>
 
             <div className="text-right w-full md:w-auto font-mono text-xs text-gray-400">
-              <span>Mostrando <strong className="text-[#F3E5AB] font-bold">{books.length}</strong> obras cargadas</span>
+              <span>Mostrando <strong className="text-[#D4AF37] font-bold">{books.length}</strong> obras cargadas</span>
               <span className="block text-[10px] text-gray-400">Indexado directo con Gutendex & Open Library (+70,000)</span>
             </div>
           </div>
@@ -579,15 +581,15 @@ function LibrosContent() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1.5">
               <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider block flex items-center gap-1">
-                <Filter size={12} className="text-[#F3E5AB]" /> Categoría Temática
+                <Filter size={12} className="text-[#D4AF37]" /> Categoría Temática
               </label>
               <select
                 value={activeCategory}
                 onChange={(e) => setActiveCategory(e.target.value)}
-                className="w-full bg-[#0D120E] text-[#F3E5AB] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#F3E5AB] cursor-pointer truncate"
+                className="w-full bg-[#030904] text-[#D4AF37] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#D4AF37] cursor-pointer truncate"
               >
                 {categories.map(c => (
-                  <option key={c.id} value={c.id} title={c.name} className="bg-[#0A0D0B] text-white">
+                  <option key={c.id} value={c.id} title={c.name} className="bg-[#030904] text-white">
                     {c.name}
                   </option>
                 ))}
@@ -596,15 +598,15 @@ function LibrosContent() {
 
             <div className="space-y-1.5">
               <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider block flex items-center gap-1">
-                <Layers size={12} className="text-[#F3E5AB]" /> Formato Disponible
+                <Layers size={12} className="text-[#D4AF37]" /> Formato Disponible
               </label>
               <select
                 value={activeFormat}
                 onChange={(e) => setActiveFormat(e.target.value)}
-                className="w-full bg-[#0D120E] text-[#F3E5AB] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#F3E5AB] cursor-pointer truncate"
+                className="w-full bg-[#030904] text-[#D4AF37] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#D4AF37] cursor-pointer truncate"
               >
                 {formats.map(f => (
-                  <option key={f.id} value={f.id} title={f.name} className="bg-[#0A0D0B] text-white">
+                  <option key={f.id} value={f.id} title={f.name} className="bg-[#030904] text-white">
                     {f.name}
                   </option>
                 ))}
@@ -613,15 +615,15 @@ function LibrosContent() {
 
             <div className="space-y-1.5">
               <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider block flex items-center gap-1">
-                <ShieldCheck size={12} className="text-[#F3E5AB]" /> Tipo de Licencia / Estado
+                <ShieldCheck size={12} className="text-[#D4AF37]" /> Tipo de Licencia / Estado
               </label>
               <select
                 value={activeLicense}
                 onChange={(e) => setActiveLicense(e.target.value)}
-                className="w-full bg-[#0D120E] text-[#F3E5AB] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#F3E5AB] cursor-pointer truncate"
+                className="w-full bg-[#030904] text-[#D4AF37] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#D4AF37] cursor-pointer truncate"
               >
                 {licenses.map(l => (
-                  <option key={l.id} value={l.id} title={l.name} className="bg-[#0A0D0B] text-white">
+                  <option key={l.id} value={l.id} title={l.name} className="bg-[#030904] text-white">
                     {l.name}
                   </option>
                 ))}
@@ -633,12 +635,12 @@ function LibrosContent() {
         {/* CATÁLOGO PRINCIPAL GRID ESPACIOSO */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-            <RefreshCw className="animate-spin text-[#F3E5AB] mb-4" size={32} />
-            <p className="text-xs font-mono uppercase tracking-widest">Consultando la API REST y buscando en vivo en Project Gutenberg (+70,000 obras)...</p>
+            <RefreshCw className="animate-spin text-[#D4AF37] mb-4" size={32} />
+            <p className="text-xs font-mono uppercase tracking-widest text-[#D4AF37]">Consultando la API REST y buscando en vivo en Project Gutenberg (+70,000 obras)...</p>
           </div>
         ) : books.length === 0 ? (
-          <div className="text-center py-16 bg-white/5 rounded-3xl border border-white/10 p-8 space-y-4">
-            <AlertCircle className="text-[#F3E5AB] mx-auto mb-2" size={40} />
+          <div className="text-center py-16 bg-[#051208]/85 rounded-3xl border border-white/10 p-8 space-y-4">
+            <AlertCircle className="text-[#D4AF37] mx-auto mb-2" size={40} />
             <h3 className="text-lg font-bold text-white font-serif">No encontramos obras guardadas para "{searchQuery}"</h3>
             <p className="text-xs text-gray-300 max-w-md mx-auto font-light leading-relaxed">
               Haz clic abajo para realizar una consulta en tiempo real en la base de datos completa de Project Gutenberg y Open Library (+70,000 títulos de dominio público).
@@ -647,7 +649,7 @@ function LibrosContent() {
             <button
               onClick={() => handleTriggerEtlSync(searchQuery)}
               disabled={isSyncing}
-              className="px-6 py-3 bg-[#F3E5AB] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-xl inline-flex items-center gap-2"
+              className="px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-xl inline-flex items-center gap-2"
             >
               {isSyncing ? <RefreshCw className="animate-spin" size={16} /> : <Search size={16} />}
               <span>Buscar "{searchQuery}" en vivo en Project Gutenberg</span>
@@ -659,7 +661,7 @@ function LibrosContent() {
               {books.map((book) => (
                 <div 
                   key={book.id} 
-                  className="bg-black/40 border border-white/15 hover:border-[#F3E5AB]/70 rounded-2xl p-6 backdrop-blur-xl shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
+                  className="bg-[#051208]/85 border border-white/10 hover:border-[#D4AF37]/70 rounded-2xl p-6 backdrop-blur-xl shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
                 >
                   <div>
                     <div className="w-full h-64 rounded-xl overflow-hidden bg-black mb-5 relative border border-white/15 shadow-lg flex items-center justify-center">
@@ -674,12 +676,12 @@ function LibrosContent() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-b from-[#16221A] via-[#0A0F0D] to-black p-6 flex flex-col justify-between text-center border border-[#F3E5AB]/30">
-                          <div className="w-8 h-8 rounded-full border border-[#F3E5AB]/40 mx-auto flex items-center justify-center text-[#F3E5AB]">
+                        <div className="w-full h-full bg-gradient-to-b from-[#0B1E10] via-[#051208] to-black p-6 flex flex-col justify-between text-center border border-[#D4AF37]/30">
+                          <div className="w-8 h-8 rounded-full border border-[#D4AF37]/40 mx-auto flex items-center justify-center text-[#D4AF37]">
                             <BookOpen size={16} />
                           </div>
                           <div>
-                            <h4 className="font-serif text-lg font-bold text-[#F3E5AB] leading-snug mb-1">{book.titulo}</h4>
+                            <h4 className="font-serif text-lg font-bold text-[#D4AF37] leading-snug mb-1">{book.titulo}</h4>
                             <p className="text-[11px] text-gray-300 font-sans italic">{(book.autores || []).join(', ')}</p>
                           </div>
                           <span className="text-[9px] font-mono text-gray-400 uppercase tracking-widest">{book.fuente_original}</span>
@@ -696,11 +698,11 @@ function LibrosContent() {
                     </div>
 
                     <div className="flex items-center justify-between text-[11px] font-mono text-gray-400 border-b border-white/10 pb-2 mb-3">
-                      <span className="text-[#F3E5AB] font-bold truncate max-w-[60%]">{(book.autores || []).join(', ')}</span>
+                      <span className="text-[#D4AF37] font-bold truncate max-w-[60%]">{(book.autores || []).join(', ')}</span>
                       <span className="text-gray-400 truncate max-w-[38%] text-right">{book.fuente_original}</span>
                     </div>
 
-                    <h3 className="font-serif text-xl font-bold text-white mb-2 leading-snug group-hover:text-[#F3E5AB] transition-colors">
+                    <h3 className="font-serif text-xl font-bold text-white mb-2 leading-snug group-hover:text-[#D4AF37] transition-colors">
                       {book.titulo}
                     </h3>
                     <p className="text-gray-300 text-xs font-light mb-4 leading-relaxed line-clamp-3">
@@ -710,8 +712,8 @@ function LibrosContent() {
                   
                   <div className="pt-4 border-t border-white/10 space-y-3 font-mono text-xs">
                     <div className="flex items-center justify-between text-gray-300">
-                      <span className="text-[#F3E5AB] font-semibold flex items-center gap-1">
-                        <Star size={13} fill="#F3E5AB" /> {book.calificacion_promedio || '4.9'}
+                      <span className="text-[#D4AF37] font-semibold flex items-center gap-1">
+                        <Star size={13} fill="#D4AF37" /> {book.calificacion_promedio || '4.9'}
                       </span>
                       <span className="text-gray-400">{book.paginas_aprox || '220 págs'}</span>
                     </div>
@@ -723,7 +725,7 @@ function LibrosContent() {
                             href={book.url_fuente || 'https://www.amazon.com'}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-2.5 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1.5"
+                            className="w-full py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1.5"
                           >
                             <span>Comprar en Tienda Oficial</span>
                             <ExternalLink size={13} />
@@ -743,14 +745,14 @@ function LibrosContent() {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => openReaderModal(book)}
-                              className="flex-1 py-2.5 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1"
+                              className="flex-1 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1"
                             >
                               <BookOpen size={13} /> Leer Libro Completo
                             </button>
 
                             <button
                               onClick={() => handleDownloadAcademicPdf(book)}
-                              className="py-2.5 px-3 bg-[#F3E5AB]/20 text-[#F3E5AB] border border-[#F3E5AB]/40 font-bold text-[11px] rounded-xl hover:bg-white hover:text-black transition-all flex items-center justify-center gap-1"
+                              className="py-2.5 px-3 bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/40 font-bold text-[11px] rounded-xl hover:bg-white hover:text-black transition-all flex items-center justify-center gap-1"
                               title="Descargar archivo PDF directamente al ordenador"
                             >
                               <Download size={14} />
@@ -777,7 +779,7 @@ function LibrosContent() {
                 <button
                   onClick={handleLoadMoreBooks}
                   disabled={loadingMore}
-                  className="px-10 py-4 bg-[#F3E5AB] text-black font-extrabold text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-white transition-all shadow-[0_0_30px_rgba(243,229,171,0.3)] hover:scale-105 inline-flex items-center gap-3 cursor-pointer"
+                  className="px-10 py-4 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-white transition-all shadow-[0_0_30px_rgba(212,175,55,0.3)] hover:scale-105 inline-flex items-center gap-3 cursor-pointer"
                   title="Cargar más obras para continuar explorando la biblioteca"
                 >
                   {loadingMore ? <RefreshCw className="animate-spin" size={16} /> : <BookOpen size={16} />}
@@ -798,22 +800,22 @@ function LibrosContent() {
       {/* LECTOR EJECUTIVO NATIVO GRANCOLINOS (CON HERRAMIENTA DE LÁPIZ LIBRE Y BOTÓN DE DESCARGA DIRECTA AUTOMÁTICA EN DISPOSITIVO) */}
       {readingBook && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-6 bg-black/95 backdrop-blur-2xl animate-in fade-in duration-200">
-          <div className={`border rounded-3xl w-full shadow-[0_0_90px_rgba(243,229,171,0.25)] relative flex flex-col transition-all duration-300 ${
+          <div className={`border rounded-3xl w-full shadow-[0_0_90px_rgba(212,175,55,0.25)] relative flex flex-col transition-all duration-300 ${
             isFullscreenReader ? 'h-full max-w-full rounded-none' : 'max-w-6xl max-h-[94vh] h-[90vh]'
           } ${
             readerTheme === 'sepia' ? 'bg-[#FBF0D9] text-[#2B1B10] border-[#D4C3A3]' :
             readerTheme === 'contrast' ? 'bg-black text-yellow-300 border-yellow-400' :
-            'bg-[#090E0B] text-gray-100 border-[#F3E5AB]/40'
+            'bg-[#051208] text-gray-100 border-[#D4AF37]/40'
           }`}>
             
             {/* Header del Lector Nativo */}
             <div className={`sticky top-0 z-50 px-6 py-3.5 border-b flex flex-wrap items-center justify-between gap-3 backdrop-blur-md ${
               readerTheme === 'sepia' ? 'bg-[#FBF0D9]/95 border-[#D4C3A3]' :
               readerTheme === 'contrast' ? 'bg-black border-yellow-400' :
-              'bg-[#090E0B]/95 border-white/15'
+              'bg-[#051208]/95 border-white/15'
             }`}>
               <div className="flex items-center gap-3 truncate max-w-md">
-                <span className="px-2.5 py-1 bg-[#F3E5AB]/20 text-[#F3E5AB] text-[10px] font-bold uppercase tracking-widest rounded border border-[#F3E5AB]/30 shrink-0">
+                <span className="px-2.5 py-1 bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] font-bold uppercase tracking-widest rounded border border-[#D4AF37]/30 shrink-0">
                   {readingBook.fuente_original}
                 </span>
                 <h4 className="font-serif text-sm font-bold truncate">{readingBook.titulo}</h4>
@@ -824,7 +826,7 @@ function LibrosContent() {
                   <button
                     onClick={() => { setIsPenActive(!isPenActive); setIsEraser(false); }}
                     className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
-                      isPenActive && !isEraser ? 'bg-[#F3E5AB] text-black shadow-md' : 'text-gray-300 hover:text-white'
+                      isPenActive && !isEraser ? 'bg-[#D4AF37] text-black shadow-md' : 'text-gray-300 hover:text-white'
                     }`}
                     title="Activar trazo de lápiz libre"
                   >
@@ -865,14 +867,14 @@ function LibrosContent() {
                   <div className="flex items-center gap-1 bg-white/10 rounded-xl p-1">
                     <button 
                       onClick={() => setReaderPageMode('single')} 
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${readerPageMode === 'single' ? 'bg-[#F3E5AB] text-black shadow-md' : 'text-gray-300 hover:text-white'}`}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${readerPageMode === 'single' ? 'bg-[#D4AF37] text-black shadow-md' : 'text-gray-300 hover:text-white'}`}
                       title="Vista de 1 Página"
                     >
                       <Layout size={13} /> 1 Pág
                     </button>
                     <button 
                       onClick={() => setReaderPageMode('double')} 
-                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${readerPageMode === 'double' ? 'bg-[#F3E5AB] text-black shadow-md' : 'text-gray-300 hover:text-white'}`}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${readerPageMode === 'double' ? 'bg-[#D4AF37] text-black shadow-md' : 'text-gray-300 hover:text-white'}`}
                       title="Vista Doble (Libro Abierto 2 Páginas)"
                     >
                       <Columns size={13} /> Libro Abierto (2 Págs)
@@ -890,7 +892,7 @@ function LibrosContent() {
 
                 <button 
                   onClick={() => setReadingBook(null)}
-                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#F3E5AB] hover:text-black flex items-center justify-center transition-all shrink-0 ml-1"
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#D4AF37] hover:text-black flex items-center justify-center transition-all shrink-0 ml-1"
                 >
                   <X size={16} />
                 </button>
@@ -900,16 +902,16 @@ function LibrosContent() {
             {/* SI SE ESTÁ EXTRAYENDO EL TEXTO REAL DE LA OBRA */}
             {loadingFullBookText ? (
               <div className="flex flex-col items-center justify-center flex-1 py-20 text-gray-300 space-y-4">
-                <RefreshCw className="animate-spin text-[#F3E5AB]" size={36} />
+                <RefreshCw className="animate-spin text-[#D4AF37]" size={36} />
                 <div className="text-center font-mono space-y-1">
-                  <p className="text-sm font-bold text-[#F3E5AB]">Buscando e ingiriendo el texto plano original de la obra...</p>
+                  <p className="text-sm font-bold text-[#D4AF37]">Buscando e ingiriendo el texto plano original de la obra...</p>
                   <p className="text-xs text-gray-400">Verificando licencias de dominio público en Project Gutenberg & Internet Archive</p>
                 </div>
               </div>
             ) : isBookCopyrighted ? (
               /* CASO OBRA COMERCIAL CON DESCARGA DIRECTA TRANSPARENTE AL ORDENADOR */
               <div className="flex flex-col items-center justify-center flex-1 p-8 sm:p-12 text-center max-w-3xl mx-auto space-y-6">
-                <div className="w-16 h-16 rounded-3xl bg-[#F3E5AB]/10 border border-[#F3E5AB]/40 flex items-center justify-center text-[#F3E5AB] shadow-2xl">
+                <div className="w-16 h-16 rounded-3xl bg-[#D4AF37]/10 border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] shadow-2xl">
                   <Lock size={32} />
                 </div>
 
@@ -918,7 +920,7 @@ function LibrosContent() {
                     Propiedad Intelectual & Copyright Activo
                   </span>
                   <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">{readingBook.titulo}</h3>
-                  <p className="text-xs font-mono text-[#F3E5AB]">Por {(readingBook.autores || []).join(', ')} • {readingBook.fuente_original}</p>
+                  <p className="text-xs font-mono text-[#D4AF37]">Por {(readingBook.autores || []).join(', ')} • {readingBook.fuente_original}</p>
                   
                   <p className="text-gray-300 text-xs font-light leading-relaxed max-w-xl mx-auto pt-2">
                     {readingBook.resumen || readingBook.subtitulo}
@@ -926,7 +928,7 @@ function LibrosContent() {
                 </div>
 
                 <div className="p-6 bg-white/5 rounded-2xl border border-white/10 text-left font-sans text-xs space-y-3 w-full">
-                  <p className="font-bold flex items-center gap-1.5 text-[#F3E5AB]">
+                  <p className="font-bold flex items-center gap-1.5 text-[#D4AF37]">
                     <ShieldCheck size={16} /> Cumplimiento de Licencias de Derechos de Autor
                   </p>
                   <p className="opacity-80 leading-relaxed text-[11px]">
@@ -940,7 +942,7 @@ function LibrosContent() {
                     href={readingBook.url_fuente || 'https://www.amazon.com'}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 py-4 px-6 bg-[#F3E5AB] text-black font-extrabold text-xs uppercase tracking-widest rounded-2xl hover:bg-white transition-all shadow-xl flex items-center justify-center gap-2"
+                    className="flex-1 py-4 px-6 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-widest rounded-2xl hover:bg-white transition-all shadow-xl flex items-center justify-center gap-2"
                   >
                     <span>Adquirir / Leer Edición Oficial</span>
                     <ExternalLink size={15} />
@@ -975,11 +977,11 @@ function LibrosContent() {
                       />
 
                       <div className="flex items-center justify-between text-xs font-mono border-b pb-3 border-white/10 opacity-80 relative z-10">
-                        <span className="text-[#F3E5AB] font-bold">Página {pageLeft.page} de {totalBookPages}</span>
+                        <span className="text-[#D4AF37] font-bold">Página {pageLeft.page} de {totalBookPages}</span>
                         <span className="italic">{readingBook.titulo}</span>
                       </div>
 
-                      <h3 className="text-lg font-bold text-[#F3E5AB] font-serif border-b pb-2 border-white/10 relative z-10">
+                      <h3 className="text-lg font-bold text-[#D4AF37] font-serif border-b pb-2 border-white/10 relative z-10">
                         {pageLeft.title}
                       </h3>
 
@@ -1003,7 +1005,7 @@ function LibrosContent() {
 
                   {/* PÁGINA DERECHA (PÁGINA B) */}
                   {readerPageMode === 'double' && (
-                    <div className="space-y-6 font-serif leading-relaxed p-6 bg-white/5 rounded-2xl border border-white/10 shadow-lg relative min-h-[440px] border-l-4 border-l-[#F3E5AB]/30 overflow-hidden">
+                    <div className="space-y-6 font-serif leading-relaxed p-6 bg-white/5 rounded-2xl border border-white/10 shadow-lg relative min-h-[440px] border-l-4 border-l-[#D4AF37]/30 overflow-hidden">
                       {pageRight ? (
                         <>
                           <FreehandPenCanvas 
@@ -1014,11 +1016,11 @@ function LibrosContent() {
                           />
 
                           <div className="flex items-center justify-between text-xs font-mono border-b pb-3 border-white/10 opacity-80 relative z-10">
-                            <span className="text-[#F3E5AB] font-bold">Página {pageRight.page} de {totalBookPages}</span>
+                            <span className="text-[#D4AF37] font-bold">Página {pageRight.page} de {totalBookPages}</span>
                             <span className="italic">{readingBook.titulo}</span>
                           </div>
 
-                          <h3 className="text-lg font-bold text-[#F3E5AB] font-serif border-b pb-2 border-white/10 relative z-10">
+                          <h3 className="text-lg font-bold text-[#D4AF37] font-serif border-b pb-2 border-white/10 relative z-10">
                             {pageRight.title}
                           </h3>
 
@@ -1069,7 +1071,7 @@ function LibrosContent() {
                     onClick={() => setReaderCurrentPage(Math.min(totalBookPages, readerCurrentPage + (readerPageMode === 'double' ? 2 : 1)))}
                     disabled={readerCurrentPage >= totalBookPages}
                     className={`px-5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 ${
-                      readerCurrentPage >= totalBookPages ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-[#F3E5AB] text-black hover:bg-white shadow-md'
+                      readerCurrentPage >= totalBookPages ? 'bg-white/5 text-gray-500 cursor-not-allowed' : 'bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black hover:bg-white shadow-md'
                     }`}
                   >
                     Página Siguiente <ChevronRight size={16} />
@@ -1091,7 +1093,7 @@ export default function LibrosPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen theme-libros flex items-center justify-center text-white">
-        <RefreshCw className="animate-spin text-[#F3E5AB]" size={32} />
+        <RefreshCw className="animate-spin text-[#D4AF37]" size={32} />
       </div>
     }>
       <LibrosContent />
