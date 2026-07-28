@@ -235,14 +235,14 @@ export default function GCAClient() {
               
               {/* Foto del CEO */}
               <div className="md:col-span-5 relative">
-                <div className="relative aspect-[3/4] w-full rounded-sm overflow-hidden border border-[#D4AF37]/30 shadow-[0_0_60px_rgba(212,175,55,0.12)] group">
+                <div className="relative w-full rounded-sm overflow-hidden border border-[#D4AF37]/30 shadow-[0_0_60px_rgba(212,175,55,0.12)] group bg-[#070D09]">
                   <img
                     src={branding.ceoImageUrl || '/images/gca/ceo.jpg'}
                     alt={branding.ceoName}
-                    className="w-full h-full object-cover filter contrast-[1.05] group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-auto max-h-[650px] object-cover object-top filter contrast-[1.05] group-hover:scale-105 transition-transform duration-700"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#040806] via-transparent to-transparent opacity-80" />
-                  <div className="absolute bottom-6 left-6 right-6">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#040806] via-transparent to-transparent opacity-80 pointer-events-none" />
+                  <div className="absolute bottom-6 left-6 right-6 z-10">
                     <span className="text-[#D4AF37] text-xs font-bold tracking-[0.2em] uppercase block">{branding.ceoRole}</span>
                     <h3 className={`${playfair.className} text-2xl text-white font-bold`}>{branding.ceoName}</h3>
                   </div>
