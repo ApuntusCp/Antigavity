@@ -15,7 +15,9 @@ import {
   IconBaseDatos,
   IconMovimiento,
   IconServicios,
-  IconInfo
+  IconInfo,
+  IconArquitectura,
+  IconArtistas
 } from "./DockIcons";
 
 const DOCK_ITEMS = [
@@ -25,6 +27,8 @@ const DOCK_ITEMS = [
   { id: 'libros', name: 'LIBROS', href: '/libros', icon: IconLibros, color: '#F3E5AB', activeClass: 'active-brasa-libros' },
   { id: 'datos', name: 'BASE DE DATOS', href: '/base-de-datos-global', icon: IconBaseDatos, color: '#00F0FF', activeClass: 'active-brasa-datos' },
   { id: 'movimiento', name: 'MOVIMIENTO', href: '/movimiento', icon: IconMovimiento, color: '#FF4D4D', activeClass: 'active-brasa-movimiento' },
+  { id: 'artistas', name: 'ARTISTAS', href: '/artistas', icon: IconArtistas, color: '#E11D48', activeClass: 'active-brasa-artistas' },
+  { id: 'arquitectura', name: 'ARQUITECTURA', href: '/gca', icon: IconArquitectura, color: '#FCD34D', activeClass: 'active-brasa-arquitectura' },
   { id: 'servicios', name: 'SERVICIOS', href: '/servicios', icon: IconServicios, color: '#A855F7', activeClass: 'active-brasa-servicios' },
   { id: 'informacion', name: 'INFO & PQR', href: '/informacion', icon: IconInfo, color: '#10B981', activeClass: 'active-brasa-info' },
 ];
@@ -49,6 +53,8 @@ export default function Header({ headerConfig = {} }) {
     if (pathname.includes('/libros')) return 'libros';
     if (pathname.includes('/base-de-datos')) return 'datos';
     if (pathname.includes('/movimiento')) return 'movimiento';
+    if (pathname.includes('/artistas')) return 'artistas';
+    if (pathname.includes('/gca')) return 'arquitectura';
     if (pathname.includes('/servicios')) return 'servicios';
     if (pathname.includes('/informacion') || pathname.includes('/pqr')) return 'informacion';
     return 'tienda';

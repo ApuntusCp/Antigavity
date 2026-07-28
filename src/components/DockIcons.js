@@ -87,3 +87,26 @@ export function IconInfo({ className = "w-5 h-5", strokeWidth = 1.5 }) {
     </svg>
   );
 }
+
+// 9. Arquitectura (GCA)
+export function IconArquitectura({ className = "w-5 h-5", strokeWidth = 1.5 }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M12 3l-8 4v12l8 4 8-4V7l-8-4z" />
+      <path d="M12 3v20M4 7l8 4 8-4M4 17l8-4 8 4" />
+    </svg>
+  );
+}
+
+// 10. Artistas
+export function IconArtistas({ className = "w-5 h-5", strokeWidth = 1.5 }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M12 2c-5.5 0-10 4.5-10 10s4.5 10 10 10c1.5 0 2.5-1 2.5-2.5 0-.7-.3-1.3-.8-1.7-.5-.4-.8-1-.8-1.8 0-1.5 1.5-2.5 3-2.5h1.1c3 0 5-2.5 5-5.5C22 6.5 17.5 2 12 2z" />
+      <circle cx="6.5" cy="10.5" r="1.5" fill="currentColor" />
+      <circle cx="9.5" cy="6.5" r="1.5" fill="currentColor" />
+      <circle cx="14.5" cy="6.5" r="1.5" fill="currentColor" />
+      <circle cx="17.5" cy="10.5" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}
