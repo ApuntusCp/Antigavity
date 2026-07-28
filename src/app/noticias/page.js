@@ -1368,24 +1368,44 @@ function NoticiasContent() {
               </button>
 
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 border-b border-[#D4AF37]/30 pb-6 clear-both">
-                <div className="relative w-28 h-28 rounded-2xl overflow-hidden shrink-0 border-2 border-[#D4AF37] shadow-[0_0_25px_rgba(212,175,55,0.5)]">
-                  <img 
-                    src={selectedAuthor.avatar} 
-                    alt={selectedAuthor.name}
-                    onError={(e) => {
-                      e.currentTarget.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80";
-                    }}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute bottom-1 right-1 bg-black/80 p-1 rounded-full border border-[#D4AF37]">
-                    <BadgeCheck size={18} className="text-[#D4AF37]" />
-                  </div>
+                <div className="relative w-28 h-28 rounded-2xl overflow-hidden shrink-0 border-2 border-[#D4AF37] shadow-[0_0_25px_rgba(212,175,55,0.5)] flex items-center justify-center bg-[#051208]">
+                  {selectedAuthor.isPhotoVerified && selectedAuthor.avatar ? (
+                    <>
+                      <img 
+                        src={selectedAuthor.avatar} 
+                        alt={selectedAuthor.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute bottom-1 right-1 bg-black/80 p-1 rounded-full border border-[#D4AF37]">
+                        <BadgeCheck size={18} className="text-[#D4AF37]" />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center bg-gradient-to-b from-[#0B2010] to-[#040C06] relative">
+                      <User size={36} className="text-[#D4AF37] mb-1" />
+                      <span className="font-mono text-[9px] font-extrabold text-amber-300/90 uppercase tracking-widest leading-none">
+                        {selectedAuthor.name ? selectedAuthor.name.split(' ').map(n => n[0]).join('').slice(0, 3) : 'PRENSA'}
+                      </span>
+                      <div className="absolute bottom-1 right-1 bg-black/90 p-1 rounded-full border border-amber-500/50" title="Fotografía en revisión de fuente oficial">
+                        <AlertTriangle size={14} className="text-amber-400" />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2 text-center sm:text-left flex-1 min-w-0">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#D4AF37] text-[10px] font-mono font-bold uppercase tracking-widest">
-                    <ShieldCheck size={13} />
-                    <span>Perfil Profesional de Prensa Verificado</span>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#D4AF37] text-[10px] font-mono font-bold uppercase tracking-widest">
+                    {selectedAuthor.isPhotoVerified ? (
+                      <>
+                        <ShieldCheck size={13} className="text-emerald-400" />
+                        <span>Perfil e Imagen de Prensa Verificados</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck size={13} className="text-[#D4AF37]" />
+                        <span>Trayectoria Biográfica Verificada • Sin Foto Oficial Registrada</span>
+                      </>
+                    )}
                   </div>
 
                   <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white leading-tight">
@@ -1402,6 +1422,13 @@ function NoticiasContent() {
                     </span>
                     <span className="flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-lg border border-white/10">
                       <MapPin size={13} className="text-[#D4AF37]" /> {selectedAuthor.location}
+                    </span>
+                  </div>
+
+                  {/* TRAZABILIDAD Y CRÉDITO DE FUENTE DE IMAGEN (FASE 2 & FASE 3) */}
+                  <div className="pt-1">
+                    <span className="text-[9px] font-mono text-gray-400 block">
+                      Trazabilidad de Imagen: <strong className="text-gray-300">{selectedAuthor.photoSourceCredit || "Sin foto oficial de prensa atribuida"}</strong>
                     </span>
                   </div>
                 </div>
