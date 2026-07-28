@@ -296,53 +296,53 @@ function GlobalAcademicRepositoryContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070D18] text-white pt-32 pb-36 px-4 sm:px-6 relative overflow-hidden select-none">
+    <div className="min-h-screen theme-noticias text-white pt-32 pb-36 px-4 sm:px-6 relative overflow-hidden select-none">
       
-      {/* Fondo de Estética Cuero Navy & Acento Cian Eléctrico */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-[#0A1628] via-[#070D18] to-black opacity-90 pointer-events-none" />
+      {/* Fondo de Estética Cuero Botánico Verde Esmeralda & Dorado GranColinos */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-[#D4AF37]/15 via-[#020502] to-black opacity-90 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10 space-y-10">
 
         {/* HERO PRINCIPAL — REPOSITORIO ACADÉMICO GLOBAL */}
         <div className="text-center space-y-4 fade-in">
-          <div className="inline-flex items-center gap-2 bg-[#00F0FF]/10 px-4 py-1.5 rounded-full border border-[#00F0FF]/30">
-            <Globe size={16} className="text-[#00F0FF]" />
-            <span className="text-[#00F0FF] text-xs font-bold tracking-[0.25em] uppercase">
+          <div className="inline-flex items-center gap-2 bg-[#D4AF37]/15 px-4 py-1.5 rounded-full border border-[#D4AF37]/40 shadow-md">
+            <Globe size={16} className="text-[#D4AF37]" />
+            <span className="text-[#D4AF37] text-xs font-mono font-extrabold tracking-[0.25em] uppercase">
               REPOSITORIO GLOBAL DE INVESTIGACIÓN ACADÉMICA
             </span>
           </div>
 
-          <h1 className="font-serif text-4xl md:text-6xl text-[#00F0FF] drop-shadow-[0_0_25px_rgba(0,240,255,0.4)]">
+          <h1 className="font-serif text-4xl md:text-6xl font-black text-gold-gradient uppercase tracking-tight drop-shadow-[0_4px_30px_rgba(212,175,55,0.4)]">
             Base de Datos Global de Investigación
           </h1>
-          <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-[#00F0FF] to-transparent mx-auto"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_12px_rgba(212,175,55,0.8)]"></div>
 
-          <p className="text-gray-300 max-w-3xl mx-auto font-light leading-relaxed text-sm md:text-base">
+          <p className="text-gray-200 max-w-3xl mx-auto font-light leading-relaxed text-sm md:text-base">
             Buscador federado y libre de literatura científica internacional indexando publicaciones de OpenAlex, PubMed, arXiv, SciELO y repositorios universitarios en acceso abierto.
           </p>
 
-          {/* AVISO DE CUMPLIMIENTO RIGUROSO DE DERECHOS DE AUTOR (FASE 5) */}
-          <div className="max-w-2xl mx-auto bg-black/60 border border-[#00F0FF]/25 rounded-2xl p-3.5 backdrop-blur-md flex items-center justify-center gap-3 text-xs text-center">
-            <div className="flex items-center gap-2 text-gray-300">
-              <ShieldCheck size={18} className="text-[#00F0FF] shrink-0" />
+          {/* AVISO DE CUMPLIMIENTO RIGUROSO DE DERECHOS DE AUTOR */}
+          <div className="max-w-2xl mx-auto bg-[#051208]/85 border border-[#D4AF37]/30 rounded-2xl p-3.5 backdrop-blur-md flex items-center justify-center gap-3 text-xs text-center shadow-lg">
+            <div className="flex items-center gap-2 text-gray-200">
+              <ShieldCheck size={18} className="text-[#D4AF37] shrink-0" />
               <span>Indexación 100% Legal: Acceso a metadatos, resúmenes y enlaces directos a las fuentes universitarias originales.</span>
             </div>
           </div>
         </div>
 
-        {/* BUSCADOR PRINCIPAL Y BUSCADOR AVANZADO BOOLEANO (FASE 3 & FASE 10) */}
-        <div className="bg-[#0A1424]/90 border border-[#00F0FF]/40 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-[0_0_50px_rgba(0,240,255,0.15)] space-y-6">
+        {/* BUSCADOR PRINCIPAL Y BUSCADOR AVANZADO BOOLEANO */}
+        <div className="bg-[#051208]/85 border border-[#D4AF37]/40 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl space-y-6">
           
           <form onSubmit={handleSearchSubmit} className="space-y-4">
             <div className="flex flex-col md:flex-row items-center gap-3">
               <div className="relative flex-1 w-full">
-                <Search className="absolute left-4 top-3.5 text-[#00F0FF]" size={20} />
+                <Search className="absolute left-4 top-3.5 text-[#D4AF37]" size={20} />
                 <input
                   type="text"
                   placeholder="Buscar artículos científicos, autores o temas (ej. 'apitoxina melitina', 'CBD botánica')..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#050A12] border border-[#00F0FF]/30 rounded-2xl pl-12 pr-10 py-3.5 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#00F0FF] font-mono shadow-inner"
+                  className="w-full bg-[#030904] border border-[#D4AF37]/35 rounded-2xl pl-12 pr-10 py-3.5 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#D4AF37] font-mono shadow-inner"
                 />
                 {searchQuery && (
                   <button
@@ -358,7 +358,7 @@ function GlobalAcademicRepositoryContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full md:w-auto px-8 py-3.5 bg-[#00F0FF] text-black font-extrabold text-xs uppercase tracking-widest rounded-2xl hover:bg-white transition-all shadow-[0_0_25px_rgba(0,240,255,0.5)] flex items-center justify-center gap-2"
+                className="w-full md:w-auto px-8 py-3.5 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-widest rounded-2xl hover:bg-white transition-all shadow-lg flex items-center justify-center gap-2"
               >
                 {loading ? <RefreshCw className="animate-spin" size={16} /> : <Search size={16} />}
                 <span>{loading ? 'Consultando...' : 'Buscar en Red Global'}</span>
@@ -370,7 +370,7 @@ function GlobalAcademicRepositoryContent() {
               <button
                 type="button"
                 onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
-                className="text-xs font-mono text-[#00F0FF] hover:underline flex items-center gap-1.5"
+                className="text-xs font-mono text-[#D4AF37] hover:underline flex items-center gap-1.5"
               >
                 <Sliders size={14} />
                 <span>{showAdvancedSearch ? 'Ocultar Filtros Booleanos Avanzados' : 'Búsqueda Booleana Avanzada (AND, OR, NOT, Campos)'}</span>
@@ -380,7 +380,7 @@ function GlobalAcademicRepositoryContent() {
                 <button
                   type="button"
                   onClick={() => setSelectedFolderView('all')}
-                  className="text-xs font-mono text-[#00F0FF] hover:underline flex items-center gap-1.5"
+                  className="text-xs font-mono text-[#D4AF37] hover:underline flex items-center gap-1.5"
                 >
                   <Bookmark size={14} />
                   <span>Mis Carpetas de Proyecto ({Object.keys(researchFolders).length})</span>
@@ -388,15 +388,15 @@ function GlobalAcademicRepositoryContent() {
               )}
             </div>
 
-            {/* PANEL DE BÚSQUEDA BOOLEANA AVANZADA (FASE 10) */}
+            {/* PANEL DE BÚSQUEDA BOOLEANA AVANZADA */}
             {showAdvancedSearch && (
-              <div className="p-5 bg-[#050A12] rounded-2xl border border-[#00F0FF]/30 grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in text-xs font-mono">
+              <div className="p-5 bg-[#030904] rounded-2xl border border-[#D4AF37]/35 grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in text-xs font-mono">
                 <div className="space-y-1.5">
                   <label className="text-gray-400">Operador Lógico:</label>
                   <select
                     value={booleanOperator}
                     onChange={(e) => setBooleanOperator(e.target.value)}
-                    className="w-full bg-[#08101D] text-[#00F0FF] py-2 px-3 rounded-xl border border-white/20 focus:outline-none focus:border-[#00F0FF]"
+                    className="w-full bg-[#051208] text-[#D4AF37] py-2 px-3 rounded-xl border border-white/20 focus:outline-none focus:border-[#D4AF37]"
                   >
                     <option value="AND">AND (Todas las palabras obligatorias)</option>
                     <option value="OR">OR (Cualquiera de las palabras)</option>
@@ -411,7 +411,7 @@ function GlobalAcademicRepositoryContent() {
                     placeholder='Ej: "cambio climático"'
                     value={exactPhrase}
                     onChange={(e) => setExactPhrase(e.target.value)}
-                    className="w-full bg-[#08101D] text-white py-2 px-3 rounded-xl border border-white/20 focus:outline-none focus:border-[#00F0FF]"
+                    className="w-full bg-[#051208] text-white py-2 px-3 rounded-xl border border-white/20 focus:outline-none focus:border-[#D4AF37]"
                   />
                 </div>
 
@@ -422,56 +422,56 @@ function GlobalAcademicRepositoryContent() {
                     placeholder="Ej: García, Aponte..."
                     value={authorFilter}
                     onChange={(e) => setAuthorFilter(e.target.value)}
-                    className="w-full bg-[#08101D] text-white py-2 px-3 rounded-xl border border-white/20 focus:outline-none focus:border-[#00F0FF]"
+                    className="w-full bg-[#051208] text-white py-2 px-3 rounded-xl border border-white/20 focus:outline-none focus:border-[#D4AF37]"
                   />
                 </div>
               </div>
             )}
           </form>
 
-          {/* MATRIZ DE FILTROS SECUNDARIOS (FASE 2 & IDIOMAS MULTILINGÜES) */}
+          {/* MATRIZ DE FILTROS SECUNDARIOS */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-white/10 pt-4">
             <div className="space-y-1.5">
               <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider block flex items-center gap-1">
-                <Filter size={12} className="text-[#00F0FF]" /> Filtrar por Disciplina
+                <Filter size={12} className="text-[#D4AF37]" /> Filtrar por Disciplina
               </label>
               <select
                 value={activeDiscipline}
                 onChange={(e) => handleDisciplineChange(e.target.value)}
-                className="w-full bg-[#050A12] text-[#00F0FF] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#00F0FF] cursor-pointer"
+                className="w-full bg-[#030904] text-[#D4AF37] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#D4AF37] cursor-pointer"
               >
                 {disciplines.map(d => (
-                  <option key={d.id} value={d.id} className="bg-[#050A12] text-white">{d.name}</option>
+                  <option key={d.id} value={d.id} className="bg-[#030904] text-white">{d.name}</option>
                 ))}
               </select>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider block flex items-center gap-1">
-                <Globe size={12} className="text-[#00F0FF]" /> Idioma de la Fuente (Históricos & Modernos)
+                <Globe size={12} className="text-[#D4AF37]" /> Idioma de la Fuente (Históricos & Modernos)
               </label>
               <select
                 value={activeLanguage}
                 onChange={(e) => handleLanguageChange(e.target.value)}
-                className="w-full bg-[#050A12] text-[#00F0FF] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#00F0FF] cursor-pointer"
+                className="w-full bg-[#030904] text-[#D4AF37] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#D4AF37] cursor-pointer"
               >
                 {languages.map(l => (
-                  <option key={l.id} value={l.id} className="bg-[#050A12] text-white">{l.name}</option>
+                  <option key={l.id} value={l.id} className="bg-[#030904] text-white">{l.name}</option>
                 ))}
               </select>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-[10px] text-gray-400 font-mono uppercase tracking-wider block flex items-center gap-1">
-                <Layers size={12} className="text-[#00F0FF]" /> Tipo de Publicación
+                <Layers size={12} className="text-[#D4AF37]" /> Tipo de Publicación
               </label>
               <select
                 value={activeDocType}
                 onChange={(e) => handleDocTypeChange(e.target.value)}
-                className="w-full bg-[#050A12] text-[#00F0FF] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#00F0FF] cursor-pointer"
+                className="w-full bg-[#030904] text-[#D4AF37] text-xs font-semibold py-2.5 px-3 rounded-xl border border-white/20 appearance-none focus:outline-none focus:border-[#D4AF37] cursor-pointer"
               >
                 {docTypes.map(t => (
-                  <option key={t.id} value={t.id} className="bg-[#050A12] text-white">{t.name}</option>
+                  <option key={t.id} value={t.id} className="bg-[#030904] text-white">{t.name}</option>
                 ))}
               </select>
             </div>
@@ -480,23 +480,23 @@ function GlobalAcademicRepositoryContent() {
 
         {/* MENSAJE TOAST ALERTA */}
         {toastMessage && (
-          <div className="fixed bottom-6 right-6 z-[9999] bg-[#00F0FF] text-black font-mono font-bold text-xs px-5 py-3 rounded-2xl shadow-[0_0_30px_rgba(0,240,255,0.6)] animate-in fade-in flex items-center gap-2">
+          <div className="fixed bottom-6 right-6 z-[9999] bg-[#D4AF37] text-black font-mono font-bold text-xs px-5 py-3 rounded-2xl shadow-[0_0_30px_rgba(212,175,55,0.6)] animate-in fade-in flex items-center gap-2">
             <Check size={16} /> {toastMessage}
           </div>
         )}
 
-        {/* LISTADO DE RESULTADOS DE INVESTIGACIÓN (FASE 3 & FASE 4) */}
+        {/* LISTADO DE RESULTADOS DE INVESTIGACIÓN */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-gray-400 space-y-4">
-            <RefreshCw className="animate-spin text-[#00F0FF]" size={36} />
+            <RefreshCw className="animate-spin text-[#D4AF37]" size={36} />
             <div className="text-center font-mono space-y-1">
-              <p className="text-sm font-bold text-[#00F0FF]">Consultando simultáneamente en OpenAlex, PubMed, arXiv y SciELO...</p>
+              <p className="text-sm font-bold text-[#D4AF37]">Consultando simultáneamente en OpenAlex, PubMed, arXiv y SciELO...</p>
               <p className="text-xs text-gray-400">Verificando metadatos y resúmenes de acceso abierto</p>
             </div>
           </div>
         ) : results.length === 0 ? (
-          <div className="text-center py-16 bg-[#0A1424]/60 rounded-3xl border border-white/10 p-8 space-y-4">
-            <AlertCircle className="text-[#00F0FF] mx-auto mb-2" size={40} />
+          <div className="text-center py-16 bg-[#051208]/85 rounded-3xl border border-white/10 p-8 space-y-4">
+            <AlertCircle className="text-[#D4AF37] mx-auto mb-2" size={40} />
             <h3 className="text-lg font-bold text-white font-serif">No se encontraron artículos para "{activeQuery}"</h3>
             <p className="text-xs text-gray-300 max-w-md mx-auto font-light leading-relaxed">
               Intente simplificar la búsqueda o usar términos alternativos en español o inglés.
@@ -505,7 +505,7 @@ function GlobalAcademicRepositoryContent() {
         ) : (
           <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-white/10 pb-4 font-mono text-xs text-gray-400">
-              <span>Mostrando <strong className="text-[#00F0FF] font-bold">{results.length}</strong> publicaciones científicas halladas</span>
+              <span>Mostrando <strong className="text-[#D4AF37] font-bold">{results.length}</strong> publicaciones científicas halladas</span>
               <span className="hidden sm:inline">Fuentes activas: OpenAlex • PubMed • arXiv</span>
             </div>
 
@@ -515,11 +515,11 @@ function GlobalAcademicRepositoryContent() {
                 return (
                   <div
                     key={paper.id}
-                    className="bg-[#0A1424]/80 border border-white/15 hover:border-[#00F0FF]/70 rounded-3xl p-6 backdrop-blur-xl shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1 space-y-4"
+                    className="bg-[#051208]/85 border border-white/10 hover:border-[#D4AF37]/70 rounded-3xl p-6 backdrop-blur-xl shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1 space-y-4"
                   >
                     <div className="space-y-3">
                       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
-                        <span className="px-2.5 py-1 bg-[#00F0FF]/15 text-[#00F0FF] text-[9px] font-bold uppercase tracking-widest rounded border border-[#00F0FF]/30">
+                        <span className="px-2.5 py-1 bg-[#D4AF37]/15 text-[#D4AF37] text-[9px] font-bold uppercase tracking-widest rounded border border-[#D4AF37]/35">
                           {paper.fuente_nombre}
                         </span>
                         <span className="text-[10px] font-mono text-gray-400">
@@ -527,11 +527,11 @@ function GlobalAcademicRepositoryContent() {
                         </span>
                       </div>
 
-                      <h3 className="font-serif text-lg font-bold text-white leading-snug group-hover:text-[#00F0FF] transition-colors">
+                      <h3 className="font-serif text-lg font-bold text-white leading-snug group-hover:text-[#D4AF37] transition-colors">
                         {paper.titulo}
                       </h3>
 
-                      <p className="text-[#00F0FF] text-xs font-mono font-semibold">
+                      <p className="text-[#D4AF37] text-xs font-mono font-semibold">
                         {(paper.autores || []).join(', ')}
                       </p>
 
@@ -541,28 +541,28 @@ function GlobalAcademicRepositoryContent() {
                     </div>
 
                     <div className="pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 font-mono text-xs">
-                      {/* BOTÓN: VER DOCUMENTO EN FUENTE ORIGINAL DE TERCEROS (CUMPLIMIENTO DERECHOS DE AUTOR FASE 5) */}
+                      {/* BOTÓN: VER DOCUMENTO EN FUENTE ORIGINAL */}
                       <a
                         href={paper.url_original}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-4 py-2 bg-[#00F0FF] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center gap-1.5"
+                        className="px-4 py-2 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center gap-1.5"
                       >
                         <span>Ver en Repositorio Oficial</span>
                         <ExternalLink size={13} />
                       </a>
 
                       <div className="flex items-center gap-2">
-                        {/* BOTÓN: CITAR APA 7 & ICONTEC (FASE 7) */}
+                        {/* BOTÓN: CITAR APA 7 & ICONTEC */}
                         <button
                           onClick={() => setSelectedCitationPaper(paper)}
-                          className="px-3 py-2 bg-white/10 hover:bg-white/20 text-[#00F0FF] font-bold text-[11px] uppercase rounded-xl border border-white/10 transition-all flex items-center gap-1"
+                          className="px-3 py-2 bg-white/10 hover:bg-white/20 text-[#D4AF37] font-bold text-[11px] uppercase rounded-xl border border-white/10 transition-all flex items-center gap-1"
                           title="Generar Cita APA 7 o ICONTEC"
                         >
                           <FileText size={13} /> Citar
                         </button>
 
-                        {/* BOTÓN: GUARDAR EN CARPETA (FASE 8) */}
+                        {/* BOTÓN: GUARDAR EN CARPETA */}
                         <button
                           onClick={() => setActiveFolderModalPaper(paper)}
                           className="px-3 py-2 bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white font-bold text-[11px] uppercase rounded-xl border border-white/10 transition-all flex items-center gap-1"
@@ -579,10 +579,10 @@ function GlobalAcademicRepositoryContent() {
           </div>
         )}
 
-        {/* MODAL DE MOTOR DE CITACIÓN APA 7ª E ICONTEC (FASE 7) */}
+        {/* MODAL DE MOTOR DE CITACIÓN APA 7ª E ICONTEC */}
         {selectedCitationPaper && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in">
-            <div className="bg-[#0A1424] border border-[#00F0FF]/50 rounded-3xl max-w-2xl w-full p-6 md:p-8 space-y-6 relative shadow-[0_0_90px_rgba(0,240,255,0.25)]">
+            <div className="bg-[#051208] border border-[#D4AF37]/50 rounded-3xl max-w-2xl w-full p-6 md:p-8 space-y-6 relative shadow-[0_0_90px_rgba(212,175,55,0.25)]">
               <button
                 onClick={() => setSelectedCitationPaper(null)}
                 className="absolute top-4 right-4 text-gray-400 hover:text-white w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"
@@ -590,8 +590,8 @@ function GlobalAcademicRepositoryContent() {
                 <X size={16} />
               </button>
 
-              <div className="space-y-2 border-b border-[#00F0FF]/20 pb-4">
-                <span className="px-3 py-1 bg-[#00F0FF]/20 text-[#00F0FF] text-[10px] font-bold uppercase tracking-widest rounded border border-[#00F0FF]/40 inline-flex items-center gap-1">
+              <div className="space-y-2 border-b border-[#D4AF37]/20 pb-4">
+                <span className="px-3 py-1 bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] font-bold uppercase tracking-widest rounded border border-[#D4AF37]/40 inline-flex items-center gap-1">
                   <FileText size={12} /> MOTOR DE CITACIÓN ACADÉMICA AUTOMÁTICO
                 </span>
                 <h3 className="font-serif text-lg font-bold text-white leading-snug">{selectedCitationPaper.titulo}</h3>
@@ -600,32 +600,32 @@ function GlobalAcademicRepositoryContent() {
               <div className="space-y-4 font-mono text-xs">
                 {/* CITA APA 7ª EDICIÓN */}
                 <div className="p-4 bg-black/60 rounded-2xl border border-white/10 space-y-2">
-                  <div className="flex items-center justify-between text-[#00F0FF] font-bold uppercase tracking-wider text-[11px]">
+                  <div className="flex items-center justify-between text-[#D4AF37] font-bold uppercase tracking-wider text-[11px]">
                     <span>Cita Estándar Internacional (APA 7ª Edición)</span>
                     <button
                       onClick={() => copyToClipboard(generateCitations(selectedCitationPaper).apa, 'APA 7')}
-                      className="px-3 py-1 bg-[#00F0FF]/20 text-[#00F0FF] hover:bg-[#00F0FF] hover:text-black rounded-lg border border-[#00F0FF]/40 transition-all flex items-center gap-1"
+                      className="px-3 py-1 bg-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black rounded-lg border border-[#D4AF37]/40 transition-all flex items-center gap-1"
                     >
                       <Copy size={12} /> {copiedFormat === 'APA 7' ? '¡Copiado!' : 'Copiar Cita APA 7'}
                     </button>
                   </div>
-                  <p className="text-gray-200 leading-relaxed italic bg-[#070D18] p-3 rounded-xl border border-white/5">
+                  <p className="text-gray-200 leading-relaxed italic bg-[#030904] p-3 rounded-xl border border-white/5">
                     {generateCitations(selectedCitationPaper).apa}
                   </p>
                 </div>
 
                 {/* CITA ICONTEC (COLOMBIA) */}
                 <div className="p-4 bg-black/60 rounded-2xl border border-white/10 space-y-2">
-                  <div className="flex items-center justify-between text-[#00F0FF] font-bold uppercase tracking-wider text-[11px]">
+                  <div className="flex items-center justify-between text-[#D4AF37] font-bold uppercase tracking-wider text-[11px]">
                     <span>Cita Norma Colombiana (ICONTEC NTC 1486 / 5613)</span>
                     <button
                       onClick={() => copyToClipboard(generateCitations(selectedCitationPaper).icontec, 'ICONTEC')}
-                      className="px-3 py-1 bg-[#00F0FF]/20 text-[#00F0FF] hover:bg-[#00F0FF] hover:text-black rounded-lg border border-[#00F0FF]/40 transition-all flex items-center gap-1"
+                      className="px-3 py-1 bg-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black rounded-lg border border-[#D4AF37]/40 transition-all flex items-center gap-1"
                     >
                       <Copy size={12} /> {copiedFormat === 'ICONTEC' ? '¡Copiado!' : 'Copiar Cita ICONTEC'}
                     </button>
                   </div>
-                  <p className="text-gray-200 leading-relaxed italic bg-[#070D18] p-3 rounded-xl border border-white/5">
+                  <p className="text-gray-200 leading-relaxed italic bg-[#030904] p-3 rounded-xl border border-white/5">
                     {generateCitations(selectedCitationPaper).icontec}
                   </p>
                 </div>
@@ -643,10 +643,10 @@ function GlobalAcademicRepositoryContent() {
           </div>
         )}
 
-        {/* MODAL DE GUARDAR EN CARPETA DE PROYECTO (FASE 8) */}
+        {/* MODAL DE GUARDAR EN CARPETA DE PROYECTO */}
         {activeFolderModalPaper && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in">
-            <div className="bg-[#0A1424] border border-[#00F0FF]/50 rounded-3xl max-w-md w-full p-6 space-y-6 relative shadow-[0_0_90px_rgba(0,240,255,0.25)]">
+            <div className="bg-[#051208] border border-[#D4AF37]/50 rounded-3xl max-w-md w-full p-6 space-y-6 relative shadow-[0_0_90px_rgba(212,175,55,0.25)]">
               <button
                 onClick={() => setActiveFolderModalPaper(null)}
                 className="absolute top-4 right-4 text-gray-400 hover:text-white w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"
@@ -654,8 +654,8 @@ function GlobalAcademicRepositoryContent() {
                 <X size={16} />
               </button>
 
-              <div className="space-y-2 border-b border-[#00F0FF]/20 pb-3">
-                <span className="px-3 py-1 bg-[#00F0FF]/20 text-[#00F0FF] text-[10px] font-bold uppercase tracking-widest rounded border border-[#00F0FF]/40 inline-flex items-center gap-1">
+              <div className="space-y-2 border-b border-[#D4AF37]/20 pb-3">
+                <span className="px-3 py-1 bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] font-bold uppercase tracking-widest rounded border border-[#D4AF37]/40 inline-flex items-center gap-1">
                   <Bookmark size={12} /> GUARDAR REFERENCIA EN CARPETA
                 </span>
                 <h3 className="font-serif text-sm font-bold text-white truncate">{activeFolderModalPaper.titulo}</h3>
@@ -669,11 +669,11 @@ function GlobalAcademicRepositoryContent() {
                     placeholder="Nombre de nueva carpeta..."
                     value={newFolderName}
                     onChange={(e) => setNewFolderName(e.target.value)}
-                    className="flex-1 bg-[#050A12] border border-[#00F0FF]/30 rounded-xl px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-[#00F0FF]"
+                    className="flex-1 bg-[#030904] border border-[#D4AF37]/30 rounded-xl px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-[#D4AF37]"
                   />
                   <button
                     onClick={createNewFolder}
-                    className="px-4 py-2 bg-[#00F0FF] text-black font-bold uppercase rounded-xl hover:bg-white transition-all shrink-0 flex items-center gap-1"
+                    className="px-4 py-2 bg-[#D4AF37] text-black font-bold uppercase rounded-xl hover:bg-white transition-all shrink-0 flex items-center gap-1"
                   >
                     <FolderPlus size={14} /> Crear
                   </button>
@@ -686,10 +686,10 @@ function GlobalAcademicRepositoryContent() {
                       <button
                         key={folderName}
                         onClick={() => savePaperToFolder(folderName, activeFolderModalPaper)}
-                        className="w-full p-3 bg-black/60 hover:bg-[#00F0FF]/20 border border-white/10 hover:border-[#00F0FF]/50 rounded-xl text-left font-semibold text-white flex items-center justify-between transition-all"
+                        className="w-full p-3 bg-black/60 hover:bg-[#D4AF37]/20 border border-white/10 hover:border-[#D4AF37]/50 rounded-xl text-left font-semibold text-white flex items-center justify-between transition-all"
                       >
                         <span className="truncate">{folderName}</span>
-                        <span className="text-[10px] text-[#00F0FF] bg-[#00F0FF]/10 px-2 py-0.5 rounded">
+                        <span className="text-[10px] text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded">
                           {researchFolders[folderName]?.length || 0} ítems
                         </span>
                       </button>
@@ -701,14 +701,14 @@ function GlobalAcademicRepositoryContent() {
           </div>
         )}
 
-        {/* MODAL DE VISTA DE CARPETAS DE PROYECTO Y EXPORTACIÓN BIBTEX/RIS (FASE 8 & FASE 9) */}
+        {/* MODAL DE VISTA DE CARPETAS DE PROYECTO Y EXPORTACIÓN BIBTEX/RIS */}
         {selectedFolderView && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl animate-in fade-in">
-            <div className="bg-[#0A1424] border border-[#00F0FF]/50 rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-[0_0_90px_rgba(0,240,255,0.25)]">
+            <div className="bg-[#051208] border border-[#D4AF37]/50 rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-[0_0_90px_rgba(212,175,55,0.25)]">
               
-              <div className="p-6 border-b border-[#00F0FF]/20 flex items-center justify-between">
+              <div className="p-6 border-b border-[#D4AF37]/20 flex items-center justify-between">
                 <div>
-                  <span className="px-3 py-1 bg-[#00F0FF]/20 text-[#00F0FF] text-[10px] font-bold uppercase tracking-widest rounded border border-[#00F0FF]/40 inline-flex items-center gap-1 mb-1">
+                  <span className="px-3 py-1 bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] font-bold uppercase tracking-widest rounded border border-[#D4AF37]/40 inline-flex items-center gap-1 mb-1">
                     <Bookmark size={12} /> CARPETAS DE PROYECTO DE INVESTIGACIÓN
                   </span>
                   <h3 className="font-serif text-xl font-bold text-white">Gestión de Referencias & Exportación BibTeX/RIS</h3>
@@ -716,7 +716,7 @@ function GlobalAcademicRepositoryContent() {
 
                 <button
                   onClick={() => setSelectedFolderView(null)}
-                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#00F0FF] hover:text-black flex items-center justify-center transition-all"
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#D4AF37] hover:text-black flex items-center justify-center transition-all"
                 >
                   <X size={16} />
                 </button>
@@ -732,15 +732,15 @@ function GlobalAcademicRepositoryContent() {
                       <div key={folderName} className="bg-black/60 border border-white/15 rounded-2xl p-5 space-y-4">
                         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
                           <div>
-                            <h4 className="font-mono text-sm font-bold text-[#00F0FF]">{folderName}</h4>
+                            <h4 className="font-mono text-sm font-bold text-[#D4AF37]">{folderName}</h4>
                             <span className="text-[10px] text-gray-400 font-mono">{folderItems.length} referencias guardadas</span>
                           </div>
 
-                          {/* BOTONES DE EXPORTACIÓN BIBTEX / RIS / APA 7 (FASE 9) */}
+                          {/* BOTONES DE EXPORTACIÓN BIBTEX / RIS / APA 7 */}
                           <div className="flex flex-wrap items-center gap-2">
                             <button
                               onClick={() => exportFolderBibliography(folderName, 'bibtex')}
-                              className="px-3 py-1.5 bg-[#00F0FF]/20 text-[#00F0FF] hover:bg-[#00F0FF] hover:text-black text-[10px] font-mono font-bold uppercase rounded-lg border border-[#00F0FF]/40 transition-all flex items-center gap-1"
+                              className="px-3 py-1.5 bg-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black text-[10px] font-mono font-bold uppercase rounded-lg border border-[#D4AF37]/40 transition-all flex items-center gap-1"
                               title="Exportar archivo BibTeX (.bib) para Zotero / Mendeley / LaTeX"
                             >
                               <Download size={12} /> BibTeX (.bib)
@@ -748,7 +748,7 @@ function GlobalAcademicRepositoryContent() {
 
                             <button
                               onClick={() => exportFolderBibliography(folderName, 'ris')}
-                              className="px-3 py-1.5 bg-[#00F0FF]/20 text-[#00F0FF] hover:bg-[#00F0FF] hover:text-black text-[10px] font-mono font-bold uppercase rounded-lg border border-[#00F0FF]/40 transition-all flex items-center gap-1"
+                              className="px-3 py-1.5 bg-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black text-[10px] font-mono font-bold uppercase rounded-lg border border-[#D4AF37]/40 transition-all flex items-center gap-1"
                               title="Exportar archivo RIS (.ris) para Zotero / EndNote"
                             >
                               <Download size={12} /> RIS (.ris)
@@ -777,7 +777,7 @@ function GlobalAcademicRepositoryContent() {
                         ) : (
                           <div className="space-y-2 font-mono text-xs">
                             {folderItems.map(item => (
-                              <div key={item.id} className="p-3 bg-[#070D18] rounded-xl border border-white/5 flex items-center justify-between gap-3">
+                              <div key={item.id} className="p-3 bg-[#030904] rounded-xl border border-white/5 flex items-center justify-between gap-3">
                                 <div className="truncate">
                                   <p className="text-white font-bold truncate">{item.titulo}</p>
                                   <p className="text-gray-400 text-[10px] truncate">{(item.autores || []).join(', ')} • {item.anio}</p>
@@ -788,7 +788,7 @@ function GlobalAcademicRepositoryContent() {
                                     href={item.url_original}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="p-1.5 text-[#00F0FF] hover:bg-[#00F0FF]/20 rounded-lg"
+                                    className="p-1.5 text-[#D4AF37] hover:bg-[#D4AF37]/20 rounded-lg"
                                     title="Ver en repositorio oficial"
                                   >
                                     <ExternalLink size={14} />
@@ -824,8 +824,8 @@ function GlobalAcademicRepositoryContent() {
 export default function BaseDatosPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#070D18] flex items-center justify-center text-white font-mono text-xs">
-        <RefreshCw className="animate-spin text-[#00F0FF] mb-2" size={32} />
+      <div className="min-h-screen bg-[#020502] flex items-center justify-center text-white font-mono text-xs">
+        <RefreshCw className="animate-spin text-[#D4AF37] mb-2" size={32} />
       </div>
     }>
       <GlobalAcademicRepositoryContent />
