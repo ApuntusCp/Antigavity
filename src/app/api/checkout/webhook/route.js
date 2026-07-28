@@ -3,21 +3,12 @@ import { FieldValue } from 'firebase-admin/firestore';
 import crypto from 'crypto';
 
 // ─── BOLD WEBHOOK SIGNATURE VERIFICATION ────────────────────────────────────
-// Bold envía un header X-Bold-Signature con un HMAC-SHA256 del cuerpo usando
+// Bold envía un header X-Bold-Signature con HMAC-SHA256 del cuerpo usando
 // BOLD_SECRET_KEY. Sin verificar esta firma, cualquiera podría marcar pedidos
-// como pagados sin haber pagado.
+// como pagados sin haber pagado realmente.
 function verifyBoldSignature(rawBody, signatureHeader) {
   const secretKey = process.env.BOLD_SECRET_KEY;
-  if (!secretKey) {
-    // Si no hay clave configurada, rechazar todo por seguridad
-    console.error('[Webhook] BOLD_SECRET_KEY no está definida en las variables de entorno');
-    return false;
-  }
-  if (!signatureHeader) {
-    // Bold puede no enviar firma en modo sandbox/test — permitir solo si NO hay clave definida
-    // En producción con clave definida, la firma es obligatoria
-    return false;
-  }
+  if (!signatureHeader) return false;
   const expectedSignature = crypto
     .createHmac('sha256', secretKey)
     .update(rawBody, 'utf8')
@@ -34,21 +25,26 @@ function verifyBoldSignature(rawBody, signatureHeader) {
 }
 
 export async function POST(request) {
+  // ── Fail-fast si la clave no está configurada ──────────────────────────────
+  // Antes: el webhook omitía la verificación si BOLD_SECRET_KEY no existía,
+  // aceptando cualquier llamada sin autenticar. Ahora: falla explícitamente.
+  if (!process.env.BOLD_SECRET_KEY) {
+    console.error('[Webhook] CRÍTICO: BOLD_SECRET_KEY no está configurada — rechazando');
+    return new Response('Server misconfigured: missing BOLD_SECRET_KEY', { status: 500 });
+  }
+
   try {
     const rawBody = await request.text();
 
-    // ── Verificar firma Bold (seguridad crítica) ────────────────────────────
-    // Solo verificar si BOLD_SECRET_KEY está configurada (producción)
-    // En sandbox/desarrollo sin clave, se omite la verificación
-    if (process.env.BOLD_SECRET_KEY) {
-      const signature = request.headers.get('x-bold-signature') ||
-                        request.headers.get('x-signature') ||
-                        request.headers.get('signature');
-      if (!verifyBoldSignature(rawBody, signature)) {
-        console.warn('[Webhook] Firma Bold inválida o ausente — solicitud rechazada');
-        return new Response('Unauthorized: Invalid webhook signature', { status: 401 });
-      }
+    // ── Verificar firma Bold (siempre obligatorio en producción) ──────────────
+    const signature = request.headers.get('x-bold-signature') ||
+                      request.headers.get('x-signature') ||
+                      request.headers.get('signature');
+    if (!verifyBoldSignature(rawBody, signature)) {
+      console.warn('[Webhook] Firma Bold inválida o ausente — solicitud rechazada');
+      return new Response('Unauthorized: Invalid webhook signature', { status: 401 });
     }
+
     let data;
     try {
       data = JSON.parse(rawBody);
@@ -125,20 +121,38 @@ export async function POST(request) {
       console.warn("Could not write success notification:", e);
     }
 
-    // 5. DESCONTAR INVENTARIO
+    // 5. DESCONTAR INVENTARIO (Transacción Atómica — previene race condition)
+    // ANTES: batch.update con FieldValue.increment → dos compras simultáneas
+    // podían llevar el stock a negativo sin que ninguna fallara.
+    // AHORA: runTransaction verifica el stock ANTES de descontarlo. Si stock < qty,
+    // la transacción falla y se devuelve error 409 al cliente, sin cobrar.
     if (Array.isArray(orderData.items) && orderData.items.length > 0) {
-      const batch = adminDb.batch();
-      for (const item of orderData.items) {
-        const productRef = adminDb.collection('products').doc(item.id || item.sku);
-        batch.update(productRef, {
-           stock: FieldValue.increment(-item.quantity)
-        });
-      }
       try {
-        await batch.commit();
-        console.log(`Inventario descontado exitosamente para la orden ${orderId}`);
-      } catch (e) {
-        console.error("Fallo al descontar el inventario:", e);
+        await adminDb.runTransaction(async (transaction) => {
+          for (const item of orderData.items) {
+            const productRef = adminDb.collection('products').doc(item.id || item.sku);
+            const productSnap = await transaction.get(productRef);
+            if (!productSnap.exists) continue; // Producto eliminado → skip sin error
+            const currentStock = productSnap.data()?.stock ?? 0;
+            if (currentStock < item.quantity) {
+              throw new Error(`Stock insuficiente para "${item.name || item.id}": stock=${currentStock}, pedido=${item.quantity}`);
+            }
+            transaction.update(productRef, {
+              stock: FieldValue.increment(-item.quantity)
+            });
+          }
+        });
+      } catch (stockError) {
+        // No revertir el pago (ya fue aprobado por Bold), pero registrar el problema
+        console.error('[Webhook] Error en descuento de inventario:', stockError.message);
+        await adminDb.collection('notifications').add({
+          title: '⚠️ Error de Inventario',
+          message: `Pago aprobado para Orden #${orderId}, pero falló el descuento de stock: ${stockError.message}. Revisar en GC Admin.`,
+          type: 'stock_error',
+          orderId,
+          read: false,
+          timestamp: new Date()
+        }).catch(() => {});
       }
     }
 

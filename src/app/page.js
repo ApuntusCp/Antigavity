@@ -75,9 +75,9 @@ export default async function Home() {
               </span>
               <h2 className="font-serif text-4xl md:text-5xl text-gold-gradient drop-shadow-lg">Catálogo Exclusivo</h2>
             </div>
-            <a href="/shop" className="text-xs font-bold tracking-[0.2em] uppercase border-b border-[#D4AF37] text-[#D4AF37] pb-1 mt-6 md:mt-0 hover:text-white hover:border-white transition-colors duration-300">
+            <Link href="/shop" className="text-xs font-bold tracking-[0.2em] uppercase border-b border-[#D4AF37] text-[#D4AF37] pb-1 mt-6 md:mt-0 hover:text-white hover:border-white transition-colors duration-300">
               Ver Todo
-            </a>
+            </Link>
           </FadeInWhenVisible>
 
           <div className="flex flex-wrap justify-center gap-10">

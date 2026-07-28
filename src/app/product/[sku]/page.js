@@ -1,14 +1,15 @@
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../../utils/firebase';
 import Link from 'next/link';
-import { CheckCircle2, ShieldCheck, Truck, Lock } from 'lucide-react';
+import { CheckCircle2, ShieldCheck } from 'lucide-react';
 import AddToCartButton from './AddToCartButton';
 import ProductGallery from './ProductGallery';
 import RelatedProducts from './RelatedProducts';
 import PaymentMethodsBadge from '../../../components/PaymentMethodsBadge';
 
-// Forzar datos en tiempo real (evitar problemas de sincronización de caché)
-export const dynamic = 'force-dynamic';
+// ISR: revalidar la ficha de producto cada 60 segundos
+// (en lugar de force-dynamic que renderizaba en cada request)
+export const revalidate = 60;
 
 // Helper para obtener el producto
 async function getProductBySku(sku) {
@@ -16,11 +17,25 @@ async function getProductBySku(sku) {
     const q = query(collection(db, 'products'), where('sku', '==', decodeURIComponent(sku)));
     const snapshot = await getDocs(q);
     if (snapshot.empty) return null;
-    const doc = snapshot.docs[0];
-    return { id: doc.id, ...doc.data() };
+    const docSnap = snapshot.docs[0];
+    return { id: docSnap.id, ...docSnap.data() };
   } catch (error) {
     console.error("Error fetching product server-side:", error);
     return null;
+  }
+}
+
+// generateStaticParams: pre-renderiza fichas de producto en build time
+// Next.js genera HTML estático para cada SKU → respuesta instantánea, mejor SEO
+export async function generateStaticParams() {
+  try {
+    const { fetchProducts } = await import('../../../utils/firebase');
+    const products = await fetchProducts();
+    return products
+      .filter(p => p.sku)
+      .map(p => ({ sku: encodeURIComponent(p.sku) }));
+  } catch {
+    return [];
   }
 }
 
@@ -71,9 +86,35 @@ export default async function ProductPage({ params }) {
   const formattedPrice = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price || 0);
   const formattedDiscountPrice = product.discountPrice ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.discountPrice) : null;
 
+  // ── JSON-LD: Schema.org Product ─────────────────────────────────────────────
+  // Habilita rich snippets en Google: precio, disponibilidad, imagen, reseñas
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name || product.title,
+    "description": product.description || '',
+    "sku": product.sku,
+    "image": product.images?.[0] || '',
+    "brand": { "@type": "Brand", "name": "GranColinos" },
+    "offers": {
+      "@type": "Offer",
+      "url": `https://grancolinos.com/product/${product.sku}`,
+      "priceCurrency": "COP",
+      "price": product.discountPrice || product.price || 0,
+      "availability": (product.stock === undefined || product.stock > 0)
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      "seller": { "@type": "Organization", "name": "GranColinos" }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050A04] text-white py-28 md:py-36 px-4 sm:px-6 lg:px-8 font-sans selection:bg-[#D4AF37] selection:text-black relative overflow-hidden">
-      
+      {/* JSON-LD Product Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
       {/* Ambient background glow */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-[#D4AF37]/5 blur-[150px] pointer-events-none" />
 

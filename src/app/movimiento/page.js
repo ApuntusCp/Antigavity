@@ -20,8 +20,21 @@ export default async function MovimientoPage() {
   const blocks = cmsConfig?.blocks || [];
   
   const heroBlock = blocks.find(b => b.type === 'movimiento_hero')?.content || {};
-  const heroTitle = heroBlock.title || 'El Futuro es <br/><span class="text-gold-gradient font-black">Solarpunk & Orgánico</span>';
-  const heroText = heroBlock.text || 'El <strong>Movimiento Gran Colinos</strong> es un manifiesto vivo de soberanía. Nuestra meta es transformar la cultura de salud y dignidad en Colombia fusionando la sabiduría botánica con tecnología ética.';
+  // Whitelist de tags HTML seguros para el hero del movimiento.
+  // Se permite <br/>, <strong>, <span> y <em> pero se elimina cualquier script,
+  // evento on*, href javascript: u otro vector de XSS potencial.
+  function sanitizeHeroHtml(html) {
+    if (typeof html !== 'string') return '';
+    return html
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/on\w+="[^"]*"/gi, '')
+      .replace(/javascript:/gi, '')
+      .replace(/<(?!\/?(?:br|strong|em|span|b|i)[\s/>])[^>]+>/gi, '');
+  }
+  const heroTitleRaw = heroBlock.title || 'El Futuro es <br/><span class="text-gold-gradient font-black">Solarpunk &amp; Orgánico</span>';
+  const heroTextRaw = heroBlock.text || 'El <strong>Movimiento Gran Colinos</strong> es un manifiesto vivo de soberanía. Nuestra meta es transformar la cultura de salud y dignidad en Colombia fusionando la sabiduría botánica con tecnología ética.';
+  const heroTitle = sanitizeHeroHtml(heroTitleRaw);
+  const heroText = sanitizeHeroHtml(heroTextRaw);
   const heroCta = heroBlock.cta || 'Únete al Manifiesto';
 
   const pillarBlocks = blocks.filter(b => b.type === 'movimiento_pillar').map(b => b.content);

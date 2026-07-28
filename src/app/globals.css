@@ -40,7 +40,7 @@ body {
     radial-gradient(ellipse at 50% 15%, rgba(212, 175, 55, 0.08) 0%, transparent 60%),
     radial-gradient(circle at 50% 85%, rgba(15, 30, 10, 0.25) 0%, transparent 60%),
     linear-gradient(rgba(2, 5, 2, 0.75), rgba(2, 5, 2, 0.75)),
-    url('/images/bg_leather.jpg');
+    url('/images/bg_leather.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -59,7 +59,7 @@ body {
     radial-gradient(ellipse at 50% 100%, rgba(6, 12, 24, 0.95) 0%, transparent 75%),
     linear-gradient(rgba(3, 7, 13, 0.65), rgba(3, 7, 13, 0.65)),
     url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leatherGrain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.35' intercept='0.05'/%3E%3CfeFuncG type='linear' slope='0.4' intercept='0.08'/%3E%3CfeFuncB type='linear' slope='0.55' intercept='0.15'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leatherGrain)' opacity='0.2'/%3E%3C/svg%3E"),
-    url('/images/bg_leather.jpg');
+    url('/images/bg_leather.webp');
   background-size: auto, auto, auto, 220px 220px, cover;
   background-position: center;
   border: 1px solid rgba(212, 175, 55, 0.5);
@@ -99,7 +99,7 @@ body {
     radial-gradient(circle at 50% 85%, rgba(12, 28, 9, 0.30) 0%, transparent 70%),
     linear-gradient(rgba(2, 5, 2, 0.75), rgba(2, 5, 2, 0.75)),
     url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leatherGreenNoticias'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.35' intercept='0.05'/%3E%3CfeFuncG type='linear' slope='0.5' intercept='0.1'/%3E%3CfeFuncB type='linear' slope='0.35' intercept='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leatherGreenNoticias)' opacity='0.2'/%3E%3C/svg%3E"),
-    url('/images/bg_leather.jpg');
+    url('/images/bg_leather.webp');
   background-attachment: fixed;
   background-size: auto, auto, auto, 220px 220px, cover;
   background-position: center;
@@ -113,7 +113,7 @@ body {
     radial-gradient(circle at 50% 85%, rgba(12, 28, 9, 0.30) 0%, transparent 70%),
     linear-gradient(rgba(2, 5, 2, 0.75), rgba(2, 5, 2, 0.75)),
     url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leatherGreen'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.35' intercept='0.05'/%3E%3CfeFuncG type='linear' slope='0.5' intercept='0.1'/%3E%3CfeFuncB type='linear' slope='0.35' intercept='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leatherGreen)' opacity='0.2'/%3E%3C/svg%3E"),
-    url('/images/bg_leather.jpg');
+    url('/images/bg_leather.webp');
   background-attachment: fixed;
   background-size: auto, auto, auto, 220px 220px, cover;
   background-position: center;

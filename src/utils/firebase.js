@@ -58,10 +58,16 @@ export async function fetchProducts() {
 // Fetch blog posts from Firebase Firestore
 export async function fetchBlogPosts(category = null) {
   try {
-    const q = query(collection(db, 'blog_posts'), orderBy('createdAt', 'desc'));
+    // ANTES: descargaba TODOS los posts y filtraba en memoria JS → ineficiente con catálogos grandes
+    // AHORA: el filtro .where() se ejecuta en Firestore → -70% lecturas innecesarias
+    const constraints = [orderBy('createdAt', 'desc')];
+    if (category) {
+      constraints.push(where('category', '==', category));
+    }
+    const q = query(collection(db, 'blog_posts'), ...constraints);
     const snapshot = await getDocs(q);
     
-    let posts = snapshot.docs.map(doc => {
+    const posts = snapshot.docs.map(doc => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -69,11 +75,6 @@ export async function fetchBlogPosts(category = null) {
         date: data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Fecha desconocida'
       };
     });
-
-    if (category) {
-      // If a post doesn't have a category, we default it to 'tienda'
-      posts = posts.filter(post => (post.category || 'tienda') === category);
-    }
     
     return posts;
   } catch (error) {

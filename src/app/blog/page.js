@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { fetchBlogPosts } from "../../utils/firebase";
 
 export const dynamic = 'force-dynamic';
@@ -34,7 +35,7 @@ export default async function BlogIndex() {
           </div>
         ) : (
           posts.map((post, i) => (
-            <a key={post.slug} href={`/blog/${post.slug}`} className={`group fade-in delay-${(i % 4 + 1) * 100} block`}>
+            <Link key={post.slug} href={`/blog/${post.slug}`} className={`group fade-in delay-${(i % 4 + 1) * 100} block`}>
               <div className="relative aspect-[4/3] w-full mb-8 overflow-hidden bg-gray-100 dark:bg-gray-800">
                 <Image 
                   src={post.image || 'https://images.unsplash.com/photo-1611078731519-2166a4bc2c8e?q=80&w=1000&auto=format&fit=crop'} 
@@ -56,7 +57,7 @@ export default async function BlogIndex() {
                   {post.excerpt}
                 </p>
               </div>
-            </a>
+            </Link>
           ))
         )}
       </div>

@@ -40,7 +40,7 @@ export default function Header({ headerConfig = {} }) {
 
   const carouselRef = useRef(null);
 
-  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+
 
   const getActiveItem = () => {
     if (pathname.includes('/shop') || pathname.includes('/product') || pathname.includes('/tienda')) return 'tienda';
