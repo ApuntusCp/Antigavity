@@ -87,7 +87,7 @@ export default async function Home() {
               products.slice(0, 3).map((product, index) => (
                 <FadeInWhenVisible key={product.id} delay={index * 0.15} className="w-full sm:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)] max-w-sm">
                   <Link href={`/product/${product.sku}`} className="group cursor-pointer block">
-                    <div className="aspect-[3/4] bg-black/30 mb-5 overflow-hidden relative rounded-2xl border border-[#D4AF37]/30 backdrop-blur-md shadow-xl transition-all duration-700 group-hover:shadow-[0_20px_50px_rgba(212,175,55,0.25)] group-hover:border-[#D4AF37]">
+                    <div className="aspect-[3/4] bg-black/30 mb-5 overflow-hidden relative rounded-2xl border border-white/10 backdrop-blur-md shadow-xl transition-all duration-700 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] group-hover:border-emerald-500/50">
                       {product.images && product.images.length > 0 ? (
                         <Image 
                           src={product.images[0]}

@@ -64,7 +64,7 @@ export default async function ShopPage() {
               return (
                 <div 
                   key={product.id} 
-                  className="w-full sm:w-[320px] md:w-[340px] group bg-[#0A1408]/90 border-2 border-[#D4AF37]/40 hover:border-[#D4AF37] rounded-3xl overflow-hidden backdrop-blur-xl shadow-2xl transition-all duration-500 hover:shadow-[0_15px_45px_rgba(212,175,55,0.35)] flex flex-col justify-between hover:-translate-y-1.5"
+                  className="w-full sm:w-[320px] md:w-[340px] group bg-[#0A1408]/90 border border-white/10 hover:border-emerald-500/50 rounded-3xl overflow-hidden backdrop-blur-xl shadow-2xl transition-all duration-500 hover:shadow-[0_15px_45px_rgba(0,0,0,0.8)] flex flex-col justify-between hover:-translate-y-1.5"
                 >
                   <div className="flex flex-col flex-1">
                     
@@ -73,7 +73,7 @@ export default async function ShopPage() {
                       
                       {/* Insignias Apiladas Arriba a la Izquierda */}
                       <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 items-start">
-                        <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-[#D4AF37]/60 text-[#D4AF37] text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
+                        <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-white/15 text-[#D4AF37] text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
                           <ShieldCheck size={12} className="text-[#D4AF37]" /> INVIMA CERTIFICADO
                         </span>
 
@@ -112,7 +112,7 @@ export default async function ShopPage() {
                     <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="px-2.5 py-0.5 rounded-full bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/35 text-[9px] font-mono font-extrabold tracking-widest uppercase">
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-950/40 text-emerald-300 border border-white/10 text-[9px] font-mono font-extrabold tracking-widest uppercase">
                             {product.category || 'BIENESTAR'}
                           </span>
                           <span className="text-[10px] font-mono text-gray-400 font-bold">

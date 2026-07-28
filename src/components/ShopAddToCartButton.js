@@ -36,7 +36,7 @@ export default function ShopAddToCartButton({ product }) {
       className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 ${
         added
           ? 'bg-green-600 text-white shadow-[0_0_15px_rgba(76,175,80,0.5)]'
-          : 'bg-[#1E3314] text-[#D4AF37] border border-[#D4AF37]/40 hover:bg-[#D4AF37] hover:text-black hover:border-[#D4AF37] shadow-[0_0_12px_rgba(212,175,55,0.2)]'
+          : 'bg-[#1E3314] text-[#D4AF37] border border-white/15 hover:bg-[#D4AF37] hover:text-black hover:border-transparent shadow-md'
       }`}
     >
       {added ? (

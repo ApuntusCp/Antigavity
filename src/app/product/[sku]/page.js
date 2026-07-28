@@ -88,7 +88,7 @@ export default async function ProductPage({ params }) {
         <div className="w-full lg:w-1/2 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <span className="px-3 py-1 bg-[#1E3314] border border-[#D4AF37]/40 text-[#D4AF37] text-[10px] font-bold uppercase tracking-widest rounded-md shadow-sm">
+              <span className="px-3 py-1 bg-[#1E3314] border border-white/15 text-[#D4AF37] text-[10px] font-bold uppercase tracking-widest rounded-md shadow-sm">
                 {product.category} {product.categoryGroup ? `/ ${product.categoryGroup}` : ''}
               </span>
               <span className="text-gray-400 font-mono text-[11px] uppercase tracking-wider bg-black/60 px-3 py-1 rounded-md border border-white/10">
@@ -101,7 +101,7 @@ export default async function ProductPage({ params }) {
             </h1>
 
             {/* INVIMA Certificate Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#0A1408] border border-[#D4AF37]/40 rounded-lg text-xs font-semibold text-[#D4AF37] mb-6 shadow-sm">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#0A1408] border border-white/15 rounded-lg text-xs font-semibold text-[#D4AF37] mb-6 shadow-sm">
               <ShieldCheck size={16} className="text-[#D4AF37]" />
               <span>Certificación INVIMA RS-2024-12345 (100% Certificado)</span>
             </div>
@@ -115,7 +115,7 @@ export default async function ProductPage({ params }) {
                 <span className="text-xl font-light text-gray-500 line-through font-mono">
                   {formattedPrice}
                 </span>
-                <span className="bg-[#D4AF37]/20 text-[#D4AF37] px-3 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-widest border border-[#D4AF37]/50 shadow-[0_0_12px_rgba(212,175,55,0.2)] animate-pulse">
+                <span className="bg-[#D4AF37]/20 text-[#D4AF37] px-3 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-widest border border-white/15 shadow-sm animate-pulse">
                   EN OFERTA
                 </span>
               </div>
@@ -129,7 +129,7 @@ export default async function ProductPage({ params }) {
               {product.description || 'Fórmula botánica premium desarrollada con los más altos estándares de calidad colombiana para promover tu bienestar diario.'}
             </p>
             
-            <ul className="space-y-2.5 mb-8 border-y border-[#D4AF37]/20 py-4">
+            <ul className="space-y-2.5 mb-8 border-y border-white/10 py-4">
               {product.benefits ? (
                 product.benefits.split('\n').map((benefit, idx) => (
                   <li key={idx} className="flex items-start gap-2.5 text-xs md:text-sm text-gray-300">
@@ -154,7 +154,7 @@ export default async function ProductPage({ params }) {
 
           <div className="space-y-6">
             {/* Disponibilidad en Almacén */}
-            <div className="p-4 md:p-5 bg-[#0A1408] border border-[#D4AF37]/30 rounded-2xl shadow-xl">
+            <div className="p-4 md:p-5 bg-[#0A1408] border border-white/15 rounded-2xl shadow-xl">
               <h3 className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest mb-2">Disponibilidad en Almacén</h3>
               <div className="flex items-center gap-3">
                 <div className="relative">

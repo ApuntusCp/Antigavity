@@ -6,12 +6,12 @@ import { ShieldCheck, Lock, Truck, RefreshCw } from 'lucide-react';
 
 export default function PaymentMethodsBadge() {
   return (
-    <div className="w-full bg-[#070E06]/90 border border-[#D4AF37]/35 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.8)] my-10">
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 border-b border-[#D4AF37]/20 pb-6 mb-6">
+    <div className="w-full bg-[#070E06]/90 border border-white/10 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.8)] my-10">
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-6 border-b border-white/10 pb-6 mb-6">
         
         {/* Security Title & SSL Lock */}
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-full bg-[#D4AF37]/15 flex items-center justify-center text-[#D4AF37] border border-[#D4AF37]/40 shadow-inner">
+          <div className="w-11 h-11 rounded-full bg-[#D4AF37]/15 flex items-center justify-center text-[#D4AF37] border border-white/15 shadow-inner">
             <Lock size={22} />
           </div>
           <div>
@@ -30,7 +30,7 @@ export default function PaymentMethodsBadge() {
               alt="PSE Logo Oficial" 
               width={50} 
               height={50} 
-              className="h-11 w-11 object-contain rounded-full border border-[#D4AF37]/40 shadow-md" 
+              className="h-11 w-11 object-contain rounded-full border border-white/15 shadow-md" 
             />
           </div>
 
@@ -79,13 +79,13 @@ export default function PaymentMethodsBadge() {
           </div>
 
           {/* Bold Logo Oficial (Gradiente azul-rojo con palabra bold original) */}
-          <div className="hover:scale-105 transition-transform duration-300 drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]" title="Bold Pasarela de Pagos">
+          <div className="hover:scale-105 transition-transform duration-300" title="Bold Pasarela de Pagos">
             <Image 
               src="/images/payments/bold_official.png" 
               alt="Bold Logo Oficial" 
               width={50} 
               height={50} 
-              className="h-11 w-11 object-cover rounded-xl border border-[#D4AF37]/50 shadow-md" 
+              className="h-11 w-11 object-cover rounded-xl border border-white/15 shadow-md" 
             />
           </div>
 
