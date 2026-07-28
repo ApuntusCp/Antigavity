@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Leaf, Cpu, Sun, Sprout, ShieldCheck, TrendingUp, Sparkles } from "lucide-react";
 import { fetchCMSPage } from "../../utils/firebase";
 import JoinMovementButton from "../../components/JoinMovementButton";
-import PaymentMethodsBadge from "../../components/PaymentMethodsBadge";
 
 export const revalidate = 30;
 
@@ -105,10 +104,6 @@ export default async function MovimientoPage() {
           <p className="text-gray-200 font-light leading-relaxed text-base md:text-lg max-w-2xl mx-auto">
             Visualizamos un país donde la medicina natural, la apitoxina y los extractos botánicos puros se combinan con la tecnología para garantizar salud, bienestar y soberanía comunitaria.
           </p>
-
-          <div className="pt-4">
-            <PaymentMethodsBadge />
-          </div>
         </section>
 
       </div>
