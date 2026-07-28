@@ -322,18 +322,11 @@ function GlobalAcademicRepositoryContent() {
           </p>
 
           {/* AVISO DE CUMPLIMIENTO RIGUROSO DE DERECHOS DE AUTOR (FASE 5) */}
-          <div className="max-w-2xl mx-auto bg-black/60 border border-[#00F0FF]/25 rounded-2xl p-3.5 backdrop-blur-md flex items-center justify-between gap-3 text-xs text-left">
+          <div className="max-w-2xl mx-auto bg-black/60 border border-[#00F0FF]/25 rounded-2xl p-3.5 backdrop-blur-md flex items-center justify-center gap-3 text-xs text-center">
             <div className="flex items-center gap-2 text-gray-300">
               <ShieldCheck size={18} className="text-[#00F0FF] shrink-0" />
               <span>Indexación 100% Legal: Acceso a metadatos, resúmenes y enlaces directos a las fuentes universitarias originales.</span>
             </div>
-            <a 
-              href="/trazabilidad"
-              className="text-[11px] text-[#00F0FF] hover:underline font-mono font-bold shrink-0 flex items-center gap-1"
-            >
-              <span>Consultar Lotes INVIMA</span>
-              <ChevronRight size={14} />
-            </a>
           </div>
         </div>
 
