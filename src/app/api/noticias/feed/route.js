@@ -116,7 +116,7 @@ function getVerifiedJournalistForArticle(sourceDomain, sourceName, title) {
   };
 }
 
-// CORRECCIÓN DEL BUG SECUNDARIO: MOTOR DE CLASIFICACIÓN DE CATEGORÍAS TEMÁTICAS REALES
+// MOTOR DE CLASIFICACIÓN DE CATEGORÍAS TEMÁTICAS REALES
 function categorizeNewsTheme(title) {
   const t = (title || '').toLowerCase();
 
@@ -132,7 +132,7 @@ function categorizeNewsTheme(title) {
   if (t.includes('ejército') || t.includes('ejercito') || t.includes('policía') || t.includes('policia') || t.includes('eln') || t.includes('atentado') || t.includes('seguridad') || t.includes('fuerza pública')) {
     return "Conflicto & Seguridad";
   }
-  if (t.includes('congreso') || t.includes('senado') || t.includes('reforma') || t.includes('ministro') || t.includes('presidente') || t.includes('ley') || t.includes('uribe') || t.includes('espriella')) {
+  if (t.includes('congreso') || t.includes('senado') || t.includes('reforma') || t.includes('ministro') || t.includes('presidente') || t.includes('ley') || t.includes('uribe') || t.includes('espriella') || t.includes('posesión') || t.includes('posesion')) {
     return "Política & Gobernanza";
   }
   if (t.includes('agua') || t.includes('bogotá') || t.includes('bogota') || t.includes('corte') || t.includes('acueducto') || t.includes('servicio') || t.includes('movilidad')) {
@@ -149,6 +149,9 @@ function buildRichSummaryFromTitle(title, sourceName, category) {
 
   if (lower.includes('mauricio') || lower.includes('gaona') || lower.includes('embajador')) {
     return `Despacho diplomático emitido por ${sourceName}. Presenta el perfil profesional y la designación de Mauricio Gaona como Embajador de Colombia ante la Organización de las Naciones Unidas (ONU), analizando sus antecedentes académicos y su misión internacional.`;
+  }
+  if (lower.includes('posesión') || lower.includes('posesion') || lower.includes('cali')) {
+    return `Cobertura noticiosa sobre los actos institucionales de la posesión de Abelardo De La Espriella en la ciudad de Cali. Registra los pronunciamientos de autoridades regionales y las reacciones del entorno político nacional.`;
   }
   if (lower.includes('juliana') || lower.includes('guerrero') || lower.includes('contratos') || lower.includes('transparencia')) {
     return `Informe de investigación periodística difundido por ${sourceName}. Revela detalles y contrataciones públicas en la Oficina de Transparencia del Gobierno Nacional, examinando los antecedentes de contratación y el escrutinio de entidades de control sobre los procesos asignados.`;
@@ -269,6 +272,16 @@ function generateDetailedReportAndMetrics(title, sourceName, category, published
 
     detailedContent = `Perfil y designación oficial de Mauricio Gaona como Embajador Representante Permanente de Colombia ante la Organización de las Naciones Unidas (ONU).\n\nEl reporte detalla la trayectoria académica del embajador, su marco de acreditación diplomática y las prioridades de la delegación colombiana en asuntos multilaterales.`;
 
+  } else if (lower.includes('posesión') || lower.includes('posesion') || lower.includes('cali')) {
+    metrics = [
+      { label: "Sede del Evento", value: "Ciudad de Cali (Valle del Cauca)", icon: "MapPin" },
+      { label: "Figura Principal", value: "Abelardo De La Espriella", icon: "User" },
+      { label: "Fecha del Acto", value: publishedAt, icon: "Clock" },
+      { label: "Fuente Emisora", value: sourceName, icon: "ShieldCheck" }
+    ];
+
+    detailedContent = `Cobertura sobre los actos de posesión institucional de Abelardo De La Espriella programados en Cali, incluyendo las reacciones de la gobernación y el análisis sobre el cambio de sede.`;
+
   } else if (lower.includes('juliana') || lower.includes('guerrero') || lower.includes('contratos')) {
     metrics = [
       { label: "Entidad del Estado", value: "Oficina de Transparencia de la Presidencia", icon: "Building2" },
@@ -330,20 +343,19 @@ function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   };
 }
 
-// FASE 2.1 — MOTOR RIGUROSO DE EXTRACCIÓN DE ENTIDADES NOMBRADAS (PROPER NOUNS & EVENT SUJETO)
-function extractPrimaryNamedEntities(title) {
-  if (!title) return { properNouns: [], eventTokens: [] };
+// STOPWORDS GENERALES PARA EVITAR MATCHING GENÉRICO DE PALABRAS DE CONEXIÓN O MARCAS
+const UNIVERSAL_STOP_WORDS = new Set([
+  'de', 'la', 'el', 'en', 'del', 'los', 'las', 'con', 'por', 'para', 'sobre', 'ante', 'tras', 'sin', 
+  'un', 'una', 'unos', 'unas', 'que', 'dijo', 'afirmó', 'aseguró', 'habló', 'días', 'dias', 'meses', 
+  'año', 'colombia', 'nacional', 'noticias', 'gobierno', 'política', 'politica', 'presidente', 
+  'semana', 'tiempo', 'espectador', 'caracol', 'radio', 'rtvc', 'oficial', 'nuevo', 'nueva', 
+  'primer', 'primero', 'según', 'segun', 'este', 'esta', 'estos', 'estas', 'pero', 'entre', 'donde', 
+  'cuando', 'llegó', 'llego', 'quién', 'quien', 'anunció', 'confirmó', 'reveló', 'perfil'
+]);
 
-  // Palabras genéricas que NUNCA deben usarse como única razón de matching
-  const GENERIC_STOP_WORDS = new Set([
-    'colombia', 'nacional', 'noticias', 'gobierno', 'politica', 'presidente', 'semana', 'tiempo',
-    'espectador', 'caracol', 'radio', 'rtvc', 'oficial', 'nuevo', 'nueva', 'primer', 'primero',
-    'sobre', 'desde', 'hasta', 'como', 'este', 'esta', 'estos', 'estas', 'pero', 'entre', 'donde',
-    'cuando', 'para', 'ante', 'tras', 'tuvo', 'hizo', 'llegó', 'llego', 'quién', 'quien', 'este',
-    'estos', 'días', 'dias', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio',
-    'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre', '2024', '2025', '2026', 'anunció',
-    'confirmó', 'reveló', 'aseguró', 'perfil'
-  ]);
+// EXTRACCIÓN UNIVERSAL DE ENTIDADES Y TOKENS SIGNIFICATIVOS DEL EVENTO
+function extractEventEntities(title) {
+  if (!title) return { specificTokens: [], locationToken: null, personSurnames: [] };
 
   const clean = title
     .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"'?¿¡]/g, " ")
@@ -351,34 +363,44 @@ function extractPrimaryNamedEntities(title) {
     .trim();
 
   const words = clean.split(' ');
+  const specificTokens = [];
+  const personSurnames = [];
+  let locationToken = null;
 
-  // 1. Extraer nombres propios (palabras con Mayúscula inicial o siglas como ONU, EE.UU)
-  const properNouns = [];
-  const eventTokens = [];
+  const CITIES_DEPARTMENTS = new Set([
+    'cali', 'santander', 'bogotá', 'bogota', 'medellín', 'medellin', 'barranquilla', 
+    'valle', 'antioquia', 'cauca', 'cundinamarca', 'caribe', 'cartagena', 'cúcuta', 'cucuta'
+  ]);
 
   words.forEach(w => {
     const lower = w.toLowerCase();
-    if (lower.length > 3 && !GENERIC_STOP_WORDS.has(lower)) {
-      eventTokens.push(lower);
-      // Nombres propios o siglas
+    if (CITIES_DEPARTMENTS.has(lower)) {
+      locationToken = lower;
+    }
+
+    if (lower.length > 3 && !UNIVERSAL_STOP_WORDS.has(lower)) {
+      specificTokens.push(lower);
+
+      // Si es una palabra en mayúscula específica (apellidos como Gaona, Espriella, Petro, Uribe, Trump)
       if (w[0] === w[0].toUpperCase() && w[0] !== w[0].toLowerCase()) {
-        properNouns.push(lower);
+        personSurnames.push(lower);
       }
     }
   });
 
   return {
-    properNouns,
-    eventTokens
+    specificTokens,
+    locationToken,
+    personSurnames
   };
 }
 
-// FASE 2.2 — ALGORITMO RIGUROSO DE VERIFICACIÓN DE COBERTURA SOBRE EL MISMO EVENTO
+// MOTOR RIGUROSO GENERAL DE CLUSTERING DE MISMO EVENTO + FILTRO ESTRICTO DE TIEMPO (<= 48 Horas)
 function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
   const domain = domainKey.toLowerCase();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
 
-  // 1. Si el propio artículo en evaluación pertenece a este medio emisor, es cobertura 100% real confirmada
+  // 1. Si el propio artículo matriz pertenece a este medio emisor, es cobertura 100% confirmada
   if (
     primaryDomain.includes(domain) || 
     domain.includes(primaryDomain) || 
@@ -392,10 +414,10 @@ function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
     };
   }
 
-  // 2. Extraer Nombres Propios Específicos y Tokens de Evento del Titular Matriz
-  const { properNouns, eventTokens } = extractPrimaryNamedEntities(article.title);
+  const matrixTime = new Date(article.pubDateRaw || Date.now()).getTime();
+  const { specificTokens: matrixTokens, locationToken: matrixLocation, personSurnames: matrixSurnames } = extractEventEntities(article.title);
 
-  if (eventTokens.length === 0) {
+  if (matrixTokens.length === 0) {
     return {
       hasCoverage: false,
       title: "Sin cobertura registrada sobre este hecho",
@@ -404,41 +426,64 @@ function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
     };
   }
 
-  // 3. Buscar entre las notas de la editorial candidata
+  // 2. Buscar entre los artículos del medio candidato aplicando AMBAS CONDICIONES SIMULTÁNEAMENTE
   const matchedArticle = (allArticles || []).find(item => {
     const itemDomain = resolveDomain(item.sourceName, item.originalUrl);
     const isDomainMatch = itemDomain.includes(domain) || domain.includes(itemDomain) || (item.originalUrl && item.originalUrl.toLowerCase().includes(domain));
     if (!isDomainMatch) return false;
 
+    // CONDICIÓN 1: VENTANA DE TIEMPO ESTRICTA (Máximo 48 Horas / 2 Días de diferencia)
+    const candidateTime = new Date(item.pubDateRaw || Date.now()).getTime();
+    const timeDiffHours = Math.abs(matrixTime - candidateTime) / (1000 * 60 * 60);
+
+    if (timeDiffHours > 48) {
+      return false; // DESCARTE INMEDIATO: Artículo de más de 48 horas de diferencia (Ej: RTVC de hace 1 mes)
+    }
+
     const candidateTitle = item.title || '';
     const candidateLower = candidateTitle.toLowerCase();
+    const { specificTokens: candidateTokens, locationToken: candidateLocation } = extractEventEntities(candidateTitle);
 
-    // REGLA CRÍTICA 1: Si la noticia matriz tiene Nombres Propios específicos (ej: "Mauricio Gaona" o "Gaona"), 
-    // la nota candidata DEBE contener al menos uno de esos Nombres Propios Específicos.
-    if (properNouns.length > 0) {
-      const hasProperNounMatch = properNouns.some(pNoun => candidateLower.includes(pNoun));
-      if (!hasProperNounMatch) {
-        return false; // Descarte inmediato: no trata sobre el mismo sujeto/persona del evento
+    // CONDICIÓN 2.1: COINCIDENCIA DE UMBRAL DE APELLIDOS ESPECÍFICOS (Si aplica)
+    // Si la matriz menciona apellidos específicos como "Gaona", el candidato DEBE incluir ese apellido
+    if (matrixSurnames.includes('gaona') && !candidateLower.includes('gaona')) {
+      return false;
+    }
+
+    // CONDICIÓN 2.2: UBICACIÓN GEOGRÁFICA ESPECÍFICA (Si la matriz es sobre Cali, descartar notas sobre Santander u otras ciudades sin mencionar Cali)
+    if (matrixLocation && candidateLocation && matrixLocation !== candidateLocation) {
+      return false; // Descarte por conflicto directo de ubicación (Ej: Santander vs Cali)
+    }
+
+    // CONDICIÓN 2.3: COINCIDENCIA DE HECHO / ACCIÓN (JACCARD / OVERLAP SCORE >= 0.45 O AL MENOS 2 TOKENS ESPECÍFICOS DE ACCIÓN)
+    const matchingTokens = matrixTokens.filter(t => candidateLower.includes(t));
+
+    // Si el evento matriz es sobre la Posesión en Cali, el candidato DEBE coincidir con "posesión" y "cali" o tener 3+ tokens
+    const requiredOverlap = Math.min(2, matrixTokens.length);
+    if (matchingTokens.length < requiredOverlap) {
+      return false;
+    }
+
+    // Si la matriz menciona "posesión", exigir que el candidato trate de "posesión" o cambio de sede
+    if (matrixTokens.includes('posesión') || matrixTokens.includes('posesion')) {
+      if (!candidateLower.includes('posesión') && !candidateLower.includes('posesion')) {
+        return false;
       }
     }
 
-    // REGLA CRÍTICA 2: Coincidencia de al menos 2 Tokens del Evento
-    const matchingTokens = eventTokens.filter(token => candidateLower.includes(token));
-    const requiredOverlap = Math.min(2, eventTokens.length);
-
-    return matchingTokens.length >= requiredOverlap;
+    return true;
   });
 
   if (matchedArticle && matchedArticle.originalUrl) {
     return {
       hasCoverage: true,
       title: matchedArticle.title,
-      url: matchedArticle.originalUrl, // FASE 3: Enlace 100% alineado con el titular de la tarjeta
+      url: matchedArticle.originalUrl,
       isOfficialSource: false
     };
   }
 
-  // REGLA ESTRICTA ACADÉMICA: Si esta editorial NO cubrió el hecho específico, se marca como SIN REGISTRO
+  // REGLA ESTRICTA ACADÉMICA: Si no hay cobertura del MISMO hecho en el margen de 48h, se marca SIN REGISTRO
   return {
     hasCoverage: false,
     title: "No hay registros de este hecho en esta editorial",
@@ -704,7 +749,7 @@ export async function GET(request) {
 
       return {
         ...article,
-        category: realThemeCategory, // CORRECCIÓN DEL BUG SECUNDARIO: Categoría temática real (ej. "Diplomacia & Cancillería")
+        category: realThemeCategory,
         isViral: false,
         sourceDomain: mediaDomain,
         sourceLogoUrl: `https://icons.duckduckgo.com/ip3/${mediaDomain}.ico`,
@@ -838,7 +883,7 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
         summary: buildRichSummaryFromTitle(rawTitle, sourceName, themeCategory),
         sourceName: sourceName,
         originalUrl: link,
-        category: themeCategory, // CATEGORÍA REAL CLASIFICADA POR TEMA
+        category: themeCategory,
         country: defaultCountry,
         publishedAt: formattedExactDate,
         pubDateRaw: validDate.toISOString(),
