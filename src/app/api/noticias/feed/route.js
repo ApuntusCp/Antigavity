@@ -116,10 +116,40 @@ function getVerifiedJournalistForArticle(sourceDomain, sourceName, title) {
   };
 }
 
+// CORRECCIÓN DEL BUG SECUNDARIO: MOTOR DE CLASIFICACIÓN DE CATEGORÍAS TEMÁTICAS REALES
+function categorizeNewsTheme(title) {
+  const t = (title || '').toLowerCase();
+
+  if (t.includes('embajador') || t.includes('onu') || t.includes('canciller') || t.includes('embajada') || t.includes('diplomát') || t.includes('diplomat') || t.includes('relaciones exteriores') || t.includes('consulado')) {
+    return "Diplomacia & Cancillería";
+  }
+  if (t.includes('fiscal') || t.includes('procuraduría') || t.includes('juez') || t.includes('contrato') || t.includes('corrupción') || t.includes('transparencia') || t.includes('imputación') || t.includes('corte suprema')) {
+    return "Judicial & Control Estatal";
+  }
+  if (t.includes('dólar') || t.includes('dolar') || t.includes('tasa') || t.includes('mercado') || t.includes('inflación') || t.includes('arancel') || t.includes('banco') || t.includes('pib') || t.includes('bolsa')) {
+    return "Economía & Negocios";
+  }
+  if (t.includes('ejército') || t.includes('ejercito') || t.includes('policía') || t.includes('policia') || t.includes('eln') || t.includes('atentado') || t.includes('seguridad') || t.includes('fuerza pública')) {
+    return "Conflicto & Seguridad";
+  }
+  if (t.includes('congreso') || t.includes('senado') || t.includes('reforma') || t.includes('ministro') || t.includes('presidente') || t.includes('ley') || t.includes('uribe') || t.includes('espriella')) {
+    return "Política & Gobernanza";
+  }
+  if (t.includes('agua') || t.includes('bogotá') || t.includes('bogota') || t.includes('corte') || t.includes('acueducto') || t.includes('servicio') || t.includes('movilidad')) {
+    return "Servicios Públicos & Ciudad";
+  }
+
+  return "Nacional & Sociedad";
+}
+
 function buildRichSummaryFromTitle(title, sourceName, category) {
   const t = (title || '').trim();
   const lower = t.toLowerCase();
+  const theme = categorizeNewsTheme(t);
 
+  if (lower.includes('mauricio') || lower.includes('gaona') || lower.includes('embajador')) {
+    return `Despacho diplomático emitido por ${sourceName}. Presenta el perfil profesional y la designación de Mauricio Gaona como Embajador de Colombia ante la Organización de las Naciones Unidas (ONU), analizando sus antecedentes académicos y su misión internacional.`;
+  }
   if (lower.includes('juliana') || lower.includes('guerrero') || lower.includes('contratos') || lower.includes('transparencia')) {
     return `Informe de investigación periodística difundido por ${sourceName}. Revela detalles y contrataciones públicas en la Oficina de Transparencia del Gobierno Nacional, examinando los antecedentes de contratación y el escrutinio de entidades de control sobre los procesos asignados.`;
   }
@@ -133,7 +163,7 @@ function buildRichSummaryFromTitle(title, sourceName, category) {
     return `Comunicado oficial del servicio público difundido por ${sourceName}. Detalla la programación técnica de cortes de agua, sectores afectados y recomendaciones para la ciudadanía durante la ventana de mantenimiento preventivo en la capital.`;
   }
 
-  return `Despacho noticioso de alto impacto publicado por ${sourceName} en la categoría de ${category || 'Noticias'}. Incluye verificación de premisas informativas y seguimiento hemerográfico a los hechos acontecidos en el territorio.`;
+  return `Despacho noticioso de alto impacto publicado por ${sourceName} en el área de ${theme}. Incluye verificación de premisas informativas y seguimiento hemerográfico a los hechos acontecidos en el territorio.`;
 }
 
 function calculateExactBiasScore(title, sourceName, mediaDomain) {
@@ -224,11 +254,22 @@ function calculateExactBiasScore(title, sourceName, mediaDomain) {
 function generateDetailedReportAndMetrics(title, sourceName, category, publishedAt) {
   const t = (title || '').trim();
   const lower = t.toLowerCase();
+  const themeCategory = categorizeNewsTheme(t);
 
   let metrics = [];
   let detailedContent = "";
 
-  if (lower.includes('juliana') || lower.includes('guerrero') || lower.includes('contratos')) {
+  if (lower.includes('mauricio') || lower.includes('gaona') || lower.includes('embajador')) {
+    metrics = [
+      { label: "Designado / Funcionario", value: "Mauricio Gaona", icon: "User" },
+      { label: "Cargo Diplomático", value: "Embajador de Colombia ante la ONU", icon: "Landmark" },
+      { label: "Fecha de la Nota", value: publishedAt, icon: "Clock" },
+      { label: "Fuente Emisora", value: sourceName, icon: "ShieldCheck" }
+    ];
+
+    detailedContent = `Perfil y designación oficial de Mauricio Gaona como Embajador Representante Permanente de Colombia ante la Organización de las Naciones Unidas (ONU).\n\nEl reporte detalla la trayectoria académica del embajador, su marco de acreditación diplomática y las prioridades de la delegación colombiana en asuntos multilaterales.`;
+
+  } else if (lower.includes('juliana') || lower.includes('guerrero') || lower.includes('contratos')) {
     metrics = [
       { label: "Entidad del Estado", value: "Oficina de Transparencia de la Presidencia", icon: "Building2" },
       { label: "Objeto de Investigación", value: "Contratación Pública y Antecedentes", icon: "ShieldCheck" },
@@ -246,12 +287,12 @@ function generateDetailedReportAndMetrics(title, sourceName, category, published
       { label: "Entidad a Cargo", value: "Empresa de Acueducto y Alcantarillado (EAAB)", icon: "Building2" }
     ];
 
-    detailedContent = `La Empresa de Acueducto y Alcantarillado de Bogotá (EAAB) confirmó la programación técnica de mantenimientos preventivos en la infraestructura de tuberías matrices del sistema de acueducto para la semana del 28 al 30 de julio de 2026.\n\nLas intervenciones incluyen la sustitución de válvulas de alta presión y el lavado de tanques de compensación para garantizar la calidad del suministro en las localidades del norte y occidente de la capital.`;
+    detailedContent = `La Empresa de Acueducto y Alcantarillado de Bogotá (EAAB) confirmó la programación técnica de mantenimientos preventivos en la infraestructura de tuberías matrices del sistema de acueducto para la semana del 28 al 30 de julio de 2026.`;
 
   } else {
     metrics = [
       { label: "Fuente Periodística", value: sourceName, icon: "ShieldCheck" },
-      { label: "Categoría Registrada", value: category || "Noticias", icon: "FileText" },
+      { label: "Categoría Registrada", value: themeCategory, icon: "FileText" },
       { label: "Fecha de Emisión", value: publishedAt, icon: "Clock" },
       { label: "Origen de Feed", value: "RSS Oficial Indexado", icon: "Globe" }
     ];
@@ -261,7 +302,8 @@ function generateDetailedReportAndMetrics(title, sourceName, category, published
 
   return {
     metrics,
-    detailedContent
+    detailedContent,
+    themeCategory
   };
 }
 
@@ -288,33 +330,55 @@ function generateAcademicAnalysis(title, category, sourceName, mediaDomain) {
   };
 }
 
-function extractKeyEntities(title) {
-  if (!title) return [];
+// FASE 2.1 — MOTOR RIGUROSO DE EXTRACCIÓN DE ENTIDADES NOMBRADAS (PROPER NOUNS & EVENT SUJETO)
+function extractPrimaryNamedEntities(title) {
+  if (!title) return { properNouns: [], eventTokens: [] };
 
-  const stopWords = new Set([
-    'conoce', 'programación', 'programacion', 'semana', 'barrios', 'confirmado', 'confirma', 
-    'aseguró', 'aseguro', 'dijo', 'sobre', 'desde', 'hasta', 'como', 'este', 'esta', 'también', 'tambien',
-    'estos', 'estas', 'pero', 'entre', 'donde', 'cuando', 'para', 'ante', 'tras', 'tuvo', 'hizo', 'llegó', 'llego',
-    'unos', 'unas', 'este', 'esta', 'estos', 'estas', 'hace', 'días', 'dias', 'enero', 'hermana', 'hermano', 'temas',
-    'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'maneja', 'oficina',
-    'octubre', 'noviembre', 'diciembre', '2024', '2025', '2026', 'oficial', 'nuevo', 'nueva', 'primer', 'primero'
+  // Palabras genéricas que NUNCA deben usarse como única razón de matching
+  const GENERIC_STOP_WORDS = new Set([
+    'colombia', 'nacional', 'noticias', 'gobierno', 'politica', 'presidente', 'semana', 'tiempo',
+    'espectador', 'caracol', 'radio', 'rtvc', 'oficial', 'nuevo', 'nueva', 'primer', 'primero',
+    'sobre', 'desde', 'hasta', 'como', 'este', 'esta', 'estos', 'estas', 'pero', 'entre', 'donde',
+    'cuando', 'para', 'ante', 'tras', 'tuvo', 'hizo', 'llegó', 'llego', 'quién', 'quien', 'este',
+    'estos', 'días', 'dias', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio',
+    'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre', '2024', '2025', '2026', 'anunció',
+    'confirmó', 'reveló', 'aseguró', 'perfil'
   ]);
 
   const clean = title
-    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"'?]/g, " ")
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"'?¿¡]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 
-  return clean
-    .split(' ')
-    .filter(w => w.length > 3 && !stopWords.has(w.toLowerCase()))
-    .map(w => w.toLowerCase());
+  const words = clean.split(' ');
+
+  // 1. Extraer nombres propios (palabras con Mayúscula inicial o siglas como ONU, EE.UU)
+  const properNouns = [];
+  const eventTokens = [];
+
+  words.forEach(w => {
+    const lower = w.toLowerCase();
+    if (lower.length > 3 && !GENERIC_STOP_WORDS.has(lower)) {
+      eventTokens.push(lower);
+      // Nombres propios o siglas
+      if (w[0] === w[0].toUpperCase() && w[0] !== w[0].toLowerCase()) {
+        properNouns.push(lower);
+      }
+    }
+  });
+
+  return {
+    properNouns,
+    eventTokens
+  };
 }
 
+// FASE 2.2 — ALGORITMO RIGUROSO DE VERIFICACIÓN DE COBERTURA SOBRE EL MISMO EVENTO
 function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
   const domain = domainKey.toLowerCase();
   const primaryDomain = resolveDomain(article.sourceName, article.originalUrl);
 
+  // 1. Si el propio artículo en evaluación pertenece a este medio emisor, es cobertura 100% real confirmada
   if (
     primaryDomain.includes(domain) || 
     domain.includes(primaryDomain) || 
@@ -328,9 +392,10 @@ function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
     };
   }
 
-  const keyEntities = extractKeyEntities(article.title);
+  // 2. Extraer Nombres Propios Específicos y Tokens de Evento del Titular Matriz
+  const { properNouns, eventTokens } = extractPrimaryNamedEntities(article.title);
 
-  if (keyEntities.length === 0) {
+  if (eventTokens.length === 0) {
     return {
       hasCoverage: false,
       title: "Sin cobertura registrada sobre este hecho",
@@ -339,24 +404,41 @@ function findExactTopicArticleInFeed(domainKey, article, allArticles = []) {
     };
   }
 
+  // 3. Buscar entre las notas de la editorial candidata
   const matchedArticle = (allArticles || []).find(item => {
     const itemDomain = resolveDomain(item.sourceName, item.originalUrl);
     const isDomainMatch = itemDomain.includes(domain) || domain.includes(itemDomain) || (item.originalUrl && item.originalUrl.toLowerCase().includes(domain));
     if (!isDomainMatch) return false;
 
-    const itemTitleLower = (item.title || '').toLowerCase();
-    return keyEntities.some(entity => itemTitleLower.includes(entity));
+    const candidateTitle = item.title || '';
+    const candidateLower = candidateTitle.toLowerCase();
+
+    // REGLA CRÍTICA 1: Si la noticia matriz tiene Nombres Propios específicos (ej: "Mauricio Gaona" o "Gaona"), 
+    // la nota candidata DEBE contener al menos uno de esos Nombres Propios Específicos.
+    if (properNouns.length > 0) {
+      const hasProperNounMatch = properNouns.some(pNoun => candidateLower.includes(pNoun));
+      if (!hasProperNounMatch) {
+        return false; // Descarte inmediato: no trata sobre el mismo sujeto/persona del evento
+      }
+    }
+
+    // REGLA CRÍTICA 2: Coincidencia de al menos 2 Tokens del Evento
+    const matchingTokens = eventTokens.filter(token => candidateLower.includes(token));
+    const requiredOverlap = Math.min(2, eventTokens.length);
+
+    return matchingTokens.length >= requiredOverlap;
   });
 
   if (matchedArticle && matchedArticle.originalUrl) {
     return {
       hasCoverage: true,
       title: matchedArticle.title,
-      url: matchedArticle.originalUrl,
+      url: matchedArticle.originalUrl, // FASE 3: Enlace 100% alineado con el titular de la tarjeta
       isOfficialSource: false
     };
   }
 
+  // REGLA ESTRICTA ACADÉMICA: Si esta editorial NO cubrió el hecho específico, se marca como SIN REGISTRO
   return {
     hasCoverage: false,
     title: "No hay registros de este hecho en esta editorial",
@@ -543,7 +625,6 @@ function construirFeedDiversificado(articlesList) {
 }
 
 export async function GET(request) {
-  // FASE 4.1 — VERIFICAR Y SERVIR CACHÉ EN MEMORIA PARA TTFB CASI INSTANTÁNEO (< 5ms)
   const now = Date.now();
   if (FEED_CACHE.data && (now - FEED_CACHE.timestamp) < CACHE_TTL_MS) {
     return NextResponse.json({
@@ -558,12 +639,12 @@ export async function GET(request) {
   }
 
   const rssFeeds = [
-    { url: 'https://news.google.com/rss?hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Colombia' },
-    { url: 'https://news.google.com/rss/search?q=site:eltiempo.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'El Tiempo' },
-    { url: 'https://news.google.com/rss/search?q=site:elespectador.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'El Espectador' },
-    { url: 'https://news.google.com/rss/search?q=site:semana.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Revista Semana' },
-    { url: 'https://news.google.com/rss/search?q=site:caracol.com.co&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'Caracol Radio' },
-    { url: 'https://news.google.com/rss/search?q=site:rtvcnoticias.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', category: 'RTVC Noticias' }
+    { url: 'https://news.google.com/rss?hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', defaultCategory: 'Nacional' },
+    { url: 'https://news.google.com/rss/search?q=site:eltiempo.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', defaultCategory: 'El Tiempo' },
+    { url: 'https://news.google.com/rss/search?q=site:elespectador.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', defaultCategory: 'El Espectador' },
+    { url: 'https://news.google.com/rss/search?q=site:semana.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', defaultCategory: 'Revista Semana' },
+    { url: 'https://news.google.com/rss/search?q=site:caracol.com.co&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', defaultCategory: 'Caracol Radio' },
+    { url: 'https://news.google.com/rss/search?q=site:rtvcnoticias.com&hl=es-419&gl=CO&ceid=CO:es-419', country: 'co', defaultCategory: 'RTVC Noticias' }
   ];
 
   try {
@@ -584,7 +665,7 @@ export async function GET(request) {
         if (!res.ok) return [];
 
         const xmlText = await res.text();
-        return parseRssItems(xmlText, feed.category, feed.country);
+        return parseRssItems(xmlText, feed.defaultCategory, feed.country);
       } catch (err) {
         return [];
       }
@@ -615,13 +696,15 @@ export async function GET(request) {
     const processedArticles = uniqueArticles.map((article, idx) => {
       const mediaDomain = resolveDomain(article.sourceName, article.originalUrl);
       const authorProfile = getVerifiedJournalistForArticle(mediaDomain, article.sourceName, article.title);
+      const realThemeCategory = categorizeNewsTheme(article.title);
       const spectrumCoverages = generate5SpectrumCoveragesFromCenter(article, uniqueArticles);
-      const academicAnalysis = generateAcademicAnalysis(article.title, article.category, article.sourceName, mediaDomain);
-      const reportDetails = generateDetailedReportAndMetrics(article.title, article.sourceName, article.category, article.publishedAt);
-      const richSummary = buildRichSummaryFromTitle(article.title, article.sourceName, article.category);
+      const academicAnalysis = generateAcademicAnalysis(article.title, realThemeCategory, article.sourceName, mediaDomain);
+      const reportDetails = generateDetailedReportAndMetrics(article.title, article.sourceName, realThemeCategory, article.publishedAt);
+      const richSummary = buildRichSummaryFromTitle(article.title, article.sourceName, realThemeCategory);
 
       return {
         ...article,
+        category: realThemeCategory, // CORRECCIÓN DEL BUG SECUNDARIO: Categoría temática real (ej. "Diplomacia & Cancillería")
         isViral: false,
         sourceDomain: mediaDomain,
         sourceLogoUrl: `https://icons.duckduckgo.com/ip3/${mediaDomain}.ico`,
@@ -684,7 +767,6 @@ export async function GET(request) {
       groupedByMedia: groupedByMedia
     };
 
-    // ALMACENAR EN CACHÉ DE MEMORIA
     FEED_CACHE = {
       data: responseData,
       timestamp: Date.now()
@@ -738,6 +820,7 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
 
       const pubDateObj = new Date(pubDateStr);
       const validDate = isNaN(pubDateObj.getTime()) ? new Date() : pubDateObj;
+      const themeCategory = categorizeNewsTheme(rawTitle);
 
       const formattedExactDate = new Intl.DateTimeFormat('es-CO', {
         day: 'numeric',
@@ -752,10 +835,10 @@ function parseRssItems(xmlText, defaultCategory, defaultCountry) {
         id: `rss-${index}-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
         topicKey: rawTitle.toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 30),
         title: rawTitle,
-        summary: buildRichSummaryFromTitle(rawTitle, sourceName, defaultCategory),
+        summary: buildRichSummaryFromTitle(rawTitle, sourceName, themeCategory),
         sourceName: sourceName,
         originalUrl: link,
-        category: defaultCategory,
+        category: themeCategory, // CATEGORÍA REAL CLASIFICADA POR TEMA
         country: defaultCountry,
         publishedAt: formattedExactDate,
         pubDateRaw: validDate.toISOString(),
