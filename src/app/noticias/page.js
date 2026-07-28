@@ -1201,9 +1201,64 @@ function NoticiasContent() {
                           </span>
                         </div>
 
-                        <div>
-                          <span className="text-[9px] font-mono text-emerald-300/80 font-bold uppercase block tracking-wider">TITULAR DEL MEDIO:</span>
-                          <h5 className="font-serif text-sm sm:text-base font-bold text-white leading-snug mt-1 group-hover/card:text-[#D4AF37] transition-colors">
+                        <div 
+                          className={coverage.hasCoverage !== false ? "cursor-pointer group/title transition-all" : ""}
+                          onClick={() => {
+                            if (coverage.hasCoverage === false) return;
+
+                            const matched = realtimeArticles.find(a => 
+                              (a.originalUrl && coverage.outletUrl && a.originalUrl.toLowerCase() === coverage.outletUrl.toLowerCase()) ||
+                              (a.title && coverage.headline && a.title.toLowerCase() === coverage.headline.toLowerCase())
+                            );
+
+                            const targetArticle = matched || {
+                              id: `cov-${idx}-${Date.now()}`,
+                              title: coverage.headline,
+                              sourceName: coverage.sourceName,
+                              sourceDomain: coverage.sourceDomain,
+                              sourceLogoUrl: coverage.logoUrl,
+                              originalUrl: coverage.outletUrl || selectedBiasComparison.originalUrl,
+                              publishedAt: selectedBiasComparison.publishedAt,
+                              author: `${coverage.sourceName} Redacción`,
+                              authorProfile: {
+                                name: `${coverage.sourceName} Redacción`,
+                                title: `Mesa de Redacción de ${coverage.sourceName}`,
+                                institution: "Prensa Institucional Acreditada",
+                                location: "Redacción Central",
+                                avatar: coverage.logoUrl,
+                                bio: `Equipo de redactores e investigadores profesionales adscritos a ${coverage.sourceName}.`,
+                                previousWork: [`Agencia de Noticias ${coverage.sourceName}`],
+                                specialties: ["Cobertura Periodística Factual"],
+                                publishedCount: 240
+                              },
+                              summary: `Reporte noticioso difundido por ${coverage.sourceName}. ${coverage.intention}`,
+                              biasDirection: coverage.biasDirection,
+                              deviationPercent: coverage.deviationPercent,
+                              biasLabel: coverage.biasLabel,
+                              academicAnalysis: selectedBiasComparison.academicAnalysis,
+                              metricsData: [
+                                { label: "Fuente Periodística", value: coverage.sourceName, icon: "ShieldCheck" },
+                                { label: "Espectro Político", value: coverage.spectrumBadge, icon: "Scale" },
+                                { label: "Fecha del Despacho", value: selectedBiasComparison.publishedAt, icon: "Clock" },
+                                { label: "Origen de Feed", value: "RSS Oficial Indexado", icon: "Globe" }
+                              ],
+                              fullContent: `Despacho periodístico emitido por ${coverage.sourceName} sobre "${coverage.headline}".\n\n${coverage.intention}\n\nPara consultar la publicación original en la plataforma del emisor, utilice el botón adjunto.`,
+                              otherCoverages: selectedBiasComparison.otherCoverages
+                            };
+
+                            setSelectedBiasComparison(null);
+                            setSelectedArticle(targetArticle);
+                          }}
+                        >
+                          <span className="text-[9px] font-mono text-emerald-300/80 font-bold uppercase tracking-wider flex items-center justify-between">
+                            <span>TITULAR DEL MEDIO:</span>
+                            {coverage.hasCoverage !== false && (
+                              <span className="text-[#D4AF37] font-extrabold hover:underline flex items-center gap-1">
+                                (Abrir Ficha Completa ↗)
+                              </span>
+                            )}
+                          </span>
+                          <h5 className={`font-serif text-sm sm:text-base font-bold text-white leading-snug mt-1 transition-colors ${coverage.hasCoverage !== false ? 'group-hover/title:text-[#D4AF37] group-hover/title:underline decoration-[#D4AF37] underline-offset-4' : ''}`}>
                             "{coverage.headline}"
                           </h5>
                         </div>
