@@ -283,49 +283,49 @@ export default function GCAClient() {
             
             <div className="text-center mb-16 space-y-3">
               <span className="text-[#D4AF37] font-bold text-xs tracking-[0.3em] uppercase">Especialidades</span>
-              <h2 className={`${playfair.className} text-4xl md:text-5xl text-white font-bold`}>Nuestros Servicios de Firma</h2>
-              <p className="text-gray-400 max-w-xl mx-auto text-sm font-light">Ejecutados con estándares de precisión internacional y atención personalizada en cada fase.</p>
+              <h2 className={`${playfair.className} text-4xl md:text-5xl text-white font-bold`}>
+                {branding.servicesTitle || 'Nuestros Servicios de Firma'}
+              </h2>
+              {branding.servicesSubtitle && (
+                <p className="text-gray-400 max-w-xl mx-auto text-sm font-light">
+                  {branding.servicesSubtitle}
+                </p>
+              )}
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
-              {/* Card 1 */}
-              <div className="bg-[#040806] p-8 border border-[#D4AF37]/20 hover:border-[#D4AF37] transition-all duration-500 rounded-sm group relative overflow-hidden">
-                <div className="w-14 h-14 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] mb-8 group-hover:scale-110 transition-transform">
-                  <Sparkles size={28} />
-                </div>
-                <h3 className={`${playfair.className} text-2xl text-white font-bold mb-4 group-hover:text-[#D4AF37] transition-colors`}>
-                  Diseño de Interiores
-                </h3>
-                <p className="text-gray-400 font-light text-sm leading-relaxed">
-                  Atmósferas donde la iluminación arquitectónica, los materiales nobles y la integración botánica crean espacios habitables de máximo confort.
-                </p>
-              </div>
+              {(branding.services || [
+                { id: 's1', title: 'Diseño de Interiores', desc: 'Atmósferas donde la iluminación arquitectónica, los materiales nobles y la integración botánica crean espacios habitables de máximo confort.', icon: 'Sparkles' },
+                { id: 's2', title: 'Arquitectura Paisajística', desc: 'Diseño de entornos exteriores vivos. Conectamos estructuras construidas con jardines botánicos privados, agua y topografía natural.', icon: 'Trees' },
+                { id: 's3', title: 'Construcción a Gran Escala', desc: 'Desarrollo integral de proyectos comerciales, industriales y residenciales. Gestión técnica de obra asegurando rigor estructural y acabados de lujo.', icon: 'Building2' }
+              ]).map((service, i) => {
+                const getIcon = (iconName) => {
+                  switch (iconName) {
+                    case 'Sparkles': return <Sparkles size={28} />;
+                    case 'Trees': return <Trees size={28} />;
+                    case 'Building2': return <Building2 size={28} />;
+                    case 'Compass': return <Compass size={28} />;
+                    case 'Wrench': return <Ruler size={28} />;
+                    default: return <Sparkles size={28} />;
+                  }
+                };
 
-              {/* Card 2 */}
-              <div className="bg-[#040806] p-8 border border-[#D4AF37]/20 hover:border-[#D4AF37] transition-all duration-500 rounded-sm group relative overflow-hidden">
-                <div className="w-14 h-14 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] mb-8 group-hover:scale-110 transition-transform">
-                  <Trees size={28} />
-                </div>
-                <h3 className={`${playfair.className} text-2xl text-white font-bold mb-4 group-hover:text-[#D4AF37] transition-colors`}>
-                  Arquitectura Paisajística
-                </h3>
-                <p className="text-gray-400 font-light text-sm leading-relaxed">
-                  Diseño de entornos exteriores vivos. Conectamos estructuras construidas con jardines botánicos privados, agua y topografía natural.
-                </p>
-              </div>
-
-              {/* Card 3 */}
-              <div className="bg-[#040806] p-8 border border-[#D4AF37]/20 hover:border-[#D4AF37] transition-all duration-500 rounded-sm group relative overflow-hidden">
-                <div className="w-14 h-14 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] mb-8 group-hover:scale-110 transition-transform">
-                  <Building2 size={28} />
-                </div>
-                <h3 className={`${playfair.className} text-2xl text-white font-bold mb-4 group-hover:text-[#D4AF37] transition-colors`}>
-                  Construcción a Gran Escala
-                </h3>
-                <p className="text-gray-400 font-light text-sm leading-relaxed">
-                  Desarrollo integral de proyectos comerciales, industriales y residenciales. Gestión técnica de obra asegurando rigor estructural y acabados de lujo.
-                </p>
-              </div>
+                return (
+                  <div key={service.id || i} className="bg-[#040806] p-8 border border-[#D4AF37]/20 hover:border-[#D4AF37] transition-all duration-500 rounded-sm group relative overflow-hidden flex flex-col justify-between">
+                    <div>
+                      <div className="w-14 h-14 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] mb-8 group-hover:scale-110 transition-transform">
+                        {getIcon(service.icon)}
+                      </div>
+                      <h3 className={`${playfair.className} text-2xl text-white font-bold mb-4 group-hover:text-[#D4AF37] transition-colors`}>
+                        {service.title}
+                      </h3>
+                      <p className="text-gray-400 font-light text-sm leading-relaxed">
+                        {service.desc}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
           </div>
