@@ -196,7 +196,6 @@ function LibrosContent() {
   // Categorías
   const categories = [
     { id: 'todas', name: 'Todas las Categorías' },
-    { id: 'grancolinos', name: 'Colección GranColinos Editorial' },
     { id: 'salud', name: 'Salud, Apiterapia & Botánica' },
     { id: 'ficcion', name: 'Ficción & Clásicos Universales' },
     { id: 'ciencia', name: 'Ciencia & Naturaleza' },
@@ -218,7 +217,6 @@ function LibrosContent() {
   const licenses = [
     { id: 'todos', name: 'Todas las Licencias' },
     { id: 'dominio_publico', name: 'Gratis • Dominio Público (Gutenberg / LibriVox)' },
-    { id: 'grancolinos', name: 'Exclusivo Club GranColinos' },
     { id: 'copyright_externo', name: 'Tienda Externa Licenciada' }
   ];
 
@@ -331,26 +329,6 @@ function LibrosContent() {
 
   // Catálogo Semilla de Clásicos Inmortales
   const masterclassSeedBooks = [
-    {
-      id: 'gc-1',
-      titulo: "Apitoxina: De la Tradición a la Nanotecnología Botánica",
-      subtitulo: "Manual completo de Apitoxina y Apiterapia Moderna",
-      autores: ["GranColinos Editorial"],
-      categoria: "grancolinos",
-      paginas_aprox: "210 págs",
-      calificacion_promedio: "5.0 (18 reseñas verosímiles)",
-      licencia: "grancolinos",
-      licencia_badge: "Exclusivo Club GranColinos",
-      fuente_original: "GranColinos Editorial",
-      url_fuente: "https://grancolinos.com/blog",
-      portada_url: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80",
-      formatos_disponibles: ["epub", "pdf", "html", "audio"],
-      enlaces_descarga: {
-        epub: "https://grancolinos.com/libros/apitoxina-nanotecnologia.epub",
-        pdf: "https://grancolinos.com/libros/apitoxina-nanotecnologia.pdf"
-      },
-      resumen: "Estudio exhaustivo sobre la melitina y apamina extraídas con métodos sustentables sin daño al panal en la Cordillera Central."
-    },
     {
       id: 'gut-1656',
       titulo: "Apología de Sócrates, Critón y Fedón",
@@ -567,69 +545,7 @@ function LibrosContent() {
           )}
         </div>
 
-        {/* SECCIÓN DESTACADA SEPARADA — COLECCIÓN GRANCOLINOS EDITORIAL */}
-        <div className="bg-black/50 border border-[#F3E5AB]/40 rounded-3xl p-6 md:p-10 backdrop-blur-xl shadow-2xl glow-libros space-y-6">
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
-            <span className="px-3.5 py-1.5 bg-[#F3E5AB]/20 text-[#F3E5AB] text-xs font-extrabold uppercase tracking-widest rounded-xl border border-[#F3E5AB]/40 inline-flex items-center gap-2">
-              <Sparkles size={14} /> COLECCIÓN EDITORIAL INSTITUCIONAL GRANCOLINOS
-            </span>
-            <span className="text-xs text-gray-400 font-mono">Ediciones de Salud, Apiterapia & Botánica</span>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {masterclassSeedBooks.filter(b => b.categoria === 'grancolinos').map(book => (
-              <div 
-                key={book.id} 
-                className="bg-black/60 border border-[#F3E5AB]/30 hover:border-[#F3E5AB]/80 rounded-2xl p-5 backdrop-blur-xl shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
-              >
-                <div>
-                  <div className="w-full h-56 rounded-xl overflow-hidden bg-black mb-4 relative border border-[#F3E5AB]/30 shadow-md">
-                    <img 
-                      src={book.portada_url} 
-                      alt={book.titulo} 
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80";
-                      }}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <span className="absolute top-3 left-3 px-2.5 py-1 bg-black/85 text-[#F3E5AB] text-[9px] font-bold uppercase tracking-widest rounded border border-[#F3E5AB]/40 backdrop-blur-md">
-                      {book.licencia_badge}
-                    </span>
-                  </div>
-
-                  <span className="text-[#F3E5AB] text-[10px] font-bold tracking-widest uppercase block mb-1">
-                    {(book.autores || []).join(', ')}
-                  </span>
-                  <h3 className="font-serif text-lg font-bold text-white mb-1.5 leading-snug group-hover:text-[#F3E5AB] transition-colors">
-                    {book.titulo}
-                  </h3>
-                  <p className="text-gray-300 text-xs font-light mb-3 line-clamp-2">
-                    {book.subtitulo}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-white/10 space-y-3 font-mono text-xs">
-                  <div className="flex items-center justify-between text-gray-300">
-                    <span className="text-[#F3E5AB] font-bold flex items-center gap-1">
-                      <Star size={13} fill="#F3E5AB" /> {book.calificacion_promedio}
-                    </span>
-                    <span className="text-gray-400">{book.paginas_aprox}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-1">
-                    <button
-                      onClick={() => openReaderModal(book)}
-                      className="flex-1 py-2 bg-[#F3E5AB] text-black font-extrabold text-[11px] uppercase tracking-wider rounded-xl hover:bg-white transition-all shadow-md flex items-center justify-center gap-1"
-                    >
-                      <BookOpen size={13} /> Leer Libro Completo
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/* BUSCADOR Y MATRIZ DE FILTROS PARA EL CATÁLOGO MASIVO */}
         <div className="bg-black/50 border border-white/15 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl space-y-6">
