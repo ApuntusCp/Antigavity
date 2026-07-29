@@ -2,13 +2,15 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Hammer, Sparkles, Shield, ArrowLeft, Newspaper, ShoppingBag, Bell, Check, Send, AlertTriangle, Compass, Clock, Landmark } from 'lucide-react';
+import { Hammer, Sparkles, Shield, ArrowLeft, Newspaper, ShoppingBag, Bell, Check, Send, Clock } from 'lucide-react';
 
 export default function UnderConstructionScreen({ 
   title = "SECCIÓN EN DESARROLLO & PRÓXIMO LANZAMIENTO",
   subtitle = "Estamos perfeccionando este módulo con los más altos estándares de calidad, verificación factual y diseño hemerográfico.",
   moduleName = "GranColinos Digital",
   estimatedDate = "Agosto 2026",
+  statusText = "Desarrollo Activo",
+  qualityText = "100% Verificado",
   showNavigationButtons = true
 }) {
   const [email, setEmail] = useState('');
@@ -70,14 +72,14 @@ export default function UnderConstructionScreen({
             <div className="p-4 rounded-2xl bg-black/50 border border-[#D4AF37]/35 space-y-1 text-center shadow-lg">
               <span className="text-gray-400 text-[10px] uppercase font-bold block">Estado Actual</span>
               <strong className="text-amber-400 font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5">
-                <Clock size={14} /> Desarrollo Activo
+                <Clock size={14} /> {statusText}
               </strong>
             </div>
 
             <div className="p-4 rounded-2xl bg-black/50 border border-[#D4AF37]/35 space-y-1 text-center shadow-lg">
               <span className="text-gray-400 text-[10px] uppercase font-bold block">Estándar de Calidad</span>
               <strong className="text-emerald-400 font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5">
-                <Shield size={14} /> 100% Verificado
+                <Shield size={14} /> {qualityText}
               </strong>
             </div>
 
@@ -132,7 +134,7 @@ export default function UnderConstructionScreen({
               </Link>
 
               <Link
-                href="/tienda"
+                href="/shop"
                 className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold uppercase tracking-wider rounded-xl transition-all border border-white/20 flex items-center gap-2"
               >
                 <ShoppingBag size={16} className="text-[#D4AF37]" />
