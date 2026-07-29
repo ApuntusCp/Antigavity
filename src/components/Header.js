@@ -88,26 +88,31 @@ export default function Header({ headerConfig = {} }) {
 
   const activeId = getActiveItem();
 
-  // Escuchar el Scroll del Carrusel Móvil para Resaltar el Ícono Central
+  // Escuchar el Scroll del Carrusel Móvil para Resaltar el Ícono Central (Throttled con rAF)
+  const scrollRafRef = useRef(null);
   const handleScroll = () => {
-    if (!carouselRef.current) return;
-    const container = carouselRef.current;
-    const containerCenter = container.scrollLeft + container.clientWidth / 2;
-    const children = Array.from(container.children);
+    if (scrollRafRef.current) return;
+    scrollRafRef.current = requestAnimationFrame(() => {
+      scrollRafRef.current = null;
+      if (!carouselRef.current) return;
+      const container = carouselRef.current;
+      const containerCenter = container.scrollLeft + container.clientWidth / 2;
+      const children = Array.from(container.children);
 
-    let closestIdx = 0;
-    let closestDist = Infinity;
+      let closestIdx = 0;
+      let closestDist = Infinity;
 
-    children.forEach((child, idx) => {
-      const childCenter = child.offsetLeft + child.clientWidth / 2;
-      const dist = Math.abs(containerCenter - childCenter);
-      if (dist < closestDist) {
-        closestDist = dist;
-        closestIdx = idx;
-      }
+      children.forEach((child, idx) => {
+        const childCenter = child.offsetLeft + child.clientWidth / 2;
+        const dist = Math.abs(containerCenter - childCenter);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closestIdx = idx;
+        }
+      });
+
+      setActiveCenterIndex((prevIdx) => (prevIdx !== closestIdx ? closestIdx : prevIdx));
     });
-
-    setActiveCenterIndex(closestIdx);
   };
 
   useEffect(() => {

@@ -2,6 +2,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, getDoc, doc, query, orderBy, addDoc, serverTimestamp, where } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
+import { cache } from 'react';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAH980UahKAMSzLpnSeSYojJgeeMhE40yU",
@@ -18,8 +19,8 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 
-// Fetch products from Firebase Firestore
-export async function fetchProducts() {
+// Fetch products from Firebase Firestore (Cacheado por solicitud para evitar llamadas duplicadas)
+export const fetchProducts = cache(async () => {
   try {
     const snapshot = await getDocs(collection(db, 'products'));
     
@@ -53,13 +54,11 @@ export async function fetchProducts() {
     console.error("Error fetching products from Firebase:", error);
     return [];
   }
-}
+});
 
-// Fetch blog posts from Firebase Firestore
-export async function fetchBlogPosts(category = null) {
+// Fetch blog posts from Firebase Firestore (Cacheado por solicitud)
+export const fetchBlogPosts = cache(async (category = null) => {
   try {
-    // ANTES: descargaba TODOS los posts y filtraba en memoria JS → ineficiente con catálogos grandes
-    // AHORA: el filtro .where() se ejecuta en Firestore → -70% lecturas innecesarias
     const constraints = [orderBy('createdAt', 'desc')];
     if (category) {
       constraints.push(where('category', '==', category));
@@ -81,10 +80,10 @@ export async function fetchBlogPosts(category = null) {
     console.error("Error fetching blog posts from Firebase:", error);
     return [];
   }
-}
+});
 
-// Fetch published client testimonials
-export async function fetchClientTestimonials() {
+// Fetch published client testimonials (Cacheado por solicitud)
+export const fetchClientTestimonials = cache(async () => {
   try {
     const q = query(collection(db, 'community_messages'), where('isPublished', '==', true));
     const snapshot = await getDocs(q);
@@ -93,11 +92,10 @@ export async function fetchClientTestimonials() {
     console.error("Error fetching testimonials:", error);
     return [];
   }
-}
+});
 
-// Fetch CMS page config published from GC Admin Editor Visual
-// Reads from cms_pages/{pageId}_production, written by Editor when user clicks "Publicar"
-export async function fetchCMSPage(pageId = 'home') {
+// Fetch CMS page config published from GC Admin Editor Visual (Cacheado por solicitud)
+export const fetchCMSPage = cache(async (pageId = 'home') => {
   try {
     const snap = await getDoc(doc(db, 'cms_pages', `${pageId}_production`));
     if (snap.exists()) {
@@ -108,7 +106,7 @@ export async function fetchCMSPage(pageId = 'home') {
     console.error(`Error fetching CMS config for ${pageId}:`, error);
     return null;
   }
-}
+});
 
 // Retro-compatibility (or specific use)
 export const fetchHomeCMSConfig = () => fetchCMSPage('home');

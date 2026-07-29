@@ -106,6 +106,8 @@ export default async function ShopPage() {
                             src={product.images[0]}
                             alt={product.title || product.name || 'Producto GranColinos'}
                             fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 340px"
+                            priority={product.id === products[0]?.id || product.id === products[1]?.id}
                             className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
                           />
                         ) : (

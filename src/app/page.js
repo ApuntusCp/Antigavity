@@ -101,6 +101,7 @@ export default async function Home() {
                           src={product.images[0]}
                           alt={product.title || product.name || 'Producto GranColinos'}
                           fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
                           className="object-contain p-4 group-hover:scale-110 transition-transform duration-1000 ease-out"
                         />
                       ) : (

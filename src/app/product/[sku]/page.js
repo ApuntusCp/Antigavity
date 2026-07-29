@@ -1,5 +1,6 @@
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../../utils/firebase';
+import { cache } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, ShieldCheck } from 'lucide-react';
 import AddToCartButton from './AddToCartButton';
@@ -8,11 +9,10 @@ import RelatedProducts from './RelatedProducts';
 import PaymentMethodsBadge from '../../../components/PaymentMethodsBadge';
 
 // ISR: revalidar la ficha de producto cada 60 segundos
-// (en lugar de force-dynamic que renderizaba en cada request)
 export const revalidate = 60;
 
-// Helper para obtener el producto
-async function getProductBySku(sku) {
+// Helper para obtener el producto (Cacheado por solicitud para evitar llamadas dobles en metadata y render)
+const getProductBySku = cache(async (sku) => {
   try {
     const q = query(collection(db, 'products'), where('sku', '==', decodeURIComponent(sku)));
     const snapshot = await getDocs(q);
@@ -23,7 +23,7 @@ async function getProductBySku(sku) {
     console.error("Error fetching product server-side:", error);
     return null;
   }
-}
+});
 
 // generateStaticParams: pre-renderiza fichas de producto en build time
 // Next.js genera HTML estático para cada SKU → respuesta instantánea, mejor SEO
