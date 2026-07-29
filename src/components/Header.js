@@ -44,8 +44,6 @@ export default function Header({ headerConfig = {} }) {
 
   const carouselRef = useRef(null);
 
-
-
   const getActiveItem = () => {
     if (pathname.includes('/shop') || pathname.includes('/product') || pathname.includes('/tienda')) return 'tienda';
     if (pathname.includes('/noticias') || pathname.includes('/blog')) return 'noticias';
@@ -93,25 +91,22 @@ export default function Header({ headerConfig = {} }) {
 
   return (
     <>
-      {/* Header Superior Fijo (Logo Centrado en la Geometría Exacta) */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-[#050A07]/90 backdrop-blur-xl border-b border-[#D4AF37]/20 px-4 py-3 shadow-xl">
-        <div className="max-w-7xl mx-auto flex items-center justify-between relative h-10">
+      {/* Header Superior Fijo Adaptativo sin Colisiones ni Solapamiento */}
+      <header className="fixed top-0 left-0 right-0 z-40 bg-[#050A07]/95 backdrop-blur-xl border-b border-[#D4AF37]/20 px-3 sm:px-6 py-2.5 shadow-xl">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 h-10">
           
-          {/* Lado Izquierdo Vacio/Equilibrado */}
-          <div className="flex items-center gap-2"></div>
-
-          {/* LOGO EN EL CENTRO EXACTO DEL ENCABEZADO */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-auto">
-            <Link href="/" className="flex items-center gap-2">
+          {/* LOGO DE MARCA (Izquierda en Móvil, Centrado en Desktop) */}
+          <div className="flex items-center shrink-0 pointer-events-auto md:absolute md:left-1/2 md:-translate-x-1/2">
+            <Link href="/" className="flex items-center">
               {headerConfig.logoText ? (
-                <span className="font-playfair text-lg font-bold text-gold-gradient tracking-wide">{headerConfig.logoText}</span>
+                <span className="font-playfair text-base sm:text-lg font-bold text-gold-gradient tracking-wide">{headerConfig.logoText}</span>
               ) : (
                 <Image 
                   src="/Logos/GranColinos.Com.png" 
                   alt="GranColinos Logo" 
-                  width={150} 
-                  height={40} 
-                  className="object-contain filter drop-shadow-[0_0_12px_rgba(212,175,55,0.55)] hover:scale-105 transition-transform"
+                  width={140} 
+                  height={36} 
+                  className="w-28 sm:w-36 h-auto object-contain filter drop-shadow-[0_0_12px_rgba(212,175,55,0.55)] hover:scale-105 transition-transform"
                   priority
                 />
               )}
@@ -119,14 +114,14 @@ export default function Header({ headerConfig = {} }) {
           </div>
 
           {/* Acciones del Lado Derecho (Búsqueda, Usuario, Carrito) */}
-          <div className="flex items-center gap-3 ml-auto">
+          <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 ml-auto shrink-0 pointer-events-auto">
             {/* Buscador Rápido */}
             <div className="relative">
               {showSearch ? (
-                <div className="flex items-center bg-black/90 border border-[#D4AF37]/60 rounded-full px-3 py-1 animate-in fade-in">
+                <div className="flex items-center bg-black/90 border border-[#D4AF37]/60 rounded-full px-2.5 py-1 animate-in fade-in">
                   <input
                     type="text"
-                    placeholder="Buscar en la red..."
+                    placeholder="Buscar..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => {
@@ -135,7 +130,7 @@ export default function Header({ headerConfig = {} }) {
                         setShowSearch(false);
                       }
                     }}
-                    className="bg-transparent text-xs text-white placeholder-gray-400 focus:outline-none w-28 md:w-40"
+                    className="bg-transparent text-xs text-white placeholder-gray-400 focus:outline-none w-24 xs:w-32 md:w-40"
                     autoFocus
                   />
                   <button onClick={() => setShowSearch(false)} className="text-gray-400 hover:text-white ml-1">
@@ -145,32 +140,32 @@ export default function Header({ headerConfig = {} }) {
               ) : (
                 <button 
                   onClick={() => setShowSearch(true)} 
-                  className="p-2 text-gray-200 hover:text-[#D4AF37] transition-colors rounded-full hover:bg-[#D4AF37]/15"
+                  className="p-1.5 text-gray-200 hover:text-[#D4AF37] transition-colors rounded-full hover:bg-[#D4AF37]/15"
                   title="Buscar"
                 >
-                  <Search size={18} />
+                  <Search size={17} />
                 </button>
               )}
             </div>
 
-            {/* Auth / Club (VISIBLE EN TODOS LOS DISPOSITIVOS) */}
+            {/* Auth / Club (ADAPTATIVO - NUNCA SE COLISIONA CON EL LOGO) */}
             {user ? (
-              <div className="flex items-center gap-1.5 shrink-0">
+              <div className="flex items-center gap-1 shrink-0">
                 <Link 
                   href="/comunidad" 
-                  className="flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase text-[#D4AF37] border border-[#D4AF37]/40 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-[#D4AF37]/10 hover:bg-[#D4AF37] hover:text-black transition-all"
+                  className="flex items-center gap-1 text-[9px] xs:text-[10px] font-bold tracking-wider uppercase text-[#D4AF37] border border-[#D4AF37]/40 px-2 py-1 xs:px-2.5 xs:py-1 sm:px-3 sm:py-1.5 rounded-full bg-[#D4AF37]/10 hover:bg-[#D4AF37] hover:text-black transition-all whitespace-nowrap"
                 >
                   <User size={12} />
                   <span>MI CLUB</span>
                 </Link>
                 <button onClick={() => logout()} className="text-gray-400 hover:text-red-400 p-1" title="Cerrar Sesión">
-                  <LogOut size={15} />
+                  <LogOut size={14} />
                 </button>
               </div>
             ) : (
               <Link 
                 href="/login" 
-                className="flex items-center gap-1 text-[10px] tracking-wider uppercase font-bold text-[#D4AF37] border border-[#D4AF37]/40 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 transition-all shrink-0"
+                className="flex items-center gap-1 text-[9px] xs:text-[10px] tracking-wider uppercase font-bold text-[#D4AF37] border border-[#D4AF37]/40 px-2 py-1 xs:px-2.5 xs:py-1 sm:px-3 sm:py-1.5 rounded-full bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 transition-all shrink-0 whitespace-nowrap"
               >
                 <User size={12} />
                 <span>Ingresar</span>
@@ -180,10 +175,10 @@ export default function Header({ headerConfig = {} }) {
             {/* Carrito */}
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2 text-gray-100 hover:text-[#D4AF37] transition-all rounded-full hover:bg-[#D4AF37]/15"
+              className="relative p-1.5 text-gray-100 hover:text-[#D4AF37] transition-all rounded-full hover:bg-[#D4AF37]/15 shrink-0"
               title="Carrito de Compras"
             >
-              <ShoppingCart size={19} />
+              <ShoppingCart size={18} />
               {cartItemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-[#D4AF37] text-black font-extrabold text-[9px] w-4 h-4 rounded-full flex items-center justify-center shadow-[0_0_12px_rgba(212,175,55,0.9)] animate-pulse">
                   {cartItemCount}
@@ -195,14 +190,14 @@ export default function Header({ headerConfig = {} }) {
       </header>
 
       {/* Floating Bottom Navigation Container */}
-      <div className="fixed bottom-3 left-2 right-2 sm:left-4 sm:right-4 z-50 max-w-4xl mx-auto pointer-events-none">
+      <div className="fixed bottom-3 left-0 right-0 z-50 px-3 pointer-events-none flex justify-center">
         
-        {/* CARRUSEL DE BURBUJAS FLOTANTES MÓVIL (<768px) - BALANCED SPACING & SCALING */}
-        <div className="md:hidden pointer-events-auto bg-[#050A07]/95 border border-[#D4AF37]/40 backdrop-blur-2xl rounded-full py-1.5 px-2 shadow-[0_10px_35px_rgba(0,0,0,0.95)]">
+        {/* CARRUSEL DE BURBUJAS FLOTANTES MÓVIL (<768px) - CÁPSULA COMPACTA PERFECTA */}
+        <div className="md:hidden pointer-events-auto bg-[#050A07]/95 border border-[#D4AF37]/40 backdrop-blur-2xl rounded-full py-1 px-1.5 shadow-[0_10px_35px_rgba(0,0,0,0.95)] max-w-[340px] xs:max-w-[400px] w-full">
           <div
             ref={carouselRef}
             onScroll={handleScroll}
-            className="flex items-center justify-start sm:justify-center gap-1.5 xs:gap-2 overflow-x-auto snap-x snap-mandatory scrollbar-none px-2 py-0.5"
+            className="flex items-center justify-start xs:justify-center gap-1 overflow-x-auto snap-x snap-mandatory scrollbar-none px-1 py-0.5"
             style={{ scrollSnapType: 'x mandatory' }}
           >
             {DOCK_ITEMS.map((item, idx) => {
@@ -214,7 +209,7 @@ export default function Header({ headerConfig = {} }) {
                 <Link
                   key={item.id}
                   href={item.href}
-                  className={`snap-center shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border relative ${
+                  className={`snap-center shrink-0 w-9 h-9 xs:w-10 xs:h-10 rounded-full flex items-center justify-center transition-all duration-300 border relative ${
                     isCentered || isSelectedActive
                       ? 'scale-110 border-white/60 shadow-[0_0_15px_rgba(212,175,55,0.6)] bg-white/15 z-10'
                       : 'scale-100 border-transparent text-gray-300 opacity-80 hover:opacity-100'
@@ -251,20 +246,20 @@ export default function Header({ headerConfig = {} }) {
                         : 'border-transparent text-gray-400 hover:text-white hover:bg-white/10 hover:border-white/20 hover:scale-105'
                     }`}
                     style={{ color: isActive ? item.color : undefined }}
-                    aria-label={item.name}
                   >
-                    <IconComp className="w-5 h-5 shrink-0" style={{ color: isActive ? item.color : '#D4AF37' }} />
+                    <IconComp className="w-5 h-5 shrink-0" style={{ color: isActive ? item.color : undefined }} />
                   </Link>
 
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-[#050505] text-white text-[10px] font-bold tracking-widest uppercase rounded-lg border border-[#D4AF37]/50 shadow-[0_0_15px_rgba(0,0,0,0.9)] opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                  {/* Tooltip Hover */}
+                  <span className="absolute -top-10 scale-0 group-hover:scale-100 transition-all duration-200 bg-black/90 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border border-[#D4AF37]/40 whitespace-nowrap pointer-events-none shadow-xl">
                     {item.name}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#050505]"></div>
-                  </div>
+                  </span>
                 </div>
               );
             })}
           </nav>
         </header>
+
       </div>
     </>
   );
