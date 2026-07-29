@@ -23,6 +23,7 @@ export default function GCAClient() {
     showCeo: true,
     showServices: true,
     showProjects: true,
+    showPortafolioBtn: true,
     heroTitle: 'Gran Colina Arquitectos',
     heroSubtitle: 'Donde la naturaleza, el lujo y la geometría se encuentran para crear espacios atemporales.',
     heroImageUrl: '',
@@ -187,12 +188,14 @@ export default function GCAClient() {
                 <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </a>
 
-              <a
-                href="#portafolio"
-                className="px-8 py-4 bg-transparent border border-[#D4AF37]/40 text-[#D4AF37] font-semibold tracking-[0.2em] text-xs uppercase hover:bg-[#D4AF37]/10 transition-all duration-300"
-              >
-                Ver Portafolio
-              </a>
+              {branding.showPortafolioBtn !== false && (
+                <a
+                  href="#portafolio"
+                  className="px-8 py-4 bg-transparent border border-[#D4AF37]/40 text-[#D4AF37] font-semibold tracking-[0.2em] text-xs uppercase hover:bg-[#D4AF37]/10 transition-all duration-300"
+                >
+                  Ver Portafolio
+                </a>
+              )}
             </div>
 
             {/* Stats Bar */}
