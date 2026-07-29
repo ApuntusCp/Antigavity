@@ -135,7 +135,7 @@ export default function GCAClient() {
           
           {/* Background Video or Parallax Image */}
           <div className="absolute inset-0 z-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-[#020502]/85 via-[#020502]/70 to-[#020502]/90 z-20" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70 z-20" />
             
             {branding.heroVideoUrl ? (
               <video
@@ -223,9 +223,9 @@ export default function GCAClient() {
         </section>
       )}
 
-      {/* SECCIÓN MANIFIESTO FILOSÓFICO */}
+      {/* SECCIÓN MANIFIESTO FILOSÓFICO - 100% Transparente sobre el cuero */}
       {branding.showManifesto !== false && (
-        <section className="py-28 relative bg-[#040905]/70 backdrop-blur-sm border-b border-[#D4AF37]/10">
+        <section className="py-28 relative bg-black/20 backdrop-blur-sm border-b border-[#D4AF37]/10">
           <div className="max-w-5xl mx-auto px-6 text-center">
             <span className="text-[#D4AF37] font-bold text-xs tracking-[0.3em] uppercase block mb-4">Filosofía Arquitectónica</span>
             <h2 className={`${playfair.className} text-3xl md:text-5xl text-white leading-tight font-normal max-w-4xl mx-auto italic`}>
@@ -236,15 +236,15 @@ export default function GCAClient() {
         </section>
       )}
 
-      {/* SECCIÓN CEO / PERFIL DIRECTIVO */}
+      {/* SECCIÓN CEO / PERFIL DIRECTIVO - 100% Transparente sobre el cuero */}
       {branding.showCeo !== false && (
-        <section className="py-32 relative bg-[#020502]/80 backdrop-blur-sm">
+        <section className="py-32 relative bg-black/20 backdrop-blur-sm">
           <div className="max-w-6xl mx-auto px-6">
             <div className="grid md:grid-cols-12 gap-12 items-center">
               
               {/* Foto del CEO */}
               <div className="md:col-span-5 relative">
-                <div className="relative w-full rounded-sm overflow-hidden border border-[#D4AF37]/30 shadow-[0_0_60px_rgba(212,175,55,0.12)] group bg-[#070D09]/80 backdrop-blur-md">
+                <div className="relative w-full rounded-sm overflow-hidden border border-[#D4AF37]/30 shadow-[0_0_60px_rgba(212,175,55,0.12)] group bg-black/30 backdrop-blur-md">
                   {branding.ceoImageUrl ? (
                     <img
                       src={branding.ceoImageUrl}
@@ -252,14 +252,14 @@ export default function GCAClient() {
                       className="w-full h-auto max-h-[650px] object-cover object-top filter contrast-[1.05] group-hover:scale-105 transition-transform duration-700"
                     />
                   ) : (
-                    <div className="w-full h-80 min-h-[420px] bg-[#060B08]/90 flex flex-col items-center justify-center p-8 text-center space-y-4">
+                    <div className="w-full h-80 min-h-[420px] bg-black/40 flex flex-col items-center justify-center p-8 text-center space-y-4">
                       <div className="w-20 h-20 rounded-2xl bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37]">
                         <Building2 size={38} />
                       </div>
                       <span className="text-[#D4AF37] text-xs font-bold tracking-[0.2em] uppercase">Gran Colina Arquitectos</span>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#020502] via-transparent to-transparent opacity-80 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80 pointer-events-none" />
                   <div className="absolute bottom-6 left-6 right-6 z-10">
                     <span className="text-[#D4AF37] text-xs font-bold tracking-[0.2em] uppercase block">{branding.ceoRole}</span>
                     <h3 className={`${playfair.className} text-2xl text-white font-bold`}>{branding.ceoName}</h3>
@@ -282,7 +282,7 @@ export default function GCAClient() {
                   <p>{branding.ceoBio2}</p>
                 </div>
 
-                <blockquote className="p-6 bg-[#08120B]/80 border-l-2 border-[#D4AF37] rounded-r-lg text-[#FFF5D0] italic text-lg font-light backdrop-blur-sm">
+                <blockquote className="p-6 bg-black/40 border-l-2 border-[#D4AF37] rounded-r-lg text-[#FFF5D0] italic text-lg font-light backdrop-blur-sm">
                   "{branding.ceoQuote}"
                 </blockquote>
 
@@ -303,9 +303,9 @@ export default function GCAClient() {
         </section>
       )}
 
-      {/* SECCIÓN SERVICIOS PREMIUM */}
+      {/* SECCIÓN SERVICIOS PREMIUM - 100% Transparente sobre el cuero */}
       {branding.showServices !== false && (
-        <section className="py-28 bg-[#040905]/80 backdrop-blur-sm border-t border-b border-[#D4AF37]/15">
+        <section className="py-28 bg-black/20 backdrop-blur-sm border-t border-b border-[#D4AF37]/15">
           <div className="max-w-7xl mx-auto px-6">
             
             <div className="text-center mb-16 space-y-3">
@@ -335,7 +335,7 @@ export default function GCAClient() {
                   };
 
                   return (
-                    <div key={service.id || i} className="bg-[#020603]/80 backdrop-blur-md p-8 border border-[#D4AF37]/20 hover:border-[#D4AF37] transition-all duration-500 rounded-sm group relative overflow-hidden flex flex-col justify-between">
+                    <div key={service.id || i} className="bg-black/30 backdrop-blur-md p-8 border border-[#D4AF37]/20 hover:border-[#D4AF37] transition-all duration-500 rounded-sm group relative overflow-hidden flex flex-col justify-between">
                       <div>
                         <div className="w-14 h-14 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] mb-8 group-hover:scale-110 transition-transform">
                           {getIcon(service.icon)}
@@ -352,7 +352,7 @@ export default function GCAClient() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-12 p-8 border border-white/5 rounded-2xl bg-[#060B08]/80 backdrop-blur-sm">
+              <div className="text-center py-12 p-8 border border-white/5 rounded-2xl bg-black/30 backdrop-blur-sm">
                 <p className="text-gray-400 text-sm">Configura tus servicios desde GC Admin para verlos aquí.</p>
               </div>
             )}
@@ -363,7 +363,7 @@ export default function GCAClient() {
 
       {/* SECCIÓN PORTAFOLIO / GALERÍA EN VIVIO */}
       {branding.showProjects !== false && (
-        <section id="portafolio" className="py-32 bg-[#020502]/85 backdrop-blur-sm">
+        <section id="portafolio" className="py-32 bg-black/20 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-6">
             
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
@@ -381,7 +381,7 @@ export default function GCAClient() {
                     className={`px-4 py-2 text-xs font-semibold tracking-wider uppercase rounded-full transition-all ${
                       activeCategory === cat
                         ? 'bg-[#D4AF37] text-black shadow-lg shadow-[#D4AF37]/20 font-bold'
-                        : 'bg-[#0A120D]/90 text-gray-400 hover:text-white border border-white/5 backdrop-blur-sm'
+                        : 'bg-black/40 text-gray-400 hover:text-white border border-white/5 backdrop-blur-sm'
                     }`}
                   >
                     {cat}
@@ -397,7 +397,7 @@ export default function GCAClient() {
                   <div
                     key={proj.id}
                     onClick={() => setSelectedProject(proj)}
-                    className="bg-[#080E0B]/85 backdrop-blur-md border border-[#D4AF37]/20 rounded-sm overflow-hidden group cursor-pointer hover:border-[#D4AF37] transition-all duration-500 flex flex-col"
+                    className="bg-black/30 backdrop-blur-md border border-[#D4AF37]/20 rounded-sm overflow-hidden group cursor-pointer hover:border-[#D4AF37] transition-all duration-500 flex flex-col"
                   >
                     <div className="relative h-64 overflow-hidden bg-black/60">
                       <img
@@ -405,7 +405,7 @@ export default function GCAClient() {
                         alt={proj.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       />
-                      <div className="absolute top-3 left-3 bg-[#040806]/90 border border-[#D4AF37]/40 text-[#D4AF37] px-3 py-1 text-[10px] uppercase font-bold tracking-widest rounded-none">
+                      <div className="absolute top-3 left-3 bg-black/80 border border-[#D4AF37]/40 text-[#D4AF37] px-3 py-1 text-[10px] uppercase font-bold tracking-widest rounded-none">
                         {proj.category}
                       </div>
                     </div>
@@ -429,7 +429,7 @@ export default function GCAClient() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-16 p-8 border border-white/5 rounded-2xl bg-[#060B08]/80 backdrop-blur-sm">
+              <div className="text-center py-16 p-8 border border-white/5 rounded-2xl bg-black/30 backdrop-blur-sm">
                 <p className="text-gray-400 text-sm">No hay proyectos publicados en esta categoría todavía.</p>
               </div>
             )}
@@ -471,7 +471,7 @@ export default function GCAClient() {
       )}
 
       {/* CTA FINAL */}
-      <section className="py-32 relative text-center bg-gradient-to-b from-[#020502]/90 to-[#08120B]/90 border-t border-[#D4AF37]/20 backdrop-blur-sm">
+      <section className="py-32 relative text-center bg-gradient-to-b from-black/40 to-black/80 border-t border-[#D4AF37]/20 backdrop-blur-sm">
         <div className="max-w-3xl mx-auto px-6 space-y-8">
           <h2 className={`${playfair.className} text-4xl md:text-6xl text-white font-bold`}>
             Hagamos Realidad Tu Proyecto
