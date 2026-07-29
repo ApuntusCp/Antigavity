@@ -153,25 +153,27 @@ export default function Header({ headerConfig = {} }) {
               )}
             </div>
 
-            {/* Auth / Club */}
+            {/* Auth / Club (VISIBLE EN TODOS LOS DISPOSITIVOS) */}
             {user ? (
-              <div className="hidden sm:flex items-center gap-2">
+              <div className="flex items-center gap-1.5 shrink-0">
                 <Link 
                   href="/comunidad" 
-                  className="text-[10px] font-bold tracking-widest uppercase text-[#D4AF37] border border-[#D4AF37]/40 px-3 py-1.5 rounded-full hover:bg-[#D4AF37] hover:text-black transition-all"
+                  className="flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase text-[#D4AF37] border border-[#D4AF37]/40 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-[#D4AF37]/10 hover:bg-[#D4AF37] hover:text-black transition-all"
                 >
-                  MI CLUB
+                  <User size={12} />
+                  <span>MI CLUB</span>
                 </Link>
                 <button onClick={() => logout()} className="text-gray-400 hover:text-red-400 p-1" title="Cerrar Sesión">
-                  <LogOut size={16} />
+                  <LogOut size={15} />
                 </button>
               </div>
             ) : (
               <Link 
                 href="/login" 
-                className="hidden sm:flex items-center gap-1 text-[10px] tracking-wider uppercase font-bold text-[#D4AF37] border border-[#D4AF37]/30 px-3 py-1.5 rounded-full hover:bg-[#D4AF37]/20 transition-all"
+                className="flex items-center gap-1 text-[10px] tracking-wider uppercase font-bold text-[#D4AF37] border border-[#D4AF37]/40 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 transition-all shrink-0"
               >
-                <User size={14} /> Ingresar
+                <User size={12} />
+                <span>Ingresar</span>
               </Link>
             )}
 
@@ -193,14 +195,14 @@ export default function Header({ headerConfig = {} }) {
       </header>
 
       {/* Floating Bottom Navigation Container */}
-      <div className="fixed bottom-4 left-0 right-0 z-50 px-2 sm:px-6 max-w-5xl mx-auto pointer-events-none">
+      <div className="fixed bottom-3 left-2 right-2 sm:left-4 sm:right-4 z-50 max-w-4xl mx-auto pointer-events-none">
         
-        {/* CARRUSEL DE BURBUJAS FLOTANTES MÓVIL (<768px) */}
-        <div className="md:hidden pointer-events-auto bg-[#050A07]/90 border border-[#D4AF37]/40 backdrop-blur-2xl rounded-full py-2.5 px-3 shadow-[0_10px_35px_rgba(0,0,0,0.9)]">
+        {/* CARRUSEL DE BURBUJAS FLOTANTES MÓVIL (<768px) - BALANCED SPACING & SCALING */}
+        <div className="md:hidden pointer-events-auto bg-[#050A07]/95 border border-[#D4AF37]/40 backdrop-blur-2xl rounded-full py-1.5 px-2 shadow-[0_10px_35px_rgba(0,0,0,0.95)]">
           <div
             ref={carouselRef}
             onScroll={handleScroll}
-            className="flex items-center gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none px-4 py-1"
+            className="flex items-center justify-start sm:justify-center gap-1.5 xs:gap-2 overflow-x-auto snap-x snap-mandatory scrollbar-none px-2 py-0.5"
             style={{ scrollSnapType: 'x mandatory' }}
           >
             {DOCK_ITEMS.map((item, idx) => {
@@ -212,17 +214,17 @@ export default function Header({ headerConfig = {} }) {
                 <Link
                   key={item.id}
                   href={item.href}
-                  className={`snap-center shrink-0 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 border relative ${
+                  className={`snap-center shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border relative ${
                     isCentered || isSelectedActive
-                      ? 'scale-125 border-white/60 shadow-[0_0_20px_rgba(212,175,55,0.6)] bg-white/10 z-10'
-                      : 'scale-90 border-transparent text-gray-400 opacity-70 hover:opacity-100'
+                      ? 'scale-110 border-white/60 shadow-[0_0_15px_rgba(212,175,55,0.6)] bg-white/15 z-10'
+                      : 'scale-100 border-transparent text-gray-300 opacity-80 hover:opacity-100'
                   }`}
                   style={{ color: (isCentered || isSelectedActive) ? item.color : '#D4AF37' }}
                   aria-label={item.name}
                 >
-                  <IconComp className="w-5 h-5 shrink-0" style={{ color: (isCentered || isSelectedActive) ? item.color : '#D4AF37' }} />
+                  <IconComp className="w-4 h-4 xs:w-5 xs:h-5 shrink-0" style={{ color: (isCentered || isSelectedActive) ? item.color : '#D4AF37' }} />
                   {(isCentered || isSelectedActive) && (
-                    <span className="absolute -top-7 bg-black/90 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-[#D4AF37]/40 whitespace-nowrap shadow-md">
+                    <span className="absolute -top-6 bg-black/95 text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-[#D4AF37]/50 whitespace-nowrap shadow-lg pointer-events-none">
                       {item.name}
                     </span>
                   )}
