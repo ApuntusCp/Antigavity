@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { Database, Globe, Search, Cpu, ShieldCheck, BookOpen, ExternalLink, Filter, Layers, Download, Check, Sparkles, FolderPlus, Bookmark, Copy, FileText, Sliders, X, RefreshCw, AlertCircle, Trash2, Edit3, ChevronRight, Share2, CornerDownRight } from 'lucide-react';
 import { useAuth } from '@/components/AuthProvider';
 import AcademicTrustBadge from '@/components/AcademicTrustBadge';
+import MaintenanceGuard from '@/components/MaintenanceGuard';
 
 // COMPONENTE PRINCIPAL REPOSITORIO ACADÉMICO GLOBAL
 function GlobalAcademicRepositoryContent() {
@@ -823,12 +824,20 @@ function GlobalAcademicRepositoryContent() {
 
 export default function BaseDatosPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#020502] flex items-center justify-center text-white font-mono text-xs">
-        <RefreshCw className="animate-spin text-[#D4AF37] mb-2" size={32} />
-      </div>
-    }>
-      <GlobalAcademicRepositoryContent />
-    </Suspense>
+    <MaintenanceGuard
+      routeKey="/base-de-datos-global"
+      defaultTitle="BASE DE DATOS GLOBAL EN CONSTRUCCIÓN"
+      defaultSubtitle="Estamos sincronizando los nodos académicos internacionales e ingiriendo repositorios factuales."
+      defaultModuleName="Base de Datos Global Academic"
+      defaultEstimatedDate="Agosto 2026"
+    >
+      <Suspense fallback={
+        <div className="min-h-screen bg-[#020502] flex items-center justify-center text-white font-mono text-xs">
+          <RefreshCw className="animate-spin text-[#D4AF37] mb-2" size={32} />
+        </div>
+      }>
+        <GlobalAcademicRepositoryContent />
+      </Suspense>
+    </MaintenanceGuard>
   );
 }
