@@ -7,6 +7,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "./CartContext";
 import { useAuth } from "./AuthProvider";
 import { User, LogOut, ShoppingCart, X, Search } from "lucide-react";
+import { db } from "../utils/firebase";
+import { doc, onSnapshot } from "firebase/firestore";
 import {
   IconTienda,
   IconNoticias,
@@ -20,7 +22,7 @@ import {
   IconArtistas
 } from "./DockIcons";
 
-const DOCK_ITEMS = [
+const DEFAULT_DOCK_ITEMS = [
   { id: 'tienda', name: 'TIENDA', href: '/shop', icon: IconTienda, color: '#D4AF37', activeClass: 'active-brasa-tienda' },
   { id: 'noticias', name: 'NOTICIAS', href: '/noticias', icon: IconNoticias, color: '#E2E8F0', activeClass: 'active-brasa-noticias' },
   { id: 'periodismo', name: 'PERIODISMO', href: '/periodismo-alternativo', icon: IconPeriodismo, color: '#FF6B35', activeClass: 'active-brasa-periodismo' },
@@ -42,7 +44,33 @@ export default function Header({ headerConfig = {} }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCenterIndex, setActiveCenterIndex] = useState(0);
 
+  // Orden Dinámico en Tiempo Real (Sincronizado desde GC Admin)
+  const [dockItems, setDockItems] = useState(DEFAULT_DOCK_ITEMS);
+
   const carouselRef = useRef(null);
+
+  useEffect(() => {
+    const unsub = onSnapshot(
+      doc(db, 'settings', 'navigation_order'),
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          if (data.orderedPaths && Array.isArray(data.orderedPaths)) {
+            const orderMap = new Map(data.orderedPaths.map((p, idx) => [p, idx]));
+            const sorted = [...DEFAULT_DOCK_ITEMS].sort((a, b) => {
+              const idxA = orderMap.has(a.href) ? orderMap.get(a.href) : 999;
+              const idxB = orderMap.has(b.href) ? orderMap.get(b.href) : 999;
+              return idxA - idxB;
+            });
+            setDockItems(sorted);
+          }
+        }
+      },
+      (err) => console.log("Navigation order sub error:", err)
+    );
+
+    return () => unsub();
+  }, []);
 
   const getActiveItem = () => {
     if (pathname.includes('/shop') || pathname.includes('/product') || pathname.includes('/tienda')) return 'tienda';
@@ -83,11 +111,11 @@ export default function Header({ headerConfig = {} }) {
   };
 
   useEffect(() => {
-    const activeIdx = DOCK_ITEMS.findIndex(item => item.id === activeId);
+    const activeIdx = dockItems.findIndex(item => item.id === activeId);
     if (activeIdx !== -1) {
       setActiveCenterIndex(activeIdx);
     }
-  }, [pathname]);
+  }, [pathname, dockItems, activeId]);
 
   return (
     <>
@@ -200,7 +228,7 @@ export default function Header({ headerConfig = {} }) {
             className="flex items-center justify-start xs:justify-center gap-1 overflow-x-auto snap-x snap-mandatory scrollbar-none px-1 py-0.5"
             style={{ scrollSnapType: 'x mandatory' }}
           >
-            {DOCK_ITEMS.map((item, idx) => {
+            {dockItems.map((item, idx) => {
               const IconComp = item.icon;
               const isSelectedActive = activeId === item.id;
               const isCentered = activeCenterIndex === idx;
@@ -232,7 +260,7 @@ export default function Header({ headerConfig = {} }) {
         {/* DOCK FLOTANTE DESKTOP (>=768px) */}
         <header className="hidden md:flex pointer-events-auto nav-pill-bottom-floating px-5 py-2.5 items-center justify-between transition-all duration-300 gap-3 shadow-2xl">
           <nav className="flex items-center justify-center gap-3 lg:gap-4 w-full">
-            {DOCK_ITEMS.map((item) => {
+            {dockItems.map((item) => {
               const IconComp = item.icon;
               const isActive = activeId === item.id;
               
@@ -250,8 +278,8 @@ export default function Header({ headerConfig = {} }) {
                     <IconComp className="w-5 h-5 shrink-0" style={{ color: isActive ? item.color : undefined }} />
                   </Link>
 
-                  {/* Tooltip Hover */}
-                  <span className="absolute -top-10 scale-0 group-hover:scale-100 transition-all duration-200 bg-black/90 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border border-[#D4AF37]/40 whitespace-nowrap pointer-events-none shadow-xl">
+                  {/* Tooltip con nombre de sección en hover */}
+                  <span className="absolute -top-9 bg-black/95 text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border border-[#D4AF37]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap shadow-xl">
                     {item.name}
                   </span>
                 </div>
