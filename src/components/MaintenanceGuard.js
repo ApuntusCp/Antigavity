@@ -5,7 +5,7 @@ import { db } from '../utils/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useAuth } from './AuthProvider';
 import UnderConstructionScreen from './UnderConstructionScreen';
-import { ShieldCheck, Eye, EyeOff, Wrench, Unlock, Lock } from 'lucide-react';
+import { Wrench, Unlock, Lock } from 'lucide-react';
 
 export default function MaintenanceGuard({
   routeKey,
@@ -21,19 +21,26 @@ export default function MaintenanceGuard({
   const [adminPreviewMode, setAdminPreviewMode] = useState(false);
 
   useEffect(() => {
+    const cleanKey = routeKey.startsWith('/') ? routeKey : `/${routeKey}`;
+    const noSlashKey = routeKey.replace(/^\//, '');
+
     const unsub = onSnapshot(
       doc(db, 'settings', 'maintenance_config'),
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data();
-          if (data[routeKey]) {
-            setConfig(data[routeKey]);
-          }
+          // Buscar con slash, sin slash, o la clave tal como viene
+          const routeData = data[cleanKey] ?? data[noSlashKey] ?? data[routeKey] ?? null;
+          setConfig(routeData);
+        } else {
+          setConfig(null);
         }
         setIsLoaded(true);
       },
       (err) => {
-        console.log("Maintenance config sub err:", err);
+        console.error('MaintenanceGuard Firestore error:', err);
+        // En caso de error de Firestore, permitir acceso para no bloquear la página
+        setConfig(null);
         setIsLoaded(true);
       }
     );
@@ -41,7 +48,24 @@ export default function MaintenanceGuard({
     return () => unsub();
   }, [routeKey]);
 
-  // Verificar si el usuario actual es el Administrador Principal (brayan.aponte1502@gmail.com o rol admin)
+  // ─── CRITICAL GUARD ───────────────────────────────────────────────────────
+  // No renderizar NADA hasta que Firestore confirme el estado de mantenimiento.
+  // Sin esto, config=null en el primer render y el contenido siempre se muestra.
+  // ──────────────────────────────────────────────────────────────────────────
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-[#040903] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
+          <span className="text-[#D4AF37] font-mono text-xs uppercase tracking-widest opacity-60">
+            Verificando estado del sistema...
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Detectar si es administrador ────────────────────────────────────────
   const isAdmin = Boolean(
     user && (
       user.email === 'brayan.aponte1502@gmail.com' ||
@@ -52,20 +76,24 @@ export default function MaintenanceGuard({
     )
   );
 
-  // Por defecto /periodismo-alternativo y /servicios inician en modo construcción a menos que se cambie en Firestore
-  const isEnabled = config?.enabled ?? (routeKey === '/periodismo-alternativo' || routeKey === '/servicios');
+  // ─── Determinar si mantenimiento está activo ───────────────────────────
+  // Si config tiene un valor explícito de `enabled`, siempre lo respetamos.
+  // Si config es null (sin registro en Firestore), usamos los defaults.
+  const isEnabled = (config !== null && typeof config.enabled === 'boolean')
+    ? config.enabled
+    : (routeKey === '/periodismo-alternativo' || routeKey === '/servicios');
 
-  const constructionTitle = config?.title || defaultTitle || `MÓDULO DE ${routeKey.replace('/', '').toUpperCase()} EN CONSTRUCCIÓN`;
-  const constructionSubtitle = config?.subtitle || defaultSubtitle || "Estamos perfeccionando este módulo con los más altos estándares de calidad.";
-  const constructionModuleName = config?.moduleName || defaultModuleName || "GranColinos Digital";
+  const constructionTitle = config?.title || defaultTitle || `MÓDULO DE ${routeKey.replace(/^\//, '').toUpperCase()} EN CONSTRUCCIÓN`;
+  const constructionSubtitle = config?.subtitle || defaultSubtitle || 'Estamos perfeccionando este módulo con los más altos estándares de calidad.';
+  const constructionModuleName = config?.moduleName || defaultModuleName || 'GranColinos Digital';
   const constructionEstimatedDate = config?.estimatedDate || defaultEstimatedDate;
-  const constructionStatusText = config?.statusText || "Desarrollo Activo";
-  const constructionQualityText = config?.qualityText || "100% Verificado";
+  const constructionStatusText = config?.statusText || 'Desarrollo Activo';
+  const constructionQualityText = config?.qualityText || '100% Verificado';
 
-  // Si Mantenimiento está ACTIVADO y el usuario NO ES ADMINISTRADOR -> Mostrar pantalla de construcción
+  // ─── Mantenimiento ACTIVO + usuario NO ES ADMIN → pantalla de construcción
   if (isEnabled && !isAdmin) {
     return (
-      <UnderConstructionScreen 
+      <UnderConstructionScreen
         title={constructionTitle}
         subtitle={constructionSubtitle}
         moduleName={constructionModuleName}
@@ -76,18 +104,15 @@ export default function MaintenanceGuard({
     );
   }
 
-  // Si Mantenimiento está ACTIVADO y el usuario ES ADMINISTRADOR:
+  // ─── Mantenimiento ACTIVO + usuario ES ADMIN → pantalla admin con toggle
   if (isEnabled && isAdmin) {
-    // Si no hay contenido hijo disponible o si no se ha activado la previsualización del contenido real, mostrar la Pantalla de Construcción con la Barra Flotante del Admin
     if (!children || !adminPreviewMode) {
       return (
         <div className="relative">
-          {/* BARRA FLOTANTE ADMINISTRATIVA VISTA PREVIA */}
           <div className="fixed top-14 left-1/2 -translate-x-1/2 z-[100] bg-black/90 border border-[#D4AF37] px-4 py-2 rounded-full shadow-[0_0_30px_rgba(212,175,55,0.4)] backdrop-blur-md flex items-center gap-3 text-xs font-mono">
             <span className="flex items-center gap-1.5 text-[#D4AF37] font-bold uppercase tracking-wider">
-              <Wrench size={14} className="animate-spin" /> VISTA ADMIN
+              <Wrench size={14} className="animate-spin" /> VISTA ADMIN — MANTENIMIENTO ACTIVO
             </span>
-
             {children && (
               <button
                 onClick={() => setAdminPreviewMode(true)}
@@ -98,7 +123,7 @@ export default function MaintenanceGuard({
             )}
           </div>
 
-          <UnderConstructionScreen 
+          <UnderConstructionScreen
             title={constructionTitle}
             subtitle={constructionSubtitle}
             moduleName={constructionModuleName}
@@ -110,14 +135,12 @@ export default function MaintenanceGuard({
       );
     }
 
-    // Si Admin activó la previsualización del contenido real:
     return (
       <>
         <div className="fixed top-14 left-1/2 -translate-x-1/2 z-[100] bg-black/90 border border-emerald-500 px-4 py-2 rounded-full shadow-[0_0_30px_rgba(16,185,129,0.4)] backdrop-blur-md flex items-center gap-3 text-xs font-mono">
           <span className="flex items-center gap-1.5 text-emerald-400 font-bold uppercase tracking-wider">
             <Unlock size={14} /> PREVISUALIZANDO CONTENIDO REAL (ADMIN)
           </span>
-
           <button
             onClick={() => setAdminPreviewMode(false)}
             className="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/50 font-extrabold rounded-full uppercase tracking-wider transition-all flex items-center gap-1"
@@ -130,6 +153,6 @@ export default function MaintenanceGuard({
     );
   }
 
-  // Si Mantenimiento está DESACTIVADO -> Mostrar contenido real normalmente
+  // ─── Mantenimiento DESACTIVADO → mostrar contenido normal
   return <>{children}</>;
 }
