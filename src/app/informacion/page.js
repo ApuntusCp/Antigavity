@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Info, HelpCircle, MessageSquare, ShieldCheck, Mail, Phone, FileText, Send, CheckCircle, Clock, Globe, ArrowRight, Building, Layers, Lock, Cpu, Sparkles } from 'lucide-react';
 import PaymentMethodsBadge from '@/components/PaymentMethodsBadge';
+import MaintenanceGuard from '@/components/MaintenanceGuard';
 
 export default function InformacionPage() {
   // Estado del Formulario PQR (Petición, Queja, Reclamo)
@@ -91,12 +92,19 @@ export default function InformacionPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#050A07] text-white pt-32 pb-36 px-4 sm:px-6 relative overflow-hidden">
-      
-      {/* Fondo Verde Esmeralda Corporativo */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-[#0A1F13] via-[#050A07] to-black opacity-95 pointer-events-none" />
+    <MaintenanceGuard
+      routeKey="/informacion"
+      defaultTitle="MÓDULO DE ATENCIÓN & PQR / INFO EN CONSTRUCCIÓN"
+      defaultSubtitle="Estamos optimizando los canales de atención al ciudadano y respuesta PQR de GranColinos."
+      defaultModuleName="Atención & PQR / Info"
+      defaultEstimatedDate="Agosto 2026"
+    >
+      <div className="min-h-screen bg-[#050A07] text-white pt-32 pb-36 px-4 sm:px-6 relative overflow-hidden">
+        
+        {/* Fondo Verde Esmeralda Corporativo */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-[#0A1F13] via-[#050A07] to-black opacity-95 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto relative z-10 space-y-16">
+        <div className="max-w-7xl mx-auto relative z-10 space-y-16">
 
         {/* HERO CORPORATIVO */}
         <div className="text-center space-y-4 fade-in">
@@ -346,5 +354,6 @@ export default function InformacionPage() {
         <PaymentMethodsBadge />
       </div>
     </div>
+  </MaintenanceGuard>
   );
 }

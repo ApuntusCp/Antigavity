@@ -7,7 +7,7 @@ import FadeInWhenVisible from "../components/FadeInWhenVisible";
 import PaymentMethodsBadge from "../components/PaymentMethodsBadge";
 import ShopAddToCartButton from "../components/ShopAddToCartButton";
 
-export const revalidate = 30; // ISR: check for new CMS publishes every 30 seconds
+export const revalidate = 3600; // ISR: check for new CMS publishes every 1 hour
 
 export default async function Home() {
   // ── try-catch garantiza que un fallo de Firebase no crashee la página entera

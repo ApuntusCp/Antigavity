@@ -9,7 +9,7 @@ import RelatedProducts from './RelatedProducts';
 import PaymentMethodsBadge from '../../../components/PaymentMethodsBadge';
 
 // ISR: revalidar la ficha de producto cada 60 segundos
-export const revalidate = 60;
+export const revalidate = 3600;
 
 // Helper para obtener el producto (Cacheado por solicitud para evitar llamadas dobles en metadata y render)
 const getProductBySku = cache(async (sku) => {

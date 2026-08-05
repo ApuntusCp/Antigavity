@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Newspaper, ArrowRight, Clock, Globe, Rss, Sparkles, RefreshCw, UserCheck, X, ChevronDown, TrendingUp, BookOpen, ShieldCheck, Award, CheckCircle2, FileText, User, Calendar, MapPin, BarChart3, Scale, Filter, Building2, GraduationCap, Compass, ExternalLink, Info, Sliders, Layers, ChevronRight, Check, Briefcase, Mail, Phone, Lock, FileSpreadsheet, BadgeCheck, Radio, Landmark, Eye, GitCompare, Compass as CompassIcon, Network, BrainCircuit, Target, Lightbulb, CheckCheck, Percent, LayoutGrid, Rows3, SlidersHorizontal, PieChart, History, AlertTriangle, Calculator, Flame } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import NewsTrustBadge from '../../components/NewsTrustBadge';
+import MaintenanceGuard from '../../components/MaintenanceGuard';
 
 // COMPONENTE DE DATOS Y MÉTRICAS EN TEMA VERDE BOTÁNICO Y DORADO LUXURY (69% TRANSPARENCIA + BLUR)
 function EventMetricsGrid({ metrics }) {
@@ -1509,12 +1510,20 @@ function NoticiasContent() {
 
 export default function NoticiasPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#050A14] flex items-center justify-center text-white font-mono text-xs">
-        <RefreshCw className="animate-spin text-[#D4AF37] mb-2" size={32} />
-      </div>
-    }>
-      <NoticiasContent />
-    </Suspense>
+    <MaintenanceGuard
+      routeKey="/noticias"
+      defaultTitle="MÓDULO DE GRAN NOTICIAS EN CONSTRUCCIÓN"
+      defaultSubtitle="Estamos preparando nuestra plataforma de noticias y análisis especializado."
+      defaultModuleName="Gran Noticias & Análisis"
+      defaultEstimatedDate="Agosto 2026"
+    >
+      <Suspense fallback={
+        <div className="min-h-screen bg-[#050A14] flex items-center justify-center text-white font-mono text-xs">
+          <RefreshCw className="animate-spin text-[#D4AF37] mb-2" size={32} />
+        </div>
+      }>
+        <NoticiasContent />
+      </Suspense>
+    </MaintenanceGuard>
   );
 }

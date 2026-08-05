@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { fetchBlogPosts } from "../../utils/firebase";
+import MaintenanceGuard from "../../components/MaintenanceGuard";
 
 export const dynamic = 'force-dynamic';
 
@@ -18,15 +19,22 @@ export default async function BlogIndex() {
     console.error('[Blog] Error cargando posts:', error);
   }
   return (
-    <div className="max-w-7xl mx-auto px-6 py-20">
-      <div className="text-center mb-24 fade-in">
-        <h1 className="font-playfair text-5xl md:text-7xl text-brand-dark dark:text-white mb-6">
-          Journal de Bienestar
-        </h1>
-        <p className="text-gray-500 text-lg max-w-2xl mx-auto font-light">
-          Conocimiento, ciencia y naturaleza para elevar tu estilo de vida.
-        </p>
-      </div>
+    <MaintenanceGuard
+      routeKey="/blog"
+      defaultTitle="MÓDULO DE JOURNAL DE BIENESTAR EN CONSTRUCCIÓN"
+      defaultSubtitle="Estamos preparando nuestros artículos de investigación y salud natural."
+      defaultModuleName="Journal & Blog"
+      defaultEstimatedDate="Agosto 2026"
+    >
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        <div className="text-center mb-24 fade-in">
+          <h1 className="font-playfair text-5xl md:text-7xl text-brand-dark dark:text-white mb-6">
+            Journal de Bienestar
+          </h1>
+          <p className="text-gray-500 text-lg max-w-2xl mx-auto font-light">
+            Conocimiento, ciencia y naturaleza para elevar tu estilo de vida.
+          </p>
+        </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
         {posts.length === 0 ? (
@@ -62,5 +70,6 @@ export default async function BlogIndex() {
         )}
       </div>
     </div>
+  </MaintenanceGuard>
   );
 }

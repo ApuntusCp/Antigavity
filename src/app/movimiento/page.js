@@ -1,8 +1,9 @@
 import { Leaf, Cpu, Sun, ShieldCheck, TrendingUp, Sparkles } from "lucide-react";
 import { fetchCMSPage } from "../../utils/firebase";
 import JoinMovementButton from "../../components/JoinMovementButton";
+import MaintenanceGuard from "../../components/MaintenanceGuard";
 
-export const revalidate = 30;
+export const revalidate = 3600;
 
 export const metadata = {
   title: "Movimiento Gran Colinos | Red Solarpunk",
@@ -61,7 +62,14 @@ export default async function MovimientoPage() {
   }
 
   return (
-    <div className="min-h-screen theme-movimiento text-gray-200 font-sans overflow-hidden pt-32 pb-24 px-6 relative select-none">
+    <MaintenanceGuard
+      routeKey="/movimiento"
+      defaultTitle="MÓDULO DE MOVIMIENTO GRAN COLINOS EN CONSTRUCCIÓN"
+      defaultSubtitle="Estamos preparando nuestra red comunitaria Solarpunk."
+      defaultModuleName="Movimiento Social GC"
+      defaultEstimatedDate="Agosto 2026"
+    >
+      <div className="min-h-screen theme-movimiento text-gray-200 font-sans overflow-hidden pt-32 pb-24 px-6 relative select-none">
       
       {/* Fondo de Estética Cuero Botánico Verde Esmeralda & Dorado GranColinos */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-[#D4AF37]/15 via-[#020502] to-black opacity-90 pointer-events-none" />
@@ -125,5 +133,6 @@ export default async function MovimientoPage() {
 
       </div>
     </div>
+  </MaintenanceGuard>
   );
 }

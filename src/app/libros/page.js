@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { BookOpen, Bookmark, ArrowRight, Star, Book, FileText, Award, Download, Play, Pause, Volume2, Search, Filter, Globe, ShieldCheck, RefreshCw, X, ExternalLink, Headphones, Sparkles, Check, ChevronRight, Layers, Sliders, Type, Sun, Moon, Database, AlertCircle, ChevronLeft, Maximize2, Minimize2, Highlighting, Highlighter, MessageSquare, Edit3, Columns, Layout, Trash2, Save, Palette, PenTool, Eraser, RotateCcw, Lock, GraduationCap } from 'lucide-react';
+import MaintenanceGuard from '../../components/MaintenanceGuard';
 
 // Componente Especial de Garantía y Acceso Abierto para la Biblioteca
 function LibraryTrustBadge() {
@@ -1053,12 +1054,20 @@ function LibrosContent() {
 
 export default function LibrosPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen theme-libros flex items-center justify-center text-white">
-        <RefreshCw className="animate-spin text-[#D4AF37]" size={32} />
-      </div>
-    }>
-      <LibrosContent />
-    </Suspense>
+    <MaintenanceGuard
+      routeKey="/libros"
+      defaultTitle="MÓDULO DE LIBROS & BIBLIOTECA EN CONSTRUCCIÓN"
+      defaultSubtitle="Estamos digitalizando e indexando obras clásicas de acceso abierto."
+      defaultModuleName="Libros & Biblioteca"
+      defaultEstimatedDate="Agosto 2026"
+    >
+      <Suspense fallback={
+        <div className="min-h-screen theme-libros flex items-center justify-center text-white">
+          <RefreshCw className="animate-spin text-[#D4AF37]" size={32} />
+        </div>
+      }>
+        <LibrosContent />
+      </Suspense>
+    </MaintenanceGuard>
   );
 }

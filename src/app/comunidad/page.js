@@ -7,6 +7,7 @@ import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, g
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Link from "next/link";
 import { Crown, Gift, MessageSquare, ShieldCheck, Copy, CheckCircle, Loader2, Camera, Star, Settings, User } from "lucide-react";
+import MaintenanceGuard from "../../components/MaintenanceGuard";
 
 export default function ClubGranColinosPage() {
   const { user, loading } = useAuth();
@@ -147,7 +148,14 @@ export default function ClubGranColinosPage() {
   // Vista para No Logueados (Invitados)
   if (!user) {
     return (
-      <div className="min-h-screen bg-brand-light dark:bg-brand-dark flex items-center justify-center px-6 relative overflow-hidden py-24">
+      <MaintenanceGuard
+        routeKey="/comunidad"
+        defaultTitle="MÓDULO DE MI CLUB & COMUNIDAD EN CONSTRUCCIÓN"
+        defaultSubtitle="Estamos afinando los servicios y beneficios del Club Gran Colinos."
+        defaultModuleName="Mi Club & Registro"
+        defaultEstimatedDate="Agosto 2026"
+      >
+        <div className="min-h-screen bg-brand-light dark:bg-brand-dark flex items-center justify-center px-6 relative overflow-hidden py-24">
         {/* Background elements */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-gold/10 rounded-full blur-[120px] pointer-events-none" />
         
@@ -194,12 +202,20 @@ export default function ClubGranColinosPage() {
           </div>
         </div>
       </div>
+    </MaintenanceGuard>
     );
   }
 
   // Vista para Miembros Logueados
   return (
-    <div className="min-h-screen bg-brand-light dark:bg-brand-dark py-24 px-6 relative">
+    <MaintenanceGuard
+      routeKey="/comunidad"
+      defaultTitle="MÓDULO DE MI CLUB & COMUNIDAD EN CONSTRUCCIÓN"
+      defaultSubtitle="Estamos afinando los servicios y beneficios del Club Gran Colinos."
+      defaultModuleName="Mi Club & Registro"
+      defaultEstimatedDate="Agosto 2026"
+    >
+      <div className="min-h-screen bg-brand-light dark:bg-brand-dark py-24 px-6 relative">
       <div className="max-w-4xl mx-auto">
         
         {/* User Dashboard Header */}
@@ -356,5 +372,6 @@ export default function ClubGranColinosPage() {
 
       </div>
     </div>
+  </MaintenanceGuard>
   );
 }

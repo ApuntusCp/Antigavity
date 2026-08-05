@@ -5,7 +5,7 @@ import PaymentMethodsBadge from "../../components/PaymentMethodsBadge";
 import ShopAddToCartButton from "../../components/ShopAddToCartButton";
 import { ShieldCheck, Sparkles } from "lucide-react";
 
-export const revalidate = 30; // ISR for shop page
+export const revalidate = 3600; // ISR for shop page (1 hour)
 
 export const metadata = {
   title: "Catálogo Exclusivo | GranColinos",
