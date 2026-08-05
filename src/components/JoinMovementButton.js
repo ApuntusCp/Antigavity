@@ -52,9 +52,9 @@ export default function JoinMovementButton({ text = "Únete al Manifiesto" }) {
 
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/85 backdrop-blur-md" onClick={() => setIsOpen(false)} />
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
           
-          <div className="relative w-full max-w-lg bg-[#051208] border border-[#D4AF37]/40 rounded-3xl p-8 shadow-2xl animate-fade-in-up">
+          <div className="relative w-full max-w-lg bg-[#051208] border border-[#D4AF37]/40 rounded-3xl p-6 sm:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.8)] animate-fade-in-up">
             <button 
               onClick={() => setIsOpen(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white"
@@ -131,7 +131,7 @@ export default function JoinMovementButton({ text = "Únete al Manifiesto" }) {
                 <button 
                   type="submit" 
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-widest py-4 rounded-xl mt-4 hover:bg-white transition-all flex justify-center items-center gap-2 disabled:opacity-50 shadow-lg"
+                  className="w-full bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black font-extrabold text-xs uppercase tracking-widest py-4 rounded-xl hover:bg-white transition-all flex justify-center items-center gap-2 disabled:opacity-50 shadow-lg cursor-pointer"
                 >
                   {loading ? <Loader2 size={20} className="animate-spin" /> : 'Enviar Solicitud al Movimiento'}
                 </button>
