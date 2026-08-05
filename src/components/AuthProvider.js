@@ -5,6 +5,19 @@ import { auth, db } from "../utils/firebase";
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
+// ── Admin emails con acceso bypass al mantenimiento ──────────────────────────
+const ADMIN_EMAILS = [
+  'brayan.aponte1502@gmail.com',
+];
+
+// ── Helpers de cookie de bypass para el proxy server-side ────────────────────
+function setAdminBypassCookie() {
+  document.cookie = 'gc_admin_bypass=1; path=/; max-age=86400; SameSite=Lax';
+}
+function clearAdminBypassCookie() {
+  document.cookie = 'gc_admin_bypass=; path=/; max-age=0; SameSite=Lax';
+}
+
 const AuthContext = createContext({ 
   user: null, 
   loading: true, 
@@ -49,14 +62,28 @@ export function AuthProvider({ children }) {
           // Attach custom data to currentUser object for the app to consume
           currentUser.customProfile = customData;
           setUser(currentUser);
+
+          // ── Cookie de bypass para el proxy de mantenimiento ────────────
+          // Si es admin, el proxy server-side lo deja pasar sin verificar Firestore
+          const isAdmin =
+            ADMIN_EMAILS.includes(currentUser.email) ||
+            customData?.role === 'admin' ||
+            customData?.isAdmin === true;
+          if (isAdmin) setAdminBypassCookie();
+          else clearAdminBypassCookie();
         } catch (error) {
           console.error('[AuthProvider] Error al cargar perfil de usuario:', error);
           // Aun así asignamos el usuario base para que la app no quede bloqueada
           setUser(currentUser);
+          // Si el email es admin, aplicar bypass aunque Firestore haya fallado
+          if (ADMIN_EMAILS.includes(currentUser.email)) setAdminBypassCookie();
+          else clearAdminBypassCookie();
         } finally {
           setLoading(false);
         }
       } else {
+        // Logout: limpiar cookie de bypass
+        clearAdminBypassCookie();
         setUser(null);
         setLoading(false);
       }
@@ -74,6 +101,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
+    clearAdminBypassCookie();
     return signOut(auth);
   };
 

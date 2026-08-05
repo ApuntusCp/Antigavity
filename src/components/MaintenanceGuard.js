@@ -77,11 +77,10 @@ export default function MaintenanceGuard({
   );
 
   // ─── Determinar si mantenimiento está activo ───────────────────────────
-  // Si config tiene un valor explícito de `enabled`, siempre lo respetamos.
-  // Si config es null (sin registro en Firestore), usamos los defaults.
-  const isEnabled = (config !== null && typeof config.enabled === 'boolean')
-    ? config.enabled
-    : (routeKey === '/periodismo-alternativo' || routeKey === '/servicios');
+  // El proxy server-side (proxy.js) ya bloqueó el acceso para no-admins.
+  // Este guard solo gestiona el bypass de admin (banner + toggle de preview).
+  // Si config es null (sin registro en Firestore) → modo producción (no bloquear).
+  const isEnabled = config?.enabled === true;
 
   const constructionTitle = config?.title || defaultTitle || `MÓDULO DE ${routeKey.replace(/^\//, '').toUpperCase()} EN CONSTRUCCIÓN`;
   const constructionSubtitle = config?.subtitle || defaultSubtitle || 'Estamos perfeccionando este módulo con los más altos estándares de calidad.';
