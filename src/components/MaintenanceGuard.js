@@ -77,10 +77,18 @@ export default function MaintenanceGuard({
   );
 
   // ─── Determinar si mantenimiento está activo ───────────────────────────
-  // El proxy server-side (proxy.js) ya bloqueó el acceso para no-admins.
-  // Este guard solo gestiona el bypass de admin (banner + toggle de preview).
-  // Si config es null (sin registro en Firestore) → modo producción (no bloquear).
-  const isEnabled = config?.enabled === true;
+  // El proxy server-side (proxy.js) ya bloqueó el acceso para no-admins
+  // cuando Firestore tiene enabled=true.
+  // Este guard gestiona además el bypass de admin (banner + toggle de preview).
+  //
+  // Regla de defaults:
+  //   • Página SIN children (sin contenido real aún) → mantenimiento a menos que
+  //     Firestore diga explícitamente enabled=false. Evita página en blanco.
+  //   • Página CON children (contenido real) → solo bloquear si Firestore dice
+  //     enabled=true. No bloquear si no hay dato.
+  const isEnabled = !children
+    ? config?.enabled !== false   // sin contenido: default=mantenimiento
+    : config?.enabled === true;   // con contenido: solo si Firestore lo activa
 
   const constructionTitle = config?.title || defaultTitle || `MÓDULO DE ${routeKey.replace(/^\//, '').toUpperCase()} EN CONSTRUCCIÓN`;
   const constructionSubtitle = config?.subtitle || defaultSubtitle || 'Estamos perfeccionando este módulo con los más altos estándares de calidad.';
