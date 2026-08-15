@@ -366,7 +366,7 @@ export async function syncBooksToFirestore(bookList = []) {
     existingSnap.docs.forEach(docSnap => {
       const data = docSnap.data();
       if (data.dedup_key) {
-        existingMap.set(data.dedup_key, { firestoreId: docSnap.id, ...data });
+        existingMap.set(data.dedup_key, { firestoreId: docSnap.id, prioridad_fuente: data.prioridad_fuente || 99 });
       }
     });
 

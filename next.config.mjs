@@ -1,27 +1,26 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  
   // ── Eliminar console.log en producción ──────────────────────────────────────
-  // Evita que logs internos sean visibles en DevTools del navegador en producción
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
 
   // ── Optimización de imágenes ─────────────────────────────────────────────────
   images: {
-    // Formatos modernos: AVIF tiene mejor compresión que WebP; WebP mejor que JPEG/PNG
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
-      // Firebase Storage (imágenes de productos y CMS)
+      // Firebase Storage
       { protocol: 'https', hostname: 'firebasestorage.googleapis.com' },
       { protocol: 'https', hostname: 'storage.googleapis.com' },
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
-      // DuckDuckGo (íconos de noticias)
+      // DuckDuckGo (íconos de medios)
       { protocol: 'https', hostname: 'icons.duckduckgo.com' },
       { protocol: 'https', hostname: 'external-content.duckduckgo.com' },
-      // Wikimedia (imágenes educativas)
+      // Wikimedia (educativo)
       { protocol: 'https', hostname: 'upload.wikimedia.org' },
-      // Medios colombianos (noticias)
+      // Medios
       { protocol: 'https', hostname: '**.eltiempo.com' },
       { protocol: 'https', hostname: '**.semana.com' },
       { protocol: 'https', hostname: '**.elespectador.com' },
@@ -30,10 +29,7 @@ const nextConfig = {
     ],
   },
 
-  // ── Cabeceras de seguridad HTTP ──────────────────────────────────────────────
-  // Estas cabeceras se aplican a TODAS las respuestas sin afectar el diseño ni UX.
-  // Previenen: Clickjacking (X-Frame-Options), MIME sniffing (X-Content-Type-Options),
-  // exposición de referrer (Referrer-Policy), abuso de APIs de dispositivo (Permissions-Policy).
+  // ── Cabeceras de seguridad HTTP robustas ─────────────────────────────────────
   async headers() {
     return [
       {
@@ -50,6 +46,14 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin-allow-popups',
           },
           {
             key: 'Permissions-Policy',
