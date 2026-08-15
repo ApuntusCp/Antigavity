@@ -40,7 +40,7 @@ export async function GET(request) {
       headers: {
         'Access-Control-Allow-Origin': corsOrigin,
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60'
+        'Cache-Control': 'no-store, max-age=0, must-revalidate'
       }
     });
   } catch (error) {

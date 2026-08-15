@@ -1,6 +1,5 @@
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../../utils/firebase';
-import { cache } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, ShieldCheck } from 'lucide-react';
 import AddToCartButton from './AddToCartButton';
@@ -8,34 +7,32 @@ import ProductGallery from './ProductGallery';
 import RelatedProducts from './RelatedProducts';
 import PaymentMethodsBadge from '../../../components/PaymentMethodsBadge';
 
-// ISR: revalidar la ficha de producto cada 60 segundos
-export const revalidate = 3600;
+// Configuración dinámica en tiempo real: sincronización instantánea con GC Admin
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-// Helper para obtener el producto (Cacheado por solicitud para evitar llamadas dobles en metadata y render)
-const getProductBySku = cache(async (sku) => {
+// Helper para obtener el producto directamente desde Firestore en tiempo real
+async function getProductBySku(sku) {
   try {
-    const q = query(collection(db, 'products'), where('sku', '==', decodeURIComponent(sku)));
+    const decodedSku = decodeURIComponent(sku);
+    const q = query(collection(db, 'products'), where('sku', '==', decodedSku));
     const snapshot = await getDocs(q);
-    if (snapshot.empty) return null;
+    
+    if (snapshot.empty) {
+      // Fallback: búsqueda por ID de documento
+      const directSnap = await getDocs(collection(db, 'products'));
+      const found = directSnap.docs.find(d => d.id === decodedSku || d.data().sku === decodedSku);
+      if (found) {
+        return { id: found.id, ...found.data() };
+      }
+      return null;
+    }
+    
     const docSnap = snapshot.docs[0];
     return { id: docSnap.id, ...docSnap.data() };
   } catch (error) {
-    console.error("Error fetching product server-side:", error);
+    console.error("Error fetching product in real-time:", error);
     return null;
-  }
-});
-
-// generateStaticParams: pre-renderiza fichas de producto en build time
-// Next.js genera HTML estático para cada SKU → respuesta instantánea, mejor SEO
-export async function generateStaticParams() {
-  try {
-    const { fetchProducts } = await import('../../../utils/firebase');
-    const products = await fetchProducts();
-    return products
-      .filter(p => p.sku)
-      .map(p => ({ sku: encodeURIComponent(p.sku) }));
-  } catch {
-    return [];
   }
 }
 
@@ -49,17 +46,17 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: `${product.name} | GranColinos`,
+    title: `${product.name || product.title} | GranColinos`,
     description: product.description || 'Fórmula botánica premium desarrollada con los más altos estándares de calidad colombiana.',
     openGraph: {
-      title: `${product.name} - GranColinos`,
+      title: `${product.name || product.title} - GranColinos`,
       description: product.description || 'Bienestar premium y extractos naturales de alta gama en Colombia.',
       images: product.images && product.images.length > 0 ? [
         {
           url: product.images[0],
           width: 800,
           height: 800,
-          alt: product.name,
+          alt: product.name || product.title,
         }
       ] : [],
       type: 'website',
@@ -87,7 +84,6 @@ export default async function ProductPage({ params }) {
   const formattedDiscountPrice = product.discountPrice ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.discountPrice) : null;
 
   // ── JSON-LD: Schema.org Product ─────────────────────────────────────────────
-  // Habilita rich snippets en Google: precio, disponibilidad, imagen, reseñas
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -203,7 +199,9 @@ export default async function ProductPage({ params }) {
                   <div className="w-3 h-3 rounded-full bg-green-500 relative border border-black"></div>
                 </div>
                 <div>
-                  <div className="text-white text-sm font-semibold">Unidades disponibles</div>
+                  <div className="text-white text-sm font-semibold">
+                    {product.stock !== undefined ? `${product.stock} unidades en almacén` : 'Unidades disponibles'}
+                  </div>
                 </div>
               </div>
             </div>
@@ -223,7 +221,7 @@ export default async function ProductPage({ params }) {
 
       {/* Productos Relacionados */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-        <RelatedProducts currentSku={params.sku} />
+        <RelatedProducts currentSku={resolvedParams.sku} />
       </div>
     </div>
   );

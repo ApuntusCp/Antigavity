@@ -7,7 +7,8 @@ import FadeInWhenVisible from "../components/FadeInWhenVisible";
 import PaymentMethodsBadge from "../components/PaymentMethodsBadge";
 import ShopAddToCartButton from "../components/ShopAddToCartButton";
 
-export const revalidate = 3600; // ISR: check for new CMS publishes every 1 hour
+export const dynamic = 'force-dynamic';
+export const revalidate = 0; // Sincronización en vivo con GC Admin
 
 export default async function Home() {
   // ── try-catch garantiza que un fallo de Firebase no crashee la página entera
