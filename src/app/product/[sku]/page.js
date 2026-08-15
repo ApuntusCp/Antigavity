@@ -144,7 +144,7 @@ export default async function ProductPage({ params }) {
             {/* INVIMA Certificate Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#0A1408] border border-white/15 rounded-lg text-xs font-semibold text-[#D4AF37] mb-6 shadow-sm">
               <ShieldCheck size={16} className="text-[#D4AF37]" />
-              <span>Certificación INVIMA RS-2024-12345 (100% Certificado)</span>
+              <span>Calidad Certificada por INVIMA</span>
             </div>
 
             {/* Price Display */}
