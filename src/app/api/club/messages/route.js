@@ -4,6 +4,11 @@ import { FieldValue } from 'firebase-admin/firestore';
 
 export const dynamic = 'force-dynamic';
 
+const ADMIN_EMAILS = [
+  'brayan.aponte1502@gmail.com',
+  'grancolinos@gmail.com'
+];
+
 // ── GET: Obtener mensajes enriquecidos con tag y tipo ────────────────────────
 export async function GET(request) {
   try {
@@ -57,7 +62,11 @@ export async function POST(request) {
     let finalPostType = 'comunidad';
     if (postType === 'institucional') {
       const clientDoc = await adminDb.collection('clients').doc(uid).get();
-      const isAdmin = clientDoc.exists && (clientDoc.data()?.role === 'admin' || clientDoc.data()?.isAdmin === true);
+      const isAdmin = clientDoc.exists && (
+        clientDoc.data()?.role === 'admin' || 
+        clientDoc.data()?.isAdmin === true ||
+        ADMIN_EMAILS.includes(clientDoc.data()?.email)
+      );
       if (isAdmin) {
         finalPostType = 'institucional';
       }
@@ -173,6 +182,79 @@ export async function PATCH(request) {
     });
   } catch (error) {
     console.error('[Messages Reply] Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+// ── DELETE: Eliminar mensaje o respuesta (Administrador / Autor) ─────────────
+export async function DELETE(request) {
+  try {
+    const body = await request.json();
+    const { messageId, replyId, uid } = body;
+
+    if (!messageId || !uid) {
+      return NextResponse.json({ success: false, error: 'Faltan parámetros (messageId, uid)' }, { status: 400 });
+    }
+
+    // Verificar si el usuario es Admin oficial
+    const clientDoc = await adminDb.collection('clients').doc(uid).get();
+    const clientData = clientDoc.exists ? clientDoc.data() : {};
+    const isAdmin = Boolean(
+      clientData.role === 'admin' ||
+      clientData.isAdmin === true ||
+      ADMIN_EMAILS.includes(clientData.email) ||
+      clientData.name?.toLowerCase().includes('aponte sas') ||
+      clientData.name?.toLowerCase().includes('oficial')
+    );
+
+    const messageRef = adminDb.collection('community_messages').doc(messageId);
+    const snap = await messageRef.get();
+
+    if (!snap.exists) {
+      return NextResponse.json({ success: false, error: 'Mensaje no encontrado' }, { status: 404 });
+    }
+
+    const msgData = snap.data();
+
+    // Caso 1: Borrar una respuesta específica
+    if (replyId) {
+      const currentReplies = Array.isArray(msgData.replies) ? msgData.replies : [];
+      const targetReply = currentReplies.find(r => r.id === replyId);
+
+      if (!targetReply) {
+        return NextResponse.json({ success: false, error: 'Respuesta no encontrada' }, { status: 404 });
+      }
+
+      if (!isAdmin && targetReply.uid !== uid) {
+        return NextResponse.json({ success: false, error: 'No tienes permisos para eliminar esta respuesta' }, { status: 403 });
+      }
+
+      const updatedReplies = currentReplies.filter(r => r.id !== replyId);
+      await messageRef.update({
+        replies: updatedReplies,
+        updatedAt: FieldValue.serverTimestamp()
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: 'Respuesta eliminada exitosamente'
+      });
+    }
+
+    // Caso 2: Borrar la publicación completa
+    if (!isAdmin && msgData.uid !== uid) {
+      return NextResponse.json({ success: false, error: 'No tienes permisos para eliminar este mensaje' }, { status: 403 });
+    }
+
+    await messageRef.delete();
+
+    return NextResponse.json({
+      success: true,
+      message: 'Mensaje eliminado exitosamente por ' + (isAdmin ? 'Administrador Oficial' : 'el Autor')
+    });
+
+  } catch (error) {
+    console.error('[Messages DELETE] Error:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

@@ -335,8 +335,9 @@ export default function ClubGranColinosPage() {
                 />
 
                 {/* Professional verification note */}
-                <div className="p-3 bg-white/5 border border-white/10 rounded-xl text-[11px] text-gray-400">
-                  🛡️ <strong>Verificación Profesional:</strong> Si eres médico, químico o profesional de la salud, puedes validar tus credenciales enviando tus soportes a GC Admin para habilitar tu badge oficial.
+                <div className="p-3 bg-white/5 border border-white/10 rounded-xl text-[11px] text-gray-400 flex items-start gap-2.5">
+                  <ShieldCheck size={16} className="text-brand-gold shrink-0 mt-0.5" />
+                  <span><strong>Verificación Profesional:</strong> Si eres médico, químico o profesional de la salud, puedes validar tus credenciales enviando tus soportes a GC Admin para habilitar tu badge oficial.</span>
                 </div>
 
                 <div className="flex gap-3">

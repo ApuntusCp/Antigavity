@@ -76,7 +76,9 @@ export default function GamificationProgressBar({ ecoPoints = 0, vipLevel = 'Bro
             {pointsRemaining} pts para <strong>{nextTier}</strong>
           </span>
         ) : (
-          <span className="text-yellow-400 font-bold">👑 Rango Máximo VIP</span>
+          <span className="text-yellow-400 font-bold flex items-center gap-1">
+            <Crown size={12} className="text-yellow-400" /> Rango Máximo VIP
+          </span>
         )}
       </div>
 

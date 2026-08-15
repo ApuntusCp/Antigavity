@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Award, ShoppingBag, Share2, Copy, CheckCircle, Package, ArrowUpRight, Lock, Check } from 'lucide-react';
+import { Award, ShoppingBag, Share2, Copy, CheckCircle, Package, ArrowUpRight, Lock, Check, Leaf, MessageSquare, ShieldCheck, Crown } from 'lucide-react';
 
 export default function BadgesAndHistory({ user, clientData }) {
   const [orders, setOrders] = useState([]);
@@ -38,41 +38,46 @@ export default function BadgesAndHistory({ user, clientData }) {
     setTimeout(() => setReferralCopied(false), 2500);
   };
 
-  // Badges logic based on real state
+  // Badges logic with luxury SVG icons
   const badgesList = [
     {
       id: 'pionero',
       name: 'Pionero del Club',
       desc: 'Miembro registrado de la comunidad Gran Colinos',
-      icon: '🌿',
-      unlocked: true // Registered member
+      IconComponent: Leaf,
+      iconColor: 'text-emerald-400',
+      unlocked: true
     },
     {
       id: 'primer_pedido',
       name: 'Primer Pedido',
       desc: 'Ha realizado al menos una compra en la tienda',
-      icon: '🛍️',
+      IconComponent: ShoppingBag,
+      iconColor: 'text-amber-400',
       unlocked: (clientData?.purchaseCount > 0) || orders.length > 0
     },
     {
       id: 'voz_activa',
       name: 'Voz del Club',
       desc: 'Ha compartido su testimonio o experiencia en el foro',
-      icon: '💬',
-      unlocked: (clientData?.ecoPoints >= 70) // Given points or post created
+      IconComponent: MessageSquare,
+      iconColor: 'text-yellow-400',
+      unlocked: (clientData?.ecoPoints >= 70)
     },
     {
       id: 'verificado',
       name: 'Profesional Verificado',
       desc: 'Acreditación formal médica o técnica validada por GC Admin',
-      icon: '🛡️',
+      IconComponent: ShieldCheck,
+      iconColor: 'text-emerald-300',
       unlocked: Boolean(clientData?.verifiedProfession)
     },
     {
       id: 'elite',
       name: 'Miembro Élite Oro',
       desc: 'Alcanzó el rango VIP máximo de 500+ Eco-Points',
-      icon: '👑',
+      IconComponent: Crown,
+      iconColor: 'text-brand-gold',
       unlocked: clientData?.vipLevel === 'Oro' || (clientData?.ecoPoints >= 500)
     }
   ];
@@ -130,35 +135,38 @@ export default function BadgesAndHistory({ user, clientData }) {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {badgesList.map(badge => (
-                <div
-                  key={badge.id}
-                  className={`p-4 rounded-xl border transition-all flex items-start gap-3.5 ${
-                    badge.unlocked
-                      ? 'bg-brand-gold/5 border-brand-gold/30 shadow-[0_0_15px_rgba(212,175,55,0.08)]'
-                      : 'bg-black/20 border-white/5 opacity-50 grayscale'
-                  }`}
-                >
-                  <div className="text-2xl p-2.5 bg-black/40 rounded-xl border border-white/10 shrink-0">
-                    {badge.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="text-xs font-bold text-brand-dark dark:text-white uppercase tracking-wider truncate">
-                        {badge.name}
-                      </h4>
-                      {badge.unlocked ? (
-                        <Check size={12} className="text-brand-gold shrink-0" />
-                      ) : (
-                        <Lock size={12} className="text-gray-500 shrink-0" />
-                      )}
+              {badgesList.map(badge => {
+                const Icon = badge.IconComponent;
+                return (
+                  <div
+                    key={badge.id}
+                    className={`p-4 rounded-xl border transition-all flex items-start gap-3.5 ${
+                      badge.unlocked
+                        ? 'bg-brand-gold/5 border-brand-gold/30 shadow-[0_0_15px_rgba(212,175,55,0.08)]'
+                        : 'bg-black/20 border-white/5 opacity-50 grayscale'
+                    }`}
+                  >
+                    <div className="p-3 bg-black/50 rounded-xl border border-white/10 shrink-0 flex items-center justify-center">
+                      <Icon size={20} className={badge.iconColor} />
                     </div>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug">
-                      {badge.desc}
-                    </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="text-xs font-bold text-brand-dark dark:text-white uppercase tracking-wider truncate">
+                          {badge.name}
+                        </h4>
+                        {badge.unlocked ? (
+                          <Check size={12} className="text-brand-gold shrink-0" />
+                        ) : (
+                          <Lock size={12} className="text-gray-500 shrink-0" />
+                        )}
+                      </div>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug">
+                        {badge.desc}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

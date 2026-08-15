@@ -1,11 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, Heart, CornerDownRight, Send, Filter, Sparkles, Shield, User, Loader2, Megaphone, Check } from 'lucide-react';
+import { MessageSquare, Heart, CornerDownRight, Send, Filter, Sparkles, Shield, User, Loader2, Megaphone, Check, Trash2, Leaf, HelpCircle, Star, Users } from 'lucide-react';
 import { RenderAvatar } from './AvatarPicker';
 import VerificationBadge from './VerificationBadge';
 
-const TAGS = ['Todos', '🌿 Testimonio', '❓ Pregunta', '⭐ Opinión de producto', '📢 Institucional'];
+const TAG_CONFIG = [
+  { id: 'Todos', label: 'Todos', icon: Filter },
+  { id: 'Testimonios', label: 'Testimonios', icon: Leaf },
+  { id: 'Preguntas', label: 'Preguntas', icon: HelpCircle },
+  { id: 'Opinión de Producto', label: 'Opinión de Producto', icon: Star },
+  { id: 'Institucional', label: 'Institucional', icon: Megaphone }
+];
 
 export default function ForumSection({ user, clientData }) {
   const [messages, setMessages] = useState([]);
@@ -15,13 +21,25 @@ export default function ForumSection({ user, clientData }) {
   
   // New Post Form state
   const [postText, setPostText] = useState('');
-  const [postTag, setPostTag] = useState('🌿 Testimonio');
+  const [postTag, setPostTag] = useState('Testimonios');
   const [submitting, setSubmitting] = useState(false);
   
   // Reply Form states
   const [activeReplyId, setActiveReplyId] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [replying, setReplying] = useState(false);
+
+  // Check if current user is admin / official account
+  const isAdmin = Boolean(
+    user && (
+      user.email === 'brayan.aponte1502@gmail.com' ||
+      user.email === 'grancolinos@gmail.com' ||
+      clientData?.role === 'admin' ||
+      clientData?.isAdmin === true ||
+      clientData?.name?.toLowerCase().includes('aponte sas') ||
+      clientData?.name?.toLowerCase().includes('oficial')
+    )
+  );
 
   // Fetch messages from API
   const fetchMessages = async () => {
@@ -64,13 +82,13 @@ export default function ForumSection({ user, clientData }) {
           uid: user.uid,
           text: postText.trim(),
           authorName: clientData?.name || user.displayName || 'Miembro del Club',
-          role: clientData?.vipLevel ? `Miembro ${clientData.vipLevel}` : 'Voz del Club',
+          role: isAdmin ? 'Dirección General' : (clientData?.vipLevel ? `Miembro ${clientData.vipLevel}` : 'Voz del Club'),
           photoUrl: clientData?.photoUrl || null,
           avatarIconId: clientData?.avatarIconId || 'leaf',
           verifiedProfession: Boolean(clientData?.verifiedProfession),
           professionTitle: clientData?.professionTitle || null,
           tag: postTag,
-          postType: (clientData?.role === 'admin' || clientData?.isAdmin === true) ? 'institucional' : 'comunidad'
+          postType: isAdmin ? 'institucional' : 'comunidad'
         })
       });
 
@@ -113,7 +131,7 @@ export default function ForumSection({ user, clientData }) {
       });
     } catch (err) {
       console.error("Error toggling reaction:", err);
-      fetchMessages(); // revert if failed
+      fetchMessages();
     }
   };
 
@@ -149,6 +167,73 @@ export default function ForumSection({ user, clientData }) {
     }
   };
 
+  // Handle delete message (Admin or Author)
+  const handleDeleteMessage = async (messageId) => {
+    if (!user) return;
+    if (!confirm("¿Deseas eliminar este comentario del foro?")) return;
+
+    // Optimistic removal
+    setMessages(prev => prev.filter(m => m.id !== messageId));
+
+    try {
+      const res = await fetch('/api/club/messages', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messageId,
+          uid: user.uid
+        })
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        alert(data.error || "No se pudo eliminar el mensaje");
+        fetchMessages();
+      }
+    } catch (err) {
+      console.error("Error deleting message:", err);
+      fetchMessages();
+    }
+  };
+
+  // Handle delete reply (Admin or Author)
+  const handleDeleteReply = async (messageId, replyId) => {
+    if (!user) return;
+    if (!confirm("¿Deseas eliminar esta respuesta?")) return;
+
+    // Optimistic removal
+    setMessages(prev => prev.map(m => {
+      if (m.id === messageId) {
+        return {
+          ...m,
+          replies: (m.replies || []).filter(r => r.id !== replyId)
+        };
+      }
+      return m;
+    }));
+
+    try {
+      const res = await fetch('/api/club/messages', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messageId,
+          replyId,
+          uid: user.uid
+        })
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        alert(data.error || "No se pudo eliminar la respuesta");
+        fetchMessages();
+      }
+    } catch (err) {
+      console.error("Error deleting reply:", err);
+      fetchMessages();
+    }
+  };
+
   return (
     <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-100 dark:border-white/5 overflow-hidden shadow-xl fade-in">
       {/* Header */}
@@ -174,60 +259,65 @@ export default function ForumSection({ user, clientData }) {
           </button>
           <button
             onClick={() => setFilterType('comunidad')}
-            className={`px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
               filterType === 'comunidad' ? 'bg-brand-gold text-brand-dark shadow-md' : 'text-gray-400 hover:text-white'
             }`}
           >
-            💬 Comunidad
+            <Users size={13} /> Comunidad
           </button>
           <button
             onClick={() => setFilterType('institucional')}
-            className={`px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
               filterType === 'institucional' ? 'bg-yellow-500 text-black shadow-md' : 'text-gray-400 hover:text-white'
             }`}
           >
-            📢 Oficial
+            <Megaphone size={13} /> Oficial
           </button>
         </div>
       </div>
 
       {/* Tags Filter Bar */}
       <div className="px-6 py-3 border-b border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-black/10 flex items-center gap-2 overflow-x-auto custom-scrollbar">
-        <Filter size={14} className="text-gray-500 shrink-0 mr-1" />
-        {TAGS.map(tag => (
-          <button
-            key={tag}
-            onClick={() => setSelectedTag(tag)}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
-              selectedTag === tag
-                ? 'bg-brand-gold/20 text-brand-gold border border-brand-gold/50 shadow-sm'
-                : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
-            }`}
-          >
-            {tag}
-          </button>
-        ))}
+        {TAG_CONFIG.map(tagItem => {
+          const Icon = tagItem.icon;
+          const isSelected = selectedTag === tagItem.id;
+          return (
+            <button
+              key={tagItem.id}
+              onClick={() => setSelectedTag(tagItem.id)}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
+                isSelected
+                  ? 'bg-brand-gold/20 text-brand-gold border border-brand-gold/50 shadow-sm'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+              }`}
+            >
+              <Icon size={12} />
+              <span>{tagItem.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Post Composer Form */}
       <div className="p-6 md:p-8 border-b border-gray-100 dark:border-white/10 bg-white dark:bg-[#141414]">
         <form onSubmit={handleCreatePost} className="space-y-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
-              Crear Nueva Publicación
+            <span className="text-xs font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1.5">
+              <MessageSquare size={14} className="text-brand-gold" />
+              <span>Crear Nueva Publicación</span>
             </span>
 
             {/* Tag selector for new post */}
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-gray-500">Categoría:</span>
+              <span className="text-[11px] text-gray-500 font-medium">Categoría:</span>
               <select
                 value={postTag}
                 onChange={e => setPostTag(e.target.value)}
-                className="bg-black/50 border border-white/15 text-white text-xs rounded-lg px-3 py-1.5 outline-none focus:border-brand-gold"
+                className="bg-black/60 border border-white/15 text-white text-xs rounded-lg px-3 py-1.5 outline-none focus:border-brand-gold cursor-pointer font-medium"
               >
-                <option value="🌿 Testimonio">🌿 Testimonio</option>
-                <option value="❓ Pregunta">❓ Pregunta</option>
-                <option value="⭐ Opinión de producto">⭐ Opinión de producto</option>
+                <option value="Testimonios">Testimonios</option>
+                <option value="Preguntas">Preguntas</option>
+                <option value="Opinión de Producto">Opinión de Producto</option>
               </select>
             </div>
           </div>
@@ -276,11 +366,12 @@ export default function ForumSection({ user, clientData }) {
             const likesCount = msg.likesCount || (Array.isArray(msg.likedBy) ? msg.likedBy.length : 0);
             const replies = Array.isArray(msg.replies) ? msg.replies : [];
             const isReplying = activeReplyId === msg.id;
+            const canDelete = isAdmin || (user && msg.uid === user.uid);
 
             return (
               <div
                 key={msg.id}
-                className={`rounded-2xl transition-all p-6 ${
+                className={`rounded-2xl transition-all p-6 relative group ${
                   isInstitutional
                     ? 'bg-gradient-to-br from-yellow-950/20 via-black to-[#0e160a] border-2 border-brand-gold/50 shadow-[0_0_25px_rgba(212,175,55,0.15)]'
                     : 'bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/5'
@@ -321,16 +412,30 @@ export default function ForumSection({ user, clientData }) {
                         </span>
                         {msg.tag && (
                           <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-gray-400">
-                            {msg.tag}
+                            {msg.tag.replace(/[^\w\s]/gi, '').trim()}
                           </span>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  <span className="text-[10px] text-gray-500 font-mono shrink-0">
-                    {msg.createdAt ? new Date(msg.createdAt).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }) : 'Reciente'}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] text-gray-500 font-mono shrink-0">
+                      {msg.createdAt ? new Date(msg.createdAt).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }) : 'Reciente'}
+                    </span>
+
+                    {/* Delete button (Admin or Author) */}
+                    {canDelete && (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteMessage(msg.id)}
+                        className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all cursor-pointer"
+                        title={isAdmin ? "Eliminar comentario como Administrador" : "Eliminar mi publicación"}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Message Body */}
@@ -367,30 +472,45 @@ export default function ForumSection({ user, clientData }) {
                 {/* Replies Thread (Single Level) */}
                 {replies.length > 0 && (
                   <div className="mt-4 space-y-3 pl-4 md:pl-8 border-l-2 border-brand-gold/30">
-                    {replies.map(reply => (
-                      <div key={reply.id} className="bg-black/30 border border-white/5 rounded-xl p-3.5 text-xs">
-                        <div className="flex items-center justify-between gap-2 mb-1.5">
-                          <div className="flex items-center gap-2">
-                            <RenderAvatar
-                              avatarType="icon"
-                              avatarIconId={reply.avatarIconId || 'leaf'}
-                              name={reply.authorName}
-                              size="sm"
-                            />
-                            <span className="font-bold text-white uppercase tracking-wider text-[11px]">
-                              {reply.authorName}
-                            </span>
-                            <VerificationBadge verifiedProfession={reply.verifiedProfession} />
+                    {replies.map(reply => {
+                      const canDeleteReply = isAdmin || (user && reply.uid === user.uid);
+                      return (
+                        <div key={reply.id} className="bg-black/30 border border-white/5 rounded-xl p-3.5 text-xs">
+                          <div className="flex items-center justify-between gap-2 mb-1.5">
+                            <div className="flex items-center gap-2">
+                              <RenderAvatar
+                                avatarType="icon"
+                                avatarIconId={reply.avatarIconId || 'leaf'}
+                                name={reply.authorName}
+                                size="sm"
+                              />
+                              <span className="font-bold text-white uppercase tracking-wider text-[11px]">
+                                {reply.authorName}
+                              </span>
+                              <VerificationBadge verifiedProfession={reply.verifiedProfession} />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-gray-500">
+                                {reply.createdAt ? new Date(reply.createdAt).toLocaleDateString('es-CO') : ''}
+                              </span>
+                              {canDeleteReply && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteReply(msg.id, reply.id)}
+                                  className="text-gray-500 hover:text-red-400 p-1 rounded transition-colors cursor-pointer"
+                                  title="Eliminar respuesta"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              )}
+                            </div>
                           </div>
-                          <span className="text-[10px] text-gray-500">
-                            {reply.createdAt ? new Date(reply.createdAt).toLocaleDateString('es-CO') : ''}
-                          </span>
+                          <p className="text-gray-300 font-light pl-8 leading-relaxed">
+                            {reply.text}
+                          </p>
                         </div>
-                        <p className="text-gray-300 font-light pl-8 leading-relaxed">
-                          {reply.text}
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
 
