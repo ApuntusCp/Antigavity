@@ -3,26 +3,29 @@
 import { useAuth } from "../../components/AuthProvider";
 import { useState, useEffect, useRef } from "react";
 import { db, storage } from "../../utils/firebase";
-import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Link from "next/link";
-import { Crown, Gift, MessageSquare, ShieldCheck, Copy, CheckCircle, Loader2, Camera, Star, Settings, User } from "lucide-react";
+import { Crown, Gift, MessageSquare, ShieldCheck, Copy, CheckCircle, Loader2, Camera, Settings, User, Sparkles, Check } from "lucide-react";
 import MaintenanceGuard from "../../components/MaintenanceGuard";
+
+import AvatarSelector, { RenderAvatar } from "./components/AvatarPicker";
+import VerificationBadge from "./components/VerificationBadge";
+import GamificationProgressBar from "./components/GamificationProgressBar";
+import BadgesAndHistory from "./components/BadgesAndHistory";
+import ForumSection from "./components/ForumSection";
 
 export default function ClubGranColinosPage() {
   const { user, loading } = useAuth();
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [sending, setSending] = useState(false);
-  
   const [clientData, setClientData] = useState(null);
   const [copied, setCopied] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
 
-  // Estados Perfil / Testimonio
+  // Estados Perfil
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [profileName, setProfileName] = useState("");
-  const [testimonialText, setTestimonialText] = useState("");
+  const [selectedAvatarType, setSelectedAvatarType] = useState("icon"); // 'upload' | 'icon' | 'letter'
+  const [selectedAvatarIconId, setSelectedAvatarIconId] = useState("leaf");
   const [savingProfile, setSavingProfile] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const fileInputRef = useRef(null);
@@ -30,7 +33,6 @@ export default function ClubGranColinosPage() {
   // Cargar datos del cliente logueado
   useEffect(() => {
     if (!user) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoadingData(false);
       return;
     }
@@ -42,7 +44,28 @@ export default function ClubGranColinosPage() {
         if (docSnap.exists()) {
           const data = docSnap.data();
           setClientData(data);
-          setProfileName(data.name || "");
+          setProfileName(data.name || user.displayName || "");
+          setSelectedAvatarType(data.avatarType || (data.photoUrl ? 'upload' : 'icon'));
+          setSelectedAvatarIconId(data.avatarIconId || 'leaf');
+        } else {
+          // Si no existe aún en Firestore, aprovisionarlo de forma segura
+          const res = await fetch('/api/club/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              uid: user.uid,
+              name: user.displayName || user.email.split('@')[0],
+              email: user.email,
+              source: 'Club Comunidad'
+            })
+          });
+          const json = await res.json();
+          if (json.success && json.client) {
+            setClientData(json.client);
+            setProfileName(json.client.name || "");
+            setSelectedAvatarType('icon');
+            setSelectedAvatarIconId('leaf');
+          }
         }
       } catch (error) {
         console.error("Error fetching client data:", error);
@@ -53,54 +76,6 @@ export default function ClubGranColinosPage() {
 
     fetchClientData();
   }, [user]);
-
-  // Suscribirse a mensajes
-  useEffect(() => {
-    if (!user) return;
-
-    const q = query(collection(db, "community_messages"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          // Fallback para createdAt localmente antes de sincronizar
-          createdAt: data.createdAt ? data.createdAt : { toDate: () => new Date() }
-        };
-      });
-      // Sort manually just in case the null timestamp throws it at the end
-      msgs.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-      setMessages(msgs);
-    });
-
-    return () => unsubscribe();
-  }, [user]);
-
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim() || !user) return;
-    
-    setSending(true);
-    try {
-      await addDoc(collection(db, "community_messages"), {
-        text: newMessage,
-        uid: user.uid,
-        name: clientData?.name || "Miembro del Club",
-        authorName: clientData?.name || "Miembro del Club",
-        role: clientData?.vipLevel ? `Miembro ${clientData.vipLevel}` : "Voz del Club",
-        photoUrl: clientData?.photoUrl || null,
-        isPublished: false,
-        createdAt: serverTimestamp(),
-      });
-      setNewMessage("");
-    } catch (error) {
-      console.error("Error sending message", error);
-      alert("Hubo un error al enviar el mensaje. Verifica tu conexión.");
-    } finally {
-      setSending(false);
-    }
-  };
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
@@ -116,8 +91,9 @@ export default function ClubGranColinosPage() {
       const storageRef = ref(storage, `clients_avatars/${user.uid}_${Date.now()}`);
       await uploadBytes(storageRef, file);
       const url = await getDownloadURL(storageRef);
-      await updateDoc(doc(db, "clients", user.uid), { photoUrl: url });
-      setClientData(prev => ({ ...prev, photoUrl: url }));
+      await updateDoc(doc(db, "clients", user.uid), { photoUrl: url, avatarType: 'upload' });
+      setClientData(prev => ({ ...prev, photoUrl: url, avatarType: 'upload' }));
+      setSelectedAvatarType('upload');
     } catch (error) {
       console.error("Error uploading photo", error);
       alert("No se pudo subir la foto: " + error.message);
@@ -131,9 +107,27 @@ export default function ClubGranColinosPage() {
     if (!user || !profileName.trim()) return;
     try {
       setSavingProfile(true);
-      await updateDoc(doc(db, "clients", user.uid), { name: profileName });
-      setClientData(prev => ({ ...prev, name: profileName }));
-      setIsEditingProfile(false);
+      const res = await fetch('/api/club/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: user.uid,
+          name: profileName.trim(),
+          avatarType: selectedAvatarType,
+          avatarIconId: selectedAvatarIconId
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setClientData(prev => ({
+          ...prev,
+          name: profileName.trim(),
+          avatarType: selectedAvatarType,
+          avatarIconId: selectedAvatarIconId
+        }));
+        setIsEditingProfile(false);
+      }
     } catch (error) {
       console.error("Error saving profile", error);
     } finally {
@@ -142,7 +136,11 @@ export default function ClubGranColinosPage() {
   };
 
   if (loading || loadingData) {
-    return <div className="min-h-screen flex items-center justify-center bg-brand-dark"><Loader2 className="w-8 h-8 text-brand-gold animate-spin" /></div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-dark">
+        <Loader2 className="w-8 h-8 text-brand-gold animate-spin" />
+      </div>
+    );
   }
 
   // Vista para No Logueados (Invitados)
@@ -156,53 +154,52 @@ export default function ClubGranColinosPage() {
         defaultEstimatedDate="Agosto 2026"
       >
         <div className="min-h-screen bg-brand-light dark:bg-brand-dark flex items-center justify-center px-6 relative overflow-hidden py-24">
-        {/* Background elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-gold/10 rounded-full blur-[120px] pointer-events-none" />
-        
-        <div className="max-w-4xl mx-auto text-center relative z-10 fade-in">
-          <Crown className="w-16 h-16 text-brand-gold mx-auto mb-6" />
-          <h1 className="font-playfair text-5xl md:text-6xl text-brand-dark dark:text-white mb-6">
-            Club Gran Colinos
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300 text-lg md:text-xl font-light max-w-2xl mx-auto mb-12">
-            La comunidad exclusiva para amantes del bienestar holístico y CBD. Regístrate hoy y obtén acceso inmediato a beneficios únicos.
-          </p>
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-gold/10 rounded-full blur-[120px] pointer-events-none" />
+          
+          <div className="max-w-4xl mx-auto text-center relative z-10 fade-in">
+            <Crown className="w-16 h-16 text-brand-gold mx-auto mb-6" />
+            <h1 className="font-playfair text-5xl md:text-6xl text-brand-dark dark:text-white mb-6">
+              Club Gran Colinos
+            </h1>
+            <p className="text-gray-600 dark:text-gray-300 text-lg md:text-xl font-light max-w-2xl mx-auto mb-12">
+              La comunidad exclusiva para amantes del bienestar holístico y botánica de alta pureza. Regístrate hoy y obtén acceso inmediato a beneficios únicos.
+            </p>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-16 text-left">
-            <div className="bg-white/50 dark:bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-brand-gold/20">
-              <Gift className="w-8 h-8 text-brand-gold mb-4" />
-              <h3 className="text-brand-dark dark:text-white font-bold mb-2">Cupón de Bienvenida</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Recibe un 10% de descuento en tu primera compra al unirte.</p>
+            <div className="grid md:grid-cols-3 gap-8 mb-16 text-left">
+              <div className="bg-white/50 dark:bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-brand-gold/20">
+                <Gift className="w-8 h-8 text-brand-gold mb-4" />
+                <h3 className="text-brand-dark dark:text-white font-bold mb-2">Cupón de Bienvenida</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Recibe un 10% de descuento en tu primera compra al unirte.</p>
+              </div>
+              <div className="bg-white/50 dark:bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-brand-gold/20">
+                <MessageSquare className="w-8 h-8 text-brand-gold mb-4" />
+                <h3 className="text-brand-dark dark:text-white font-bold mb-2">Comunidad Privada</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Comparte experiencias y aprende con otras personas sobre el uso del CBD.</p>
+              </div>
+              <div className="bg-white/50 dark:bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-brand-gold/20">
+                <ShieldCheck className="w-8 h-8 text-brand-gold mb-4" />
+                <h3 className="text-brand-dark dark:text-white font-bold mb-2">Acceso VIP</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Entérate primero de nuevos lanzamientos, lotes especiales y eventos.</p>
+              </div>
             </div>
-            <div className="bg-white/50 dark:bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-brand-gold/20">
-              <MessageSquare className="w-8 h-8 text-brand-gold mb-4" />
-              <h3 className="text-brand-dark dark:text-white font-bold mb-2">Comunidad Privada</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Comparte experiencias y aprende con otras personas sobre el uso del CBD.</p>
-            </div>
-            <div className="bg-white/50 dark:bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-brand-gold/20">
-              <ShieldCheck className="w-8 h-8 text-brand-gold mb-4" />
-              <h3 className="text-brand-dark dark:text-white font-bold mb-2">Acceso Anticipado</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Entérate primero de nuevos lanzamientos y ediciones limitadas.</p>
-            </div>
-          </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/registro"
-              className="bg-brand-gold text-brand-dark font-bold text-xs uppercase tracking-widest py-4 px-10 rounded-full hover:bg-yellow-500 transition-colors"
-            >
-              Unirme al Club
-            </Link>
-            <Link 
-              href="/login"
-              className="border border-brand-gold/30 text-brand-dark dark:text-white font-bold text-xs uppercase tracking-widest py-4 px-10 rounded-full hover:border-brand-gold hover:text-brand-gold transition-colors"
-            >
-              Ya soy miembro
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link 
+                href="/registro"
+                className="bg-brand-gold text-brand-dark font-bold text-xs uppercase tracking-widest py-4 px-10 rounded-full hover:bg-yellow-500 transition-colors shadow-lg"
+              >
+                Unirme al Club
+              </Link>
+              <Link 
+                href="/login"
+                className="border border-brand-gold/40 text-brand-dark dark:text-white font-bold text-xs uppercase tracking-widest py-4 px-10 rounded-full hover:border-brand-gold hover:text-brand-gold transition-colors"
+              >
+                Ya soy miembro
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
-    </MaintenanceGuard>
+      </MaintenanceGuard>
     );
   }
 
@@ -215,163 +212,162 @@ export default function ClubGranColinosPage() {
       defaultModuleName="Mi Club & Registro"
       defaultEstimatedDate="Agosto 2026"
     >
-      <div className="min-h-screen bg-brand-light dark:bg-brand-dark py-24 px-6 relative">
-      <div className="max-w-4xl mx-auto">
-        
-        {/* User Dashboard Header */}
-        <div className="bg-gradient-to-br from-[#111] to-black p-8 rounded-2xl border border-brand-gold/20 mb-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl relative overflow-hidden fade-in">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-[80px]" />
+      <div className="min-h-screen bg-brand-light dark:bg-brand-dark py-24 px-4 sm:px-6 relative">
+        <div className="max-w-4xl mx-auto">
           
-          <div className="relative z-10 text-center md:text-left flex flex-col md:flex-row gap-6 items-center">
-            <div className="relative group">
-              <input type="file" ref={fileInputRef} onChange={handlePhotoUpload} accept="image/*" className="hidden" />
-              {clientData?.photoUrl ? (
-                <img src={clientData.photoUrl} alt="Avatar" className="w-24 h-24 rounded-full object-cover border-2 border-brand-gold/50 shadow-xl" />
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-brand-gold/20 to-brand-green/20 border-2 border-brand-gold/30 flex items-center justify-center text-brand-gold shadow-xl">
-                  <User size={40} />
+          {/* USER DASHBOARD HEADER */}
+          <div className="bg-gradient-to-br from-[#111] to-black p-6 md:p-8 rounded-2xl border border-brand-gold/25 mb-8 shadow-2xl relative overflow-hidden fade-in">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-[80px]" />
+            
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+              {/* Profile info */}
+              <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+                {/* Avatar with upload trigger */}
+                <div className="relative group">
+                  <input type="file" ref={fileInputRef} onChange={handlePhotoUpload} accept="image/*" className="hidden" />
+                  
+                  <RenderAvatar
+                    photoUrl={clientData?.photoUrl}
+                    avatarType={clientData?.avatarType || (clientData?.photoUrl ? 'upload' : 'icon')}
+                    avatarIconId={clientData?.avatarIconId || 'leaf'}
+                    name={clientData?.name}
+                    size="xl"
+                  />
+
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploadingPhoto}
+                    className={`absolute inset-0 bg-black/60 rounded-full flex items-center justify-center transition-opacity backdrop-blur-sm cursor-pointer ${isUploadingPhoto ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                    title="Subir foto de perfil"
+                  >
+                    {isUploadingPhoto ? <Loader2 size={24} className="text-brand-gold animate-spin" /> : <Camera size={22} className="text-white" />}
+                  </button>
                 </div>
-              )}
-              <button 
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploadingPhoto}
-                className={`absolute inset-0 bg-black/50 rounded-full flex items-center justify-center transition-opacity backdrop-blur-sm cursor-pointer ${isUploadingPhoto ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-              >
-                {isUploadingPhoto ? <Loader2 size={24} className="text-white animate-spin" /> : <Camera size={24} className="text-white" />}
-              </button>
-            </div>
 
-            <div>
-              <h1 className="font-playfair text-3xl text-white mb-3">
-                Hola, {clientData?.name ? clientData.name.split(' ')[0] : 'Miembro'}
-              </h1>
-              <div className="flex items-center gap-3">
-                <span className={`text-xs tracking-widest uppercase px-3 py-1 rounded-full border font-bold ${
-                  clientData?.vipLevel === 'Oro' ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/50' :
-                  clientData?.vipLevel === 'Plata' ? 'bg-gray-400/20 text-gray-300 border-gray-400/50' :
-                  'bg-orange-700/20 text-orange-400 border-orange-700/50'
-                }`}>
-                  Rango: {clientData?.vipLevel || 'Bronce'}
-                </span>
-                <span className="text-brand-green text-xs tracking-widest uppercase bg-brand-green/20 px-3 py-1 rounded-full border border-brand-green/50">
-                  {clientData?.ecoPoints || 0} Eco-Points
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
-            <button 
-              onClick={() => setIsEditingProfile(!isEditingProfile)}
-              className="border border-white/20 text-gray-300 hover:text-white px-4 py-2 rounded-lg flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-colors"
-            >
-              <Settings size={14} /> Perfil
-            </button>
-            {clientData?.couponCode && (
-              <div className="bg-white/5 border border-brand-gold/30 p-2 rounded-xl flex items-center gap-4 px-4">
                 <div>
-                  <p className="text-[9px] text-gray-400 tracking-widest uppercase mb-1">Tu Cupón</p>
-                  <p className="text-lg font-mono font-bold text-white tracking-widest leading-none">{clientData.couponCode}</p>
-                </div>
-                <button 
-                  onClick={() => copyToClipboard(clientData.couponCode)}
-                  className="bg-brand-gold text-brand-dark p-2 rounded-lg hover:bg-yellow-400 transition-colors"
-                  title="Copiar cupón"
-                >
-                  {copied ? <CheckCircle size={16} /> : <Copy size={16} />}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Profile Settings Panel */}
-        {isEditingProfile && (
-          <div className="bg-[#111] rounded-2xl border border-brand-gold/30 p-8 mb-12 shadow-2xl fade-in relative max-w-md mx-auto">
-            <h2 className="font-playfair text-2xl text-brand-gold mb-6 border-b border-white/10 pb-4 text-center">Personaliza tu Perfil</h2>
-            <div>
-              <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-bold">Tu Apodo / Nombre</label>
-              <input 
-                type="text" 
-                value={profileName} 
-                onChange={e => setProfileName(e.target.value)}
-                className="w-full bg-black border border-white/20 rounded-lg p-3 text-white focus:border-brand-gold outline-none transition-colors"
-                placeholder="¿Cómo quieres que te llamemos?"
-              />
-              <button 
-                onClick={saveProfile}
-                disabled={savingProfile || !profileName.trim()}
-                className="mt-4 w-full bg-brand-gold text-black font-bold text-xs uppercase tracking-widest px-6 py-3 rounded flex items-center justify-center gap-2 hover:bg-yellow-400 transition-colors disabled:opacity-50"
-              >
-                {savingProfile ? <Loader2 size={16} className="animate-spin" /> : "Guardar Cambios"}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Community Chat */}
-        <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-100 dark:border-white/5 overflow-hidden shadow-xl fade-in delay-100">
-          <div className="p-6 border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-black/20">
-            <h2 className="font-playfair text-xl text-brand-dark dark:text-white flex items-center gap-2">
-              <MessageSquare size={20} className="text-brand-gold" /> Foro del Club
-            </h2>
-          </div>
-
-          <div className="p-6">
-            <form onSubmit={handleSendMessage} className="flex flex-col gap-4 mb-8">
-              <textarea 
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Comparte tu experiencia con la comunidad..."
-                className="w-full bg-transparent border border-gray-200 dark:border-gray-800 rounded-xl p-4 text-brand-dark dark:text-white focus:outline-none focus:border-brand-gold transition-colors resize-none font-light"
-                rows="3"
-                maxLength="500"
-                required
-              />
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-500">{newMessage.length}/500</span>
-                <button 
-                  type="submit"
-                  disabled={sending || !newMessage.trim()}
-                  className="bg-brand-gold text-brand-dark text-xs font-bold uppercase tracking-widest py-3 px-8 rounded-full hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center gap-2"
-                >
-                  {sending ? <Loader2 size={16} className="animate-spin" /> : "Publicar"}
-                </button>
-              </div>
-            </form>
-
-            <div className="space-y-4 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
-              {messages.length === 0 ? (
-                <div className="text-center py-12 border border-dashed border-gray-200 dark:border-gray-800 rounded-xl">
-                  <p className="text-gray-500 text-sm">Aún no hay mensajes. ¡Sé el primero en compartir!</p>
-                </div>
-              ) : (
-                messages.map((msg) => (
-                  <div key={msg.id} className={`p-5 rounded-xl ${msg.uid === user.uid ? 'bg-brand-gold/5 border border-brand-gold/20 ml-8' : 'bg-gray-50 dark:bg-black/40 border border-gray-100 dark:border-white/5 mr-8'}`}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-brand-gold to-brand-green flex items-center justify-center text-brand-dark font-bold text-xs">
-                        {(msg.authorName || "C")[0].toUpperCase()}
-                      </div>
-                      <span className="text-xs font-bold tracking-widest uppercase text-brand-dark dark:text-gray-300">
-                        {msg.authorName || "Miembro del Club"}
-                      </span>
-                      {msg.uid === user.uid && <span className="text-[9px] bg-brand-gold/20 text-brand-gold px-2 py-0.5 rounded-full ml-auto">TÚ</span>}
-                    </div>
-                    <p className="text-gray-800 dark:text-gray-300 font-light leading-relaxed">
-                      {msg.text}
-                    </p>
-                    <div className="mt-4 text-[10px] text-gray-400 tracking-widest uppercase text-right">
-                      {msg.createdAt?.toDate().toLocaleDateString('es-CO', { hour: '2-digit', minute: '2-digit' }) || 'Justo ahora'}
-                    </div>
+                  <div className="flex items-center gap-2 justify-center sm:justify-start flex-wrap mb-1">
+                    <h1 className="font-playfair text-2xl md:text-3xl text-white font-bold">
+                      {clientData?.name ? clientData.name : 'Miembro Gran Colinos'}
+                    </h1>
+                    <VerificationBadge 
+                      verifiedProfession={clientData?.verifiedProfession} 
+                      professionTitle={clientData?.professionTitle}
+                      size="md"
+                    />
                   </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
 
+                  <div className="flex items-center gap-2 justify-center sm:justify-start flex-wrap">
+                    <span className={`text-[11px] tracking-widest uppercase px-3 py-0.5 rounded-full border font-bold ${
+                      clientData?.vipLevel === 'Oro' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50' :
+                      clientData?.vipLevel === 'Plata' ? 'bg-gray-400/20 text-gray-200 border-gray-400/50' :
+                      'bg-orange-800/20 text-orange-300 border-orange-700/50'
+                    }`}>
+                      Rango {clientData?.vipLevel || 'Bronce'}
+                    </span>
+                    <span className="text-emerald-400 text-[11px] tracking-widest uppercase bg-emerald-950/60 px-3 py-0.5 rounded-full border border-emerald-500/40 font-mono">
+                      {clientData?.ecoPoints || 0} Eco-Points
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions & Coupon */}
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <button 
+                  onClick={() => setIsEditingProfile(!isEditingProfile)}
+                  className="border border-white/20 text-gray-300 hover:text-white hover:border-brand-gold px-4 py-2.5 rounded-xl flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all cursor-pointer bg-white/5"
+                >
+                  <Settings size={14} /> Personalizar
+                </button>
+
+                {clientData?.couponCode && (
+                  <div className="bg-white/5 border border-brand-gold/30 p-2 rounded-xl flex items-center gap-3 px-4">
+                    <div>
+                      <p className="text-[9px] text-gray-400 tracking-widest uppercase mb-0.5">Cupón 10% OFF</p>
+                      <p className="text-base font-mono font-bold text-white tracking-widest leading-none">{clientData.couponCode}</p>
+                    </div>
+                    <button 
+                      onClick={() => copyToClipboard(clientData.couponCode)}
+                      className="bg-brand-gold text-brand-dark p-2 rounded-lg hover:bg-yellow-400 transition-colors cursor-pointer"
+                      title="Copiar cupón"
+                    >
+                      {copied ? <CheckCircle size={16} /> : <Copy size={16} />}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* PROGRESS BAR DE GAMIFICACIÓN */}
+            <GamificationProgressBar 
+              ecoPoints={clientData?.ecoPoints || 0} 
+              vipLevel={clientData?.vipLevel || 'Bronce'} 
+            />
+          </div>
+
+          {/* PROFILE SETTINGS PANEL (Personalización) */}
+          {isEditingProfile && (
+            <div className="bg-[#111] rounded-2xl border border-brand-gold/40 p-6 md:p-8 mb-8 shadow-2xl fade-in relative max-w-xl mx-auto">
+              <h2 className="font-playfair text-2xl text-brand-gold mb-6 border-b border-white/10 pb-3 text-center font-bold">
+                Personaliza tu Identidad en el Club
+              </h2>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-bold">
+                    Nombre o Apodo Público
+                  </label>
+                  <input 
+                    type="text" 
+                    value={profileName} 
+                    onChange={e => setProfileName(e.target.value)}
+                    className="w-full bg-black border border-white/20 rounded-xl p-3.5 text-white focus:border-brand-gold outline-none transition-colors text-sm"
+                    placeholder="¿Cómo quieres que te llamemos?"
+                  />
+                </div>
+
+                {/* Avatar Icon Selector */}
+                <AvatarSelector
+                  currentType={selectedAvatarType}
+                  currentIconId={selectedAvatarIconId}
+                  onSelectType={(t) => setSelectedAvatarType(t)}
+                  onSelectIcon={(iconId) => setSelectedAvatarIconId(iconId)}
+                />
+
+                {/* Professional verification note */}
+                <div className="p-3 bg-white/5 border border-white/10 rounded-xl text-[11px] text-gray-400">
+                  🛡️ <strong>Verificación Profesional:</strong> Si eres médico, químico o profesional de la salud, puedes validar tus credenciales enviando tus soportes a GC Admin para habilitar tu badge oficial.
+                </div>
+
+                <div className="flex gap-3">
+                  <button 
+                    type="button"
+                    onClick={() => setIsEditingProfile(false)}
+                    className="flex-1 border border-white/20 text-gray-400 hover:text-white font-bold text-xs uppercase tracking-widest py-3 rounded-xl transition-colors cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={saveProfile}
+                    disabled={savingProfile || !profileName.trim()}
+                    className="flex-1 bg-brand-gold hover:bg-yellow-400 text-black font-bold text-xs uppercase tracking-widest py-3 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50 cursor-pointer shadow-[0_0_15px_rgba(212,175,55,0.25)]"
+                  >
+                    {savingProfile ? <Loader2 size={16} className="animate-spin" /> : "Guardar Cambios"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* BADGES, PURCHASE HISTORY & REFERRAL CTA */}
+          <BadgesAndHistory user={user} clientData={clientData} />
+
+          {/* FORUM & CLUB VOICES */}
+          <ForumSection user={user} clientData={clientData} />
+
+        </div>
       </div>
-    </div>
-  </MaintenanceGuard>
+    </MaintenanceGuard>
   );
 }

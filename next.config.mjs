@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   // ── Eliminar console.log en producción ──────────────────────────────────────
   // Evita que logs internos sean visibles en DevTools del navegador en producción
   compiler: {

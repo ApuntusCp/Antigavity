@@ -148,15 +148,21 @@ export default function CheckoutPage() {
         const userCredential = await register(formData.email, authPassword);
         newUser = userCredential.user;
         
-        // Crear el perfil del cliente solo en registro
-        await setDoc(doc(db, 'clients', newUser.uid), {
-          uid: newUser.uid,
-          name: `${formData.firstName} ${formData.lastName}`,
-          email: formData.email.toLowerCase().trim(),
-          source: 'Checkout',
-          purchaseCount: 0,
-          createdAt: serverTimestamp()
-        });
+        // Crear el perfil del cliente y sincronizar con GC Admin
+        try {
+          await fetch('/api/club/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              uid: newUser.uid,
+              name: `${formData.firstName} ${formData.lastName}`.trim(),
+              email: formData.email.toLowerCase().trim(),
+              source: 'Checkout'
+            })
+          });
+        } catch (apiErr) {
+          console.warn("Could not sync with /api/club/register:", apiErr);
+        }
       }
       
       await processCheckout(newUser.uid, formData.email);

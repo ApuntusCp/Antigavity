@@ -1,7 +1,5 @@
 "use client";
 import { useState } from 'react';
-import { db } from '../utils/firebase';
-import { collection, addDoc, doc, setDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { Mail, Gift, CheckCircle, Copy, Loader2, User } from 'lucide-react';
 
 export default function NewsletterForm() {
@@ -9,68 +7,53 @@ export default function NewsletterForm() {
   const [status, setStatus] = useState('idle'); // idle, loading, success, error, exists
   const [generatedCoupon, setGeneratedCoupon] = useState('');
   const [copied, setCopied] = useState(false);
-
-  const generateCode = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = 'GC-';
-    for (let i = 0; i < 6; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-  };
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email) return;
+    if (!formData.name.trim() || !formData.email.trim()) return;
     setStatus('loading');
+    setErrorMessage('');
 
     try {
-      // 1. Check if email already exists
-      const q = query(collection(db, 'clients'), where('email', '==', formData.email.toLowerCase().trim()));
-      const snap = await getDocs(q);
-      
-      if (!snap.empty) {
+      const res = await fetch('/api/club/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.toLowerCase().trim()
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.exists) {
         setStatus('exists');
+        if (data.couponCode) {
+          setGeneratedCoupon(data.couponCode);
+        }
         return;
       }
 
-      // 2. Generate unique coupon
-      const newCode = generateCode();
-      
-      // 3. Save to coupons collection
-      await setDoc(doc(db, 'coupons', newCode), {
-        code: newCode,
-        type: 'PERCENTAGE',
-        value: 10, // 10% discount by default
-        maxUses: 1,
-        usedCount: 0,
-        active: true,
-        isWelcomeCoupon: true,
-        assignedTo: formData.email.toLowerCase().trim(),
-        createdAt: serverTimestamp()
-      });
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Ocurrió un error al procesar tu solicitud');
+      }
 
-      // 4. Save to clients collection
-      await addDoc(collection(db, 'clients'), {
-        name: formData.name.trim(),
-        email: formData.email.toLowerCase().trim(),
-        couponCode: newCode,
-        source: 'Newsletter',
-        createdAt: serverTimestamp()
-      });
-
-      setGeneratedCoupon(newCode);
+      setGeneratedCoupon(data.couponCode);
       setStatus('success');
     } catch (error) {
-      console.error("Error subscribing:", error);
+      console.error("Error subscribing to Club:", error);
+      setErrorMessage(error.message || 'Ocurrió un error. Intenta nuevamente más tarde.');
       setStatus('error');
     }
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedCoupon);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (generatedCoupon) {
+      navigator.clipboard.writeText(generatedCoupon);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   if (status === 'success') {
@@ -89,8 +72,9 @@ export default function NewsletterForm() {
             {generatedCoupon}
           </div>
           <button 
+            type="button"
             onClick={copyToClipboard}
-            className="mt-2 flex items-center gap-2 px-6 py-2.5 bg-brand-gold/10 hover:bg-brand-gold/20 text-brand-gold rounded-full font-bold text-sm transition-all border border-brand-gold/30 hover:border-brand-gold"
+            className="mt-2 flex items-center gap-2 px-6 py-2.5 bg-brand-gold/10 hover:bg-brand-gold/20 text-brand-gold rounded-full font-bold text-sm transition-all border border-brand-gold/30 hover:border-brand-gold cursor-pointer"
           >
             {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
             {copied ? '¡COPIADO!' : 'COPIAR CÓDIGO'}
@@ -101,7 +85,7 @@ export default function NewsletterForm() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-[#111] to-[#050505] border border-white/5 rounded-2xl p-8 md:p-12 relative overflow-hidden shadow-2xl max-w-4xl mx-auto w-full flex flex-col md:flex-row items-center gap-12">
+    <div className="bg-gradient-to-br from-[#111] to-[#050505] border border-white/5 rounded-2xl p-8 md:p-12 relative overflow-hidden shadow-2xl max-w-4xl mx-auto w-full flex flex-col md:flex-row items-center gap-12 text-left">
       {/* Decorative Glow */}
       <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-brand-gold/10 rounded-full blur-[100px] pointer-events-none"></div>
 
@@ -150,21 +134,28 @@ export default function NewsletterForm() {
           </div>
 
           {status === 'exists' && (
-            <p className="text-red-400 text-sm font-medium text-center bg-red-400/10 py-2 rounded-lg border border-red-400/20">
-              Este correo ya está registrado en nuestro sistema.
-            </p>
+            <div className="p-3 bg-brand-gold/10 border border-brand-gold/30 rounded-xl text-center">
+              <p className="text-brand-gold text-xs font-semibold mb-1">
+                Este correo ya está registrado en nuestro Club.
+              </p>
+              {generatedCoupon && (
+                <p className="text-white text-xs font-mono">
+                  Tu cupón asignado: <strong>{generatedCoupon}</strong>
+                </p>
+              )}
+            </div>
           )}
 
           {status === 'error' && (
             <p className="text-red-400 text-sm font-medium text-center bg-red-400/10 py-2 rounded-lg border border-red-400/20">
-              Ocurrió un error. Intenta nuevamente más tarde.
+              {errorMessage || "Ocurrió un error. Intenta nuevamente más tarde."}
             </p>
           )}
 
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="w-full bg-brand-gold hover:bg-yellow-500 text-black font-black uppercase tracking-widest py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+            className="w-full bg-brand-gold hover:bg-yellow-500 text-black font-black uppercase tracking-widest py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 cursor-pointer"
           >
             {status === 'loading' ? (
               <><Loader2 className="w-5 h-5 animate-spin" /> Procesando...</>
