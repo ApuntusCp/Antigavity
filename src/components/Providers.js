@@ -3,10 +3,12 @@
 import { CartProvider } from './CartContext';
 import { AuthProvider } from './AuthProvider';
 import { Toaster } from 'react-hot-toast';
+import ServiceWorkerCleaner from './ServiceWorkerCleaner';
 
 export default function Providers({ children }) {
   return (
     <CartProvider>
+      <ServiceWorkerCleaner />
       <Toaster 
         position="top-center"
         toastOptions={{

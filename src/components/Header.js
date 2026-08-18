@@ -242,6 +242,7 @@ export default function Header({ headerConfig = {} }) {
                 <Link
                   key={item.id}
                   href={item.href}
+                  prefetch={false}
                   className={`snap-center shrink-0 w-9 h-9 xs:w-10 xs:h-10 rounded-full flex items-center justify-center transition-all duration-300 border relative ${
                     isCentered || isSelectedActive
                       ? 'scale-110 border-white/60 shadow-[0_0_15px_rgba(212,175,55,0.6)] bg-white/15 z-10'
@@ -273,6 +274,7 @@ export default function Header({ headerConfig = {} }) {
                 <div key={item.id} className="relative group flex items-center justify-center">
                   <Link
                     href={item.href}
+                    prefetch={false}
                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border ${
                       isActive
                         ? `${item.activeClass} border-white/40 shadow-lg scale-110`
