@@ -8,7 +8,7 @@ import { useCart } from "./CartContext";
 import { useAuth } from "./AuthProvider";
 import { User, LogOut, ShoppingCart, X, Search } from "lucide-react";
 import { db } from "../utils/firebase";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import {
   IconTienda,
   IconNoticias,
@@ -50,10 +50,11 @@ export default function Header({ headerConfig = {} }) {
   const carouselRef = useRef(null);
 
   useEffect(() => {
-    const unsub = onSnapshot(
-      doc(db, 'settings', 'navigation_order'),
-      (snapshot) => {
-        if (snapshot.exists()) {
+    let isMounted = true;
+    async function loadNavigationOrder() {
+      try {
+        const snapshot = await getDoc(doc(db, 'settings', 'navigation_order'));
+        if (snapshot.exists() && isMounted) {
           const data = snapshot.data();
           if (data.orderedPaths && Array.isArray(data.orderedPaths)) {
             const orderMap = new Map(data.orderedPaths.map((p, idx) => [p, idx]));
@@ -65,11 +66,13 @@ export default function Header({ headerConfig = {} }) {
             setDockItems(sorted);
           }
         }
-      },
-      (err) => console.log("Navigation order sub error:", err)
-    );
+      } catch (err) {
+        // Fallback silencioso sin spam de errores
+      }
+    }
 
-    return () => unsub();
+    loadNavigationOrder();
+    return () => { isMounted = false; };
   }, []);
 
   const getActiveItem = () => {

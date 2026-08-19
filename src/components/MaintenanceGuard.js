@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { db } from '../utils/firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { useAuth } from './AuthProvider';
 import UnderConstructionScreen from './UnderConstructionScreen';
 import { Wrench, Unlock, Lock } from 'lucide-react';
@@ -23,29 +23,27 @@ export default function MaintenanceGuard({
   useEffect(() => {
     const cleanKey = routeKey.startsWith('/') ? routeKey : `/${routeKey}`;
     const noSlashKey = routeKey.replace(/^\//, '');
+    let isMounted = true;
 
-    const unsub = onSnapshot(
-      doc(db, 'settings', 'maintenance_config'),
-      (snapshot) => {
-        if (snapshot.exists()) {
+    async function loadMaintenanceConfig() {
+      try {
+        const snapshot = await getDoc(doc(db, 'settings', 'maintenance_config'));
+        if (snapshot.exists() && isMounted) {
           const data = snapshot.data();
-          // Buscar con slash, sin slash, o la clave tal como viene
           const routeData = data[cleanKey] ?? data[noSlashKey] ?? data[routeKey] ?? null;
           setConfig(routeData);
-        } else {
+        } else if (isMounted) {
           setConfig(null);
         }
-        setIsLoaded(true);
-      },
-      (err) => {
-        console.error('MaintenanceGuard Firestore error:', err);
-        // En caso de error de Firestore, permitir acceso para no bloquear la página
-        setConfig(null);
-        setIsLoaded(true);
+      } catch (err) {
+        if (isMounted) setConfig(null);
+      } finally {
+        if (isMounted) setIsLoaded(true);
       }
-    );
+    }
 
-    return () => unsub();
+    loadMaintenanceConfig();
+    return () => { isMounted = false; };
   }, [routeKey]);
 
   // ─── CRITICAL GUARD ───────────────────────────────────────────────────────

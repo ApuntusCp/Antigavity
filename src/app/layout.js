@@ -97,6 +97,29 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="es" className={`${inter.variable} ${playfair.variable} h-full scroll-smooth`}>
       <head>
+        {/* Desregistro inmediato de Service Workers residuales y limpieza de caché corrupta */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(function(regs) {
+                    for (var i = 0; i < regs.length; i++) {
+                      regs[i].unregister();
+                    }
+                  });
+                }
+                if ('caches' in window) {
+                  caches.keys().then(function(names) {
+                    for (var i = 0; i < names.length; i++) {
+                      caches.delete(names[i]);
+                    }
+                  });
+                }
+              } catch (e) {}
+            `
+          }}
+        />
         {/* JSON-LD Organization Schema — rich snippets en Google */}
         <script
           type="application/ld+json"
