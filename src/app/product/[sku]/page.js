@@ -192,17 +192,30 @@ export default async function ProductPage({ params }) {
           <div className="space-y-6">
             {/* Disponibilidad en Almacén */}
             <div className="p-4 md:p-5 bg-[#0A1408] border border-white/15 rounded-2xl shadow-xl">
-              <h3 className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest mb-2">Disponibilidad en Almacén</h3>
+              <h3 className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest mb-2">Disponibilidad</h3>
               <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-3 h-3 rounded-full bg-green-500 animate-ping absolute opacity-40"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500 relative border border-black"></div>
-                </div>
-                <div>
-                  <div className="text-white text-sm font-semibold">
-                    {product.stock !== undefined ? `${product.stock} unidades en almacén` : 'Unidades disponibles'}
-                  </div>
-                </div>
+                {product.stock === undefined || product.stock > 0 ? (
+                  <>
+                    <div className="relative">
+                      <div className="w-3 h-3 rounded-full bg-green-500 animate-ping absolute opacity-40"></div>
+                      <div className="w-3 h-3 rounded-full bg-green-500 relative border border-black"></div>
+                    </div>
+                    <div>
+                      <div className="text-white text-sm font-semibold">
+                        Disponible para despacho inmediato
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-3 h-3 rounded-full bg-red-500 border border-black"></div>
+                    <div>
+                      <div className="text-gray-400 text-sm font-semibold">
+                        Agotado temporalmente
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
             
