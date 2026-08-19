@@ -90,8 +90,10 @@ export default function JoinMovementButton({ text = "Únete al Manifiesto" }) {
                 </p>
 
                 <div>
-                  <label className="block text-xs font-mono font-bold uppercase tracking-widest text-[#D4AF37] mb-2">Nombre Completo *</label>
+                  <label htmlFor="movement-name" className="block text-xs font-mono font-bold uppercase tracking-widest text-[#D4AF37] mb-2">Nombre Completo *</label>
                   <input 
+                    id="movement-name"
+                    name="name"
                     type="text" 
                     required
                     value={formData.name}
@@ -102,8 +104,10 @@ export default function JoinMovementButton({ text = "Únete al Manifiesto" }) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-mono font-bold uppercase tracking-widest text-[#D4AF37] mb-2">Email *</label>
+                    <label htmlFor="movement-email" className="block text-xs font-mono font-bold uppercase tracking-widest text-[#D4AF37] mb-2">Email *</label>
                     <input 
+                      id="movement-email"
+                      name="email"
                       type="email" 
                       required
                       value={formData.email}
@@ -112,8 +116,10 @@ export default function JoinMovementButton({ text = "Únete al Manifiesto" }) {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-mono font-bold uppercase tracking-widest text-[#D4AF37] mb-2">Teléfono / WhatsApp</label>
+                    <label htmlFor="movement-phone" className="block text-xs font-mono font-bold uppercase tracking-widest text-[#D4AF37] mb-2">Teléfono / WhatsApp</label>
                     <input 
+                      id="movement-phone"
+                      name="phone"
                       type="tel" 
                       value={formData.phone}
                       onChange={e => setFormData({...formData, phone: e.target.value})}
@@ -123,8 +129,10 @@ export default function JoinMovementButton({ text = "Únete al Manifiesto" }) {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono font-bold uppercase tracking-widest text-[#D4AF37] mb-2">¿Por qué quieres unirte al movimiento? *</label>
+                  <label htmlFor="movement-motivation" className="block text-xs font-mono font-bold uppercase tracking-widest text-[#D4AF37] mb-2">¿Por qué quieres unirte al movimiento? *</label>
                   <textarea 
+                    id="movement-motivation"
+                    name="motivation"
                     required
                     rows={4}
                     value={formData.motivation}

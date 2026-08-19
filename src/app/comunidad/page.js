@@ -224,7 +224,7 @@ export default function ClubGranColinosPage() {
               <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
                 {/* Avatar with upload trigger */}
                 <div className="relative group">
-                  <input type="file" ref={fileInputRef} onChange={handlePhotoUpload} accept="image/*" className="hidden" />
+                  <input id="avatar-photo-upload" name="avatarFile" type="file" ref={fileInputRef} onChange={handlePhotoUpload} accept="image/*" className="hidden" aria-label="Subir foto de perfil" />
                   
                   <RenderAvatar
                     photoUrl={clientData?.photoUrl}
@@ -314,10 +314,12 @@ export default function ClubGranColinosPage() {
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-bold">
+                  <label htmlFor="profile-public-name" className="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-bold">
                     Nombre o Apodo Público
                   </label>
                   <input 
+                    id="profile-public-name"
+                    name="profileName"
                     type="text" 
                     value={profileName} 
                     onChange={e => setProfileName(e.target.value)}

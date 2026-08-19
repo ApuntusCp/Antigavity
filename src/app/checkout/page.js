@@ -336,38 +336,38 @@ export default function CheckoutPage() {
             <form id="checkout-form" onSubmit={handleCheckoutSubmit} className="space-y-6">
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Nombre</label>
-                  <input required name="firstName" value={formData.firstName} onChange={handleChange} type="text" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="Tu nombre" />
+                  <label htmlFor="checkout-firstName" className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Nombre</label>
+                  <input id="checkout-firstName" required name="firstName" value={formData.firstName} onChange={handleChange} type="text" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="Tu nombre" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Apellido</label>
-                  <input required name="lastName" value={formData.lastName} onChange={handleChange} type="text" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="Tu apellido" />
+                  <label htmlFor="checkout-lastName" className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Apellido</label>
+                  <input id="checkout-lastName" required name="lastName" value={formData.lastName} onChange={handleChange} type="text" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="Tu apellido" />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Correo Electrónico</label>
-                <input required name="email" value={formData.email} onChange={handleChange} type="email" readOnly={!!user} className={`w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm ${user ? 'opacity-70 cursor-not-allowed' : ''}`} placeholder="correo@ejemplo.com" />
+                <label htmlFor="checkout-email" className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Correo Electrónico</label>
+                <input id="checkout-email" required name="email" value={formData.email} onChange={handleChange} type="email" readOnly={!!user} className={`w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm ${user ? 'opacity-70 cursor-not-allowed' : ''}`} placeholder="correo@ejemplo.com" />
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Teléfono / Celular</label>
-                <input required name="phone" value={formData.phone} onChange={handleChange} type="tel" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="300 000 0000" />
+                <label htmlFor="checkout-phone" className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Teléfono / Celular</label>
+                <input id="checkout-phone" required name="phone" value={formData.phone} onChange={handleChange} type="tel" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="300 000 0000" />
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Dirección de Entrega</label>
-                <input required name="address" value={formData.address} onChange={handleChange} type="text" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="Calle, Carrera, Apto, Barrio" />
+                <label htmlFor="checkout-address" className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Dirección de Entrega</label>
+                <input id="checkout-address" required name="address" value={formData.address} onChange={handleChange} type="text" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="Calle, Carrera, Apto, Barrio" />
               </div>
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Ciudad</label>
-                  <input required name="city" value={formData.city} onChange={handleChange} type="text" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="Ej: Bogotá" />
+                  <label htmlFor="checkout-city" className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Ciudad</label>
+                  <input id="checkout-city" required name="city" value={formData.city} onChange={handleChange} type="text" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="Ej: Bogotá" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Departamento</label>
-                  <input required name="department" value={formData.department} onChange={handleChange} type="text" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="Ej: Cundinamarca" />
+                  <label htmlFor="checkout-department" className="text-[10px] font-bold tracking-widest uppercase text-gray-500">Departamento</label>
+                  <input id="checkout-department" required name="department" value={formData.department} onChange={handleChange} type="text" className="w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-4 rounded-sm outline-none focus:border-brand-gold transition-colors text-sm" placeholder="Ej: Cundinamarca" />
                 </div>
               </div>
             </form>
@@ -402,13 +402,16 @@ export default function CheckoutPage() {
               <div className="border-t border-gray-200 dark:border-white/10 pt-6 mt-6 space-y-4">
                 {/* Input Cupón */}
                 <div className="flex flex-col gap-2 mb-4">
-                  <label className="text-[10px] font-bold tracking-widest uppercase text-gray-500">¿Tienes un cupón?</label>
+                  <label htmlFor="checkout-couponCode" className="text-[10px] font-bold tracking-widest uppercase text-gray-500">¿Tienes un cupón?</label>
                   <div className="flex gap-2">
                     <input 
+                      id="checkout-couponCode"
+                      name="couponCode"
                       type="text" 
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
                       placeholder="Ej: GRANCOLINOS10"
+                      aria-label="Código de cupón de descuento"
                       className="flex-1 bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 p-3 rounded-sm outline-none focus:border-brand-gold text-sm uppercase"
                     />
                     <button 
@@ -519,10 +522,12 @@ export default function CheckoutPage() {
 
                 <div className="space-y-4 mb-8">
                   <div>
-                    <label className="block text-[10px] font-bold tracking-widest uppercase text-gray-500 mb-2">Contraseña para {formData.email}</label>
+                    <label htmlFor="checkout-authPassword" className="block text-[10px] font-bold tracking-widest uppercase text-gray-500 mb-2">Contraseña para {formData.email}</label>
                     <div className="relative">
                       <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
                       <input 
+                        id="checkout-authPassword"
+                        name="authPassword"
                         type={showAuthPassword ? "text" : "password"} 
                         value={authPassword}
                         onChange={(e) => setAuthPassword(e.target.value)}
@@ -533,6 +538,7 @@ export default function CheckoutPage() {
                         type="button" 
                         onClick={() => setShowAuthPassword(!showAuthPassword)} 
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-brand-gold transition-colors"
+                        aria-label={showAuthPassword ? "Ocultar contraseña" : "Ver contraseña"}
                       >
                         {showAuthPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>

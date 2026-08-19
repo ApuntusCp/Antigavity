@@ -156,8 +156,11 @@ export default function Header({ headerConfig = {} }) {
               {showSearch ? (
                 <div className="flex items-center bg-black/90 border border-[#D4AF37]/60 rounded-full px-2.5 py-1 animate-in fade-in">
                   <input
+                    id="header-search-input"
+                    name="searchQuery"
                     type="text"
                     placeholder="Buscar..."
+                    aria-label="Buscar en el catálogo"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => {
@@ -169,7 +172,7 @@ export default function Header({ headerConfig = {} }) {
                     className="bg-transparent text-xs text-white placeholder-gray-400 focus:outline-none w-24 xs:w-32 md:w-40"
                     autoFocus
                   />
-                  <button onClick={() => setShowSearch(false)} className="text-gray-400 hover:text-white ml-1">
+                  <button onClick={() => setShowSearch(false)} className="text-gray-400 hover:text-white ml-1" aria-label="Cerrar búsqueda">
                     <X size={14} />
                   </button>
                 </div>

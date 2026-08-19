@@ -339,8 +339,11 @@ function GlobalAcademicRepositoryContent() {
               <div className="relative flex-1 w-full">
                 <Search className="absolute left-4 top-3.5 text-[#D4AF37]" size={20} />
                 <input
+                  id="global-search-query"
+                  name="searchQuery"
                   type="text"
                   placeholder="Buscar artículos científicos, autores o temas (ej. 'apitoxina melitina', 'CBD botánica')..."
+                  aria-label="Buscar artículos científicos, autores o temas"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-[#030904] border border-[#D4AF37]/35 rounded-2xl pl-12 pr-10 py-3.5 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#D4AF37] font-mono shadow-inner"
@@ -350,6 +353,7 @@ function GlobalAcademicRepositoryContent() {
                     type="button"
                     onClick={() => setSearchQuery('')}
                     className="absolute right-4 top-3.5 text-gray-400 hover:text-white"
+                    aria-label="Limpiar búsqueda"
                   >
                     <X size={16} />
                   </button>
@@ -393,8 +397,10 @@ function GlobalAcademicRepositoryContent() {
             {showAdvancedSearch && (
               <div className="p-5 bg-[#030904] rounded-2xl border border-[#D4AF37]/35 grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in text-xs font-mono">
                 <div className="space-y-1.5">
-                  <label className="text-gray-400">Operador Lógico:</label>
+                  <label htmlFor="bool-operator" className="text-gray-400">Operador Lógico:</label>
                   <select
+                    id="bool-operator"
+                    name="booleanOperator"
                     value={booleanOperator}
                     onChange={(e) => setBooleanOperator(e.target.value)}
                     className="w-full bg-[#051208] text-[#D4AF37] py-2 px-3 rounded-xl border border-white/20 focus:outline-none focus:border-[#D4AF37]"
@@ -406,8 +412,10 @@ function GlobalAcademicRepositoryContent() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-gray-400">Frase Exacta entre Comillas:</label>
+                  <label htmlFor="exact-phrase" className="text-gray-400">Frase Exacta entre Comillas:</label>
                   <input
+                    id="exact-phrase"
+                    name="exactPhrase"
                     type="text"
                     placeholder='Ej: "cambio climático"'
                     value={exactPhrase}
@@ -417,8 +425,10 @@ function GlobalAcademicRepositoryContent() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-gray-400">Búsqueda por Autor Específico:</label>
+                  <label htmlFor="author-filter" className="text-gray-400">Búsqueda por Autor Específico:</label>
                   <input
+                    id="author-filter"
+                    name="authorFilter"
                     type="text"
                     placeholder="Ej: García, Aponte..."
                     value={authorFilter}
@@ -666,8 +676,11 @@ function GlobalAcademicRepositoryContent() {
               <div className="space-y-3 font-mono text-xs">
                 <div className="flex gap-2">
                   <input
+                    id="new-folder-name"
+                    name="newFolderName"
                     type="text"
                     placeholder="Nombre de nueva carpeta..."
+                    aria-label="Nombre de nueva carpeta de investigación"
                     value={newFolderName}
                     onChange={(e) => setNewFolderName(e.target.value)}
                     className="flex-1 bg-[#030904] border border-[#D4AF37]/30 rounded-xl px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-[#D4AF37]"
@@ -675,6 +688,7 @@ function GlobalAcademicRepositoryContent() {
                   <button
                     onClick={createNewFolder}
                     className="px-4 py-2 bg-[#D4AF37] text-black font-bold uppercase rounded-xl hover:bg-white transition-all shrink-0 flex items-center gap-1"
+                    aria-label="Crear carpeta"
                   >
                     <FolderPlus size={14} /> Crear
                   </button>

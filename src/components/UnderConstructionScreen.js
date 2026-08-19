@@ -104,9 +104,12 @@ export default function UnderConstructionScreen({
             ) : (
               <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2">
                 <input
+                  id="construction-notify-email"
+                  name="email"
                   type="email"
                   required
                   placeholder="Tu correo electrónico..."
+                  aria-label="Tu correo electrónico para recibir notificación"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="flex-1 bg-black/90 text-white text-xs font-mono px-4 py-2.5 rounded-xl border border-white/20 focus:outline-none focus:border-[#D4AF37] placeholder-gray-500"

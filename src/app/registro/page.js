@@ -163,12 +163,14 @@ export default function RegisterPage() {
 
           <form onSubmit={handleRegister} className="space-y-5">
             <div>
-              <label className="block text-xs font-bold tracking-widest uppercase text-gray-600 dark:text-gray-400 mb-2">
+              <label htmlFor="register-name" className="block text-xs font-bold tracking-widest uppercase text-gray-600 dark:text-gray-400 mb-2">
                 Nombre Completo
               </label>
               <div className="relative">
                 <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input 
+                  id="register-name"
+                  name="name"
                   type="text" 
                   required
                   value={name}
@@ -180,12 +182,14 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold tracking-widest uppercase text-gray-600 dark:text-gray-400 mb-2">
+              <label htmlFor="register-email" className="block text-xs font-bold tracking-widest uppercase text-gray-600 dark:text-gray-400 mb-2">
                 Correo Electrónico
               </label>
               <div className="relative">
                 <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input 
+                  id="register-email"
+                  name="email"
                   type="email" 
                   required
                   value={email}
@@ -197,12 +201,14 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-widest mb-2">
+              <label htmlFor="register-password" className="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-widest mb-2">
                 Contraseña
               </label>
               <div className="relative">
                 <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
+                  id="register-password"
+                  name="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -214,6 +220,7 @@ export default function RegisterPage() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-gold transition-colors"
+                  aria-label={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>

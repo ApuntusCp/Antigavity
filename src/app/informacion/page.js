@@ -207,8 +207,10 @@ export default function InformacionPage() {
             <form onSubmit={handlePqrSubmit} className="space-y-4 font-mono text-xs">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <label className="text-gray-300">Tipo de Solicitud:</label>
+                  <label htmlFor="pqr-tipo" className="text-gray-300">Tipo de Solicitud:</label>
                   <select
+                    id="pqr-tipo"
+                    name="tipo"
                     value={pqrForm.tipo}
                     onChange={(e) => setPqrForm({ ...pqrForm, tipo: e.target.value })}
                     className="w-full bg-[#050A07] border border-white/20 rounded-xl p-3 text-[#10B981] focus:outline-none focus:border-[#10B981]"
@@ -221,8 +223,10 @@ export default function InformacionPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-gray-300">Nombre Completo del Solicitante:</label>
+                  <label htmlFor="pqr-nombre" className="text-gray-300">Nombre Completo del Solicitante:</label>
                   <input
+                    id="pqr-nombre"
+                    name="nombre"
                     type="text"
                     required
                     placeholder="Ej: Juan Pérez"
@@ -233,8 +237,10 @@ export default function InformacionPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-gray-300">Correo Electrónico de Contacto:</label>
+                  <label htmlFor="pqr-email" className="text-gray-300">Correo Electrónico de Contacto:</label>
                   <input
+                    id="pqr-email"
+                    name="email"
                     type="email"
                     required
                     placeholder="ejemplo@correo.com"
@@ -247,8 +253,10 @@ export default function InformacionPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-gray-300">Teléfono / WhatsApp (Opcional):</label>
+                  <label htmlFor="pqr-telefono" className="text-gray-300">Teléfono / WhatsApp (Opcional):</label>
                   <input
+                    id="pqr-telefono"
+                    name="telefono"
                     type="text"
                     placeholder="Ej: +57 300 123 4567"
                     value={pqrForm.telefono}
@@ -258,8 +266,10 @@ export default function InformacionPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-gray-300">Número de Orden de Compra (Si aplica):</label>
+                  <label htmlFor="pqr-numeroOrden" className="text-gray-300">Número de Orden de Compra (Si aplica):</label>
                   <input
+                    id="pqr-numeroOrden"
+                    name="numeroOrden"
                     type="text"
                     placeholder="Ej: GC-ORD-8849"
                     value={pqrForm.numeroOrden}
@@ -270,8 +280,10 @@ export default function InformacionPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-gray-300">Descripción Detallada de la Solicitud:</label>
+                <label htmlFor="pqr-mensaje" className="text-gray-300">Descripción Detallada de la Solicitud:</label>
                 <textarea
+                  id="pqr-mensaje"
+                  name="mensaje"
                   required
                   rows={4}
                   placeholder="Escriba los hechos, fechas y detalles específicos de su petición, queja o reclamo..."
@@ -304,7 +316,7 @@ export default function InformacionPage() {
                 <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-pulse" />
                 <span className="font-mono text-xs font-bold text-white">Chat Directo GranColinos</span>
               </div>
-              <button onClick={() => setIsChatOpen(false)} className="text-gray-400 hover:text-white font-mono text-xs">
+              <button onClick={() => setIsChatOpen(false)} className="text-gray-400 hover:text-white font-mono text-xs" aria-label="Cerrar chat">
                 ✕
               </button>
             </div>
@@ -320,13 +332,16 @@ export default function InformacionPage() {
 
             <form onSubmit={handleSendChatMessage} className="flex gap-2 font-mono text-xs">
               <input
+                id="chat-input"
+                name="chatInput"
                 type="text"
                 placeholder="Escriba su consulta..."
+                aria-label="Escriba su consulta"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 className="flex-1 bg-[#050A07] border border-white/20 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#10B981]"
               />
-              <button type="submit" className="p-2 bg-[#10B981] text-black rounded-xl hover:bg-white transition-all">
+              <button type="submit" className="p-2 bg-[#10B981] text-black rounded-xl hover:bg-white transition-all" aria-label="Enviar mensaje">
                 <Send size={14} />
               </button>
             </form>

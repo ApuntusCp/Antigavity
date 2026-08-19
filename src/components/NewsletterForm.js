@@ -108,10 +108,13 @@ export default function NewsletterForm() {
               <User className="h-5 w-5 text-gray-500" />
             </div>
             <input
+              id="newsletter-name"
+              name="name"
               type="text"
               required
               disabled={status === 'loading'}
               placeholder="Tu nombre"
+              aria-label="Tu nombre"
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
               className="w-full bg-black/50 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-all"
@@ -123,10 +126,13 @@ export default function NewsletterForm() {
               <Mail className="h-5 w-5 text-gray-500" />
             </div>
             <input
+              id="newsletter-email"
+              name="email"
               type="email"
               required
               disabled={status === 'loading'}
               placeholder="Tu correo electrónico"
+              aria-label="Tu correo electrónico"
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
               className="w-full bg-black/50 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-all"

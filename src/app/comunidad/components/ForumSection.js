@@ -311,8 +311,11 @@ export default function ForumSection({ user, clientData }) {
             <div className="flex items-center gap-2">
               <span className="text-[11px] text-gray-500 font-medium">Categoría:</span>
               <select
+                id="forum-post-tag"
+                name="postTag"
                 value={postTag}
                 onChange={e => setPostTag(e.target.value)}
+                aria-label="Categoría del tema"
                 className="bg-black/60 border border-white/15 text-white text-xs rounded-lg px-3 py-1.5 outline-none focus:border-brand-gold cursor-pointer font-medium"
               >
                 <option value="Testimonios">Testimonios</option>
@@ -323,9 +326,12 @@ export default function ForumSection({ user, clientData }) {
           </div>
 
           <textarea
+            id="forum-post-text"
+            name="postText"
             value={postText}
             onChange={e => setPostText(e.target.value)}
             placeholder="Comparte tu experiencia botánica, consulta con la comunidad o reseña un producto..."
+            aria-label="Contenido del mensaje para la comunidad"
             rows="3"
             maxLength="600"
             className="w-full bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl p-4 text-brand-dark dark:text-white placeholder-gray-500 focus:outline-none focus:border-brand-gold transition-colors resize-none font-light text-sm"
@@ -518,10 +524,13 @@ export default function ForumSection({ user, clientData }) {
                 {isReplying && (
                   <div className="mt-4 pl-4 md:pl-8 border-l-2 border-brand-gold flex items-center gap-2 animate-in fade-in">
                     <input
+                      id={`reply-text-${msg.id}`}
+                      name={`replyText-${msg.id}`}
                       type="text"
                       value={replyText}
                       onChange={e => setReplyText(e.target.value)}
                       placeholder={`Responder a ${msg.authorName || 'este miembro'}...`}
+                      aria-label={`Responder a ${msg.authorName || 'este miembro'}`}
                       maxLength="300"
                       className="flex-1 bg-black/60 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white placeholder-gray-500 outline-none focus:border-brand-gold"
                       onKeyDown={e => {

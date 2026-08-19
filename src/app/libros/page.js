@@ -556,8 +556,11 @@ function LibrosContent() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-white/10 pb-6">
             <div className="relative w-full md:w-2/3">
               <input
+                id="libros-search-input"
+                name="searchQuery"
                 type="text"
                 placeholder="Buscar autores u obras (ej. Sócrates, Platón, Cervantes, Darwin, Shakespeare)..."
+                aria-label="Buscar autores u obras"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#030904] text-white placeholder-gray-400 text-xs sm:text-sm py-3.5 px-4 pl-11 rounded-2xl border border-white/20 focus:outline-none focus:border-[#D4AF37] transition-all shadow-inner font-mono"
@@ -567,6 +570,7 @@ function LibrosContent() {
                 <button 
                   onClick={() => setSearchQuery('')}
                   className="absolute right-3.5 top-3.5 text-gray-400 hover:text-white"
+                  aria-label="Limpiar búsqueda"
                 >
                   <X size={16} />
                 </button>
