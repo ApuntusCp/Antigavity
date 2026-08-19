@@ -322,7 +322,7 @@ export default function CheckoutPage() {
       <div className="max-w-7xl mx-auto px-6">
         
         <div className="flex items-center gap-4 text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-12">
-          <Link href="/cart" className="hover:text-brand-gold transition-colors">Carrito</Link>
+          <Link href="/shop" prefetch={false} className="hover:text-brand-gold transition-colors">Tienda</Link>
           <ArrowRight size={14} />
           <span className="text-brand-gold">Checkout Seguro</span>
         </div>
