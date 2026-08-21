@@ -32,23 +32,30 @@ const getUniversalPage = cache(async (slug) => {
 
     const cleanSlug = raw.toLowerCase().replace(/[^a-z0-9-_]/g, '-');
 
-    // 1. Intento directo por ID normalizado
-    const docSnap = await getDoc(doc(db, 'gc_universal_pages', cleanSlug));
-    if (docSnap.exists()) {
-      return docSnap.data();
-    }
+    // 1. Intento en colección gca_projects (autorizada con permisos de lectura/escritura)
+    try {
+      const gcaSnap = await getDoc(doc(db, 'gca_projects', `page_${cleanSlug}`));
+      if (gcaSnap.exists()) return gcaSnap.data();
 
-    // 2. Si es diferente, intento por ID original
-    if (raw !== cleanSlug) {
-      const origSnap = await getDoc(doc(db, 'gc_universal_pages', raw));
-      if (origSnap.exists()) {
-        return origSnap.data();
+      if (raw !== cleanSlug) {
+        const gcaOrigSnap = await getDoc(doc(db, 'gca_projects', `page_${raw}`));
+        if (gcaOrigSnap.exists()) return gcaOrigSnap.data();
       }
-    }
+    } catch (_) {}
+
+    // 2. Intento directo en gc_universal_pages
+    try {
+      const docSnap = await getDoc(doc(db, 'gc_universal_pages', cleanSlug));
+      if (docSnap.exists()) return docSnap.data();
+
+      if (raw !== cleanSlug) {
+        const origSnap = await getDoc(doc(db, 'gc_universal_pages', raw));
+        if (origSnap.exists()) return origSnap.data();
+      }
+    } catch (_) {}
 
     return null;
   } catch (error) {
-    // Si no existe o hay error, retornar null de inmediato sin crashear el servidor
     return null;
   }
 });
