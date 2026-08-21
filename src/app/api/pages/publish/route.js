@@ -1,8 +1,5 @@
-// ── GranColinos Web API: Universal Page Publisher ─────────────────────────────
-// Endpoint para sincronizar páginas universales creadas en GC Admin con Hostinger / Firestore
-// Con soporte total para CORS y preflight OPTIONS desde GC Admin desktop / localhost
-
 import { NextResponse } from 'next/server';
+import { adminDb } from '@/utils/firebase-admin';
 import { doc, setDoc, getDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
 
@@ -46,12 +43,23 @@ export async function POST(request) {
       ...page,
       slug: cleanSlug,
       publishedAt: new Date().toISOString(),
-      updatedAt: serverTimestamp(),
+      updatedAt: new Date().toISOString(),
       liveUrl: `https://grancolinos.com/${cleanSlug}`
     };
 
-    // Guardar en Firestore colección 'gc_universal_pages'
-    await setDoc(doc(db, 'gc_universal_pages', cleanSlug), pageDocument, { merge: true });
+    // 1. Guardar en Firestore usando adminDb con fallback a db
+    try {
+      if (adminDb && typeof adminDb.collection === 'function') {
+        await adminDb.collection('gc_universal_pages').doc(cleanSlug).set(pageDocument, { merge: true });
+        if (page.originalSlug && page.originalSlug !== cleanSlug) {
+          await adminDb.collection('gc_universal_pages').doc(page.originalSlug).set(pageDocument, { merge: true });
+        }
+      } else {
+        await setDoc(doc(db, 'gc_universal_pages', cleanSlug), pageDocument, { merge: true });
+      }
+    } catch (_) {
+      await setDoc(doc(db, 'gc_universal_pages', cleanSlug), pageDocument, { merge: true });
+    }
 
     return NextResponse.json({
       success: true,

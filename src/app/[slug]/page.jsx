@@ -1,24 +1,8 @@
-// ── GranColinos Web: Universal Page Dynamic Renderer ─────────────────────────
-// Renderizador en vivo para páginas, cartas 3D y agentes creados desde GC Admin
-
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { adminDb } from '@/utils/firebase-admin';
 import { db } from '@/utils/firebase';
-import { 
-  Sparkles, 
-  MessageSquare, 
-  CheckCircle2, 
-  Star, 
-  ShieldCheck, 
-  ArrowRight, 
-  ExternalLink,
-  ChevronDown,
-  Box,
-  Bot,
-  Zap,
-  Phone
-} from 'lucide-react';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,13 +11,25 @@ async function getUniversalPage(slug) {
     const raw = decodeURIComponent(slug).trim().replace(/^(https?:\/\/)+/gi, '').replace(/^grancolinos\.com\/?/i, '').replace(/^\//, '');
     const cleanSlug = raw.toLowerCase().replace(/[^a-z0-9-_]/g, '-');
 
-    // 1. Direct ID matches
+    // 1. Intentar con adminDb (Bypass total de permisos en el servidor)
+    try {
+      if (adminDb && typeof adminDb.collection === 'function') {
+        for (const testId of [raw, cleanSlug, raw.toLowerCase()]) {
+          const snap = await adminDb.collection('gc_universal_pages').doc(testId).get();
+          if (snap.exists) return snap.data();
+        }
+        const qSnap = await adminDb.collection('gc_universal_pages').where('slug', '==', cleanSlug).limit(1).get();
+        if (!qSnap.empty) return qSnap.docs[0].data();
+      }
+    } catch (_) {}
+
+    // 2. Direct ID matches en db cliente
     for (const testId of [raw, cleanSlug, raw.toLowerCase()]) {
       const docSnap = await getDoc(doc(db, 'gc_universal_pages', testId));
       if (docSnap.exists()) return docSnap.data();
     }
 
-    // 2. Query by 'slug'
+    // 3. Query by 'slug' en db cliente
     for (const testSlug of [raw, cleanSlug, raw.toLowerCase()]) {
       const q = query(collection(db, 'gc_universal_pages'), where('slug', '==', testSlug));
       const qSnap = await getDocs(q);
