@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { adminDb } from '@/utils/firebase-admin';
-import { doc, setDoc, getDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
 
 export const dynamic = 'force-dynamic';
@@ -30,7 +29,6 @@ export async function POST(request) {
       );
     }
 
-    // Normalizar slug
     const cleanSlug = page.slug
       .trim()
       .toLowerCase()
@@ -47,18 +45,10 @@ export async function POST(request) {
       liveUrl: `https://grancolinos.com/${cleanSlug}`
     };
 
-    // 1. Guardar en Firestore usando adminDb con fallback a db
-    try {
-      if (adminDb && typeof adminDb.collection === 'function') {
-        await adminDb.collection('gc_universal_pages').doc(cleanSlug).set(pageDocument, { merge: true });
-        if (page.originalSlug && page.originalSlug !== cleanSlug) {
-          await adminDb.collection('gc_universal_pages').doc(page.originalSlug).set(pageDocument, { merge: true });
-        }
-      } else {
-        await setDoc(doc(db, 'gc_universal_pages', cleanSlug), pageDocument, { merge: true });
-      }
-    } catch (_) {
-      await setDoc(doc(db, 'gc_universal_pages', cleanSlug), pageDocument, { merge: true });
+    await setDoc(doc(db, 'gc_universal_pages', cleanSlug), pageDocument, { merge: true });
+
+    if (page.originalSlug && page.originalSlug !== cleanSlug) {
+      await setDoc(doc(db, 'gc_universal_pages', page.originalSlug), pageDocument, { merge: true });
     }
 
     return NextResponse.json({
@@ -98,7 +88,6 @@ export async function GET(request) {
       return NextResponse.json({ success: true, page: docSnap.data() }, { headers: CORS_HEADERS });
     }
 
-    // Listar todas las páginas publicadas
     const snapshot = await getDocs(collection(db, 'gc_universal_pages'));
     const pages = snapshot.docs.map(d => d.data());
 
