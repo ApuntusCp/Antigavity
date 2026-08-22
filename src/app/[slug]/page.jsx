@@ -19,10 +19,24 @@ import {
   Send,
   Award,
   Layers,
-  BarChart3
+  Check
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
+
+// Helper ultra-seguro para renderizar precios (string, número u objeto { amount, currency, period })
+function formatPrice(price) {
+  if (!price) return '';
+  if (typeof price === 'string' || typeof price === 'number') return String(price);
+  if (typeof price === 'object') {
+    const amt = price.amount;
+    const formatted = typeof amt === 'number'
+      ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: price.currency || 'COP', maximumFractionDigits: 0 }).format(amt)
+      : (amt || '');
+    return `${formatted} ${price.period || ''}`.trim();
+  }
+  return '';
+}
 
 // Usar cache() de React para que generateMetadata y el componente compartan la misma única petición en milisegundos
 const getUniversalPage = cache(async (slug) => {
@@ -88,13 +102,11 @@ export default async function DynamicUniversalPage({ params }) {
   const { slug } = await params;
   const page = await getUniversalPage(slug);
 
-  // Si no existe la página en la base de datos, mostramos 404 estándar instantáneo
   if (!page) {
     notFound();
   }
 
   const bgColor = page.theme?.globalBgColor || '#030712';
-  const accentColor = page.theme?.accentColor || '#D4AF37';
   const blocks = page.blocks || [];
 
   const topbarBlock = blocks.find(b => b.type === 'announcement_topbar' && b.isVisible !== false);
@@ -105,15 +117,15 @@ export default async function DynamicUniversalPage({ params }) {
       className="min-h-screen text-white relative overflow-hidden flex flex-col font-sans"
       style={{ backgroundColor: bgColor }}
     >
-      {/* ── 0. TOPBAR ANUNCIOS FIJO ── */}
+      {/* ── 0. TOPBAR ANUNCIOS ── */}
       {topbarBlock && (
         <div className="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-700 text-black py-2.5 px-4 text-center font-black text-xs uppercase tracking-widest shadow-lg sticky top-0 z-50">
-          {topbarBlock.content?.text || '✨ NUEVA EXPERIENCIA DIGITAL INTERACTIVA DISPONIBLE'}
+          {topbarBlock.content?.text || topbarBlock.content?.announcementText || topbarBlock.content?.title || '✨ NUEVA EXPERIENCIA DIGITAL INTERACTIVA DISPONIBLE'}
         </div>
       )}
 
       {/* Contenido Modular de Bloques */}
-      <div className="flex-1 space-y-20 pb-24">
+      <div className="flex-1 space-y-20 pb-28">
         {blocks.filter(b => b.isVisible !== false && b.type !== 'announcement_topbar' && b.type !== 'whatsapp_floating_cta').map((block, idx) => {
           const blockBg = block.style?.backgroundColor;
           const blockImg = block.style?.backgroundImage || block.content?.backgroundImageUrl;
@@ -133,9 +145,9 @@ export default async function DynamicUniversalPage({ params }) {
               {/* ── 1. HERO PRINCIPAL ── */}
               {block.type === 'hero' && (
                 <div className="pt-24 pb-16 px-6 max-w-5xl mx-auto text-center space-y-6">
-                  {block.content?.badge && (
+                  {(block.content?.badgeText || block.content?.badge) && (
                     <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                      <Sparkles size={13} /> {block.content.badge}
+                      <Sparkles size={13} /> {block.content.badgeText || block.content.badge}
                     </div>
                   )}
                   <h1 className="text-4xl md:text-7xl font-black tracking-tight leading-tight uppercase font-serif">
@@ -173,23 +185,54 @@ export default async function DynamicUniversalPage({ params }) {
                     <h2 className="text-3xl md:text-5xl font-black">{block.content?.title || 'Menú Gastronómico 3D'}</h2>
                     <p className="text-sm text-gray-400 max-w-xl mx-auto">{block.content?.subtitle || 'Explora nuestros platos en realidad aumentada y 360 grados'}</p>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {(block.content?.categories || ['Platos Fuertes de Autor', 'Mixología & Bebidas', 'Postres de Vanguardia']).map((cat, cIdx) => (
-                      <div key={cIdx} className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-amber-500/50 hover:bg-white/[0.05] transition-all space-y-4 shadow-xl">
-                        <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold">
-                          <Box size={26} />
+                  
+                  {/* Grid de Platos / Items */}
+                  {Array.isArray(block.content?.items) && block.content.items.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {block.content.items.map((item, iIdx) => (
+                        <div key={item.id || iIdx} className="rounded-3xl bg-white/[0.03] border border-white/10 overflow-hidden hover:border-amber-500/50 hover:bg-white/[0.05] transition-all space-y-4 shadow-2xl flex flex-col justify-between">
+                          {item.photoUrl && (
+                            <div className="relative h-48 w-full overflow-hidden bg-black/40">
+                              <img src={item.photoUrl} alt={item.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                              <span className="absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-black/70 backdrop-blur-md text-amber-400 border border-amber-500/30">
+                                3D / AR
+                              </span>
+                            </div>
+                          )}
+                          <div className="p-6 pt-2 space-y-3 flex-1 flex flex-col justify-between">
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between gap-2">
+                                <h3 className="text-lg font-black text-white">{item.name}</h3>
+                                {item.price && (
+                                  <span className="text-sm font-black text-amber-400 shrink-0">
+                                    {typeof item.price === 'number' ? `$${item.price.toLocaleString('es-CO')}` : formatPrice(item.price)}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-gray-400 leading-relaxed">{item.description}</p>
+                            </div>
+                            <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                              <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                                Ver en Realidad Aumentada <ArrowRight size={14} />
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <h3 className="text-xl font-black">{cat}</h3>
-                        <p className="text-xs text-gray-400 leading-relaxed">Modelos 3D de alta definición listos para interactuar en Realidad Aumentada sobre tu mesa.</p>
-                        <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                          <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
-                            Ver Platos 3D <ArrowRight size={14} />
-                          </span>
-                          <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">WebXR Ready</span>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {(Array.isArray(block.content?.categories) ? block.content.categories : ['Platos Fuertes', 'Mixología & Bebidas', 'Postres']).map((cat, cIdx) => (
+                        <div key={cIdx} className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-amber-500/50 hover:bg-white/[0.05] transition-all space-y-4 shadow-xl">
+                          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold">
+                            <Box size={26} />
+                          </div>
+                          <h3 className="text-xl font-black">{cat}</h3>
+                          <p className="text-xs text-gray-400 leading-relaxed">Modelos 3D de alta definición listos para interactuar en Realidad Aumentada sobre tu mesa.</p>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -202,26 +245,29 @@ export default async function DynamicUniversalPage({ params }) {
                         <Bot size={24} />
                       </div>
                       <div>
-                        <h3 className="text-lg font-black">{block.content?.agentName || 'Agente de Asistencia Virtual'}</h3>
-                        <p className="text-xs text-emerald-400 font-bold flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> En línea • Respuestas en milisegundos
+                        <h3 className="text-lg font-black">{block.content?.name || block.content?.agentName || 'Asistente IA Autónomo'}</h3>
+                        <p className="text-xs text-gray-400">{block.content?.role || 'Atención y Reservas 24/7'}</p>
+                        <p className="text-xs text-emerald-400 font-bold flex items-center gap-1.5 mt-0.5">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> En línea • Respuestas en tiempo real
                         </p>
                       </div>
                     </div>
+
                     <div className="p-5 rounded-2xl bg-black/60 border border-white/5 space-y-4">
                       <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-gray-200 text-sm leading-relaxed">
-                        {block.content?.welcomeMessage || '¡Hola! Soy tu asistente inteligente. Puedo resolver dudas, ayudarte a reservar y guiarte paso a paso.'}
+                        {block.content?.greeting || block.content?.welcomeMessage || '¡Hola! Soy tu asistente inteligente. Puedo resolver dudas, ayudarte con reservas y sugerir recomendaciones.'}
                       </div>
-                      <div className="flex gap-2">
-                        <input 
-                          type="text" 
-                          placeholder="Escribe tu pregunta aquí..." 
-                          className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-xs placeholder:text-gray-500 focus:outline-none focus:border-amber-500"
-                        />
-                        <button className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black text-xs uppercase tracking-wider flex items-center gap-1.5 hover:brightness-110">
-                          <Send size={13} /> Enviar
-                        </button>
-                      </div>
+
+                      {Array.isArray(block.content?.capabilities) && block.content.capabilities.length > 0 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pt-2">
+                          {block.content.capabilities.map((cap, capIdx) => (
+                            <div key={capIdx} className="flex items-center gap-2 text-xs text-gray-300 bg-white/[0.03] p-2 rounded-lg border border-white/5">
+                              <Check size={13} className="text-emerald-400 shrink-0" />
+                              <span>{cap}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -231,28 +277,38 @@ export default async function DynamicUniversalPage({ params }) {
               {block.type === 'pricing_tiers' && (
                 <div className="max-w-6xl mx-auto px-6 py-12">
                   <div className="text-center mb-12 space-y-3">
-                    <h2 className="text-3xl md:text-5xl font-black">{block.content?.title || 'Planes & Experiencias'}</h2>
+                    <h2 className="text-3xl md:text-5xl font-black">{block.content?.sectionTitle || block.content?.title || 'Planes & Experiencias'}</h2>
                     <p className="text-sm text-gray-400 max-w-xl mx-auto">{block.content?.subtitle || 'Elige la opción que mejor se adapte a tus necesidades'}</p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {(block.content?.tiers || [
-                      { name: 'Mesa Gourmet', price: '$85.000', desc: 'Entrada + Plato Fuerte 3D + Bebida de autor' },
-                      { name: 'Experiencia Chef VIP', price: '$160.000', desc: 'Menú degustación 5 tiempos + Maridaje guiado', isFeatured: true },
-                      { name: 'Salón Privado Black', price: '$350.000', desc: 'Experiencia exclusiva para grupos con proyección AR' }
+                    {(Array.isArray(block.content?.tiers) ? block.content.tiers : [
+                      { name: 'Starter 3D', price: '$85.000', description: 'Entrada + Plato Fuerte 3D' },
+                      { name: 'Pro Autonomous', price: '$160.000', description: 'Menú degustación 5 tiempos + Maridaje IA', isPopular: true },
+                      { name: 'Black VIP', price: '$350.000', description: 'Experiencia exclusiva para grupos' }
                     ]).map((tier, tIdx) => (
-                      <div key={tIdx} className={`p-8 rounded-3xl border transition-all space-y-6 shadow-xl flex flex-col justify-between ${tier.isFeatured ? 'bg-amber-500/10 border-amber-500/60 shadow-amber-500/10 relative scale-105' : 'bg-white/[0.02] border-white/10'}`}>
-                        {tier.isFeatured && (
+                      <div key={tier.id || tIdx} className={`p-8 rounded-3xl border transition-all space-y-6 shadow-xl flex flex-col justify-between ${tier.isPopular || tier.isFeatured ? 'bg-amber-500/10 border-amber-500/60 shadow-amber-500/10 relative scale-105' : 'bg-white/[0.02] border-white/10'}`}>
+                        {(tier.isPopular || tier.isFeatured) && (
                           <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full bg-amber-500 text-black shadow-lg">
                             ★ Más Popular
                           </span>
                         )}
                         <div className="space-y-4">
                           <h3 className="text-xl font-black">{tier.name}</h3>
-                          <div className="text-4xl font-black text-amber-400">{tier.price}</div>
-                          <p className="text-xs text-gray-400 leading-relaxed">{tier.desc}</p>
+                          <div className="text-4xl font-black text-amber-400">{formatPrice(tier.price)}</div>
+                          <p className="text-xs text-gray-400 leading-relaxed">{tier.description || tier.desc}</p>
+                          {Array.isArray(tier.features) && tier.features.length > 0 && (
+                            <ul className="space-y-2 pt-2">
+                              {tier.features.map((feat, fIdx) => (
+                                <li key={fIdx} className="text-xs text-gray-300 flex items-center gap-2">
+                                  <Check size={13} className="text-amber-400 shrink-0" />
+                                  <span>{feat}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </div>
-                        <button className={`w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${tier.isFeatured ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-lg hover:brightness-110' : 'bg-white/10 hover:bg-white/20 text-white'}`}>
-                          Seleccionar Plan
+                        <button className={`w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${tier.isPopular || tier.isFeatured ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-lg hover:brightness-110' : 'bg-white/10 hover:bg-white/20 text-white'}`}>
+                          {tier.ctaText || 'Seleccionar Plan'}
                         </button>
                       </div>
                     ))}
@@ -260,75 +316,31 @@ export default async function DynamicUniversalPage({ params }) {
                 </div>
               )}
 
-              {/* ── 5. CARACTERÍSTICAS / SERVICIOS ── */}
-              {block.type === 'features_services' && (
-                <div className="max-w-6xl mx-auto px-6 py-12">
-                  <div className="text-center mb-12 space-y-3">
-                    <h2 className="text-3xl md:text-5xl font-black">{block.content?.title || 'Nuestras Características'}</h2>
-                    <p className="text-sm text-gray-400 max-w-xl mx-auto">{block.content?.subtitle || 'Innovación de vanguardia diseñada para potenciar tu experiencia'}</p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {(block.content?.features || [
-                      { title: 'Alta Fidelidad 3D', desc: 'Modelado fotorrealista con texturas PBR y soporte WebXR directo.' },
-                      { title: 'IA Generativa 24/7', desc: 'Asistencia autónoma para atención al cliente y pedidos automatizados.' },
-                      { title: 'Pagos Instantáneos', desc: 'Integración nativa con Bold, Wompi, PSE y transferencias seguras.' }
-                    ]).map((feat, fIdx) => (
-                      <div key={fIdx} className="p-8 rounded-3xl bg-white/[0.02] border border-white/10 hover:border-white/25 transition-all space-y-3">
-                        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold">
-                          <Zap size={22} />
-                        </div>
-                        <h3 className="text-lg font-black">{feat.title}</h3>
-                        <p className="text-xs text-gray-400 leading-relaxed">{feat.desc}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* ── 6. MÉTRICAS & KPIS ── */}
-              {block.type === 'stats_kpis' && (
-                <div className="max-w-6xl mx-auto px-6 py-12">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                    {(block.content?.stats || [
-                      { value: '100%', label: 'Disponibilidad Edge' },
-                      { value: '250ms', label: 'Latencia Promedio' },
-                      { value: '5★', label: 'Calificación Clientes' },
-                      { value: '256-Bit', label: 'Seguridad SSL' }
-                    ]).map((st, sIdx) => (
-                      <div key={sIdx} className="p-6 rounded-3xl bg-white/[0.02] border border-white/10 space-y-2">
-                        <div className="text-3xl md:text-5xl font-black text-amber-400">{st.value}</div>
-                        <div className="text-xs uppercase font-bold tracking-wider text-gray-400">{st.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* ── 7. PREGUNTAS FRECUENTES (FAQ) ── */}
+              {/* ── 5. PREGUNTAS FRECUENTES (FAQ) ── */}
               {block.type === 'faq_accordion' && (
                 <div className="max-w-3xl mx-auto px-6 py-12 space-y-4">
                   <div className="text-center mb-8">
                     <h2 className="text-2xl md:text-4xl font-black">{block.content?.title || 'Preguntas Frecuentes'}</h2>
                   </div>
-                  {(block.content?.faqs || [
-                    { q: '¿Cómo funciona la visualización 3D y Realidad Aumentada?', a: 'Puedes rotar, hacer zoom y proyectar cualquier plato sobre tu mesa usando la cámara de tu celular sin instalar aplicaciones.' },
-                    { q: '¿Se requiere reserva previa?', a: 'Sí, recomendamos reservar con 24 horas de antelación a través de nuestro Asistente IA o botón de WhatsApp.' },
-                    { q: '¿Qué métodos de pago aceptan?', a: 'Aceptamos transferencias bancarias, tarjetas de crédito, débito, Bold y PSE.' }
-                  ]).map((faq, fIdx) => (
-                    <details key={fIdx} className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 group cursor-pointer hover:border-white/20 transition-all">
+                  {(Array.isArray(block.content?.items) ? block.content.items : (Array.isArray(block.content?.faqs) ? block.content.faqs : [
+                    { question: '¿Cómo funciona la visualización 3D y Realidad Aumentada?', answer: 'Puedes rotar, hacer zoom y proyectar cualquier plato sobre tu mesa usando la cámara de tu celular sin instalar aplicaciones.' },
+                    { question: '¿Se requiere reserva previa?', answer: 'Sí, recomendamos reservar con 24 horas de antelación a través de nuestro Asistente IA o botón de WhatsApp.' },
+                    { question: '¿Qué métodos de pago aceptan?', answer: 'Aceptamos transferencias bancarias, tarjetas de crédito, débito, Bold y PSE.' }
+                  ])).map((faq, fIdx) => (
+                    <details key={faq.id || fIdx} className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 group cursor-pointer hover:border-white/20 transition-all">
                       <summary className="font-bold text-sm text-gray-200 flex items-center justify-between">
-                        {faq.q}
+                        {faq.question || faq.q}
                         <ChevronDown size={18} className="text-gray-400 group-open:rotate-180 transition-transform" />
                       </summary>
                       <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-white/5 leading-relaxed">
-                        {faq.a}
+                        {faq.answer || faq.a}
                       </p>
                     </details>
                   ))}
                 </div>
               )}
 
-              {/* ── 8. RESEÑAS 5★ GOOGLE ── */}
+              {/* ── 6. RESEÑAS 5★ GOOGLE ── */}
               {block.type === 'google_reviews' && (
                 <div className="max-w-5xl mx-auto px-6 py-12">
                   <div className="text-center mb-10 space-y-2">
@@ -340,7 +352,7 @@ export default async function DynamicUniversalPage({ params }) {
                     <h2 className="text-2xl md:text-4xl font-black">{block.content?.title || 'Lo que dicen nuestros clientes'}</h2>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {(block.content?.reviews || [
+                    {(Array.isArray(block.content?.reviews) ? block.content.reviews : [
                       { name: 'Alejandro Restrepo', text: 'La experiencia interactiva y los modelos 3D son increíbles. 100% recomendado.', stars: 5 },
                       { name: 'Valentina Gómez', text: 'Excelente servicio. El agente IA nos recomendó el maridaje perfecto. 10/10.', stars: 5 }
                     ]).map((rev, rIdx) => (
@@ -356,7 +368,7 @@ export default async function DynamicUniversalPage({ params }) {
                 </div>
               )}
 
-              {/* ── 9. CAPTURA DE LEADS ── */}
+              {/* ── 7. CAPTURA DE LEADS ── */}
               {block.type === 'lead_capture' && (
                 <div className="max-w-xl mx-auto px-6 py-12">
                   <div className="p-8 rounded-3xl bg-gradient-to-b from-white/[0.05] to-white/[0.02] border border-white/15 space-y-6 text-center shadow-2xl">
@@ -372,7 +384,7 @@ export default async function DynamicUniversalPage({ params }) {
                       />
                       <button 
                         type="button"
-                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black text-xs uppercase tracking-wider hover:brightness-110 shadow-lg"
+                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black text-xs uppercase tracking-wider hover:brightness-110 shadow-lg cursor-pointer"
                       >
                         {block.content?.buttonText || 'Suscribirme Ahora'}
                       </button>
@@ -388,7 +400,7 @@ export default async function DynamicUniversalPage({ params }) {
 
       {/* Botón Flotante de WhatsApp */}
       <a
-        href={`https://wa.me/${whatsappBlock?.content?.phoneNumber || '573000000000'}?text=${encodeURIComponent(whatsappBlock?.content?.defaultMessage || 'Hola, deseo más información')}`}
+        href={`https://wa.me/${(whatsappBlock?.content?.phoneNumber || '573001234567').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(whatsappBlock?.content?.defaultMessage || 'Hola, deseo más información')}`}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 p-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black shadow-2xl transition-transform hover:scale-110 flex items-center justify-center cursor-pointer"
