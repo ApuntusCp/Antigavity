@@ -15,7 +15,11 @@ import {
   Box,
   Bot,
   Zap,
-  Phone
+  Phone,
+  Send,
+  Award,
+  Layers,
+  BarChart3
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -93,16 +97,38 @@ export default async function DynamicUniversalPage({ params }) {
   const accentColor = page.theme?.accentColor || '#D4AF37';
   const blocks = page.blocks || [];
 
+  const topbarBlock = blocks.find(b => b.type === 'announcement_topbar' && b.isVisible !== false);
+  const whatsappBlock = blocks.find(b => b.type === 'whatsapp_floating_cta' && b.isVisible !== false);
+
   return (
     <main 
-      className="min-h-screen text-white relative overflow-hidden"
+      className="min-h-screen text-white relative overflow-hidden flex flex-col font-sans"
       style={{ backgroundColor: bgColor }}
     >
+      {/* ── 0. TOPBAR ANUNCIOS FIJO ── */}
+      {topbarBlock && (
+        <div className="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-700 text-black py-2.5 px-4 text-center font-black text-xs uppercase tracking-widest shadow-lg sticky top-0 z-50">
+          {topbarBlock.content?.text || '✨ NUEVA EXPERIENCIA DIGITAL INTERACTIVA DISPONIBLE'}
+        </div>
+      )}
+
       {/* Contenido Modular de Bloques */}
-      <div className="space-y-16 pb-24">
-        {blocks.filter(b => b.isVisible !== false).map((block, idx) => {
+      <div className="flex-1 space-y-20 pb-24">
+        {blocks.filter(b => b.isVisible !== false && b.type !== 'announcement_topbar' && b.type !== 'whatsapp_floating_cta').map((block, idx) => {
+          const blockBg = block.style?.backgroundColor;
+          const blockImg = block.style?.backgroundImage || block.content?.backgroundImageUrl;
+
           return (
-            <section key={block.id || idx} className="relative z-10">
+            <section 
+              key={block.id || idx} 
+              className="relative z-10"
+              style={{
+                backgroundColor: blockBg || undefined,
+                backgroundImage: blockImg ? `url(${blockImg})` : undefined,
+                backgroundSize: blockImg ? 'cover' : undefined,
+                backgroundPosition: blockImg ? 'center' : undefined,
+              }}
+            >
               
               {/* ── 1. HERO PRINCIPAL ── */}
               {block.type === 'hero' && (
@@ -112,17 +138,17 @@ export default async function DynamicUniversalPage({ params }) {
                       <Sparkles size={13} /> {block.content.badge}
                     </div>
                   )}
-                  <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
+                  <h1 className="text-4xl md:text-7xl font-black tracking-tight leading-tight uppercase font-serif">
                     {block.content?.headline || block.title}
                   </h1>
-                  <p className="text-gray-300 text-base md:text-lg max-w-2xl mx-auto">
+                  <p className="text-gray-300 text-base md:text-xl max-w-3xl mx-auto font-medium leading-relaxed">
                     {block.content?.subheadline || block.description}
                   </p>
-                  <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+                  <div className="flex flex-wrap items-center justify-center gap-4 pt-6">
                     {block.content?.ctaPrimaryText && (
                       <a
                         href={block.content?.ctaPrimaryUrl || '#'}
-                        className="px-8 py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider text-black bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 shadow-xl transition-all"
+                        className="px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-black bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 shadow-2xl transition-all hover:scale-105 active:scale-95"
                       >
                         {block.content.ctaPrimaryText}
                       </a>
@@ -130,7 +156,7 @@ export default async function DynamicUniversalPage({ params }) {
                     {block.content?.ctaSecondaryText && (
                       <a
                         href={block.content?.ctaSecondaryUrl || '#'}
-                        className="px-8 py-3.5 rounded-2xl font-bold text-sm text-white bg-white/10 hover:bg-white/15 border border-white/10 transition-all"
+                        className="px-8 py-4 rounded-2xl font-bold text-sm uppercase tracking-wider text-white bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md transition-all hover:scale-105 active:scale-95"
                       >
                         {block.content.ctaSecondaryText}
                       </a>
@@ -142,23 +168,24 @@ export default async function DynamicUniversalPage({ params }) {
               {/* ── 2. CARTA Y MENÚ 3D ── */}
               {block.type === 'menu3d' && (
                 <div className="max-w-6xl mx-auto px-6 py-12">
-                  <div className="text-center mb-10 space-y-2">
-                    <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">Experiencia Inmersiva</span>
-                    <h2 className="text-3xl font-black">{block.content?.title || 'Menú Gastronómico 3D'}</h2>
-                    <p className="text-xs text-gray-400">{block.content?.subtitle || 'Explora nuestros platos en realidad aumentada'}</p>
+                  <div className="text-center mb-12 space-y-3">
+                    <span className="text-xs font-black text-amber-400 uppercase tracking-widest">Experiencia Inmersiva</span>
+                    <h2 className="text-3xl md:text-5xl font-black">{block.content?.title || 'Menú Gastronómico 3D'}</h2>
+                    <p className="text-sm text-gray-400 max-w-xl mx-auto">{block.content?.subtitle || 'Explora nuestros platos en realidad aumentada y 360 grados'}</p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {(block.content?.categories || ['Platos Fuertes', 'Bebidas', 'Postres']).map((cat, cIdx) => (
-                      <div key={cIdx} className="p-6 rounded-3xl bg-white/[0.02] border border-white/10 hover:border-amber-500/40 transition-all space-y-4">
-                        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold">
-                          <Box size={22} />
+                    {(block.content?.categories || ['Platos Fuertes de Autor', 'Mixología & Bebidas', 'Postres de Vanguardia']).map((cat, cIdx) => (
+                      <div key={cIdx} className="p-8 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-amber-500/50 hover:bg-white/[0.05] transition-all space-y-4 shadow-xl">
+                        <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold">
+                          <Box size={26} />
                         </div>
-                        <h3 className="text-lg font-black">{cat}</h3>
-                        <p className="text-xs text-gray-400 leading-relaxed">Modelos 3D de alta definición listos para interactuar en Realidad Aumentada.</p>
-                        <div className="pt-2">
-                          <span className="text-xs font-bold text-amber-400 flex items-center gap-1">
-                            Ver Platos <ArrowRight size={13} />
+                        <h3 className="text-xl font-black">{cat}</h3>
+                        <p className="text-xs text-gray-400 leading-relaxed">Modelos 3D de alta definición listos para interactuar en Realidad Aumentada sobre tu mesa.</p>
+                        <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                          <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                            Ver Platos 3D <ArrowRight size={14} />
                           </span>
+                          <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">WebXR Ready</span>
                         </div>
                       </div>
                     ))}
@@ -169,19 +196,31 @@ export default async function DynamicUniversalPage({ params }) {
               {/* ── 3. SIMULADOR DE AGENTE IA ── */}
               {block.type === 'ai_agent_simulator' && (
                 <div className="max-w-4xl mx-auto px-6 py-12">
-                  <div className="p-8 rounded-3xl bg-gradient-to-b from-white/[0.05] to-white/[0.02] border border-white/10 space-y-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-                        <Bot size={20} />
+                  <div className="p-8 md:p-10 rounded-3xl bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/15 space-y-6 shadow-2xl backdrop-blur-xl">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold shadow-lg shadow-emerald-500/10">
+                        <Bot size={24} />
                       </div>
                       <div>
-                        <h3 className="text-base font-black">{block.content?.agentName || 'Agente de Asistencia Virtual'}</h3>
-                        <p className="text-xs text-emerald-400">🟢 En línea • Tiempo de respuesta: Inmediato</p>
+                        <h3 className="text-lg font-black">{block.content?.agentName || 'Agente de Asistencia Virtual'}</h3>
+                        <p className="text-xs text-emerald-400 font-bold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> En línea • Respuestas en milisegundos
+                        </p>
                       </div>
                     </div>
-                    <div className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-3 text-xs">
-                      <div className="p-3 rounded-xl bg-white/5 border border-white/5 text-gray-200">
-                        {block.content?.welcomeMessage || '¡Hola! ¿En qué puedo ayudarte hoy? Conozco todo sobre nuestro menú y servicios.'}
+                    <div className="p-5 rounded-2xl bg-black/60 border border-white/5 space-y-4">
+                      <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-gray-200 text-sm leading-relaxed">
+                        {block.content?.welcomeMessage || '¡Hola! Soy tu asistente inteligente. Puedo resolver dudas, ayudarte a reservar y guiarte paso a paso.'}
+                      </div>
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          placeholder="Escribe tu pregunta aquí..." 
+                          className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-xs placeholder:text-gray-500 focus:outline-none focus:border-amber-500"
+                        />
+                        <button className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black text-xs uppercase tracking-wider flex items-center gap-1.5 hover:brightness-110">
+                          <Send size={13} /> Enviar
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -191,24 +230,28 @@ export default async function DynamicUniversalPage({ params }) {
               {/* ── 4. PLANES Y PRECIOS ── */}
               {block.type === 'pricing_tiers' && (
                 <div className="max-w-6xl mx-auto px-6 py-12">
-                  <div className="text-center mb-10 space-y-2">
-                    <h2 className="text-3xl font-black">{block.content?.title || 'Planes & Tarifas'}</h2>
-                    <p className="text-xs text-gray-400">{block.content?.subtitle || 'Elige la opción que mejor se adapte a tus necesidades'}</p>
+                  <div className="text-center mb-12 space-y-3">
+                    <h2 className="text-3xl md:text-5xl font-black">{block.content?.title || 'Planes & Experiencias'}</h2>
+                    <p className="text-sm text-gray-400 max-w-xl mx-auto">{block.content?.subtitle || 'Elige la opción que mejor se adapte a tus necesidades'}</p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {(block.content?.tiers || [
-                      { name: 'Básico', price: '$29.000', desc: 'Ideal para comenzar' },
-                      { name: 'Pro Premium', price: '$59.000', desc: 'El más popular', isFeatured: true },
-                      { name: 'Empresarial', price: '$99.000', desc: 'Todo incluido' }
+                      { name: 'Mesa Gourmet', price: '$85.000', desc: 'Entrada + Plato Fuerte 3D + Bebida de autor' },
+                      { name: 'Experiencia Chef VIP', price: '$160.000', desc: 'Menú degustación 5 tiempos + Maridaje guiado', isFeatured: true },
+                      { name: 'Salón Privado Black', price: '$350.000', desc: 'Experiencia exclusiva para grupos con proyección AR' }
                     ]).map((tier, tIdx) => (
-                      <div key={tIdx} className={`p-6 rounded-3xl border transition-all space-y-4 ${tier.isFeatured ? 'bg-amber-500/10 border-amber-500/50 shadow-2xl' : 'bg-white/[0.02] border-white/10'}`}>
+                      <div key={tIdx} className={`p-8 rounded-3xl border transition-all space-y-6 shadow-xl flex flex-col justify-between ${tier.isFeatured ? 'bg-amber-500/10 border-amber-500/60 shadow-amber-500/10 relative scale-105' : 'bg-white/[0.02] border-white/10'}`}>
                         {tier.isFeatured && (
-                          <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-amber-500 text-black">Destacado</span>
+                          <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full bg-amber-500 text-black shadow-lg">
+                            ★ Más Popular
+                          </span>
                         )}
-                        <h3 className="text-lg font-black">{tier.name}</h3>
-                        <div className="text-3xl font-black text-amber-400">{tier.price}</div>
-                        <p className="text-xs text-gray-400">{tier.desc}</p>
-                        <button className="w-full py-2.5 rounded-xl font-bold text-xs bg-white/10 hover:bg-white/20 text-white transition-all">
+                        <div className="space-y-4">
+                          <h3 className="text-xl font-black">{tier.name}</h3>
+                          <div className="text-4xl font-black text-amber-400">{tier.price}</div>
+                          <p className="text-xs text-gray-400 leading-relaxed">{tier.desc}</p>
+                        </div>
+                        <button className={`w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all cursor-pointer ${tier.isFeatured ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black shadow-lg hover:brightness-110' : 'bg-white/10 hover:bg-white/20 text-white'}`}>
                           Seleccionar Plan
                         </button>
                       </div>
@@ -217,21 +260,65 @@ export default async function DynamicUniversalPage({ params }) {
                 </div>
               )}
 
-              {/* ── 5. PREGUNTAS FRECUENTES (FAQ) ── */}
+              {/* ── 5. CARACTERÍSTICAS / SERVICIOS ── */}
+              {block.type === 'features_services' && (
+                <div className="max-w-6xl mx-auto px-6 py-12">
+                  <div className="text-center mb-12 space-y-3">
+                    <h2 className="text-3xl md:text-5xl font-black">{block.content?.title || 'Nuestras Características'}</h2>
+                    <p className="text-sm text-gray-400 max-w-xl mx-auto">{block.content?.subtitle || 'Innovación de vanguardia diseñada para potenciar tu experiencia'}</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {(block.content?.features || [
+                      { title: 'Alta Fidelidad 3D', desc: 'Modelado fotorrealista con texturas PBR y soporte WebXR directo.' },
+                      { title: 'IA Generativa 24/7', desc: 'Asistencia autónoma para atención al cliente y pedidos automatizados.' },
+                      { title: 'Pagos Instantáneos', desc: 'Integración nativa con Bold, Wompi, PSE y transferencias seguras.' }
+                    ]).map((feat, fIdx) => (
+                      <div key={fIdx} className="p-8 rounded-3xl bg-white/[0.02] border border-white/10 hover:border-white/25 transition-all space-y-3">
+                        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold">
+                          <Zap size={22} />
+                        </div>
+                        <h3 className="text-lg font-black">{feat.title}</h3>
+                        <p className="text-xs text-gray-400 leading-relaxed">{feat.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── 6. MÉTRICAS & KPIS ── */}
+              {block.type === 'stats_kpis' && (
+                <div className="max-w-6xl mx-auto px-6 py-12">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    {(block.content?.stats || [
+                      { value: '100%', label: 'Disponibilidad Edge' },
+                      { value: '250ms', label: 'Latencia Promedio' },
+                      { value: '5★', label: 'Calificación Clientes' },
+                      { value: '256-Bit', label: 'Seguridad SSL' }
+                    ]).map((st, sIdx) => (
+                      <div key={sIdx} className="p-6 rounded-3xl bg-white/[0.02] border border-white/10 space-y-2">
+                        <div className="text-3xl md:text-5xl font-black text-amber-400">{st.value}</div>
+                        <div className="text-xs uppercase font-bold tracking-wider text-gray-400">{st.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── 7. PREGUNTAS FRECUENTES (FAQ) ── */}
               {block.type === 'faq_accordion' && (
                 <div className="max-w-3xl mx-auto px-6 py-12 space-y-4">
                   <div className="text-center mb-8">
-                    <h2 className="text-2xl font-black">{block.content?.title || 'Preguntas Frecuentes'}</h2>
+                    <h2 className="text-2xl md:text-4xl font-black">{block.content?.title || 'Preguntas Frecuentes'}</h2>
                   </div>
                   {(block.content?.faqs || [
-                    { q: '¿Cómo puedo hacer un pedido?', a: 'Puedes realizar tu pedido directamente desde el menú 3D o vía WhatsApp.' },
-                    { q: '¿Qué métodos de pago aceptan?', a: 'Aceptamos transferencias bancarias, tarjetas de crédito, débito y PSE.' },
-                    { q: '¿Tienen cobertura a nivel nacional?', a: 'Sí, despachamos a las principales ciudades del país.' }
+                    { q: '¿Cómo funciona la visualización 3D y Realidad Aumentada?', a: 'Puedes rotar, hacer zoom y proyectar cualquier plato sobre tu mesa usando la cámara de tu celular sin instalar aplicaciones.' },
+                    { q: '¿Se requiere reserva previa?', a: 'Sí, recomendamos reservar con 24 horas de antelación a través de nuestro Asistente IA o botón de WhatsApp.' },
+                    { q: '¿Qué métodos de pago aceptan?', a: 'Aceptamos transferencias bancarias, tarjetas de crédito, débito, Bold y PSE.' }
                   ]).map((faq, fIdx) => (
-                    <details key={fIdx} className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 group cursor-pointer">
+                    <details key={fIdx} className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 group cursor-pointer hover:border-white/20 transition-all">
                       <summary className="font-bold text-sm text-gray-200 flex items-center justify-between">
                         {faq.q}
-                        <ChevronDown size={16} className="text-gray-400 group-open:rotate-180 transition-transform" />
+                        <ChevronDown size={18} className="text-gray-400 group-open:rotate-180 transition-transform" />
                       </summary>
                       <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-white/5 leading-relaxed">
                         {faq.a}
@@ -241,23 +328,23 @@ export default async function DynamicUniversalPage({ params }) {
                 </div>
               )}
 
-              {/* ── 6. RESEÑAS 5★ GOOGLE ── */}
+              {/* ── 8. RESEÑAS 5★ GOOGLE ── */}
               {block.type === 'google_reviews' && (
                 <div className="max-w-5xl mx-auto px-6 py-12">
-                  <div className="text-center mb-8 space-y-2">
+                  <div className="text-center mb-10 space-y-2">
                     <div className="flex items-center justify-center gap-1 text-amber-400">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={16} fill="currentColor" />
+                        <Star key={i} size={18} fill="currentColor" />
                       ))}
                     </div>
-                    <h2 className="text-2xl font-black">{block.content?.title || 'Lo que dicen nuestros clientes'}</h2>
+                    <h2 className="text-2xl md:text-4xl font-black">{block.content?.title || 'Lo que dicen nuestros clientes'}</h2>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {(block.content?.reviews || [
-                      { name: 'Carlos M.', text: 'Excelente servicio y calidad inigualable. 100% recomendado.', stars: 5 },
-                      { name: 'Diana R.', text: 'La experiencia interactiva y los productos superaron mis expectativas.', stars: 5 }
+                      { name: 'Alejandro Restrepo', text: 'La experiencia interactiva y los modelos 3D son increíbles. 100% recomendado.', stars: 5 },
+                      { name: 'Valentina Gómez', text: 'Excelente servicio. El agente IA nos recomendó el maridaje perfecto. 10/10.', stars: 5 }
                     ]).map((rev, rIdx) => (
-                      <div key={rIdx} className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-2">
+                      <div key={rIdx} className="p-6 rounded-3xl bg-white/[0.02] border border-white/10 space-y-3 shadow-lg">
                         <div className="flex items-center justify-between">
                           <span className="font-bold text-sm">{rev.name}</span>
                           <span className="text-xs text-amber-400">★★★★★</span>
@@ -269,6 +356,31 @@ export default async function DynamicUniversalPage({ params }) {
                 </div>
               )}
 
+              {/* ── 9. CAPTURA DE LEADS ── */}
+              {block.type === 'lead_capture' && (
+                <div className="max-w-xl mx-auto px-6 py-12">
+                  <div className="p-8 rounded-3xl bg-gradient-to-b from-white/[0.05] to-white/[0.02] border border-white/15 space-y-6 text-center shadow-2xl">
+                    <div className="space-y-2">
+                      <h2 className="text-2xl font-black">{block.content?.headline || 'Únete a Nuestra Comunidad VIP'}</h2>
+                      <p className="text-xs text-gray-400">{block.content?.subheadline || 'Recibe beneficios exclusivos y lanzamientos anticipados.'}</p>
+                    </div>
+                    <form className="space-y-3">
+                      <input 
+                        type="email" 
+                        placeholder="tu-correo@ejemplo.com" 
+                        className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs placeholder:text-gray-500 focus:outline-none focus:border-amber-500 text-center"
+                      />
+                      <button 
+                        type="button"
+                        className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black text-xs uppercase tracking-wider hover:brightness-110 shadow-lg"
+                      >
+                        {block.content?.buttonText || 'Suscribirme Ahora'}
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              )}
+
             </section>
           );
         })}
@@ -276,13 +388,13 @@ export default async function DynamicUniversalPage({ params }) {
 
       {/* Botón Flotante de WhatsApp */}
       <a
-        href="https://wa.me/573000000000"
+        href={`https://wa.me/${whatsappBlock?.content?.phoneNumber || '573000000000'}?text=${encodeURIComponent(whatsappBlock?.content?.defaultMessage || 'Hola, deseo más información')}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 p-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black shadow-2xl transition-transform hover:scale-110 flex items-center justify-center"
+        className="fixed bottom-6 right-6 z-50 p-4 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black shadow-2xl transition-transform hover:scale-110 flex items-center justify-center cursor-pointer"
         aria-label="Contactar por WhatsApp"
       >
-        <Phone size={22} fill="currentColor" />
+        <Phone size={24} fill="currentColor" />
       </a>
     </main>
   );
