@@ -581,6 +581,150 @@ export default async function DynamicUniversalPage({ params }) {
                 </div>
               )}
 
+              {/* ── 12. FORMULARIO DE CONTACTO AVANZADO ── */}
+              {block.type === 'contact_form' && (
+                <div id="contacto" className="max-w-xl mx-auto px-6 py-12 space-y-6">
+                  <div className="text-center space-y-2">
+                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30">
+                      ⚡ Respuesta Garantizada {block.content?.slaResponseTime || '< 15 minutos'}
+                    </span>
+                    <h2 className="text-2xl md:text-3xl font-black font-serif text-white uppercase">{block.content?.sectionTitle || block.title || '¿Tienes un Proyecto o Consulta?'}</h2>
+                    <p className="text-xs text-gray-400">{block.content?.sectionSubtitle}</p>
+                  </div>
+                  <form className="p-8 rounded-3xl bg-black/70 border border-emerald-500/30 shadow-2xl space-y-4">
+                    <div>
+                      <label className="text-xs font-bold text-gray-200 block mb-1">Nombre Completo *</label>
+                      <input type="text" required placeholder="Ej. Carlos Mendoza" className="w-full bg-black/80 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-emerald-400" />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs font-bold text-gray-200 block mb-1">Correo Electrónico *</label>
+                        <input type="email" required placeholder="carlos@empresa.com" className="w-full bg-black/80 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-emerald-400" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold text-gray-200 block mb-1">Teléfono / WhatsApp *</label>
+                        <input type="tel" required placeholder="+57 300 123 4567" className="w-full bg-black/80 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-emerald-400" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-200 block mb-1">Mensaje o Requerimientos *</label>
+                      <textarea rows={3} required placeholder="Escribe tu consulta aquí..." className="w-full bg-black/80 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-emerald-400 resize-none"></textarea>
+                    </div>
+                    <button type="submit" className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-black font-black text-xs uppercase tracking-wider hover:brightness-110 shadow-xl transition-all cursor-pointer">
+                      {block.content?.submitButtonText || 'Enviar Mensaje Ahora →'}
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {/* ── 13. CASOS DE ESTUDIO ── */}
+              {block.type === 'case_studies' && (
+                <div id="casos" className="max-w-5xl mx-auto px-6 py-12 space-y-6">
+                  <div className="text-center space-y-2">
+                    <h2 className="text-2xl md:text-3xl font-black font-serif text-white uppercase">{block.content?.sectionTitle || block.title || 'Casos de Éxito'}</h2>
+                    {block.content?.sectionSubtitle && <p className="text-xs text-gray-400">{block.content.sectionSubtitle}</p>}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {(Array.isArray(block.content?.cases) ? block.content.cases : []).map((cs, cIdx) => (
+                      <div key={cs.id || cIdx} className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 space-y-3 shadow-xl">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-bold text-gray-400">{cs.clientName || 'Cliente'}</span>
+                          <span className="text-2xl font-black text-emerald-400 font-mono">{cs.metricValue || '+300%'}</span>
+                        </div>
+                        <span className="text-[11px] text-emerald-400/80 font-bold block">{cs.metricLabel || 'Impacto'}</span>
+                        <p className="text-xs text-gray-300 leading-relaxed">{cs.description || ''}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── 14. EQUIPO REAL ── */}
+              {block.type === 'team_showcase' && (
+                <div className="max-w-5xl mx-auto px-6 py-12 space-y-6">
+                  <div className="text-center space-y-2">
+                    <h2 className="text-2xl md:text-3xl font-black font-serif text-white uppercase">{block.content?.sectionTitle || block.title || 'Nuestro Equipo'}</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {(Array.isArray(block.content?.members) ? block.content.members : []).map((m, mIdx) => (
+                      <div key={m.id || mIdx} className="p-5 rounded-3xl bg-white/[0.03] border border-white/10 flex gap-4 items-center shadow-lg">
+                        <img src={m.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80'} alt={m.name} className="w-16 h-16 rounded-2xl object-cover border border-white/10" />
+                        <div>
+                          <h4 className="font-bold text-sm text-white">{m.name}</h4>
+                          <span className="text-xs text-amber-400 font-semibold">{m.role}</span>
+                          <p className="text-[11px] text-gray-400 mt-1">{m.bio || ''}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── 15. MAPA INTERACTIVO ── */}
+              {block.type === 'interactive_map' && (
+                <div className="max-w-4xl mx-auto px-6 py-12 space-y-6">
+                  <div className="text-center space-y-2">
+                    <h2 className="text-2xl md:text-3xl font-black font-serif text-white uppercase">{block.content?.sectionTitle || block.title || 'Nuestra Sede'}</h2>
+                    <p className="text-xs text-gray-400">{block.content?.address}</p>
+                  </div>
+                  <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 flex flex-wrap gap-4 justify-center">
+                    <a href={block.content?.googleMapsUrl || '#'} target="_blank" rel="noreferrer" className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg">
+                      📍 Abrir en Google Maps
+                    </a>
+                    <a href={block.content?.wazeUrl || '#'} target="_blank" rel="noreferrer" className="px-6 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg">
+                      🧭 Abrir en Waze
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {/* ── 16. CTA REPETIDO ── */}
+              {block.type === 'repeated_cta' && (
+                <div className="max-w-4xl mx-auto px-6 py-12 text-center space-y-4 p-8 rounded-3xl bg-gradient-to-r from-amber-500/20 via-purple-500/20 to-cyan-500/20 border border-amber-500/40 shadow-2xl">
+                  <h2 className="text-3xl font-black font-serif text-white uppercase">{block.content?.headline || block.title || '¿Listo para Comenzar?'}</h2>
+                  <p className="text-xs text-gray-300 max-w-xl mx-auto">{block.content?.subheadline}</p>
+                  <div className="pt-3">
+                    <a href={block.content?.ctaPrimaryUrl || '#contacto'} className="px-8 py-3.5 rounded-full font-black text-xs uppercase tracking-wider text-black bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:brightness-110 shadow-xl inline-block">
+                      {block.content?.ctaPrimaryText || 'Comenzar Ahora Mismo →'}
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {/* ── 17. SLA BADGE ── */}
+              {block.type === 'sla_badge' && (
+                <div className="max-w-xl mx-auto px-6 py-4">
+                  <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-1">
+                    <span className="text-xs font-black text-emerald-400 uppercase tracking-widest">⚡ Garantía Oficial de Tiempo de Respuesta</span>
+                    <p className="text-xs text-gray-300 font-bold">Respuesta promedio en {block.content?.responseTime || '< 5 Minutos'} • Disponibilidad {block.content?.availability || '24/7'}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* ── 18. REDES SOCIALES (RRSS) ── */}
+              {block.type === 'social_links' && (
+                <div className="max-w-md mx-auto px-6 py-6 text-center space-y-3">
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">Síguenos en Redes Sociales</span>
+                  <div className="flex items-center justify-center gap-4">
+                    {(Array.isArray(block.content?.links) ? block.content.links : []).map((l, lIdx) => (
+                      <a key={lIdx} href={l.url} target="_blank" rel="noreferrer" className="p-3 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-white font-bold text-xs hover:text-amber-400 transition-all">
+                        {l.label || l.platform}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── 19. PRIVACIDAD & LEGAL ── */}
+              {block.type === 'legal_privacy' && (
+                <div className="max-w-4xl mx-auto px-6 py-6">
+                  <div className="p-6 rounded-2xl bg-black/60 border border-white/10 space-y-2 text-center text-xs text-gray-400">
+                    <h4 className="font-bold text-white uppercase">{block.content?.title || 'Protección de Datos & Habeas Data'}</h4>
+                    <p>{block.content?.summary || 'En cumplimiento de la Ley 1581 de 2012, tus datos personales serán tratados de forma confidencial y segura.'}</p>
+                  </div>
+                </div>
+              )}
+
             </section>
           );
         })}
