@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { adminDb } from '@/utils/firebase-admin';
 import { doc, setDoc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
 
@@ -33,8 +34,9 @@ export async function POST(request) {
       .trim()
       .toLowerCase()
       .replace(/^(https?:\/\/)+/gi, '')
-      .replace(/^grancolinos\.com\/?/i, '')
+      .replace(/^(www\.)?grancolinos\.com\/?/i, '')
       .replace(/^\//, '')
+      .replace(/\/$/, '')
       .replace(/[^a-z0-9-_]/g, '-');
 
     const pageDocument = {
@@ -45,10 +47,19 @@ export async function POST(request) {
       liveUrl: `https://grancolinos.com/${cleanSlug}`
     };
 
-    await setDoc(doc(db, 'gc_universal_pages', cleanSlug), pageDocument, { merge: true });
+    // 1. Guardar con adminDb (Firebase Admin SDK Server-Side con permisos completos)
+    try {
+      await adminDb.collection('gca_projects').doc(`page_${cleanSlug}`).set(pageDocument, { merge: true });
+      await adminDb.collection('gc_universal_pages').doc(cleanSlug).set(pageDocument, { merge: true });
 
-    if (page.originalSlug && page.originalSlug !== cleanSlug) {
-      await setDoc(doc(db, 'gc_universal_pages', page.originalSlug), pageDocument, { merge: true });
+      if (page.originalSlug && page.originalSlug !== cleanSlug) {
+        await adminDb.collection('gca_projects').doc(`page_${page.originalSlug}`).set(pageDocument, { merge: true });
+        await adminDb.collection('gc_universal_pages').doc(page.originalSlug).set(pageDocument, { merge: true });
+      }
+    } catch (adminErr) {
+      console.warn('[API /api/pages/publish] Fallback a client db:', adminErr?.message);
+      await setDoc(doc(db, 'gca_projects', `page_${cleanSlug}`), pageDocument, { merge: true });
+      await setDoc(doc(db, 'gc_universal_pages', cleanSlug), pageDocument, { merge: true });
     }
 
     return NextResponse.json({
