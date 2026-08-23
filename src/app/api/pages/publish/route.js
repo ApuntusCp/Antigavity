@@ -88,8 +88,19 @@ export async function GET(request) {
         .trim()
         .toLowerCase()
         .replace(/^(https?:\/\/)+/gi, '')
-        .replace(/^grancolinos\.com\/?/i, '')
+        .replace(/^(www\.)?grancolinos\.com\/?/i, '')
         .replace(/^\//, '');
+
+      try {
+        const docSnap = await adminDb.collection('gc_universal_pages').doc(cleanSlug).get();
+        if (docSnap.exists) {
+          return NextResponse.json({ success: true, page: docSnap.data() }, { headers: CORS_HEADERS });
+        }
+        const docSnap2 = await adminDb.collection('gca_projects').doc(`page_${cleanSlug}`).get();
+        if (docSnap2.exists) {
+          return NextResponse.json({ success: true, page: docSnap2.data() }, { headers: CORS_HEADERS });
+        }
+      } catch (_) {}
 
       const docSnap = await getDoc(doc(db, 'gc_universal_pages', cleanSlug));
       if (!docSnap.exists()) {
@@ -98,6 +109,12 @@ export async function GET(request) {
 
       return NextResponse.json({ success: true, page: docSnap.data() }, { headers: CORS_HEADERS });
     }
+
+    try {
+      const snapshot = await adminDb.collection('gc_universal_pages').get();
+      const pages = snapshot.docs.map(d => d.data());
+      return NextResponse.json({ success: true, count: pages.length, pages }, { headers: CORS_HEADERS });
+    } catch (_) {}
 
     const snapshot = await getDocs(collection(db, 'gc_universal_pages'));
     const pages = snapshot.docs.map(d => d.data());
