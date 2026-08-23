@@ -175,8 +175,8 @@ export default async function DynamicUniversalPage({ params }) {
 
       {/* ── 0. TOPBAR ANUNCIOS ── */}
       {topbarBlock && (
-        <div className="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-700 text-black py-2.5 px-4 text-center font-black text-xs uppercase tracking-widest shadow-lg sticky top-0 z-50">
-          {topbarBlock.content?.text || topbarBlock.content?.announcementText || topbarBlock.content?.title || '✨ NUEVA EXPERIENCIA DIGITAL INTERACTIVA DISPONIBLE'}
+        <div className="w-full bg-black/95 border-b border-amber-500/30 text-amber-400 py-2.5 px-4 text-center font-bold text-xs uppercase tracking-widest shadow-2xl sticky top-0 z-50 flex items-center justify-center gap-2 backdrop-blur-md">
+          <span className="text-amber-500 text-[10px]">▲</span> {topbarBlock.content?.text || topbarBlock.content?.announcementText || topbarBlock.content?.title || 'NUEVO LANZAMIENTO'} <span className="text-amber-500 text-[10px]">▲</span>
         </div>
       )}
 
@@ -200,31 +200,40 @@ export default async function DynamicUniversalPage({ params }) {
               
               {/* ── 1. HERO PRINCIPAL ── */}
               {block.type === 'hero' && (
-                <div className="pt-24 pb-16 px-6 max-w-5xl mx-auto text-center space-y-6">
+                <div className="pt-20 pb-16 px-6 max-w-5xl mx-auto text-center space-y-6">
                   {(block.content?.badgeText || block.content?.badge) && (
-                    <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                    <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/30 backdrop-blur-md shadow-lg">
                       <Sparkles size={13} /> {block.content.badgeText || block.content.badge}
                     </div>
                   )}
-                  <h1 className="text-4xl md:text-7xl font-black tracking-tight leading-tight uppercase font-serif">
+                  <h1 
+                    className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight leading-tight uppercase font-serif"
+                    style={{
+                      color: '#F59E0B',
+                      background: 'linear-gradient(135deg, #FDE68A 0%, #F59E0B 50%, #D97706 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      textShadow: '0 0 45px rgba(245, 158, 11, 0.45)'
+                    }}
+                  >
                     {block.content?.headline || block.title}
                   </h1>
-                  <p className="text-gray-300 text-base md:text-xl max-w-3xl mx-auto font-medium leading-relaxed">
+                  <p className="text-gray-200 text-sm md:text-base max-w-3xl mx-auto font-semibold uppercase tracking-wider leading-relaxed opacity-95">
                     {block.content?.subheadline || block.subtitle || block.description}
                   </p>
-                  <div className="flex flex-wrap items-center justify-center gap-4 pt-6">
+                  <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
                     {block.content?.ctaPrimaryText && (
                       <a
                         href={block.content?.ctaPrimaryUrl || '#'}
-                        className="px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider text-black bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 shadow-2xl transition-all hover:scale-105 active:scale-95"
+                        className="px-8 py-4 rounded-full font-black text-xs uppercase tracking-wider text-black bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:brightness-110 shadow-2xl shadow-amber-500/25 transition-all hover:scale-105 active:scale-95"
                       >
-                        {block.content.ctaPrimaryText}
+                        {block.content.ctaPrimaryText} →
                       </a>
                     )}
                     {block.content?.ctaSecondaryText && (
                       <a
                         href={block.content?.ctaSecondaryUrl || '#'}
-                        className="px-8 py-4 rounded-2xl font-bold text-sm uppercase tracking-wider text-white bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md transition-all hover:scale-105 active:scale-95"
+                        className="px-8 py-4 rounded-full font-bold text-xs uppercase tracking-wider text-white bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-xl shadow-lg transition-all hover:scale-105 active:scale-95"
                       >
                         {block.content.ctaSecondaryText}
                       </a>
