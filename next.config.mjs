@@ -67,6 +67,37 @@ const nextConfig = {
       },
     ];
   },
+  // ── Enrutamiento GCA OS Admin ───────────────────────────────────────────────
+  async rewrites() {
+    return [
+      {
+        source: '/GCA-Admin',
+        destination: '/GCA-Admin/index.html',
+      },
+      {
+        source: '/GCA-Admin/:path*',
+        destination: '/GCA-Admin/:path*',
+      },
+      {
+        source: '/gca-admin',
+        destination: '/GCA-Admin/index.html',
+      },
+      {
+        source: '/gca-admin/:path*',
+        destination: '/GCA-Admin/:path*',
+      },
+      {
+        has: [
+          {
+            type: 'host',
+            value: 'gca-admin.grancolinos.com',
+          },
+        ],
+        source: '/:path*',
+        destination: '/GCA-Admin/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
