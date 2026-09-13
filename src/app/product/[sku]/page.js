@@ -6,6 +6,7 @@ import AddToCartButton from './AddToCartButton';
 import ProductGallery from './ProductGallery';
 import RelatedProducts from './RelatedProducts';
 import PaymentMethodsBadge from '../../../components/PaymentMethodsBadge';
+import MedicalDisclaimer from '../../../components/MedicalDisclaimer';
 
 // Configuración dinámica en tiempo real: sincronización instantánea con GC Admin
 export const dynamic = 'force-dynamic';
@@ -83,24 +84,65 @@ export default async function ProductPage({ params }) {
   const formattedPrice = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price || 0);
   const formattedDiscountPrice = product.discountPrice ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.discountPrice) : null;
 
-  // ── JSON-LD: Schema.org Product ─────────────────────────────────────────────
+  // Detección de producto e INVIMA para transparencia regulatoria E-E-A-T
+  const productNameLower = (product.name || product.title || '').toLowerCase();
+  const productSkuLower = (product.sku || '').toLowerCase();
+  const isGotasCbd = productSkuLower.includes('gotas') || productNameLower.includes('gotas');
+  const isApitoxina = productSkuLower.includes('apitoxina') || productNameLower.includes('apitoxina');
+
+  // Código oficial verificado o fallback honesto
+  const invimaCode = product.invimaRegistro 
+    || product.registroInvima 
+    || (isGotasCbd ? 'RSA-0020388-2024' : null);
+
+  // ── JSON-LD: Schema.org Product (Google Merchant & YMYL Enriquecido) ───────────
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": product.name || product.title,
-    "description": product.description || '',
+    "description": product.description || 'Fórmula botánica premium colombiana con altos estándares de pureza.',
     "sku": product.sku,
-    "image": product.images?.[0] || '',
-    "brand": { "@type": "Brand", "name": "GranColinos" },
+    "image": product.images?.[0] || 'https://grancolinos.com/Logos/GranColinos.Com.png',
+    "brand": { 
+      "@type": "Brand", 
+      "name": "GranColinos" 
+    },
+    ...(invimaCode ? { "mpn": invimaCode } : {}),
     "offers": {
       "@type": "Offer",
       "url": `https://grancolinos.com/product/${product.sku}`,
       "priceCurrency": "COP",
       "price": product.discountPrice || product.price || 0,
+      "priceValidUntil": "2027-12-31",
+      "itemCondition": "https://schema.org/NewCondition",
       "availability": (product.stock === undefined || product.stock > 0)
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
-      "seller": { "@type": "Organization", "name": "GranColinos" }
+      "seller": { 
+        "@type": "Organization", 
+        "name": "GranColinos",
+        "legalName": "APONTE S.A.S."
+      },
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "CO",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+        "merchantReturnDays": 5,
+        "returnMethod": "https://schema.org/ReturnByMail",
+        "returnFees": "https://schema.org/FreeReturn"
+      },
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "15000",
+          "currency": "COP"
+        },
+        "shippingDestination": {
+          "@type": "DefinedRegion",
+          "addressCountry": "CO"
+        }
+      }
     }
   };
 
@@ -137,11 +179,23 @@ export default async function ProductPage({ params }) {
               {product.name || product.title}
             </h1>
 
-            {/* INVIMA Certificate Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#0A1408] border border-white/15 rounded-lg text-xs font-semibold text-[#D4AF37] mb-6 shadow-sm">
-              <ShieldCheck size={16} className="text-[#D4AF37]" />
-              <span>Calidad Certificada por INVIMA</span>
-            </div>
+            {/* INVIMA & Health Transparence Badge */}
+            {invimaCode ? (
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#0A1408] border border-[#D4AF37]/50 rounded-lg text-xs font-semibold text-[#D4AF37] mb-6 shadow-sm">
+                <ShieldCheck size={16} className="text-[#D4AF37]" />
+                <span>Reg. Sanitario INVIMA: <strong className="font-mono text-white tracking-wider ml-1">{invimaCode}</strong></span>
+              </div>
+            ) : isApitoxina ? (
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#0A1408] border border-[#D4AF37]/35 rounded-lg text-xs font-semibold text-gray-200 mb-6 shadow-sm">
+                <ShieldCheck size={16} className="text-[#D4AF37]" />
+                <span>Formulación Botánica Pura • Apiterapia Tradicional</span>
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#0A1408] border border-white/15 rounded-lg text-xs font-semibold text-[#D4AF37] mb-6 shadow-sm">
+                <ShieldCheck size={16} className="text-[#D4AF37]" />
+                <span>Trazabilidad & Calidad Orgánica Certificada</span>
+              </div>
+            )}
 
             {/* Price Display */}
             {formattedDiscountPrice ? (
@@ -178,11 +232,17 @@ export default async function ProductPage({ params }) {
                 <>
                   <li className="flex items-start gap-2.5 text-xs md:text-sm text-gray-300">
                     <CheckCircle2 size={16} className="text-[#D4AF37] mt-0.5 shrink-0" />
-                    <span>Calidad 100% garantizada y certificada por INVIMA.</span>
+                    <span>
+                      {invimaCode 
+                        ? `Certificación y Registro Sanitario INVIMA: ${invimaCode}`
+                        : isApitoxina
+                        ? 'Formulación artesanal de apiterapia botánica para uso tópico y bienestar.'
+                        : 'Trazabilidad botánica certificada y formulación bajo altos estándares de calidad.'}
+                    </span>
                   </li>
                   <li className="flex items-start gap-2.5 text-xs md:text-sm text-gray-300">
                     <CheckCircle2 size={16} className="text-[#D4AF37] mt-0.5 shrink-0" />
-                    <span>Elaborado con extractos puros y orgánicos colombianos.</span>
+                    <span>Elaborado con extractos puros y materias primas orgánicas colombianas.</span>
                   </li>
                 </>
               )}
@@ -223,6 +283,9 @@ export default async function ProductPage({ params }) {
             <div className="pt-2">
               <AddToCartButton product={product} />
             </div>
+
+            {/* Aviso Legal de Salud y Uso Responsable (Google YMYL & INVIMA) */}
+            <MedicalDisclaimer variant="compact" className="mt-4" />
           </div>
         </div>
       </div>

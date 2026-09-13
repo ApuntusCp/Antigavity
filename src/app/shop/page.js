@@ -3,6 +3,7 @@ import Link from "next/link";
 import { fetchProducts, fetchCMSPage } from "../../utils/firebase";
 import PaymentMethodsBadge from "../../components/PaymentMethodsBadge";
 import ShopAddToCartButton from "../../components/ShopAddToCartButton";
+import MedicalDisclaimer from "../../components/MedicalDisclaimer";
 import { ShieldCheck, Sparkles } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -71,6 +72,12 @@ export default async function ShopPage() {
                 ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
                 : null;
 
+              const productNameLower = (product.name || product.title || '').toLowerCase();
+              const productSkuLower = (product.sku || '').toLowerCase();
+              const isGotasCbd = productSkuLower.includes('gotas') || productNameLower.includes('gotas');
+              const isApitoxina = productSkuLower.includes('apitoxina') || productNameLower.includes('apitoxina');
+              const invimaCode = product.invimaRegistro || product.registroInvima || (isGotasCbd ? 'RSA-0020388-2024' : null);
+
               return (
                 <div 
                   key={product.id} 
@@ -83,9 +90,19 @@ export default async function ShopPage() {
                       
                       {/* Insignias Apiladas Arriba a la Izquierda */}
                       <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 items-start">
-                        <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-white/15 text-[#D4AF37] text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
-                          <ShieldCheck size={12} className="text-[#D4AF37]" /> INVIMA CERTIFICADO
-                        </span>
+                        {invimaCode ? (
+                          <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-[#D4AF37]/50 text-[#D4AF37] text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
+                            <ShieldCheck size={12} className="text-[#D4AF37]" /> INVIMA {invimaCode}
+                          </span>
+                        ) : isApitoxina ? (
+                          <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-white/15 text-gray-200 text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
+                            <ShieldCheck size={12} className="text-[#D4AF37]" /> APITERAPIA PURA
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-white/15 text-[#D4AF37] text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
+                            <ShieldCheck size={12} className="text-[#D4AF37]" /> TRAZABILIDAD GC
+                          </span>
+                        )}
 
                         {product.discountPrice && (
                           <span className="px-2.5 py-1 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black text-[9px] font-mono font-extrabold uppercase tracking-widest rounded-lg shadow-md">
@@ -188,6 +205,9 @@ export default async function ShopPage() {
 
         {/* Sellos de Confianza y Métodos de Pago */}
         <PaymentMethodsBadge />
+
+        {/* Aviso Legal de Salud y Uso Responsable (Google YMYL & INVIMA) */}
+        <MedicalDisclaimer variant="card" className="mt-8" />
 
       </div>
     </div>

@@ -5,6 +5,10 @@ import MaintenanceGuard from "../../components/MaintenanceGuard";
 export const metadata = {
   title: "Contacto | GranColinos",
   description: "Contáctanos para atención al cliente y soporte.",
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 export default function ContactPage() {

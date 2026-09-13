@@ -586,7 +586,7 @@ export default async function DynamicUniversalPage({ params }) {
                 <div id="contacto" className="max-w-xl mx-auto px-6 py-12 space-y-6">
                   <div className="text-center space-y-2">
                     <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30">
-                      ⚡ Respuesta Garantizada {block.content?.slaResponseTime || '< 15 minutos'}
+                      Respuesta Garantizada {block.content?.slaResponseTime || '< 15 minutos'}
                     </span>
                     <h2 className="text-2xl md:text-3xl font-black font-serif text-white uppercase">{block.content?.sectionTitle || block.title || '¿Tienes un Proyecto o Consulta?'}</h2>
                     <p className="text-xs text-gray-400">{block.content?.sectionSubtitle}</p>
@@ -669,10 +669,10 @@ export default async function DynamicUniversalPage({ params }) {
                   </div>
                   <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 flex flex-wrap gap-4 justify-center">
                     <a href={block.content?.googleMapsUrl || '#'} target="_blank" rel="noreferrer" className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg">
-                      📍 Abrir en Google Maps
+                      Abrir en Google Maps
                     </a>
                     <a href={block.content?.wazeUrl || '#'} target="_blank" rel="noreferrer" className="px-6 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg">
-                      🧭 Abrir en Waze
+                      Abrir en Waze
                     </a>
                   </div>
                 </div>
@@ -695,7 +695,7 @@ export default async function DynamicUniversalPage({ params }) {
               {block.type === 'sla_badge' && (
                 <div className="max-w-xl mx-auto px-6 py-4">
                   <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-1">
-                    <span className="text-xs font-black text-emerald-400 uppercase tracking-widest">⚡ Garantía Oficial de Tiempo de Respuesta</span>
+                    <span className="text-xs font-black text-emerald-400 uppercase tracking-widest">Garantía Oficial de Tiempo de Respuesta</span>
                     <p className="text-xs text-gray-300 font-bold">Respuesta promedio en {block.content?.responseTime || '< 5 Minutos'} • Disponibilidad {block.content?.availability || '24/7'}</p>
                   </div>
                 </div>

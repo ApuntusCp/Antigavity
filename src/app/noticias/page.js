@@ -688,7 +688,7 @@ function NoticiasContent() {
                     <div className="space-y-3 cursor-pointer" onClick={() => setSelectedArticle(topNewsPrimary)}>
                       <div className="flex flex-wrap items-center justify-between text-[11px] font-mono gap-2">
                         <span className="px-3 py-1 bg-gradient-to-r from-amber-500 to-[#D4AF37] text-black font-black uppercase tracking-widest rounded-full shadow-lg flex items-center gap-1.5 border border-white/40">
-                          <Flame size={13} className="fill-black" /> 🔥 NOTICIA MÁS VIRAL DEL DÍA
+                          <Flame size={13} className="fill-black" /> NOTICIA MÁS VIRAL DEL DÍA
                         </span>
                         <span className="text-[#D4AF37] font-bold">{topNewsPrimary.publishedAt}</span>
                       </div>

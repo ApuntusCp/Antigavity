@@ -63,6 +63,21 @@ const nextConfig = {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
           },
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.bold.co https://*.bold.co https://apis.google.com https://*.firebaseapp.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com data:",
+              "img-src 'self' data: blob: https: https://*.googleapis.com https://*.googleusercontent.com https://checkout.bold.co https://*.bold.co",
+              "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.bold.co https://checkout.bold.co https://api.telegram.org",
+              "frame-src 'self' https://checkout.bold.co https://*.bold.co https://*.firebaseapp.com",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self' https://checkout.bold.co",
+            ].join('; '),
+          },
         ],
       },
     ];

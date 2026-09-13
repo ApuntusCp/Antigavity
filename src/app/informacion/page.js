@@ -144,7 +144,7 @@ export default function InformacionPage() {
 
             <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#10B981]">
               <span>Operado por APONTE S.A.S.</span>
-              <span>NIT 901.839.201-4</span>
+              <span>NIT 100120471-4</span>
             </div>
           </div>
 

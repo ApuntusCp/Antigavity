@@ -97,8 +97,8 @@ export default function PaymentMethodsBadge() {
         <div className="flex items-center gap-3">
           <ShieldCheck className="text-[#D4AF37] shrink-0" size={24} />
           <div>
-            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Calidad INVIMA Certificada</h5>
-            <p className="text-[11px] text-gray-300">Fórmula certificada por INVIMA y 100% orgánica</p>
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">Trazabilidad & Registro INVIMA</h5>
+            <p className="text-[11px] text-gray-300">Fórmulas botánicas registradas y trazabilidad sanitaria oficial</p>
           </div>
         </div>
         <div className="flex items-center gap-3">

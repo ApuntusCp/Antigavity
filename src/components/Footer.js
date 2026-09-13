@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, MapPin, ShieldCheck, Lock, Sparkles, ArrowUpRight } from 'lucide-react';
+import MedicalDisclaimer from './MedicalDisclaimer';
 
 export default function Footer({ footerConfig = {} }) {
   const currentYear = new Date().getFullYear();
@@ -214,10 +215,13 @@ export default function Footer({ footerConfig = {} }) {
           </div>
         </div>
 
+        {/* Descargo Legal de Salud Global (Google YMYL & INVIMA) */}
+        <MedicalDisclaimer variant="footer" className="mt-8 mb-4" />
+
         {/* FILA INFERIOR: Copyright & Calidad */}
-        <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-400 text-center md:text-left">
+        <div className="pt-4 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] text-gray-400 text-center md:text-left">
           <p suppressHydrationWarning>
-            &copy; {currentYear} {footerConfig.copyright || "GRAN COLINOS SAS. TODOS LOS DERECHOS RESERVADOS."}
+            &copy; {currentYear} {footerConfig.copyright || "APONTE S.A.S. • NIT 100120471-4. TODOS LOS DERECHOS RESERVADOS."}
           </p>
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />

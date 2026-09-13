@@ -12,7 +12,7 @@ export default function PrivacyPage() {
         
         <h2 className="text-xl font-bold mt-8 mb-4 text-[#D4AF37]">1. Identificación del Responsable</h2>
         <p className="mb-4 text-gray-300">
-          GranColinos (operado por APONTE S.A.S., NIT 901.839.201-4) es el responsable del tratamiento de los datos personales suministrados por titulares en la tienda, repositorios académicos, módulo de servicios profesionales y peticiones de soporte.
+          GranColinos (operado por APONTE S.A.S., NIT 100120471-4) es el responsable del tratamiento de los datos personales suministrados por titulares en la tienda, repositorios académicos, módulo de servicios profesionales y peticiones de soporte.
         </p>
 
         <h2 className="text-xl font-bold mt-8 mb-4 text-[#D4AF37]">2. Tratamiento Especial de Datos en el Módulo de Servicios (Red Profesional)</h2>

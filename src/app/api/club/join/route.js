@@ -77,7 +77,7 @@ export async function POST(request) {
     // 4. Notificar a GC Admin
     try {
       await adminDb.collection('notifications').add({
-        title: '🎁 Nuevo Registro al Club (10% OFF)',
+        title: 'Nuevo Registro al Club (10% OFF)',
         message: `${cleanName} (${cleanEmail}) se ha suscrito al Club y recibió el cupón ${couponCode}.`,
         type: 'club_join',
         clientEmail: cleanEmail,

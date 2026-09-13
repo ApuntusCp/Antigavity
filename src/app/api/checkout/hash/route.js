@@ -1,12 +1,61 @@
 import crypto from 'crypto';
 import { adminDb } from '../../../../utils/firebase-admin';
 
+// ── Rate Limiter en memoria (Ventana deslizante de 60s por IP) ───────────────
+// Previene ataques de fuerza bruta y card testing automatizado contra la pasarela.
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const MAX_REQUESTS_PER_WINDOW = 6;
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const clientData = rateLimitMap.get(ip) || [];
+  const validRequests = clientData.filter(ts => now - ts < RATE_LIMIT_WINDOW_MS);
+
+  if (validRequests.length >= MAX_REQUESTS_PER_WINDOW) {
+    return false;
+  }
+
+  validRequests.push(now);
+  rateLimitMap.set(ip, validRequests);
+
+  // Limpieza periódica de IPs inactivas
+  if (rateLimitMap.size > 2000) {
+    for (const [key, timestamps] of rateLimitMap.entries()) {
+      if (timestamps.every(ts => now - ts >= RATE_LIMIT_WINDOW_MS)) {
+        rateLimitMap.delete(key);
+      }
+    }
+  }
+
+  return true;
+}
+
 export async function POST(request) {
   try {
+    // ── Validación de Rate Limit por IP ───────────────────────────────────────
+    const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+                     request.headers.get('x-real-ip') ||
+                     'unknown-ip';
+
+    if (!checkRateLimit(clientIp)) {
+      console.warn(`[Hash RateLimit] Solicitudes excesivas desde IP: ${clientIp}`);
+      return new Response(JSON.stringify({ 
+        error: 'Demasiadas solicitudes de pago en un corto período. Por favor espera un momento.' 
+      }), { 
+        status: 429, 
+        headers: { 'Content-Type': 'application/json', 'Retry-After': '60' } 
+      });
+    }
+
     const { orderId, currency } = await request.json();
 
-    if (!orderId || !currency) {
-      return new Response(JSON.stringify({ error: 'Faltan parámetros de orden' }), { status: 400 });
+    if (!orderId || typeof orderId !== 'string' || !/^[a-zA-Z0-9_-]{4,64}$/.test(orderId)) {
+      return new Response(JSON.stringify({ error: 'Identificador de orden inválido o malformado' }), { status: 400 });
+    }
+
+    if (!currency || currency !== 'COP') {
+      return new Response(JSON.stringify({ error: 'Moneda de transacción no admitida' }), { status: 400 });
     }
 
     // ── Seguridad crítica: la clave NUNCA tiene fallback hardcodeado ─────────
@@ -26,6 +75,12 @@ export async function POST(request) {
     }
 
     const orderData = orderSnap.data();
+
+    // Validar que la orden no haya sido pagada ya
+    if (orderData.status === 'paid') {
+      return new Response(JSON.stringify({ error: 'Esta orden ya fue pagada y procesada previamente' }), { status: 400 });
+    }
+
     const trustedTotal = orderData.total;
 
     if (!trustedTotal || typeof trustedTotal !== 'number' || trustedTotal <= 0) {
@@ -77,7 +132,7 @@ export async function POST(request) {
 
     try {
       await adminDb.collection('notifications').add({
-        title: '⚠️ Fallo en Pasarela de Pago',
+        title: 'Fallo en Pasarela de Pago',
         message: `Error al procesar hash de seguridad: ${error.message}`,
         type: 'payment_error',
         read: false,

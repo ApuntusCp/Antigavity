@@ -262,8 +262,8 @@ function calculateExactBiasScore(title, sourceName, mediaDomain) {
     : "0% (Lenguaje Factual Sin Adjetivos Sensacionalistas)";
 
   let verdictExplanation = isNeutral
-    ? `✅ TITULAR NEUTRAL FACTUAL (0% SESGO) — Transmite datos o hechos constatables sin adjetivos sensacionalistas.`
-    : `⚠️ ENCUADRE REGISTRADO: ${absPercent}% SESGO ${biasDirection.toUpperCase()} — Derivado de la postura del medio (${f1_score > 0 ? '+' : ''}${f1_score}%) y la adjetivación del titular (${f2_score > 0 ? '+' : ''}${f2_score}%).`;
+    ? `TITULAR NEUTRAL FACTUAL (0% SESGO) — Transmite datos o hechos constatables sin adjetivos sensacionalistas.`
+    : `ENCUADRE REGISTRADO: ${absPercent}% SESGO ${biasDirection.toUpperCase()} — Derivado de la postura del medio (${f1_score > 0 ? '+' : ''}${f1_score}%) y la adjetivación del titular (${f2_score > 0 ? '+' : ''}${f2_score}%).`;
 
   return {
     totalScore,
@@ -546,7 +546,7 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       biasLabel: primaryDomain.includes('rtvc') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "75% Sesgo Izquierda",
       intention: rtvcMatch.hasCoverage 
         ? "Enfoque institucional en garantías comunitarias y explicaciones oficiales." 
-        : "⚠️ Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
+        : "Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
       outletUrl: rtvcMatch.url,
       officialMatrixUrl: article.originalUrl
     },
@@ -563,7 +563,7 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       biasLabel: primaryDomain.includes('espectador') ? `${evaluatedBias.absPercent}% Sesgo Izquierda` : "30% Sesgo Izquierda",
       intention: espectadorMatch.hasCoverage 
         ? "Enfoque en el debido proceso, marco normativo y fiscalización jurídica." 
-        : "⚠️ Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
+        : "Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
       outletUrl: espectadorMatch.url,
       officialMatrixUrl: article.originalUrl
     },
@@ -580,7 +580,7 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       biasLabel: "0% Sesgo (Punto Cero Neutral)",
       intention: caracolMatch.hasCoverage 
         ? "Reporte directo de hechos constatados sin encuadre ideológico." 
-        : "⚠️ Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
+        : "Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
       outletUrl: caracolMatch.url,
       officialMatrixUrl: article.originalUrl
     },
@@ -597,7 +597,7 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       biasLabel: primaryDomain.includes('tiempo') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "32% Sesgo Derecha",
       intention: tiempoMatch.hasCoverage 
         ? "Enfoque en gobernabilidad e impacto institucional." 
-        : "⚠️ Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
+        : "Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
       outletUrl: tiempoMatch.url,
       officialMatrixUrl: article.originalUrl
     },
@@ -614,7 +614,7 @@ function generate5SpectrumCoveragesFromCenter(article, allArticles = []) {
       biasLabel: primaryDomain.includes('semana') ? `${evaluatedBias.absPercent}% Sesgo Derecha` : "80% Sesgo Derecha",
       intention: semanaMatch.hasCoverage 
         ? "Enfoque crítico de fiscalización política y posturas de oposición." 
-        : "⚠️ Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
+        : "Este medio no ha registrado ni publicado cobertura sobre esta noticia específica.",
       outletUrl: semanaMatch.url,
       officialMatrixUrl: article.originalUrl
     }

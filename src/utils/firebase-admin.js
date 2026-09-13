@@ -1,5 +1,6 @@
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
 
 // Initialize Firebase Admin SDK
 if (!getApps().length) {
@@ -22,8 +23,6 @@ if (!getApps().length) {
 }
 
 // ── Lazy getter para Firestore Admin ────────────────────────────────────────
-// getFirestore() ahora está dentro de una función para evitar que un error de
-// inicialización crashee el módulo completo al importarlo.
 let _adminDb = null;
 function getAdminDb() {
   if (!_adminDb) {
@@ -37,9 +36,28 @@ function getAdminDb() {
   return _adminDb;
 }
 
-// Exportar como proxy para mantener compatibilidad con el código existente
+// ── Lazy getter para Auth Admin ─────────────────────────────────────────────
+let _adminAuth = null;
+function getAdminAuth() {
+  if (!_adminAuth) {
+    try {
+      _adminAuth = getAuth();
+    } catch (error) {
+      console.error('[firebase-admin] No se pudo obtener Auth:', error.message);
+      throw error;
+    }
+  }
+  return _adminAuth;
+}
+
 export const adminDb = new Proxy({}, {
   get(_, prop) {
     return getAdminDb()[prop];
+  }
+});
+
+export const adminAuth = new Proxy({}, {
+  get(_, prop) {
+    return getAdminAuth()[prop];
   }
 });

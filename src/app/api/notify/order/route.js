@@ -8,7 +8,7 @@ export async function POST(request) {
     // Sin este check, cualquiera puede spamear notificaciones al canal de Telegram.
     const authHeader = request.headers.get('authorization') || '';
     const adminSecret = process.env.ADMIN_SECRET_KEY;
-    if (adminSecret && authHeader !== `Bearer ${adminSecret}`) {
+    if (!adminSecret || authHeader !== `Bearer ${adminSecret}`) {
       return new Response(JSON.stringify({ error: 'No autorizado' }), { status: 401 });
     }
 
@@ -24,7 +24,7 @@ export async function POST(request) {
       const { botToken, chatId } = tgSnap.data();
       
       if (botToken && chatId) {
-        const message = `🛍 *NUEVO PEDIDO RECIBIDO*\n\n*Cliente:* ${orderData.name || 'N/A'}\n*Total:* $${total.toLocaleString('es-CO')}\n*Ciudad:* ${orderData.city || 'N/A'}\n\n*Umma:* ¡Alista los productos para el envío! 🚀`;
+        const message = `*NUEVO PEDIDO RECIBIDO*\n\n*Cliente:* ${orderData.name || 'N/A'}\n*Total:* $${total.toLocaleString('es-CO')}\n*Ciudad:* ${orderData.city || 'N/A'}\n\n*Umma:* ¡Alista los productos para el envío!`;
         
         await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: 'POST',

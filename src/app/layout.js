@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import CartDrawer from "../components/CartDrawer";
 import Analytics from "../components/Analytics";
 import MaintenancePage from "../components/MaintenancePage";
+import AgeGateModal from "../components/AgeGateModal";
 import { fetchCMSPage } from "../utils/firebase";
 import { cache } from "react";
 
@@ -70,18 +71,33 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "GranColinos",
+  "legalName": "APONTE S.A.S.",
+  "taxID": "100120471-4",
   "url": "https://grancolinos.com",
   "logo": "https://grancolinos.com/Logos/GranColinos.Com.png",
-  "description": "Tienda de bienestar premium, CBD y extractos naturales colombianos certificados por INVIMA.",
+  "description": "Tienda de bienestar premium, CBD y extractos naturales colombianos formulados con rigor científico y trazabilidad sanitaria.",
+  "email": "soporte@grancolinos.com",
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "customer service",
-    "availableLanguage": "Spanish"
+    "availableLanguage": "Spanish",
+    "email": "soporte@grancolinos.com"
   },
   "address": {
     "@type": "PostalAddress",
+    "addressLocality": "Bogotá D.C.",
     "addressCountry": "CO"
-  }
+  },
+  "knowsAbout": [
+    "CBD y Cannabinoides",
+    "Fitoterapia y Botánica",
+    "Apiterapia",
+    "Bienestar Natural",
+    "Extractos Orgánicos Colombianos"
+  ],
+  "sameAs": [
+    "https://twitter.com/grancolinos"
+  ]
 };
 
 export default async function RootLayout({ children }) {
@@ -132,6 +148,9 @@ export default async function RootLayout({ children }) {
           <MaintenancePage customMessage={maintenanceBlock.message} />
         ) : (
           <Providers>
+            {/* Puerta de Mayoría de Edad (18+) Regulatoria */}
+            <AgeGateModal />
+
             {/* Main Content */}
             <main className="flex-grow">
               {children}

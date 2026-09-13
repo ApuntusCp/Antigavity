@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '../../../../utils/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { authenticateRequest } from '../../../../utils/auth-server';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
   try {
+    const auth = await authenticateRequest(request);
+    if (!auth || !auth.isAdmin) {
+      return NextResponse.json({ success: false, error: 'No autorizado. Se requieren privilegios de administración.' }, { status: 403 });
+    }
+
     const body = await request.json();
     const { uid, points, type, reason } = body;
 

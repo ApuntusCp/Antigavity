@@ -63,7 +63,7 @@ export async function POST(request) {
       // Registrar notificación de fallo o rechazo de pago en GC Admin
       try {
         await adminDb.collection('notifications').add({
-          title: '⚠️ Pago Rechazado o Cancelado',
+          title: 'Pago Rechazado o Cancelado',
           message: `El pago para la Orden #${orderId} no fue aprobado. Estado de la pasarela: ${status || 'REJECTED'}.`,
           type: 'payment_error',
           orderId: orderId,
@@ -107,7 +107,7 @@ export async function POST(request) {
     // 4. Registrar notificación de venta exitosa en GC Admin
     try {
       await adminDb.collection('notifications').add({
-        title: '🎉 ¡Nueva Venta Aprobada!',
+        title: '¡Nueva Venta Aprobada!',
         message: `El pago para la Orden #${orderId} fue APROBADO exitosamente por Bold por un valor de $${(orderData.total || 0).toLocaleString()} COP.`,
         type: 'payment_success',
         orderId: orderId,
@@ -146,7 +146,7 @@ export async function POST(request) {
         // No revertir el pago (ya fue aprobado por Bold), pero registrar el problema
         console.error('[Webhook] Error en descuento de inventario:', stockError.message);
         await adminDb.collection('notifications').add({
-          title: '⚠️ Error de Inventario',
+          title: 'Error de Inventario',
           message: `Pago aprobado para Orden #${orderId}, pero falló el descuento de stock: ${stockError.message}. Revisar en GC Admin.`,
           type: 'stock_error',
           orderId,

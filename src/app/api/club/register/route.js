@@ -78,7 +78,7 @@ export async function POST(request) {
     // 4. Crear notificación en tiempo real para GC Admin
     try {
       await adminDb.collection('notifications').add({
-        title: '🎉 ¡Nuevo Miembro en el Club!',
+        title: '¡Nuevo Miembro en el Club!',
         message: `${cleanName} (${cleanEmail}) se ha unido al Club Gran Colinos.`,
         type: 'member_registered',
         clientUid: uid,

@@ -1,24 +1,30 @@
 import { NextResponse } from 'next/server';
 import { adminDb } from '../../../../utils/firebase-admin';
+import { authenticateRequest } from '../../../../utils/auth-server';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const uid = searchParams.get('uid');
-    const email = searchParams.get('email');
-
-    if (!uid && !email) {
-      return NextResponse.json({ success: false, error: 'Se requiere UID o Email' }, { status: 400 });
+    const auth = await authenticateRequest(request);
+    if (!auth) {
+      return NextResponse.json({ success: false, error: 'No autorizado. Se requiere iniciar sesión.' }, { status: 401 });
     }
+
+    const { searchParams } = new URL(request.url);
+    const reqUid = searchParams.get('uid');
+    const reqEmail = searchParams.get('email');
+
+    // Aislamiento: si no es admin, solo puede consultar sus propios pedidos
+    const targetUid = auth.isAdmin ? (reqUid || auth.uid) : auth.uid;
+    const targetEmail = auth.isAdmin ? reqEmail : auth.email;
 
     const ordersMap = new Map();
 
     // Query by userId if provided
-    if (uid) {
+    if (targetUid) {
       const snapUid = await adminDb.collection('orders')
-        .where('userId', '==', uid)
+        .where('userId', '==', targetUid)
         .orderBy('createdAt', 'desc')
         .limit(20)
         .get();
@@ -29,9 +35,9 @@ export async function GET(request) {
     }
 
     // Query by customer email if provided
-    if (email) {
+    if (targetEmail) {
       const snapEmail = await adminDb.collection('orders')
-        .where('customer.email', '==', email.toLowerCase().trim())
+        .where('customer.email', '==', targetEmail.toLowerCase().trim())
         .limit(20)
         .get();
 
@@ -61,6 +67,6 @@ export async function GET(request) {
     return NextResponse.json({ success: true, count: orders.length, orders });
   } catch (error) {
     console.error('[Orders API] Error fetching client orders:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Error al consultar pedidos' }, { status: 500 });
   }
 }
