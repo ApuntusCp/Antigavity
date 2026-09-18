@@ -1,3 +1,4 @@
+import MaintenanceGuard from '@/components/MaintenanceGuard';
 import GCAClient from './GCAClient';
 
 export const metadata = {
@@ -6,5 +7,18 @@ export const metadata = {
 };
 
 export default function GCAPage() {
-  return <GCAClient />;
+  return (
+    <MaintenanceGuard
+      routeKey="/gca"
+      defaultTitle="MÓDULO GRAN COLINA ARQUITECTOS EN CONSTRUCCIÓN"
+      defaultSubtitle="Estamos perfeccionando nuestro estudio de arquitectura de autor, diseño de interiores y construcción premium a gran escala."
+      defaultModuleName="Gran Colina Arquitectos (GCA)"
+      defaultEstimatedDate="Indefinido / Próximamente"
+      defaultStatusText="En Desarrollo Exclusivo"
+      defaultQualityText="Estándar Aponte SAS"
+      forceMaintenance={true}
+    >
+      <GCAClient />
+    </MaintenanceGuard>
+  );
 }

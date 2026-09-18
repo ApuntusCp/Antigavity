@@ -12,7 +12,10 @@ export default function MaintenanceGuard({
   defaultTitle,
   defaultSubtitle,
   defaultModuleName,
-  defaultEstimatedDate = "Agosto 2026",
+  defaultEstimatedDate = "Indefinido / Próximamente",
+  defaultStatusText = "Desarrollo Activo",
+  defaultQualityText = "100% Verificado",
+  forceMaintenance = false,
   children
 }) {
   const { user } = useAuth();
@@ -82,25 +85,21 @@ export default function MaintenanceGuard({
   );
 
   // ─── Determinar si mantenimiento está activo ───────────────────────────
-  // El proxy server-side (proxy.js) ya bloqueó el acceso para no-admins
-  // cuando Firestore tiene enabled=true.
-  // Este guard gestiona además el bypass de admin (banner + toggle de preview).
-  //
-  // Regla de defaults:
-  //   • Página SIN children (sin contenido real aún) → mantenimiento a menos que
-  //     Firestore diga explícitamente enabled=false. Evita página en blanco.
-  //   • Página CON children (contenido real) → solo bloquear si Firestore dice
-  //     enabled=true. No bloquear si no hay dato.
-  const isEnabled = !children
-    ? config?.enabled !== false   // sin contenido: default=mantenimiento
-    : config?.enabled === true;   // con contenido: solo si Firestore lo activa
+  // Para rutas en construcción indefinida (/gca, /movimiento o forceMaintenance),
+  // se activa de manera fija a menos que Firestore explícitamente tenga enabled=false.
+  const isIndefinite = forceMaintenance || routeKey === '/gca' || routeKey === '/movimiento';
+  const isEnabled = isIndefinite
+    ? config?.enabled !== false
+    : !children
+      ? config?.enabled !== false   // sin contenido: default=mantenimiento
+      : config?.enabled === true;   // con contenido: solo si Firestore lo activa
 
   const constructionTitle = config?.title || defaultTitle || `MÓDULO DE ${routeKey.replace(/^\//, '').toUpperCase()} EN CONSTRUCCIÓN`;
   const constructionSubtitle = config?.subtitle || defaultSubtitle || 'Estamos perfeccionando este módulo con los más altos estándares de calidad.';
   const constructionModuleName = config?.moduleName || defaultModuleName || 'GranColinos Digital';
   const constructionEstimatedDate = config?.estimatedDate || defaultEstimatedDate;
-  const constructionStatusText = config?.statusText || 'Desarrollo Activo';
-  const constructionQualityText = config?.qualityText || '100% Verificado';
+  const constructionStatusText = config?.statusText || defaultStatusText || 'Desarrollo Activo';
+  const constructionQualityText = config?.qualityText || defaultQualityText || '100% Verificado';
 
   // ─── Mantenimiento ACTIVO + usuario NO ES ADMIN → pantalla de construcción
   if (isEnabled && !isAdmin) {

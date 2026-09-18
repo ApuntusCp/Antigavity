@@ -65,9 +65,12 @@ export default async function MovimientoPage() {
     <MaintenanceGuard
       routeKey="/movimiento"
       defaultTitle="MÓDULO DE MOVIMIENTO GRAN COLINOS EN CONSTRUCCIÓN"
-      defaultSubtitle="Estamos preparando nuestra red comunitaria Solarpunk."
-      defaultModuleName="Movimiento Social GC"
-      defaultEstimatedDate="Agosto 2026"
+      defaultSubtitle="Estamos preparando nuestra red comunitaria Solarpunk y manifiesto de soberanía botánica y tecnológica."
+      defaultModuleName="Movimiento Solarpunk GC"
+      defaultEstimatedDate="Indefinido / Próximamente"
+      defaultStatusText="En Desarrollo Activo"
+      defaultQualityText="100% Soberano"
+      forceMaintenance={true}
     >
       <div className="min-h-screen theme-movimiento text-gray-200 font-sans overflow-hidden pt-32 pb-24 px-6 relative select-none">
       
