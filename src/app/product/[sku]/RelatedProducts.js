@@ -1,27 +1,30 @@
 import { collection, query, limit, getDocs } from 'firebase/firestore';
-import { db } from '../../../utils/firebase';
+import { db, FALLBACK_PRODUCTS } from '../../../utils/firebase';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default async function RelatedProducts({ currentSku }) {
   let relatedProducts = [];
+  const decodedSku = decodeURIComponent(currentSku).toLowerCase();
 
   try {
-    // For now, fetch 4 products and filter out the current one
     const q = query(collection(db, 'products'), limit(4));
     const snapshot = await getDocs(q);
     
     snapshot.docs.forEach(doc => {
       const data = doc.data();
-      if (data.sku !== decodeURIComponent(currentSku)) {
+      if ((data.sku || doc.id).toLowerCase() !== decodedSku) {
         relatedProducts.push({ id: doc.id, ...data });
       }
     });
 
-    // Keep only 3
     relatedProducts = relatedProducts.slice(0, 3);
   } catch (error) {
-    console.error("Error fetching related products:", error);
+    // Silently fall back
+  }
+
+  if (relatedProducts.length === 0) {
+    relatedProducts = FALLBACK_PRODUCTS.filter(p => p.sku.toLowerCase() !== decodedSku).slice(0, 3);
   }
 
   if (relatedProducts.length === 0) return null;

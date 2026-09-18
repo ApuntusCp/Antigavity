@@ -1,5 +1,5 @@
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../../utils/firebase';
+import { db, FALLBACK_PRODUCTS } from '../../../utils/firebase';
 import Link from 'next/link';
 import { CheckCircle2, ShieldCheck } from 'lucide-react';
 import AddToCartButton from './AddToCartButton';
@@ -12,28 +12,28 @@ import MedicalDisclaimer from '../../../components/MedicalDisclaimer';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-// Helper para obtener el producto directamente desde Firestore en tiempo real
+// Helper para obtener el producto directamente desde Firestore en tiempo real con fallback local
 async function getProductBySku(sku) {
+  const decodedSku = decodeURIComponent(sku).toLowerCase();
   try {
-    const decodedSku = decodeURIComponent(sku);
     const q = query(collection(db, 'products'), where('sku', '==', decodedSku));
     const snapshot = await getDocs(q);
     
     if (snapshot.empty) {
       // Fallback: búsqueda por ID de documento
       const directSnap = await getDocs(collection(db, 'products'));
-      const found = directSnap.docs.find(d => d.id === decodedSku || d.data().sku === decodedSku);
+      const found = directSnap.docs.find(d => d.id.toLowerCase() === decodedSku || d.data().sku?.toLowerCase() === decodedSku);
       if (found) {
         return { id: found.id, ...found.data() };
       }
-      return null;
+      return FALLBACK_PRODUCTS.find(p => p.sku.toLowerCase() === decodedSku || p.id.toLowerCase() === decodedSku) || null;
     }
     
     const docSnap = snapshot.docs[0];
     return { id: docSnap.id, ...docSnap.data() };
   } catch (error) {
-    console.error("Error fetching product in real-time:", error);
-    return null;
+    console.warn("Firestore inaccesible, usando fallback local para SKU:", decodedSku);
+    return FALLBACK_PRODUCTS.find(p => p.sku.toLowerCase() === decodedSku || p.id.toLowerCase() === decodedSku) || null;
   }
 }
 

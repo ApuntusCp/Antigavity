@@ -13,33 +13,25 @@ const PRODUCT_TRANSITION = { duration: 0.7, ease: EASE, delay: 0.05 };
 // --- DATOS POR DEFECTO ---
 const DEFAULT_VARIANTS = [
   {
-    id: 'gomas',
-    name: 'Gomas Orgánicas GC',
-    tagline: 'Energía y vitalidad diaria con Jengibre y Cúrcuma',
-    price: '$28.500',
-    colorBg: 'transparent',
-    colorAccent: '#D4AF37',
-    image: '/Muestras/preview (1).webp',
-    decorations: [],
-  },
-  {
     id: 'apitoxina',
+    sku: 'apitoxina',
     name: 'Apitoxina Relajante',
     tagline: 'Alivio muscular profundo y 100% natural',
     price: '$36.700',
     colorBg: 'transparent',
     colorAccent: '#D4AF37',
-    image: '/Muestras/preview (4).webp',
+    image: '/images/products/apitoxina.webp',
     decorations: [],
   },
   {
     id: 'nanocbd',
+    sku: 'nanocbd',
     name: 'Gotas Nano CBD',
     tagline: 'Biodisponibilidad del 100% con Nanotecnología',
     price: '$197.500',
     colorBg: 'transparent',
     colorAccent: '#7BA05B',
-    image: '/Muestras/preview.webp',
+    image: '/images/products/gotas-cbd.webp',
     decorations: [],
   },
 ];
@@ -71,7 +63,7 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
                  ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.discountPrice)
                  : new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price || 0),
         oldPrice: p.discountPrice ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p.price || 0) : null,
-        image: p.images?.[0] || '/Muestras/preview.webp',
+        image: p.images?.[0] || '/images/products/apitoxina.webp',
         decorations: [],
         colorBg: 'transparent',
         colorAccent: '#D4AF37'
@@ -238,6 +230,11 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
                 <img
                   src={activeVariant.image}
                   alt={activeVariant.name}
+                  onError={(e) => {
+                    if (e.target.src && e.target.src.endsWith('.webp')) {
+                      e.target.src = e.target.src.replace('.webp', '.png');
+                    }
+                  }}
                   className="w-full h-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
                 />
               </motion.div>
