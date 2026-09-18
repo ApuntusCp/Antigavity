@@ -26,7 +26,7 @@ export default function CartPage() {
         <div className="w-16 h-16 rounded-full bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] mx-auto mb-6">
           <ShoppingBag size={28} />
         </div>
-        <h1 className="font-serif text-2xl text-white mb-3">Tu Carrito GranColinos</h1>
+        <h1 className="font-bolton text-2xl text-white mb-3">Tu Carrito GranColinos</h1>
         <p className="text-gray-300 text-sm mb-6">Redirigiendo a tu proceso de compra segura...</p>
         <Link
           href="/shop"

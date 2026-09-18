@@ -331,7 +331,7 @@ export default function CheckoutPage() {
           
           {/* Formulario de Datos */}
           <div className="w-full lg:w-3/5">
-            <h1 className="font-playfair text-3xl mb-8">Información de Envío</h1>
+            <h1 className="font-bolton text-3xl mb-8">Información de Envío</h1>
             
             <form id="checkout-form" onSubmit={handleCheckoutSubmit} className="space-y-6">
               <div className="grid grid-cols-2 gap-6">
@@ -376,7 +376,7 @@ export default function CheckoutPage() {
           {/* Resumen de Orden */}
           <div className="w-full lg:w-2/5">
             <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 p-8 rounded-sm sticky top-32">
-              <h2 className="font-playfair text-2xl mb-6">Resumen del Pedido</h2>
+              <h2 className="font-tussilago text-2xl mb-6">Resumen del Pedido</h2>
               
               <div className="space-y-4 mb-6">
                 {cart.map(item => (
@@ -510,7 +510,7 @@ export default function CheckoutPage() {
               </button>
 
               <div className="p-8 md:p-10">
-                <h3 className="font-playfair text-3xl text-white mb-2 text-center">
+                <h3 className="font-tussilago text-3xl text-white mb-2 text-center">
                   {isLoginMode ? 'Iniciar Sesión' : 'Únete al Club'}
                 </h3>
                 <p className="text-gray-400 text-sm text-center mb-8 leading-relaxed">

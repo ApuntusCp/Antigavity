@@ -116,7 +116,7 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 100 }}
             transition={TRANSITION}
-            className="text-[15rem] md:text-[20rem] font-black uppercase whitespace-nowrap text-white font-serif tracking-tighter"
+            className="text-[15rem] md:text-[20rem] font-black uppercase whitespace-nowrap text-white font-bolton tracking-tighter"
           >
             {activeVariant.name.split(' ')[0]}
           </motion.span>
@@ -130,7 +130,7 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
           {/* Lado Izquierdo */}
           <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, ...TRANSITION }}>
-              <h1 className="text-5xl md:text-7xl font-serif font-bold text-white leading-tight mb-2">
+              <h1 className="text-5xl md:text-7xl font-bolton font-bold text-white leading-tight mb-2">
                 <span style={{ color: currentAccentColor }} className="transition-colors duration-700">Gran</span>Colinos
               </h1>
               <div className="min-h-[4rem] overflow-visible">
@@ -141,7 +141,7 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={TRANSITION}
-                    className="text-3xl md:text-5xl font-light italic text-white/90"
+                    className="text-3xl md:text-5xl font-tussilago font-light italic text-white/90"
                   >
                     {heroOverride?.title || activeVariant.name}
                   </motion.h2>

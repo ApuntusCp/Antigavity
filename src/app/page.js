@@ -57,7 +57,7 @@ export default async function Home() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-[#D4AF37]/10 blur-[140px] pointer-events-none transition-all duration-1000 group-hover:bg-[#D4AF37]/20 group-hover:scale-110" />
         
         <FadeInWhenVisible className="max-w-4xl mx-auto text-center relative z-10 bg-black/25 backdrop-blur-xl border border-[#D4AF37]/25 p-10 md:p-16 rounded-3xl shadow-2xl transition-all duration-500 hover:shadow-[#D4AF37]/15 hover:border-[#D4AF37]/40">
-          <h2 className="font-serif text-3xl md:text-5xl text-gold-gradient mb-8 leading-snug drop-shadow-md">
+          <h2 className="font-tussilago text-3xl md:text-5xl text-gold-gradient mb-8 leading-snug drop-shadow-md">
             El lujo reside en la pureza de los ingredientes y el tiempo que nos dedicamos.
           </h2>
           <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mb-8 transition-all duration-700 group-hover:w-28"></div>
@@ -75,7 +75,7 @@ export default async function Home() {
               <span className="text-[#D4AF37] text-xs font-bold tracking-[0.2em] uppercase mb-3 block">
                 Selección Premium
               </span>
-              <h2 className="font-serif text-4xl md:text-5xl text-gold-gradient drop-shadow-lg">Catálogo Exclusivo</h2>
+              <h2 className="font-tussilago text-4xl md:text-5xl text-gold-gradient drop-shadow-lg">Catálogo Exclusivo</h2>
             </div>
             <Link href="/shop" prefetch={false} className="text-xs font-bold tracking-[0.2em] uppercase border-b border-[#D4AF37] text-[#D4AF37] pb-1 mt-6 md:mt-0 hover:text-white hover:border-white transition-colors duration-300">
               Ver Todo
@@ -88,7 +88,7 @@ export default async function Home() {
                 <span className="text-[#D4AF37] mb-4">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
                 </span>
-                <h3 className="font-serif text-2xl text-white mb-2 text-center">Nuevos Ingredientes en Cultivo</h3>
+                <h3 className="font-tussilago text-2xl text-white mb-2 text-center">Nuevos Ingredientes en Cultivo</h3>
                 <p className="text-gray-400 font-sans text-sm w-full max-w-md text-center mb-6">
                   Nuestra próxima colección ultra-premium está siendo preparada desde GC Admin.
                 </p>
@@ -116,7 +116,7 @@ export default async function Home() {
                         )}
                       </div>
                       <div className="flex flex-col items-center text-center">
-                        <h3 className="font-serif text-xl font-bold mb-1.5 text-white group-hover:text-[#D4AF37] transition-colors duration-300">
+                        <h3 className="font-tussilago text-xl font-bold mb-1.5 text-white group-hover:text-[#D4AF37] transition-colors duration-300">
                           {product.title || product.name}
                         </h3>
                         <p className="text-[#D4AF37] text-sm tracking-widest font-mono font-bold">
@@ -142,7 +142,7 @@ export default async function Home() {
             <span className="text-[#D4AF37] text-xs font-bold tracking-[0.2em] uppercase mb-3 block">
               Prueba Social Premium
             </span>
-            <h2 className="font-serif text-4xl md:text-5xl text-gold-gradient mb-6 drop-shadow-md">
+            <h2 className="font-tussilago text-4xl md:text-5xl text-gold-gradient mb-6 drop-shadow-md">
               {testimonialsTitle}
             </h2>
             <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto"></div>
@@ -167,7 +167,7 @@ export default async function Home() {
                       {(testimonial.name || testimonial.authorName || "M")[0]}
                     </div>
                     <div>
-                      <h4 className="font-serif text-white font-bold text-sm flex items-center gap-1.5">
+                      <h4 className="font-tussilago text-white font-bold text-sm flex items-center gap-1.5">
                         {testimonial.name || testimonial.authorName || "Miembro"}
                       </h4>
                       <span className="text-[10px] text-[#D4AF37] font-bold uppercase tracking-widest block">{testimonial.role || "Voz del Club"}</span>
@@ -187,7 +187,7 @@ export default async function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <FadeInWhenVisible>
             <span className="text-[#D4AF37] text-xs font-bold tracking-[0.3em] uppercase mb-3 block">Únete al Club</span>
-            <h2 className="font-serif text-3xl md:text-5xl text-white font-bold mb-6">Recibe 10% OFF en tu primera compra</h2>
+            <h2 className="font-tussilago text-3xl md:text-5xl text-white font-bold mb-6">Recibe 10% OFF en tu primera compra</h2>
             <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-8 max-w-xl mx-auto font-light">
               Forma parte de la comunidad GranColinos para acceder a ofertas exclusivas, lanzamientos y guías de bienestar.
             </p>

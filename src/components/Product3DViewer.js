@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 /**
@@ -18,11 +18,17 @@ export default function Product3DViewer({
 }) {
   const containerRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [imgSrc, setImgSrc] = useState(src);
+  const [currentSrc, setCurrentSrc] = useState(src);
+  const [fallbackToPng, setFallbackToPng] = useState(false);
 
-  useEffect(() => {
-    setImgSrc(src);
-  }, [src]);
+  if (currentSrc !== src) {
+    setCurrentSrc(src);
+    setFallbackToPng(false);
+  }
+
+  const activeImgSrc = fallbackToPng && currentSrc && currentSrc.endsWith('.webp')
+    ? currentSrc.replace('.webp', '.png')
+    : currentSrc;
 
   // Coordenadas normalizadas [-0.5, 0.5] relativas al centro
   const rawX = useMotionValue(0);
@@ -143,13 +149,9 @@ export default function Product3DViewer({
           className="relative w-full h-full flex items-center justify-center p-4"
         >
           <img
-            src={imgSrc}
+            src={activeImgSrc}
             alt={alt}
-            onError={() => {
-              if (imgSrc && imgSrc.endsWith('.webp')) {
-                setImgSrc(imgSrc.replace('.webp', '.png'));
-              }
-            }}
+            onError={() => setFallbackToPng(true)}
             className="max-w-full max-h-full object-contain filter drop-shadow-[0_25px_35px_rgba(0,0,0,0.85)] pointer-events-none"
             loading={priority ? 'eager' : 'lazy'}
             draggable={false}

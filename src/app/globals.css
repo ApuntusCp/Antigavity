@@ -1,10 +1,59 @@
 @import "tailwindcss";
 
+/* ── FUENTES TIPOGRÁFICAS EXCLUSIVAS GRANCOLINOS ──────────────────────────── */
+/* 1. Títulos Principales: Bolton */
+@font-face {
+  font-family: 'Bolton';
+  src: url('/fonts/BOLTON.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 2. Títulos Secundarios: Tussilago (Light / Light Italic) */
+@font-face {
+  font-family: 'Tussilago';
+  src: url('/fonts/Tussilago-Lt.otf') format('opentype');
+  font-weight: 300 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Tussilago';
+  src: url('/fonts/Tussilago-Lt-It.otf') format('opentype');
+  font-weight: 300 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* 3. Todos los Textos: Picsue Sans */
+@font-face {
+  font-family: 'Picsue Sans';
+  src: url('/fonts/PicsueSans-Trial.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --color-brand-green: #2D5016;
   --color-brand-gold: #D4AF37;
-  --font-sans: var(--font-inter);
-  --font-playfair: var(--font-playfair);
+  --font-sans: var(--font-picsue), 'Picsue Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-bolton), 'Bolton', serif;
+  --font-playfair: var(--font-bolton), 'Bolton', serif;
+  --font-bolton: var(--font-bolton), 'Bolton', serif;
+  --font-tussilago: var(--font-tussilago), 'Tussilago', sans-serif;
+  --font-picsue: var(--font-picsue), 'Picsue Sans', sans-serif;
+}
+
+/* Jerarquía tipográfica global de GranColinos */
+h1, .font-heading-main {
+  font-family: var(--font-bolton), 'Bolton', serif;
+}
+
+h2, h3, .font-heading-secondary {
+  font-family: var(--font-tussilago), 'Tussilago', sans-serif;
 }
 
 :root {

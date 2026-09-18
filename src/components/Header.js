@@ -135,7 +135,7 @@ export default function Header({ headerConfig = {} }) {
           <div className="flex items-center shrink-0 pointer-events-auto md:absolute md:left-1/2 md:-translate-x-1/2">
             <Link href="/" className="flex items-center">
               {headerConfig.logoText ? (
-                <span className="font-playfair text-base sm:text-lg font-bold text-gold-gradient tracking-wide">{headerConfig.logoText}</span>
+                <span className="font-bolton text-base sm:text-lg font-bold text-gold-gradient tracking-wide">{headerConfig.logoText}</span>
               ) : (
                 <Image 
                   src="/Logos/GranColinos.Com.png" 

@@ -72,7 +72,7 @@ export default async function ProductPage({ params }) {
   if (!product) {
     return (
       <div className="min-h-screen bg-[#050A04] flex flex-col items-center justify-center text-white p-4 text-center">
-        <h1 className="font-serif text-4xl font-bold mb-4 text-[#D4AF37]">Producto No Disponible</h1>
+        <h1 className="font-bolton text-4xl font-bold mb-4 text-[#D4AF37]">Producto No Disponible</h1>
         <p className="text-gray-400 mb-8 max-w-md">El producto con SKU <span className="font-mono text-[#D4AF37]">{decodeURIComponent(resolvedParams.sku)}</span> no fue encontrado o está en producción.</p>
         <Link href="/shop" className="px-8 py-3 border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition-all uppercase tracking-widest text-xs font-bold rounded-xl shadow-[0_0_15px_rgba(212,175,55,0.2)]">
           Volver a la tienda
@@ -175,7 +175,7 @@ export default async function ProductPage({ params }) {
               </span>
             </div>
 
-            <h1 className="font-serif text-3xl md:text-5xl font-bold mb-4 text-gold-gradient drop-shadow-md leading-tight">
+            <h1 className="font-bolton text-3xl md:text-5xl font-bold mb-4 text-gold-gradient drop-shadow-md leading-tight">
               {product.name || product.title}
             </h1>
 

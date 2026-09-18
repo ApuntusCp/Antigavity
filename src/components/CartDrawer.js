@@ -23,7 +23,7 @@ export default function CartDrawer() {
         
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-white/10 shrink-0">
-          <h2 className="font-playfair text-xl text-brand-dark dark:text-white flex items-center gap-2">
+          <h2 className="font-tussilago text-xl text-brand-dark dark:text-white flex items-center gap-2">
             <ShoppingBag size={20} className="text-brand-gold" />
             Tu Carrito Exclusivo
           </h2>
@@ -75,7 +75,7 @@ export default function CartDrawer() {
                   <div className="flex-1 flex flex-col justify-between py-1">
                     <div className="flex justify-between items-start gap-2">
                       <div>
-                        <h3 className="font-playfair text-brand-dark dark:text-white line-clamp-1">{item.title || item.name}</h3>
+                        <h3 className="font-tussilago text-brand-dark dark:text-white line-clamp-1">{item.title || item.name}</h3>
                         <div className="flex items-center gap-2 mt-1">
                           {item.discountPrice ? (
                             <>

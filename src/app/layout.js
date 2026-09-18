@@ -1,4 +1,4 @@
-import { Inter, Playfair_Display } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Providers from "../components/Providers";
 import Header from "../components/Header";
@@ -17,14 +17,37 @@ import { cache } from "react";
 const getCachedGlobalCMS = cache(() => fetchCMSPage('global'));
 // Sin export const dynamic aquí → Next.js decide por página individualmente
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+// Fuentes personalizadas de la tienda GranColinos:
+// 1. Bolton: Títulos principales (Main headings)
+const bolton = localFont({
+  src: "../fonts/BOLTON.ttf",
+  variable: "--font-bolton",
+  display: "swap",
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
+// 2. Tussilago: Títulos secundarios (Secondary headings / Subtitles)
+const tussilago = localFont({
+  src: [
+    {
+      path: "../fonts/Tussilago-Lt.otf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../fonts/Tussilago-Lt-It.otf",
+      weight: "300",
+      style: "italic",
+    },
+  ],
+  variable: "--font-tussilago",
+  display: "swap",
+});
+
+// 3. Picsue Sans: Todos los textos (Body texts, buttons, general content)
+const picsueSans = localFont({
+  src: "../fonts/PicsueSans-Trial.otf",
+  variable: "--font-picsue",
+  display: "swap",
 });
 
 export const metadata = {
@@ -111,7 +134,7 @@ export default async function RootLayout({ children }) {
   const footerBlock = blocks.find(b => b.type === 'footer_config')?.content || {};
 
   return (
-    <html lang="es" className={`${inter.variable} ${playfair.variable} h-full scroll-smooth`}>
+    <html lang="es" className={`${bolton.variable} ${tussilago.variable} ${picsueSans.variable} h-full scroll-smooth`}>
       <head>
         {/* Desregistro inmediato de Service Workers residuales y limpieza de caché corrupta */}
         <script

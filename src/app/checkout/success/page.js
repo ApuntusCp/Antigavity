@@ -51,7 +51,7 @@ function SuccessContent() {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center">
         <Loader2 size={48} className="text-brand-gold animate-spin mb-4" />
-        <h2 className="text-white font-playfair text-2xl">Verificando tu pago...</h2>
+        <h2 className="text-white font-tussilago text-2xl">Verificando tu pago...</h2>
       </div>
     );
   }
@@ -59,7 +59,7 @@ function SuccessContent() {
   if (error) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6">
-        <h2 className="text-red-500 font-playfair text-3xl mb-4">Error al verificar la orden</h2>
+        <h2 className="text-red-500 font-tussilago text-3xl mb-4">Error al verificar la orden</h2>
         <p className="text-gray-400 mb-8 max-w-md">No pudimos encontrar tu orden o hubo un problema de conexión. Si tu pago fue debitado, por favor contáctanos.</p>
         <Link href="/" className="px-8 py-3 bg-white text-black font-bold uppercase tracking-widest text-xs rounded hover:bg-brand-gold transition-colors">
           Volver al Inicio
@@ -74,7 +74,7 @@ function SuccessContent() {
         <CheckCircle size={48} className="text-green-500" />
       </div>
       
-      <h1 className="text-white font-playfair text-4xl mb-4">¡Pago Exitoso!</h1>
+      <h1 className="text-white font-bolton text-4xl mb-4">¡Pago Exitoso!</h1>
       <p className="text-gray-400 mb-2 text-lg">Gracias por tu compra, <span className="text-white font-bold">{order?.customer?.name}</span>.</p>
       <p className="text-gray-500 text-sm mb-12 max-w-lg leading-relaxed">
         Hemos recibido tu pago por <strong className="text-brand-gold">{new Intl.NumberFormat('es-CO', {style: 'currency', currency: 'COP', maximumFractionDigits: 0}).format(order?.total || 0)}</strong>.

@@ -46,7 +46,7 @@ export default async function ShopPage() {
           <span className="text-[#D4AF37] text-xs font-mono font-extrabold tracking-[0.3em] uppercase block">
             • {subtitle} •
           </span>
-          <h1 className="font-serif text-4xl md:text-6xl font-black text-gold-gradient uppercase tracking-tight drop-shadow-[0_4px_30px_rgba(212,175,55,0.4)]">
+          <h1 className="font-bolton text-4xl md:text-6xl font-black text-gold-gradient uppercase tracking-tight drop-shadow-[0_4px_30px_rgba(212,175,55,0.4)]">
             {title}
           </h1>
           <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto rounded-full shadow-[0_0_12px_rgba(212,175,55,0.8)]"></div>
@@ -153,7 +153,7 @@ export default async function ShopPage() {
                           </div>
 
                           <Link href={`/product/${product.sku}`} className="block group-hover:text-[#D4AF37] transition-colors duration-300">
-                            <h2 className="font-serif text-lg font-bold text-white group-hover:text-[#D4AF37] transition-colors duration-300 line-clamp-1">
+                            <h2 className="font-tussilago text-lg font-bold text-white group-hover:text-[#D4AF37] transition-colors duration-300 line-clamp-1">
                               {product.title || product.name}
                             </h2>
                           </Link>
