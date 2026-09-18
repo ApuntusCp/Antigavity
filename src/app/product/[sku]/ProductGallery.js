@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Card3DTilt from '../../../components/Card3DTilt';
 
 export default function ProductGallery({ images, productName }) {
   const [mainImage, setMainImage] = useState(images[0]);
@@ -17,15 +18,19 @@ export default function ProductGallery({ images, productName }) {
 
   return (
     <div className="grid gap-4">
-      <div className="aspect-square relative overflow-hidden bg-[#0a0a0a] rounded-xl border border-white/5 ring-1 ring-white/10 shadow-2xl">
-        <Image 
-          src={mainImage} 
-          alt={productName}
-          fill
-          priority
-          className="object-contain p-4 transition-transform duration-700 hover:scale-105"
-        />
-      </div>
+      <Card3DTilt maxTilt={12} className="w-full">
+        <div className="aspect-square relative overflow-hidden bg-[#0a0a0a] rounded-2xl border border-white/10 ring-1 ring-white/10 shadow-2xl">
+          <div className="relative w-full h-full" style={{ transform: 'translateZ(30px)', transformStyle: 'preserve-3d' }}>
+            <Image 
+              src={mainImage} 
+              alt={productName}
+              fill
+              priority
+              className="object-contain p-6 transition-transform duration-700 hover:scale-105 filter drop-shadow-[0_20px_35px_rgba(0,0,0,0.85)]"
+            />
+          </div>
+        </div>
+      </Card3DTilt>
       {images.length > 1 && (
         <div className="flex gap-4 overflow-x-auto pb-4 pt-2">
           {images.map((img, i) => (

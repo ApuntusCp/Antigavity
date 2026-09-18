@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FastAverageColor } from 'fast-average-color';
 import Link from 'next/link';
+import Product3DViewer from './Product3DViewer';
 
 // --- CONFIGURACIÓN DE ANIMACIÓN ---
 const EASE = [0.65, 0, 0.35, 1];
@@ -216,26 +217,22 @@ export default function HeroSection({ cmsConfig = null, products = [] }) {
             </div>
           </div>
 
-          {/* Lado Derecho: Imagen del Producto */}
-          <div className="relative flex items-center justify-center h-[350px] md:h-[450px]">
+          {/* Lado Derecho: Imagen del Producto con Animación 3D Interactiva */}
+          <div className="relative flex items-center justify-center h-[380px] md:h-[500px]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeVariant.id}
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                initial={{ opacity: 0, scale: 0.92, y: 15 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                exit={{ opacity: 0, scale: 0.92, y: -15 }}
                 transition={PRODUCT_TRANSITION}
-                className="relative w-full h-full max-w-lg"
+                className="relative w-full h-full max-w-lg flex items-center justify-center"
               >
-                <img
+                <Product3DViewer
                   src={activeVariant.image}
                   alt={activeVariant.name}
-                  onError={(e) => {
-                    if (e.target.src && e.target.src.endsWith('.webp')) {
-                      e.target.src = e.target.src.replace('.webp', '.png');
-                    }
-                  }}
-                  className="w-full h-full object-contain filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
+                  accentColor={currentAccentColor}
+                  priority={true}
                 />
               </motion.div>
             </AnimatePresence>

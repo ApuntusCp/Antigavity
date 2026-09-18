@@ -4,6 +4,7 @@ import { fetchProducts, fetchHomeCMSConfig, fetchClientTestimonials } from "../u
 import NewsletterForm from "../components/NewsletterForm";
 import HeroSection from "../components/HeroSection";
 import FadeInWhenVisible from "../components/FadeInWhenVisible";
+import Card3DTilt from "../components/Card3DTilt";
 import PaymentMethodsBadge from "../components/PaymentMethodsBadge";
 import ShopAddToCartButton from "../components/ShopAddToCartButton";
 
@@ -95,31 +96,35 @@ export default async function Home() {
             ) : (
               products.slice(0, 3).map((product, index) => (
                 <FadeInWhenVisible key={product.id} delay={index * 0.15} className="w-full sm:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-2rem)] max-w-sm">
-                  <Link href={`/product/${product.sku}`} prefetch={false} className="group cursor-pointer block">
-                    <div className="aspect-[3/4] bg-black/30 mb-5 overflow-hidden relative rounded-2xl border border-white/10 backdrop-blur-md shadow-xl transition-all duration-700 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] group-hover:border-emerald-500/50">
-                      {product.images && product.images.length > 0 ? (
-                        <Image 
-                          src={product.images[0]}
-                          alt={product.title || product.name || 'Producto GranColinos'}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
-                          className="object-contain p-4 group-hover:scale-110 transition-transform duration-1000 ease-out"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-black/40">
-                          <span className="text-[10px] tracking-widest uppercase">Sin Imagen</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex flex-col items-center text-center">
-                      <h3 className="font-serif text-xl font-bold mb-1.5 text-white group-hover:text-[#D4AF37] transition-colors duration-300">
-                        {product.title || product.name}
-                      </h3>
-                      <p className="text-[#D4AF37] text-sm tracking-widest font-mono font-bold">
-                        {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price || 0)}
-                      </p>
-                    </div>
-                  </Link>
+                  <Card3DTilt maxTilt={11}>
+                    <Link href={`/product/${product.sku}`} prefetch={false} className="group cursor-pointer block">
+                      <div className="aspect-[3/4] bg-black/30 mb-5 overflow-hidden relative rounded-2xl border border-white/10 backdrop-blur-md shadow-xl transition-all duration-700 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.8)] group-hover:border-[#D4AF37]/50">
+                        {product.images && product.images.length > 0 ? (
+                          <div className="relative w-full h-full" style={{ transform: 'translateZ(30px)', transformStyle: 'preserve-3d' }}>
+                            <Image 
+                              src={product.images[0]}
+                              alt={product.title || product.name || 'Producto GranColinos'}
+                              fill
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+                              className="object-contain p-4 group-hover:scale-105 transition-transform duration-700 ease-out filter drop-shadow-[0_15px_25px_rgba(0,0,0,0.7)]"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 bg-black/40">
+                            <span className="text-[10px] tracking-widest uppercase">Sin Imagen</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-center text-center">
+                        <h3 className="font-serif text-xl font-bold mb-1.5 text-white group-hover:text-[#D4AF37] transition-colors duration-300">
+                          {product.title || product.name}
+                        </h3>
+                        <p className="text-[#D4AF37] text-sm tracking-widest font-mono font-bold">
+                          {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.price || 0)}
+                        </p>
+                      </div>
+                    </Link>
+                  </Card3DTilt>
                 </FadeInWhenVisible>
               ))
             )}

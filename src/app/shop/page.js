@@ -4,6 +4,7 @@ import { fetchProducts, fetchCMSPage } from "../../utils/firebase";
 import PaymentMethodsBadge from "../../components/PaymentMethodsBadge";
 import ShopAddToCartButton from "../../components/ShopAddToCartButton";
 import MedicalDisclaimer from "../../components/MedicalDisclaimer";
+import Card3DTilt from "../../components/Card3DTilt";
 import { ShieldCheck, Sparkles } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
@@ -79,125 +80,131 @@ export default async function ShopPage() {
               const invimaCode = product.invimaRegistro || product.registroInvima || (isGotasCbd ? 'RSA-0020388-2024' : null);
 
               return (
-                <div 
-                  key={product.id} 
-                  className="w-full sm:w-[320px] md:w-[340px] group bg-[#0A1408]/90 border border-white/10 hover:border-emerald-500/50 rounded-3xl overflow-hidden backdrop-blur-xl shadow-2xl transition-all duration-500 hover:shadow-[0_15px_45px_rgba(0,0,0,0.8)] flex flex-col justify-between hover:-translate-y-1.5"
-                >
-                  <div className="flex flex-col flex-1">
-                    
-                    {/* ENCABEZADO DE IMAGEN CON INSIGNIAS ORGANIZADAS VERTICALMENTE (SIN OVERLAP) */}
-                    <div className="h-64 w-full bg-black/70 relative overflow-hidden border-b border-white/10">
+                <Card3DTilt key={product.id} className="w-full sm:w-[320px] md:w-[340px]" maxTilt={10}>
+                  <div 
+                    className="w-full h-full group bg-[#0A1408]/90 border border-white/10 hover:border-[#D4AF37]/50 rounded-3xl overflow-hidden backdrop-blur-xl shadow-2xl transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.85)] flex flex-col justify-between"
+                  >
+                    <div className="flex flex-col flex-1">
                       
-                      {/* Insignias Apiladas Arriba a la Izquierda */}
-                      <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 items-start">
-                        {invimaCode ? (
-                          <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-[#D4AF37]/50 text-[#D4AF37] text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
-                            <ShieldCheck size={12} className="text-[#D4AF37]" /> INVIMA {invimaCode}
-                          </span>
-                        ) : isApitoxina ? (
-                          <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-white/15 text-gray-200 text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
-                            <ShieldCheck size={12} className="text-[#D4AF37]" /> APITERAPIA PURA
-                          </span>
-                        ) : (
-                          <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-white/15 text-[#D4AF37] text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
-                            <ShieldCheck size={12} className="text-[#D4AF37]" /> TRAZABILIDAD GC
-                          </span>
-                        )}
-
-                        {product.discountPrice && (
-                          <span className="px-2.5 py-1 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black text-[9px] font-mono font-extrabold uppercase tracking-widest rounded-lg shadow-md">
-                            EN OFERTA
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Porcentaje de Ahorro Arriba a la Derecha */}
-                      {discountPercent && (
-                        <div className="absolute top-3 right-3 z-20 bg-black/85 backdrop-blur-md border border-emerald-500/60 text-emerald-400 text-[10px] font-mono font-extrabold px-2.5 py-1 rounded-lg shadow-md">
-                          -{discountPercent}% AHORRO
-                        </div>
-                      )}
-
-                      <Link href={`/product/${product.sku}`} className="block w-full h-full relative">
-                        {product.images && product.images.length > 0 ? (
-                          <Image 
-                            src={product.images[0]}
-                            alt={product.title || product.name || 'Producto GranColinos'}
-                            fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 340px"
-                            priority={product.id === products[0]?.id || product.id === products[1]?.id}
-                            className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 bg-[#050A04]">
-                            <Sparkles size={32} className="text-[#D4AF37] mb-2" />
-                            <span className="text-[10px] font-mono tracking-widest uppercase text-gray-400">GranColinos Botánica</span>
-                          </div>
-                        )}
-                      </Link>
-                    </div>
-                    
-                    {/* CUERPO ORDENADO Y ELEGANTE DE LA FICHA EN VERDE BOTÁNICO */}
-                    <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-950/40 text-emerald-300 border border-white/10 text-[9px] font-mono font-extrabold tracking-widest uppercase">
-                            {product.category || 'BIENESTAR'}
-                          </span>
-                          <span className="text-[10px] font-mono text-gray-400 font-bold">
-                            SKU: {product.sku || 'GC-PROD'}
-                          </span>
-                        </div>
-
-                        <Link href={`/product/${product.sku}`}>
-                          <h3 className="font-serif text-lg font-bold text-white group-hover:text-[#D4AF37] transition-colors leading-snug line-clamp-2 min-h-[50px]">
-                            {product.title || product.name}
-                          </h3>
-                        </Link>
-                      </div>
-
-                      {/* PRECIOS Y STOCK */}
-                      <div className="pt-2 border-t border-white/10 space-y-1">
-                        <div className="flex items-baseline gap-2">
-                          {formattedOfferPrice ? (
-                            <>
-                              <span className="text-[#D4AF37] text-2xl font-black font-mono">
-                                {formattedOfferPrice}
-                              </span>
-                              <span className="text-gray-500 text-xs font-mono line-through">
-                                {formattedPrice}
-                              </span>
-                            </>
+                      {/* ENCABEZADO DE IMAGEN CON INSIGNIAS ORGANIZADAS VERTICALMENTE (SIN OVERLAP) */}
+                      <div className="h-64 w-full bg-black/70 relative overflow-hidden border-b border-white/10">
+                        
+                        {/* Insignias Apiladas Arriba a la Izquierda */}
+                        <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 items-start">
+                          {invimaCode ? (
+                            <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-[#D4AF37]/50 text-[#D4AF37] text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
+                              <ShieldCheck size={12} className="text-[#D4AF37]" /> INVIMA {invimaCode}
+                            </span>
+                          ) : isApitoxina ? (
+                            <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-white/15 text-gray-200 text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
+                              <ShieldCheck size={12} className="text-[#D4AF37]" /> APITERAPIA PURA
+                            </span>
                           ) : (
-                            <span className="text-[#D4AF37] text-2xl font-black font-mono">
-                              {formattedPrice}
+                            <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-white/15 text-[#D4AF37] text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
+                              <ShieldCheck size={12} className="text-[#D4AF37]" /> TRAZABILIDAD GC
+                            </span>
+                          )}
+
+                          {product.discountPrice && (
+                            <span className="px-2.5 py-1 bg-gradient-to-r from-[#D4AF37] to-[#AA7C11] text-black text-[9px] font-mono font-extrabold uppercase tracking-widest rounded-lg shadow-md">
+                              EN OFERTA
                             </span>
                           )}
                         </div>
 
-                        {(product.stock === undefined || product.stock > 0) && (
-                          <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            <span>Unidades disponibles para envío</span>
+                        {/* Porcentaje de Ahorro Arriba a la Derecha */}
+                        {discountPercent && (
+                          <div className="absolute top-3 right-3 z-20 bg-black/85 backdrop-blur-md border border-emerald-500/60 text-emerald-400 text-[10px] font-mono font-extrabold px-2.5 py-1 rounded-lg shadow-md">
+                            -{discountPercent}% AHORRO
                           </div>
                         )}
-                        {product.stock === 0 && (
-                          <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-red-400">
-                            <span className="w-2 h-2 rounded-full bg-red-400"></span>
-                            <span>Agotado temporalmente</span>
-                          </div>
-                        )}
+
+                        <Link href={`/product/${product.sku}`} className="block w-full h-full relative">
+                          {product.images && product.images.length > 0 ? (
+                            <div className="relative w-full h-full" style={{ transform: 'translateZ(25px)', transformStyle: 'preserve-3d' }}>
+                              <Image 
+                                src={product.images[0]}
+                                alt={product.title || product.name || 'Producto GranColinos'}
+                                fill
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 340px"
+                                priority={product.id === products[0]?.id || product.id === products[1]?.id}
+                                className="object-contain p-3 group-hover:scale-105 transition-transform duration-700 drop-shadow-[0_15px_25px_rgba(0,0,0,0.8)]"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 bg-[#050A04]">
+                              <Sparkles size={32} className="text-[#D4AF37] mb-2" />
+                              <span className="text-[10px] font-mono tracking-widest uppercase text-gray-400">GranColinos Botánica</span>
+                            </div>
+                          )}
+                        </Link>
                       </div>
+                      
+                      {/* CUERPO ORDENADO Y ELEGANTE DE LA FICHA EN VERDE BOTÁNICO */}
+                      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-950/40 text-emerald-300 border border-white/10 text-[9px] font-mono font-extrabold tracking-widest uppercase">
+                              {product.category || 'Extractos Puros'}
+                            </span>
+                            <span className="text-[10px] font-mono text-gray-400">
+                              SKU: {product.sku}
+                            </span>
+                          </div>
 
+                          <Link href={`/product/${product.sku}`} className="block group-hover:text-[#D4AF37] transition-colors duration-300">
+                            <h2 className="font-serif text-lg font-bold text-white group-hover:text-[#D4AF37] transition-colors duration-300 line-clamp-1">
+                              {product.title || product.name}
+                            </h2>
+                          </Link>
+
+                          <p className="text-gray-300 font-sans text-xs font-light line-clamp-2 leading-relaxed">
+                            {product.description || 'Fórmula botánica de alta pureza desarrollada con ingredientes 100% colombianos bajo estrictos estándares de calidad.'}
+                          </p>
+                        </div>
+
+                        {/* PRECIOS Y DISPONIBILIDAD */}
+                        <div className="pt-2 border-t border-white/10 flex items-end justify-between">
+                          <div className="flex flex-col">
+                            {formattedOfferPrice ? (
+                              <>
+                                <span className="text-gray-400 font-mono text-xs line-through">
+                                  {formattedPrice}
+                                </span>
+                                <span className="text-xl font-mono font-black text-red-400 drop-shadow-sm">
+                                  {formattedOfferPrice}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-xl font-mono font-black text-white drop-shadow-sm group-hover:text-[#D4AF37] transition-colors duration-300">
+                                {formattedPrice}
+                              </span>
+                            )}
+                          </div>
+
+                          {product.stock === undefined || product.stock > 0 ? (
+                            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400">
+                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                              <span>Disponible</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-red-400">
+                              <span className="w-2 h-2 rounded-full bg-red-400"></span>
+                              <span>Agotado temporalmente</span>
+                            </div>
+                          )}
+                        </div>
+
+                      </div>
                     </div>
-                  </div>
 
-                  {/* BOTÓN AÑADIR AL CARRITO FULL WIDTH */}
-                  <div className="p-5 pt-0">
-                    <ShopAddToCartButton product={product} />
-                  </div>
+                    {/* BOTÓN AÑADIR AL CARRITO FULL WIDTH */}
+                    <div className="p-5 pt-0">
+                      <ShopAddToCartButton product={product} />
+                    </div>
 
-                </div>
+                  </div>
+                </Card3DTilt>
               );
             })
           )}
