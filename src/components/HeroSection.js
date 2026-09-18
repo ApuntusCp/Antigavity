@@ -21,7 +21,7 @@ const DEFAULT_VARIANTS = [
     price: '$36.700',
     colorBg: 'transparent',
     colorAccent: '#D4AF37',
-    image: '/images/products/apitoxina.webp',
+    image: '/images/products/apitoxina-3d.webp',
     decorations: [],
   },
   {
@@ -32,7 +32,7 @@ const DEFAULT_VARIANTS = [
     price: '$197.500',
     colorBg: 'transparent',
     colorAccent: '#7BA05B',
-    image: '/images/products/gotas-cbd.webp',
+    image: '/images/products/gotas-cbd-3d.webp',
     decorations: [],
   },
 ];
