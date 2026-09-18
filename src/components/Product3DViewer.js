@@ -176,6 +176,24 @@ export default function Product3DViewer({
             draggable={false}
           />
 
+          {/* Sombreado de Volumen Cilíndrico Real (Cylinder Curvature & Depth) */}
+          <div
+            style={{
+              background: 'linear-gradient(90deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 16%, transparent 35%, transparent 65%, rgba(0,0,0,0.12) 84%, rgba(0,0,0,0.4) 100%)',
+              mixBlendMode: 'multiply',
+              WebkitMaskImage: `url("${activeImgSrc}")`,
+              maskImage: `url("${activeImgSrc}")`,
+              WebkitMaskSize: 'contain',
+              maskSize: 'contain',
+              WebkitMaskRepeat: 'no-repeat',
+              maskRepeat: 'no-repeat',
+              WebkitMaskPosition: 'center',
+              maskPosition: 'center',
+              transform: 'translateZ(62px)',
+            }}
+            className="absolute inset-4 pointer-events-none"
+          />
+
           {/* Reflejo Dinámico Especular (Specular Glare) enmascarado exactamente a la silueta del frasco */}
           <motion.div
             style={{
@@ -197,15 +215,15 @@ export default function Product3DViewer({
         </motion.div>
       </motion.div>
 
-      {/* Sombra de Contacto Espacial 3D debajo del Frasco */}
+      {/* Sombra de Contacto Espacial 3D suave y realista debajo del Frasco */}
       <motion.div
         style={{
           x: shadowX,
           y: shadowY,
           scale: shadowScale,
-          opacity: isHovered ? 0.75 : 0.45,
+          opacity: isHovered ? 0.8 : 0.5,
         }}
-        className="w-48 md:w-64 h-6 bg-black/90 blur-xl rounded-[100%] pointer-events-none mt-[-15px] transition-opacity duration-500"
+        className="w-44 md:w-52 h-5 bg-black/90 blur-lg rounded-[100%] pointer-events-none mt-[-10px] transition-opacity duration-500"
       />
     </div>
   );
