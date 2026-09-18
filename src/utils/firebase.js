@@ -36,8 +36,8 @@ export const FALLBACK_PRODUCTS = [
     description: 'Fórmula botánica con apitoxina natural para masaje corporal con efecto frío-calor antiestrés. Brinda alivio en zonas de tensión en espalda, cuello, lumbago y articulaciones.',
     benefits: 'Efecto frío-calor de rápida acción\nAlivio de tensiones musculares y cuello rígido\nApiterapia tradicional con extractos botánicos puros\nFórmula no grasa de rápida absorción',
     isAvailable: true,
-    invimaRegistro: 'NSOC12345-22CO',
-    registroInvima: 'NSOC12345-22CO',
+    invimaRegistro: null,
+    registroInvima: null,
     createdAt: 1720000001
   },
   {

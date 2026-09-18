@@ -131,11 +131,11 @@ export default function Product3DViewer({
         }}
         className="relative w-full h-full max-w-md max-h-[460px] flex items-center justify-center"
       >
-        {/* Resplandor ambiental trasero vinculado al color acento */}
+        {/* Resplandor ambiental trasero suave y orgánico (sin recorte de bordes) */}
         <div
-          className="absolute inset-0 rounded-full blur-[90px] opacity-40 transition-opacity duration-500 pointer-events-none"
+          className="absolute -inset-10 pointer-events-none transition-opacity duration-700"
           style={{
-            backgroundColor: `${accentColor}33`,
+            background: `radial-gradient(circle at 50% 50%, ${accentColor}35 0%, ${accentColor}12 40%, transparent 70%)`,
             transform: 'translateZ(-40px)',
           }}
         />
@@ -157,15 +157,23 @@ export default function Product3DViewer({
             draggable={false}
           />
 
-          {/* Reflejo Dinámico Especular (Specular Glare) que sigue la luz del cursor */}
+          {/* Reflejo Dinámico Especular (Specular Glare) enmascarado exactamente a la silueta del frasco */}
           <motion.div
             style={{
-              opacity: isHovered ? 0.35 : 0,
+              opacity: isHovered ? 0.45 : 0,
               background: glareBackground,
-              mixBlendMode: 'overlay',
+              mixBlendMode: 'screen',
               transform: 'translateZ(65px)',
+              WebkitMaskImage: `url("${activeImgSrc}")`,
+              maskImage: `url("${activeImgSrc}")`,
+              WebkitMaskSize: 'contain',
+              maskSize: 'contain',
+              WebkitMaskRepeat: 'no-repeat',
+              maskRepeat: 'no-repeat',
+              WebkitMaskPosition: 'center',
+              maskPosition: 'center',
             }}
-            className="absolute inset-0 pointer-events-none rounded-3xl transition-opacity duration-300"
+            className="absolute inset-4 pointer-events-none transition-opacity duration-300"
           />
         </motion.div>
       </motion.div>

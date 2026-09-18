@@ -84,10 +84,10 @@ export default async function ProductPage({ params }) {
   const isGotasCbd = productSkuLower.includes('gotas') || productNameLower.includes('gotas');
   const isApitoxina = productSkuLower.includes('apitoxina') || productNameLower.includes('apitoxina');
 
-  // Código oficial verificado o fallback honesto
-  const invimaCode = product.invimaRegistro 
-    || product.registroInvima 
-    || (isGotasCbd ? 'RSA-0020388-2024' : null);
+  // Código oficial verificado o fallback honesto (Apitoxina no tiene INVIMA aún)
+  const invimaCode = !isApitoxina
+    ? (product.invimaRegistro || product.registroInvima || (isGotasCbd ? 'RSA-0020388-2024' : null))
+    : null;
 
   // ── JSON-LD: Schema.org Product (Google Merchant & YMYL Enriquecido) ───────────
   const productSchema = {

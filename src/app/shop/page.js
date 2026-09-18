@@ -76,7 +76,7 @@ export default async function ShopPage() {
               const productSkuLower = (product.sku || '').toLowerCase();
               const isGotasCbd = productSkuLower.includes('gotas') || productNameLower.includes('gotas');
               const isApitoxina = productSkuLower.includes('apitoxina') || productNameLower.includes('apitoxina');
-              const invimaCode = product.invimaRegistro || product.registroInvima || (isGotasCbd ? 'RSA-0020388-2024' : null);
+              const invimaCode = !isApitoxina ? (product.invimaRegistro || product.registroInvima || (isGotasCbd ? 'RSA-0020388-2024' : null)) : null;
 
               return (
                 <Card3DTilt key={product.id} className="w-full sm:w-[320px] md:w-[340px]" maxTilt={10}>
@@ -95,8 +95,8 @@ export default async function ShopPage() {
                               <ShieldCheck size={12} className="text-[#D4AF37]" /> INVIMA {invimaCode}
                             </span>
                           ) : isApitoxina ? (
-                            <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-white/15 text-gray-200 text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
-                              <ShieldCheck size={12} className="text-[#D4AF37]" /> APITERAPIA PURA
+                            <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-[#D4AF37]/35 text-gray-200 text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
+                              <ShieldCheck size={12} className="text-[#D4AF37]" /> APITERAPIA TRADICIONAL
                             </span>
                           ) : (
                             <span className="px-2.5 py-1 bg-black/85 backdrop-blur-md border border-white/15 text-[#D4AF37] text-[9px] font-mono font-bold uppercase tracking-wider rounded-lg shadow-md flex items-center gap-1">
