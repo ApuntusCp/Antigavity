@@ -21,6 +21,9 @@ export default function Product3DViewer({
   const [currentSrc, setCurrentSrc] = useState(src);
   const [fallbackToPng, setFallbackToPng] = useState(false);
 
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0, rawStartX: 0, rawStartY: 0 });
+
   if (currentSrc !== src) {
     setCurrentSrc(src);
     setFallbackToPng(false);
@@ -30,83 +33,99 @@ export default function Product3DViewer({
     ? currentSrc.replace('.webp', '.png')
     : currentSrc;
 
-  // Coordenadas normalizadas [-0.5, 0.5] relativas al centro
+  // Coordenadas normalizadas relativas al centro
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
 
   // Resortes físicos para suavidad ultra fluida (60/120 fps)
-  const springConfig = { stiffness: 240, damping: 22, mass: 0.8 };
+  const springConfig = { stiffness: 220, damping: 20, mass: 0.75 };
   const smoothX = useSpring(rawX, springConfig);
   const smoothY = useSpring(rawY, springConfig);
 
-  // Rotaciones 3D
-  const rotateX = useTransform(smoothY, [-0.5, 0.5], [18, -18]);
-  const rotateY = useTransform(smoothX, [-0.5, 0.5], [-22, 22]);
-  const rotateZ = useTransform(smoothX, [-0.5, 0.5], [-2.5, 2.5]);
+  // Rotaciones 3D con volumen acentuado
+  const rotateX = useTransform(smoothY, [-0.5, 0.5], [22, -22]);
+  const rotateY = useTransform(smoothX, [-0.5, 0.5], [-28, 28]);
+  const rotateZ = useTransform(smoothX, [-0.5, 0.5], [-3, 3]);
 
   // Posición del reflejo dinámico de luz (Specular Glare)
-  const glareX = useTransform(smoothX, [-0.5, 0.5], [10, 90]);
-  const glareY = useTransform(smoothY, [-0.5, 0.5], [10, 90]);
+  const glareX = useTransform(smoothX, [-0.5, 0.5], [15, 85]);
+  const glareY = useTransform(smoothY, [-0.5, 0.5], [15, 85]);
 
-  // Desplazamiento opuesto de la sombra de contacto 3D
-  const shadowX = useTransform(smoothX, [-0.5, 0.5], [16, -16]);
-  const shadowY = useTransform(smoothY, [-0.5, 0.5], [6, -6]);
-  const shadowScale = useTransform(smoothY, [-0.5, 0.5], [0.92, 1.08]);
+  // Desplazamiento reactivo de la sombra de contacto 3D
+  const shadowX = useTransform(smoothX, [-0.5, 0.5], [22, -22]);
+  const shadowY = useTransform(smoothY, [-0.5, 0.5], [8, -8]);
+  const shadowScale = useTransform(smoothY, [-0.5, 0.5], [0.88, 1.12]);
 
   // Gradiente dinámico de reflejo
   const glareBackground = useTransform(
     [glareX, glareY],
     ([gx, gy]) =>
-      `radial-gradient(circle 280px at ${gx}% ${gy}%, rgba(255,255,255,0.85) 0%, rgba(212,175,55,0.3) 30%, transparent 70%)`
+      `radial-gradient(circle 260px at ${gx}% ${gy}%, rgba(255,255,255,0.9) 0%, rgba(212,175,55,0.35) 30%, transparent 70%)`
   );
 
-  // Control de eventos de ratón
-  const handleMouseMove = useCallback((e) => {
+  // Control de eventos de cursor y arrastre táctil/mouse
+  const handlePointerDown = useCallback((e) => {
+    setIsDragging(true);
+    dragStart.current = {
+      x: e.clientX,
+      y: e.clientY,
+      rawStartX: rawX.get(),
+      rawStartY: rawY.get(),
+    };
+    if (e.currentTarget.setPointerCapture) {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+  }, [rawX, rawY]);
+
+  const handlePointerMove = useCallback((e) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    rawX.set(Math.max(-0.5, Math.min(0.5, x)));
-    rawY.set(Math.max(-0.5, Math.min(0.5, y)));
-  }, [rawX, rawY]);
+
+    if (isDragging) {
+      const deltaX = (e.clientX - dragStart.current.x) / (rect.width * 0.7);
+      const deltaY = (e.clientY - dragStart.current.y) / (rect.height * 0.7);
+      const nextX = Math.max(-0.6, Math.min(0.6, dragStart.current.rawStartX + deltaX));
+      const nextY = Math.max(-0.6, Math.min(0.6, dragStart.current.rawStartY + deltaY));
+      rawX.set(nextX);
+      rawY.set(nextY);
+    } else {
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      rawX.set(Math.max(-0.5, Math.min(0.5, x)));
+      rawY.set(Math.max(-0.5, Math.min(0.5, y)));
+    }
+  }, [isDragging, rawX, rawY]);
+
+  const handlePointerUp = useCallback((e) => {
+    setIsDragging(false);
+    if (e.currentTarget.releasePointerCapture && e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  }, []);
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
   }, []);
 
   const handleMouseLeave = useCallback(() => {
-    setIsHovered(false);
-    rawX.set(0);
-    rawY.set(0);
-  }, [rawX, rawY]);
-
-  const handleTouchMove = useCallback((e) => {
-    if (!containerRef.current || e.touches.length === 0) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const touch = e.touches[0];
-    const x = (touch.clientX - rect.left) / rect.width - 0.5;
-    const y = (touch.clientY - rect.top) / rect.height - 0.5;
-    rawX.set(Math.max(-0.5, Math.min(0.5, x)));
-    rawY.set(Math.max(-0.5, Math.min(0.5, y)));
-  }, [rawX, rawY]);
-
-  const handleTouchEnd = useCallback(() => {
-    setIsHovered(false);
-    rawX.set(0);
-    rawY.set(0);
-  }, [rawX, rawY]);
+    if (!isDragging) {
+      setIsHovered(false);
+      rawX.set(0);
+      rawY.set(0);
+    }
+  }, [isDragging, rawX, rawY]);
 
   return (
     <div
       ref={containerRef}
-      onMouseMove={handleMouseMove}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onTouchMove={handleTouchMove}
-      onTouchStart={handleMouseEnter}
-      onTouchEnd={handleTouchEnd}
-      className={`relative w-full h-full flex flex-col items-center justify-center select-none cursor-grab active:cursor-grabbing ${className}`}
-      style={{ perspective: 1200 }}
+      className={`relative w-full h-full flex flex-col items-center justify-center select-none cursor-grab active:cursor-grabbing touch-none ${className}`}
+      style={{ perspective: 1100 }}
     >
       {/* Contenedor Flotante en Levitación Continua (Idle Float) */}
       <motion.div
