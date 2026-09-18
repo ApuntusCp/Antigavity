@@ -2,7 +2,7 @@ import Image from "next/image";
 import { fetchBlogPosts } from "../../../utils/firebase";
 import Link from "next/link";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 120;
 
 export const metadata = {
   title: "Diario del Movimiento | GranColinos",

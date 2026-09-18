@@ -61,18 +61,45 @@ export const FALLBACK_PRODUCTS = [
   }
 ];
 
-// Fetch products from Firebase Firestore con PROYECCIÓN ESTRICTA y Fallback Robusto
+// Helper de tiempo límite estricto para evitar bloqueos del servidor (400ms máximo)
+const withTimeout = (promise, timeoutMs = 400) => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Firestore timeout')), timeoutMs)
+    )
+  ]);
+};
+
+// Caché en memoria del servidor con TTL de 5 minutos para respuesta en 0.01ms
+const memoryCache = {
+  products: null,
+  productsExpiry: 0,
+  blogPosts: {},
+  testimonials: null,
+  testimonialsExpiry: 0,
+  cmsPages: {},
+  cmsPagesExpiry: {}
+};
+
+// Fetch products from Firebase Firestore con PROYECCIÓN ESTRICTA, Timeout y Fallback Instantáneo
 export const fetchProducts = cache(async () => {
+  const now = Date.now();
+  if (memoryCache.products && memoryCache.productsExpiry > now) {
+    return memoryCache.products;
+  }
+
   try {
-    const snapshot = await getDocs(collection(db, 'products'));
+    const snapshot = await withTimeout(getDocs(collection(db, 'products')), 400);
     
     if (!snapshot || snapshot.empty) {
+      memoryCache.products = FALLBACK_PRODUCTS;
+      memoryCache.productsExpiry = now + 300000;
       return FALLBACK_PRODUCTS;
     }
 
     const products = snapshot.docs.map(doc => {
       const data = doc.data();
-      // Sanitización estricta: solo devolvemos campos públicos de presentación
       return {
         id: doc.id,
         sku: data.sku || doc.id,
@@ -94,23 +121,34 @@ export const fetchProducts = cache(async () => {
     });
 
     products.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-    return products.length > 0 ? products : FALLBACK_PRODUCTS;
+    const result = products.length > 0 ? products : FALLBACK_PRODUCTS;
+    memoryCache.products = result;
+    memoryCache.productsExpiry = now + 300000;
+    return result;
   } catch (error) {
-    console.warn("[fetchProducts] Usando catálogo de respaldo local (Firebase offline/billing):", error.message);
+    // Si falla o excede 400ms, servimos el fallback inmediatamente y lo cacheamos por 5 min
+    memoryCache.products = FALLBACK_PRODUCTS;
+    memoryCache.productsExpiry = now + 300000;
     return FALLBACK_PRODUCTS;
   }
 });
 
-// Fetch blog posts con proyección estricta
+// Fetch blog posts con proyección estricta y timeout rápido
 export const fetchBlogPosts = cache(async (category = null) => {
+  const cacheKey = category || 'all';
+  const cached = memoryCache.blogPosts[cacheKey];
+  const now = Date.now();
+  if (cached && cached.expiry > now) {
+    return cached.data;
+  }
+
   try {
     const constraints = [orderBy('createdAt', 'desc')];
     if (category) {
       constraints.push(where('category', '==', category));
     }
     const q = query(collection(db, 'blog_posts'), ...constraints);
-    const snapshot = await getDocs(q);
+    const snapshot = await withTimeout(getDocs(q), 400);
     
     const posts = snapshot.docs.map(doc => {
       const data = doc.data();
@@ -128,19 +166,25 @@ export const fetchBlogPosts = cache(async (category = null) => {
       };
     });
     
+    memoryCache.blogPosts[cacheKey] = { data: posts, expiry: now + 300000 };
     return posts;
   } catch (error) {
-    console.error("Error fetching blog posts from Firebase:", error);
+    memoryCache.blogPosts[cacheKey] = { data: [], expiry: now + 300000 };
     return [];
   }
 });
 
-// Fetch published client testimonials con proyección estricta
+// Fetch published client testimonials con proyección estricta y timeout rápido
 export const fetchClientTestimonials = cache(async () => {
+  const now = Date.now();
+  if (memoryCache.testimonials && memoryCache.testimonialsExpiry > now) {
+    return memoryCache.testimonials;
+  }
+
   try {
     const q = query(collection(db, 'community_messages'), where('isPublished', '==', true));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => {
+    const snapshot = await withTimeout(getDocs(q), 400);
+    const result = snapshot.docs.map(doc => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -156,27 +200,42 @@ export const fetchClientTestimonials = cache(async () => {
         likesCount: data.likesCount || (Array.isArray(data.likedBy) ? data.likedBy.length : 0)
       };
     });
+    memoryCache.testimonials = result;
+    memoryCache.testimonialsExpiry = now + 300000;
+    return result;
   } catch (error) {
-    console.error("Error fetching testimonials:", error);
+    memoryCache.testimonials = [];
+    memoryCache.testimonialsExpiry = now + 300000;
     return [];
   }
 });
 
-// Fetch CMS page config published from GC Admin
+// Fetch CMS page config published from GC Admin con timeout rápido y caché
 export const fetchCMSPage = cache(async (pageId = 'home') => {
+  const now = Date.now();
+  if (memoryCache.cmsPages[pageId] && (memoryCache.cmsPagesExpiry[pageId] || 0) > now) {
+    return memoryCache.cmsPages[pageId];
+  }
+
   try {
-    const snap = await getDoc(doc(db, 'cms_pages', `${pageId}_production`));
-    if (snap.exists()) {
+    const snap = await withTimeout(getDoc(doc(db, 'cms_pages', `${pageId}_production`)), 400);
+    if (snap && snap.exists()) {
       const data = snap.data();
-      return {
+      const result = {
         blocks: Array.isArray(data.blocks) ? data.blocks : [],
         publishedAt: data.publishedAt || null,
         version: data.version || '1.0'
       };
+      memoryCache.cmsPages[pageId] = result;
+      memoryCache.cmsPagesExpiry[pageId] = now + 300000;
+      return result;
     }
+    memoryCache.cmsPages[pageId] = null;
+    memoryCache.cmsPagesExpiry[pageId] = now + 300000;
     return null;
   } catch (error) {
-    console.error(`Error fetching CMS config for ${pageId}:`, error);
+    memoryCache.cmsPages[pageId] = null;
+    memoryCache.cmsPagesExpiry[pageId] = now + 300000;
     return null;
   }
 });

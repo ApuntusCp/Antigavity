@@ -31,7 +31,7 @@ import {
   Globe
 } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 120;
 
 // Helper ultra-seguro y universal para renderizar precios (string, número u objeto { monthly, annual, amount, currency, period })
 function formatPrice(price) {

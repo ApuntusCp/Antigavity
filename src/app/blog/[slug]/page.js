@@ -1,25 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../../utils/firebase';
+import { fetchBlogPosts } from '../../../utils/firebase';
 import BlogComments from '../../../components/BlogComments';
 import MedicalDisclaimer from '../../../components/MedicalDisclaimer';
 import { UserCheck, Calendar, ShieldCheck } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 120;
 
 async function getPostBySlug(slug) {
   try {
-    const q = query(collection(db, 'blog_posts'), where('slug', '==', decodeURIComponent(slug)));
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) return null;
-    const doc = snapshot.docs[0];
-    const data = doc.data();
-    return {
-      id: doc.id,
-      ...data,
-      date: data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Fecha reciente'
-    };
+    const posts = await fetchBlogPosts();
+    const decodedSlug = decodeURIComponent(slug);
+    return posts.find(p => p.slug === decodedSlug || p.id === decodedSlug) || null;
   } catch (error) {
     console.error("Error fetching post:", error);
     return null;

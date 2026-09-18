@@ -7,8 +7,7 @@ import MedicalDisclaimer from "../../components/MedicalDisclaimer";
 import Card3DTilt from "../../components/Card3DTilt";
 import { ShieldCheck, Sparkles } from "lucide-react";
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0; // Sincronización en vivo con GC Admin
+export const revalidate = 60; // ISR: Cacheado en Vercel Edge CDN
 
 export const metadata = {
   title: "Catálogo Exclusivo | GranColinos",

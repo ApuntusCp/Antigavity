@@ -30,7 +30,6 @@ export default function CartPage() {
         <p className="text-gray-300 text-sm mb-6">Redirigiendo a tu proceso de compra segura...</p>
         <Link
           href="/shop"
-          prefetch={false}
           className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#D4AF37] text-black font-bold text-xs uppercase tracking-widest rounded-full hover:bg-white transition-all shadow-lg"
         >
           <span>Ir a la Tienda</span>

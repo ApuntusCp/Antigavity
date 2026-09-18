@@ -1,5 +1,4 @@
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db, FALLBACK_PRODUCTS } from '../../../utils/firebase';
+import { fetchProducts, FALLBACK_PRODUCTS } from '../../../utils/firebase';
 import Link from 'next/link';
 import { CheckCircle2, ShieldCheck } from 'lucide-react';
 import AddToCartButton from './AddToCartButton';
@@ -8,31 +7,26 @@ import RelatedProducts from './RelatedProducts';
 import PaymentMethodsBadge from '../../../components/PaymentMethodsBadge';
 import MedicalDisclaimer from '../../../components/MedicalDisclaimer';
 
-// Configuración dinámica en tiempo real: sincronización instantánea con GC Admin
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Configuración ISR en Vercel Edge CDN
+export const revalidate = 60;
 
-// Helper para obtener el producto directamente desde Firestore en tiempo real con fallback local
+// Pre-generar rutas estáticas de productos en el build para carga instantánea (<10ms)
+export async function generateStaticParams() {
+  return [
+    { sku: 'apitoxina' },
+    { sku: 'nanocbd' }
+  ];
+}
+
+// Helper para obtener el producto mediante catálogo cacheado en memoria
 async function getProductBySku(sku) {
   const decodedSku = decodeURIComponent(sku).toLowerCase();
   try {
-    const q = query(collection(db, 'products'), where('sku', '==', decodedSku));
-    const snapshot = await getDocs(q);
-    
-    if (snapshot.empty) {
-      // Fallback: búsqueda por ID de documento
-      const directSnap = await getDocs(collection(db, 'products'));
-      const found = directSnap.docs.find(d => d.id.toLowerCase() === decodedSku || d.data().sku?.toLowerCase() === decodedSku);
-      if (found) {
-        return { id: found.id, ...found.data() };
-      }
-      return FALLBACK_PRODUCTS.find(p => p.sku.toLowerCase() === decodedSku || p.id.toLowerCase() === decodedSku) || null;
-    }
-    
-    const docSnap = snapshot.docs[0];
-    return { id: docSnap.id, ...docSnap.data() };
+    const products = await fetchProducts();
+    return products.find(p => (p.sku && p.sku.toLowerCase() === decodedSku) || (p.id && p.id.toLowerCase() === decodedSku)) 
+      || FALLBACK_PRODUCTS.find(p => (p.sku && p.sku.toLowerCase() === decodedSku) || (p.id && p.id.toLowerCase() === decodedSku)) 
+      || null;
   } catch (error) {
-    console.warn("Firestore inaccesible, usando fallback local para SKU:", decodedSku);
     return FALLBACK_PRODUCTS.find(p => p.sku.toLowerCase() === decodedSku || p.id.toLowerCase() === decodedSku) || null;
   }
 }

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { fetchBlogPosts } from "../../utils/firebase";
 import MaintenanceGuard from "../../components/MaintenanceGuard";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 120;
 
 export const metadata = {
   title: "Journal de Bienestar | GranColinos",

@@ -3,8 +3,7 @@ import { fetchCMSPage } from "../../utils/firebase";
 import JoinMovementButton from "../../components/JoinMovementButton";
 import MaintenanceGuard from "../../components/MaintenanceGuard";
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0; // Sincronización en vivo con GC Admin
+export const revalidate = 120;
 
 export const metadata = {
   title: "Movimiento Gran Colinos | Red Solarpunk",

@@ -21,7 +21,7 @@ export default function Footer({ footerConfig = {} }) {
           
           {/* Columna Marca & Identidad (5 Cols) */}
           <div className="lg:col-span-5 space-y-6">
-            <Link href="/" prefetch={false} className="inline-block group">
+            <Link href="/" className="inline-block group">
               <Image 
                 src="/Logos/GranColinos.Com.png" 
                 alt="GranColinos" 
@@ -59,33 +59,33 @@ export default function Footer({ footerConfig = {} }) {
               </h4>
               <ul className="space-y-2.5 text-xs text-gray-300 font-light">
                 <li>
-                  <Link href="/shop" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200 flex items-center gap-1 group">
+                  <Link href="/shop" className="hover:text-[#D4AF37] transition-colors duration-200 flex items-center gap-1 group">
                     <span>Tienda Oficial</span>
                     <ArrowUpRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity text-[#D4AF37]" />
                   </Link>
                 </li>
                 <li>
-                  <Link href="/#catalogo" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/#catalogo" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Catálogo Botánico
                   </Link>
                 </li>
                 <li>
-                  <Link href="/noticias" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/noticias" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Noticias & Análisis
                   </Link>
                 </li>
                 <li>
-                  <Link href="/periodismo-alternativo" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/periodismo-alternativo" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Periodismo Alternativo
                   </Link>
                 </li>
                 <li>
-                  <Link href="/libros" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/libros" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Biblioteca Digital
                   </Link>
                 </li>
                 <li>
-                  <Link href="/base-de-datos-global" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/base-de-datos-global" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Base de Datos Global
                   </Link>
                 </li>
@@ -99,33 +99,33 @@ export default function Footer({ footerConfig = {} }) {
               </h4>
               <ul className="space-y-2.5 text-xs text-gray-300 font-light">
                 <li>
-                  <Link href="/comunidad" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200 flex items-center gap-1 group">
+                  <Link href="/comunidad" className="hover:text-[#D4AF37] transition-colors duration-200 flex items-center gap-1 group">
                     <span>Mi Club GranColinos</span>
                     <span className="text-[9px] bg-[#D4AF37]/20 text-[#D4AF37] px-1.5 py-0.2 rounded font-mono font-bold">VIP</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/blog" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/blog" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Journal de Bienestar
                   </Link>
                 </li>
                 <li>
-                  <Link href="/movimiento" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/movimiento" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Movimiento Social
                   </Link>
                 </li>
                 <li>
-                  <Link href="/artistas" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/artistas" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Galería de Artistas
                   </Link>
                 </li>
                 <li>
-                  <Link href="/gca" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/gca" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Arquitectura GCA
                   </Link>
                 </li>
                 <li>
-                  <Link href="/servicios" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/servicios" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Red de Servicios
                   </Link>
                 </li>
@@ -139,22 +139,22 @@ export default function Footer({ footerConfig = {} }) {
               </h4>
               <ul className="space-y-2.5 text-xs text-gray-300 font-light">
                 <li>
-                  <Link href="/informacion" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200 flex items-center gap-1">
+                  <Link href="/informacion" className="hover:text-[#D4AF37] transition-colors duration-200 flex items-center gap-1">
                     <span>Atención & PQR</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/terminos-de-servicio" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/terminos-de-servicio" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Términos de Servicio
                   </Link>
                 </li>
                 <li>
-                  <Link href="/habeas-data" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/habeas-data" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Habeas Data (Privacidad)
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contacto" prefetch={false} className="hover:text-[#D4AF37] transition-colors duration-200">
+                  <Link href="/contacto" className="hover:text-[#D4AF37] transition-colors duration-200">
                     Contacto Directo
                   </Link>
                 </li>
