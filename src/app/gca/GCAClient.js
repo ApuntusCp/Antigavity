@@ -39,7 +39,26 @@ export default function GCAClient() {
     statExperience: '8+ Años',
     servicesTitle: 'Nuestros Servicios de Firma',
     servicesSubtitle: 'Ejecutados con estándares de precisión internacional y atención personalizada en cada fase.',
-    services: [] // Default empty array, NO hardcoded sample cards!
+    services: [
+      {
+        id: 's1',
+        title: 'Diseño de Interiores',
+        desc: 'Atmósferas donde la iluminación arquitectónica, los materiales nobles y la integración botánica crean espacios habitables de máximo confort.',
+        icon: 'Sparkles'
+      },
+      {
+        id: 's2',
+        title: 'Arquitectura Paisajística',
+        desc: 'Diseño de entornos exteriores vivos. Conectamos estructuras construidas con jardines botánicos privados, agua y topografía natural.',
+        icon: 'Trees'
+      },
+      {
+        id: 's3',
+        title: 'Construcción a Gran Escala',
+        desc: 'Desarrollo integral de proyectos comerciales, industriales y residenciales. Gestión técnica de obra asegurando rigor estructural y acabados de lujo.',
+        icon: 'Building2'
+      }
+    ]
   });
 
   const [contact, setContact] = useState({
@@ -54,18 +73,23 @@ export default function GCAClient() {
 
   // Set up real-time Firebase subscriptions
   useEffect(() => {
+    let isMounted = true;
+    const safetyTimer = setTimeout(() => {
+      if (isMounted) setIsLoaded(true);
+    }, 2500);
+
     // 1. Subscribe to Branding/CEO/Services settings
     const unsubBranding = onSnapshot(
       doc(db, 'settings', 'gca_branding'),
       (snapshot) => {
-        if (snapshot.exists()) {
+        if (snapshot.exists() && isMounted) {
           setBranding(prev => ({ ...prev, ...snapshot.data() }));
         }
-        setIsLoaded(true);
+        if (isMounted) setIsLoaded(true);
       },
       (err) => {
         console.log("Branding snapshot sub:", err);
-        setIsLoaded(true);
+        if (isMounted) setIsLoaded(true);
       }
     );
 
@@ -73,7 +97,7 @@ export default function GCAClient() {
     const unsubContact = onSnapshot(
       doc(db, 'settings', 'contact_info'),
       (snapshot) => {
-        if (snapshot.exists()) {
+        if (snapshot.exists() && isMounted) {
           setContact(prev => ({ ...prev, ...snapshot.data() }));
         }
       },
@@ -88,12 +112,14 @@ export default function GCAClient() {
         snapshot.forEach(docSnap => {
           list.push({ id: docSnap.id, ...docSnap.data() });
         });
-        setProjects(list);
+        if (isMounted) setProjects(list);
       },
       (err) => console.log("Projects snapshot sub:", err)
     );
 
     return () => {
+      isMounted = false;
+      clearTimeout(safetyTimer);
       unsubBranding();
       unsubContact();
       unsubProjects();

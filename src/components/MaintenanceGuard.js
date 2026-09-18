@@ -25,6 +25,10 @@ export default function MaintenanceGuard({
     const noSlashKey = routeKey.replace(/^\//, '');
     let isMounted = true;
 
+    const safetyTimer = setTimeout(() => {
+      if (isMounted) setIsLoaded(true);
+    }, 2500);
+
     async function loadMaintenanceConfig() {
       try {
         const snapshot = await getDoc(doc(db, 'settings', 'maintenance_config'));
@@ -43,7 +47,10 @@ export default function MaintenanceGuard({
     }
 
     loadMaintenanceConfig();
-    return () => { isMounted = false; };
+    return () => { 
+      isMounted = false;
+      clearTimeout(safetyTimer);
+    };
   }, [routeKey]);
 
   // ─── CRITICAL GUARD ───────────────────────────────────────────────────────
