@@ -46,3 +46,6 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# Generado en build desde GC_FIREBASE_CONFIG
+public/GC-Admin/firebase-config.js
