@@ -90,6 +90,16 @@ const nextConfig = {
   // ── Enrutamiento GCA OS Admin ───────────────────────────────────────────────
   async rewrites() {
     return [
+      // ── GC Admin (app administrativa, build web propio) ─────────────────
+      {
+        source: '/GC-Admin',
+        destination: '/GC-Admin/index.html',
+      },
+      {
+        source: '/gc-admin',
+        destination: '/GC-Admin/index.html',
+      },
+
       {
         source: '/GCA-Admin',
         destination: '/GCA-Admin/index.html',

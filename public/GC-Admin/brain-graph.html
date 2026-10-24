@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GC Admin — Cerebro Umma — graphify tree viewer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      margin: 20px 0 0 24px;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #1e3a56;
+    }
+    .controls {
+      margin: 20px 0 15px 24px;
+    }
+    button {
+      margin-right: 10px;
+      padding: 8px 18px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    button:active {
+      background: #004085;
+    }
+    #tree-container {
+      width: calc(100vw - 48px); /* Adjust for body margin/padding */
+      height: 85vh;
+      overflow: auto;
+      border-radius: 8px;
+      background: #fff;
+      margin-left: 24px;
+      margin-right: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #ddd;
+    }
+    svg {
+      background: #fff;
+      border-radius: 8px;
+      display: block; /* Important for D3 */
+    }
+    .node circle {
+      stroke-width: 2.5px;
+    }
+    .node text { /* Base style for the <text> container */
+      font: 13px 'Segoe UI', sans-serif;
+      paint-order: stroke fill; /* Ensures text is readable over lines */
+      stroke: #fff; /* White halo */
+      stroke-width: 3px; /* Halo thickness */
+      stroke-linejoin: round;
+      stroke-opacity: 0.85; /* Halo opacity */
+    }
+    .link {
+      fill: none;
+      stroke-opacity: 0.7;
+      stroke-width: 2px;
+    }
+  </style>
+</head>
+<body>
+  <h1>GC Admin — Cerebro Umma — Knowledge Graph</h1>
+  <div class="controls">
+    <button onclick="expandAll()">Expand All</button>
+    <button onclick="collapseAll()">Collapse All</button>
+    <button onclick="resetView()">Reset View</button>
+  </div>
+  <div id="tree-container">
+    <svg id="tree-svg" width="6000" height="8000"></svg>
+  </div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    const initialJsonData = {"name":"GC Admin \u2014 Cerebro Umma","total_count":4791,"children":[{"name":"components","total_count":4,"children":[{"name":"HeroSection.tsx","total_count":4,"children":[{"name":"HeroSection()","total_count":1,"children":[]},{"name":"PRODUCT_TRANSITION","total_count":1,"children":[]},{"name":"TRANSITION","total_count":1,"children":[]},{"name":"VARIANTS","total_count":1,"children":[]}]}]},{"name":"main","total_count":45,"children":[{"name":"htmlDocumentGenerator.ts","total_count":15,"children":[{"name":"BAR_COLORS","total_count":1,"children":[]},{"name":"BarItem","total_count":1,"children":[]},{"name":"Block","total_count":1,"children":[]},{"name":"BlockType","total_count":1,"children":[]},{"name":"cleanInline()","total_count":1,"children":[]},{"name":"detectBars()","total_count":1,"children":[]},{"name":"generatePremiumHTML()","total_count":1,"children":[]},{"name":"groupSections()","total_count":1,"children":[]},{"name":"parseMarkdown()","total_count":1,"children":[]},{"name":"renderBarChart()","total_count":1,"children":[]},{"name":"renderBlock()","total_count":1,"children":[]},{"name":"renderSection()","total_count":1,"children":[]},{"name":"renderTable()","total_count":1,"children":[]},{"name":"Section","total_count":1,"children":[]},{"name":"stripChartJson()","total_count":1,"children":[]}]},{"name":"index.ts","total_count":2,"children":[{"name":"createBubbleWindow()","total_count":1,"children":[]},{"name":"createWindow()","total_count":1,"children":[]}]},{"name":"pdfGenerator.ts","total_count":19,"children":[{"name":"BLACK","total_count":1,"children":[]},{"name":"cleanInline()","total_count":1,"children":[]},{"name":"DARK","total_count":1,"children":[]},{"name":"DARK2","total_count":1,"children":[]},{"name":"drawFooter()","total_count":1,"children":[]},{"name":"drawHeader()","total_count":1,"children":[]},{"name":"drawPageBackground()","total_count":1,"children":[]},{"name":"generatePremiumPDF()","total_count":1,"children":[]},{"name":"GOLD","total_count":1,"children":[]},{"name":"GRAY","total_count":1,"children":[]},{"name":"LIGHT","total_count":1,"children":[]},{"name":"MUTED","total_count":1,"children":[]},{"name":"ParsedBlock","total_count":1,"children":[]},{"name":"parseMarkdown()","total_count":1,"children":[]},{"name":"renderTable()","total_count":1,"children":[]},{"name":"setColor()","total_count":1,"children":[]},{"name":"setDraw()","total_count":1,"children":[]},{"name":"stripNonLatin()","total_count":1,"children":[]},{"name":"WHITE","total_count":1,"children":[]}]},{"name":"systemAdapters.ts","total_count":2,"children":[{"name":"DENY_LIST_PATTERNS","total_count":1,"children":[]},{"name":"setupSystemAdapters()","total_count":1,"children":[]}]},{"name":"ummaWindowManager.ts","total_count":7,"children":[{"name":".constructor()","total_count":1,"children":[]},{"name":".createWindow()","total_count":1,"children":[]},{"name":".init()","total_count":1,"children":[]},{"name":".restoreLayout()","total_count":1,"children":[]},{"name":".saveLayout()","total_count":1,"children":[]},{"name":"UmmaWindowManager","total_count":1,"children":[]},{"name":"WindowState","total_count":1,"children":[]}]}]},{"name":"preload","total_count":2,"children":[{"name":"index.d.ts","total_count":1,"children":[{"name":"Window","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[{"name":"api","total_count":1,"children":[]}]}]},{"name":"renderer","total_count":4740,"children":[{"name":"dist-check","total_count":4266,"children":[{"name":"assets","total_count":4266,"children":[{"name":"index-CGwVmy1f.js","total_count":4266,"children":[{"name":"$2()","total_count":1,"children":[]},{"name":"$8e()","total_count":1,"children":[]},{"name":"$C()","total_count":1,"children":[]},{"name":"$g","total_count":1,"children":[]},{"name":"$Q()","total_count":1,"children":[]},{"name":"$x()","total_count":1,"children":[]},{"name":"(+4066 more)","total_count":4066,"children":[]},{"name":".$e()","total_count":1,"children":[]},{"name":".$n()","total_count":1,"children":[]},{"name":".$r()","total_count":1,"children":[]},{"name":".$r()","total_count":1,"children":[]},{"name":".$r()","total_count":1,"children":[]},{"name":".$s()","total_count":1,"children":[]},{"name":".$t()","total_count":1,"children":[]},{"name":".$t()","total_count":1,"children":[]},{"name":".$u()","total_count":1,"children":[]},{"name":".[Symbol.iterator]()","total_count":1,"children":[]},{"name":"._a()","total_count":1,"children":[]},{"name":"._addListener()","total_count":1,"children":[]},{"name":"._addListener()","total_count":1,"children":[]},{"name":"._addListener()","total_count":1,"children":[]},{"name":"._addListener()","total_count":1,"children":[]},{"name":"._apply()","total_count":1,"children":[]},{"name":"._apply()","total_count":1,"children":[]},{"name":"._apply()","total_count":1,"children":[]},{"name":"._apply()","total_count":1,"children":[]},{"name":"._apply()","total_count":1,"children":[]},{"name":"._apply()","total_count":1,"children":[]},{"name":"._assign()","total_count":1,"children":[]},{"name":"._assign()","total_count":1,"children":[]},{"name":"._buildIdpRequest()","total_count":1,"children":[]},{"name":"._clone()","total_count":1,"children":[]},{"name":"._clone()","total_count":1,"children":[]},{"name":"._compareTo()","total_count":1,"children":[]},{"name":"._compareTo()","total_count":1,"children":[]},{"name":"._completeWith()","total_count":1,"children":[]},{"name":"._copy()","total_count":1,"children":[]},{"name":"._create()","total_count":1,"children":[]},{"name":"._create()","total_count":1,"children":[]},{"name":"._create()","total_count":1,"children":[]},{"name":"._create()","total_count":1,"children":[]},{"name":"._create()","total_count":1,"children":[]},{"name":"._create()","total_count":1,"children":[]},{"name":"._create()","total_count":1,"children":[]},{"name":"._currentUser()","total_count":1,"children":[]},{"name":"._delete()","total_count":1,"children":[]},{"name":"._delete()","total_count":1,"children":[]},{"name":"._e()","total_count":1,"children":[]},{"name":"._failWith()","total_count":1,"children":[]},{"name":"._fieldPath()","total_count":1,"children":[]},{"name":"._fieldsProto()","total_count":1,"children":[]},{"name":"._fieldsProto()","total_count":1,"children":[]},{"name":"._forOperation()","total_count":1,"children":[]},{"name":"._freezeSettings()","total_count":1,"children":[]},{"name":"._fromErrorAndOperation()","total_count":1,"children":[]},{"name":"._fromGetAccountInfoResponse()","total_count":1,"children":[]},{"name":"._fromIdTokenResponse()","total_count":1,"children":[]},{"name":"._fromIdTokenResponse()","total_count":1,"children":[]},{"name":"._fromJSON()","total_count":1,"children":[]},{"name":"._fromParams()","total_count":1,"children":[]},{"name":"._fromProto()","total_count":1,"children":[]},{"name":"._get()","total_count":1,"children":[]},{"name":"._get()","total_count":1,"children":[]},{"name":"._get()","total_count":1,"children":[]},{"name":"._get()","total_count":1,"children":[]},{"name":"._getAdditionalHeaders()","total_count":1,"children":[]},{"name":"._getAppCheckToken()","total_count":1,"children":[]},{"name":"._getEmulatorOptions()","total_count":1,"children":[]},{"name":"._getFrameworks()","total_count":1,"children":[]},{"name":"._getIdTokenResponse()","total_count":1,"children":[]},{"name":"._getIdTokenResponse()","total_count":1,"children":[]},{"name":"._getIdTokenResponse()","total_count":1,"children":[]},{"name":"._getInstance()","total_count":1,"children":[]},{"name":"._getKnownOptions()","total_count":1,"children":[]},{"name":"._getOperator()","total_count":1,"children":[]},{"name":"._getPasswordPolicyInternal()","total_count":1,"children":[]},{"name":"._getPersistence()","total_count":1,"children":[]},{"name":"._getPersistenceType()","total_count":1,"children":[]},{"name":"._getQueryConstraints()","total_count":1,"children":[]},{"name":"._getReauthenticationResolver()","total_count":1,"children":[]},{"name":"._getReauthenticationResolver()","total_count":1,"children":[]},{"name":"._getReauthenticationResolver()","total_count":1,"children":[]},{"name":"._getRecaptchaConfig()","total_count":1,"children":[]},{"name":"._getSettings()","total_count":1,"children":[]},{"name":"._getValue()","total_count":1,"children":[]},{"name":"._getValue()","total_count":1,"children":[]},{"name":"._i()","total_count":1,"children":[]},{"name":"._initialize()","total_count":1,"children":[]},{"name":"._initialize()","total_count":1,"children":[]},{"name":"._initialize()","total_count":1,"children":[]},{"name":"._initialized()","total_count":1,"children":[]},{"name":"._initializeTime()","total_count":1,"children":[]},{"name":"._initializeWithPersistence()","total_count":1,"children":[]},{"name":"._isAvailable()","total_count":1,"children":[]},{"name":"._isAvailable()","total_count":1,"children":[]},{"name":"._isAvailable()","total_count":1,"children":[]},{"name":"._isIframeWebStorageSupported()","total_count":1,"children":[]},{"name":"._key()","total_count":1,"children":[]},{"name":"._linkToIdToken()","total_count":1,"children":[]},{"name":"._linkToIdToken()","total_count":1,"children":[]},{"name":"._linkToIdToken()","total_count":1,"children":[]},{"name":"._logFramework()","total_count":1,"children":[]},{"name":"._methodName()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._name()","total_count":1,"children":[]},{"name":"._notifyListenersIfCurrent()","total_count":1,"children":[]},{"name":"._notifyReloadListener()","total_count":1,"children":[]},{"name":"._o()","total_count":1,"children":[]},{"name":"._onReload()","total_count":1,"children":[]},{"name":"._onStorageEvent()","total_count":1,"children":[]},{"name":"._openDb()","total_count":1,"children":[]},{"name":"._openPopup()","total_count":1,"children":[]},{"name":"._openRedirect()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._optionsUtil()","total_count":1,"children":[]},{"name":"._originValidation()","total_count":1,"children":[]},{"name":"._parse()","total_count":1,"children":[]},{"name":"._parse()","total_count":1,"children":[]},{"name":"._path()","total_count":1,"children":[]},{"name":"._performRefresh()","total_count":1,"children":[]},{"name":"._persistUserIfCurrent()","total_count":1,"children":[]},{"name":"._poll()","total_count":1,"children":[]},{"name":"._r()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._readUserData()","total_count":1,"children":[]},{"name":"._redirectUserForId()","total_count":1,"children":[]},{"name":"._remove()","total_count":1,"children":[]},{"name":"._remove()","total_count":1,"children":[]},{"name":"._remove()","total_count":1,"children":[]},{"name":"._remove()","total_count":1,"children":[]},{"name":"._removeListener()","total_count":1,"children":[]},{"name":"._removeListener()","total_count":1,"children":[]},{"name":"._removeListener()","total_count":1,"children":[]},{"name":"._removeListener()","total_count":1,"children":[]},{"name":"._restart()","total_count":1,"children":[]},{"name":"._s()","total_count":1,"children":[]},{"name":"._send()","total_count":1,"children":[]},{"name":"._set()","total_count":1,"children":[]},{"name":"._set()","total_count":1,"children":[]},{"name":"._set()","total_count":1,"children":[]},{"name":"._set()","total_count":1,"children":[]},{"name":"._setRedirectUser()","total_count":1,"children":[]},{"name":"._setSettings()","total_count":1,"children":[]},{"name":"._shouldInitProactively()","total_count":1,"children":[]},{"name":"._start()","total_count":1,"children":[]},{"name":"._startProactiveRefresh()","total_count":1,"children":[]},{"name":"._startProactiveRefresh()","total_count":1,"children":[]},{"name":"._stop()","total_count":1,"children":[]},{"name":"._stopProactiveRefresh()","total_count":1,"children":[]},{"name":"._stopProactiveRefresh()","total_count":1,"children":[]},{"name":"._subscribe()","total_count":1,"children":[]},{"name":"._t()","total_count":1,"children":[]},{"name":"._terminate()","total_count":1,"children":[]},{"name":"._terminate()","total_count":1,"children":[]},{"name":"._terminated()","total_count":1,"children":[]},{"name":"._toFieldTransform()","total_count":1,"children":[]},{"name":"._toFieldTransform()","total_count":1,"children":[]},{"name":"._toFieldTransform()","total_count":1,"children":[]},{"name":"._toFieldTransform()","total_count":1,"children":[]}]}]}]},{"name":"src","total_count":474,"children":[{"name":"App.tsx","total_count":35,"children":[{"name":"AgendaCalendar","total_count":1,"children":[]},{"name":"AgendaMailbox","total_count":1,"children":[]},{"name":"AgendaNotebooks","total_count":1,"children":[]},{"name":"AgendaPlanner","total_count":1,"children":[]},{"name":"Agents","total_count":1,"children":[]},{"name":"App()","total_count":1,"children":[]},{"name":"AppContent()","total_count":1,"children":[]},{"name":"AuthWrapper()","total_count":1,"children":[]},{"name":"BlogEditor","total_count":1,"children":[]},{"name":"Carts","total_count":1,"children":[]},{"name":"Cashflow","total_count":1,"children":[]},{"name":"Catalog","total_count":1,"children":[]},{"name":"Clients","total_count":1,"children":[]},{"name":"ContentStudio","total_count":1,"children":[]},{"name":"Coupons","total_count":1,"children":[]},{"name":"Dashboard","total_count":1,"children":[]},{"name":"Editor","total_count":1,"children":[]},{"name":"FinancialCenter","total_count":1,"children":[]},{"name":"GCAPanel","total_count":1,"children":[]},{"name":"GranNoticiasPanel","total_count":1,"children":[]},{"name":"LoadingSkeleton()","total_count":1,"children":[]},{"name":"Messaging","total_count":1,"children":[]},{"name":"Movement","total_count":1,"children":[]},{"name":"NAV_SECTIONS()","total_count":1,"children":[]},{"name":"NavItem","total_count":1,"children":[]},{"name":"NavSection","total_count":1,"children":[]},{"name":"Notifications","total_count":1,"children":[]},{"name":"ProfilePanel","total_count":1,"children":[]},{"name":"Settings_","total_count":1,"children":[]},{"name":"ShippingCenter","total_count":1,"children":[]},{"name":"Sidebar()","total_count":1,"children":[]},{"name":"SidebarProps","total_count":1,"children":[]},{"name":"TitleBar()","total_count":1,"children":[]},{"name":"VocesDelClub","total_count":1,"children":[]},{"name":"Window","total_count":1,"children":[]}]},{"name":"components","total_count":274,"children":[{"name":"Agenda","total_count":39,"children":[{"name":"AgendaSyncEngine.ts","total_count":3,"children":[{"name":"AgendaContextItem","total_count":1,"children":[]},{"name":"AgendaSyncEngine","total_count":1,"children":[]},{"name":"DEFAULT_CONTEXTS","total_count":1,"children":[]}]},{"name":"Calendar.tsx","total_count":4,"children":[{"name":"AgendaEvent","total_count":1,"children":[]},{"name":"Calendar()","total_count":1,"children":[]},{"name":"CalendarViewMode","total_count":1,"children":[]},{"name":"PlannerTask","total_count":1,"children":[]}]},{"name":"CustomSelect.tsx","total_count":3,"children":[{"name":"CustomSelect()","total_count":1,"children":[]},{"name":"CustomSelectProps","total_count":1,"children":[]},{"name":"SelectOption","total_count":1,"children":[]}]},{"name":"MailAccountStorage.ts","total_count":7,"children":[{"name":".addIgnoredSender()","total_count":1,"children":[]},{"name":".deleteAccount()","total_count":1,"children":[]},{"name":".getIgnoredSenders()","total_count":1,"children":[]},{"name":".getUserAccounts()","total_count":1,"children":[]},{"name":".removeIgnoredSender()","total_count":1,"children":[]},{"name":".saveAccount()","total_count":1,"children":[]},{"name":"MailAccountStorage","total_count":1,"children":[]}]},{"name":"MailAccountTypes.ts","total_count":6,"children":[{"name":"ConnectedMailAccount","total_count":1,"children":[]},{"name":"EmailMessage","total_count":1,"children":[]},{"name":"GoogleTokens","total_count":1,"children":[]},{"name":"IMAPConfig","total_count":1,"children":[]},{"name":"MailAccountType","total_count":1,"children":[]},{"name":"SMTPConfig","total_count":1,"children":[]}]},{"name":"Mailbox.tsx","total_count":1,"children":[{"name":"Mailbox()","total_count":1,"children":[]}]},{"name":"MailEngine.ts","total_count":7,"children":[{"name":".decodeBase64Url()","total_count":1,"children":[]},{"name":".ensureValidAccessToken()","total_count":1,"children":[]},{"name":".fetchGoogleEmails()","total_count":1,"children":[]},{"name":".sendEmail()","total_count":1,"children":[]},{"name":".utf8ToBase64Url()","total_count":1,"children":[]},{"name":"MailEngine","total_count":1,"children":[]},{"name":"RFC-2822","total_count":1,"children":[]}]},{"name":"Notebooks.tsx","total_count":5,"children":[{"name":"Note","total_count":1,"children":[]},{"name":"Notebook","total_count":1,"children":[]},{"name":"Notebooks()","total_count":1,"children":[]},{"name":"NoteVersion","total_count":1,"children":[]},{"name":"TEMPLATES","total_count":1,"children":[]}]},{"name":"Planner.tsx","total_count":3,"children":[{"name":"Planner()","total_count":1,"children":[]},{"name":"Subtask","total_count":1,"children":[]},{"name":"Task","total_count":1,"children":[]}]}]},{"name":"Agents.tsx","total_count":5,"children":[{"name":"Agents()","total_count":1,"children":[]},{"name":"AgentTab","total_count":1,"children":[]},{"name":"ChatMessage","total_count":1,"children":[]},{"name":"ChatMessageBubble","total_count":1,"children":[]},{"name":"formatMsgTime()","total_count":1,"children":[]}]},{"name":"ArtifactPanel.tsx","total_count":3,"children":[{"name":"ArtifactData","total_count":1,"children":[]},{"name":"ArtifactPanel()","total_count":1,"children":[]},{"name":"ArtifactPanelProps","total_count":1,"children":[]}]},{"name":"BlogEditor.tsx","total_count":2,"children":[{"name":"BlogEditor()","total_count":1,"children":[]},{"name":"BlogPost","total_count":1,"children":[]}]},{"name":"BrainGraph.tsx","total_count":9,"children":[{"name":"BrainGraph()","total_count":1,"children":[]},{"name":"CodebaseGraph()","total_count":1,"children":[]},{"name":"drawGlowCircle()","total_count":1,"children":[]},{"name":"GraphEdge","total_count":1,"children":[]},{"name":"GraphNode","total_count":1,"children":[]},{"name":"GraphTab","total_count":1,"children":[]},{"name":"hexToRgb()","total_count":1,"children":[]},{"name":"LiveBrainCanvas()","total_count":1,"children":[]},{"name":"Props","total_count":1,"children":[]}]},{"name":"Carts.tsx","total_count":6,"children":[{"name":"Cart","total_count":1,"children":[]},{"name":"CartItem","total_count":1,"children":[]},{"name":"Carts()","total_count":1,"children":[]},{"name":"CustomDropdown()","total_count":1,"children":[]},{"name":"STATUS_FILTER_OPTIONS","total_count":1,"children":[]},{"name":"TIME_FILTER_OPTIONS","total_count":1,"children":[]}]},{"name":"Cashflow.tsx","total_count":7,"children":[{"name":"Cashflow()","total_count":1,"children":[]},{"name":"COLORS","total_count":1,"children":[]},{"name":"CustomDropdown()","total_count":1,"children":[]},{"name":"EXPENSE_CATEGORIES","total_count":1,"children":[]},{"name":"INCOME_CATEGORIES","total_count":1,"children":[]},{"name":"TIME_FILTER_OPTIONS","total_count":1,"children":[]},{"name":"Transaction","total_count":1,"children":[]}]},{"name":"Catalog.tsx","total_count":5,"children":[{"name":"Catalog()","total_count":1,"children":[]},{"name":"CustomDropdown()","total_count":1,"children":[]},{"name":"EditableCell()","total_count":1,"children":[]},{"name":"Product","total_count":1,"children":[]},{"name":"STOCK_FILTER_OPTIONS","total_count":1,"children":[]}]},{"name":"Clients.tsx","total_count":5,"children":[{"name":"Client","total_count":1,"children":[]},{"name":"Clients()","total_count":1,"children":[]},{"name":"CustomDropdown()","total_count":1,"children":[]},{"name":"getSegmentColor()","total_count":1,"children":[]},{"name":"SEGMENT_OPTIONS","total_count":1,"children":[]}]},{"name":"ContentStudio.tsx","total_count":2,"children":[{"name":"ContentStudio()","total_count":1,"children":[]},{"name":"ContentTab","total_count":1,"children":[]}]},{"name":"Coupons.tsx","total_count":2,"children":[{"name":"Coupon","total_count":1,"children":[]},{"name":"Coupons()","total_count":1,"children":[]}]},{"name":"CustomContextMenu.tsx","total_count":2,"children":[{"name":"CustomContextMenu()","total_count":1,"children":[]},{"name":"MenuState","total_count":1,"children":[]}]},{"name":"Dashboard.tsx","total_count":3,"children":[{"name":"Dashboard()","total_count":1,"children":[]},{"name":"DashboardProps","total_count":1,"children":[]},{"name":"DEFAULT_ECOSYSTEM_PAGES","total_count":1,"children":[]}]},{"name":"Editor.tsx","total_count":12,"children":[{"name":"AVAILABLE_BLOCKS","total_count":1,"children":[]},{"name":"Block","total_count":1,"children":[]},{"name":"BlockType","total_count":1,"children":[]},{"name":"Editor()","total_count":1,"children":[]},{"name":"ImageUploadButton()","total_count":1,"children":[]},{"name":"RESPONSIVE_WIDTHS","total_count":1,"children":[]},{"name":"ResponsiveMode","total_count":1,"children":[]},{"name":"SortableLayerItem()","total_count":1,"children":[]},{"name":"Toast","total_count":1,"children":[]},{"name":"ToastContainer()","total_count":1,"children":[]},{"name":"ToastType","total_count":1,"children":[]},{"name":"ViewMode","total_count":1,"children":[]}]},{"name":"FinancialCenter","total_count":98,"children":[{"name":"BalanceGeneral.tsx","total_count":2,"children":[{"name":"BalanceGeneral()","total_count":1,"children":[]},{"name":"COP()","total_count":1,"children":[]}]},{"name":"CAC_LTV.tsx","total_count":8,"children":[{"name":"CAC_LTV()","total_count":1,"children":[]},{"name":"Channel","total_count":1,"children":[]},{"name":"CHANNEL_COLORS","total_count":1,"children":[]},{"name":"ChannelData","total_count":1,"children":[]},{"name":"CHANNELS","total_count":1,"children":[]},{"name":"InputField()","total_count":1,"children":[]},{"name":"MetricCard()","total_count":1,"children":[]},{"name":"SharedProps","total_count":1,"children":[]}]},{"name":"Cohortes.tsx","total_count":1,"children":[{"name":"Cohortes()","total_count":1,"children":[]}]},{"name":"CostosProduccion.tsx","total_count":2,"children":[{"name":"COLORS","total_count":1,"children":[]},{"name":"CostosProduccion()","total_count":1,"children":[]}]},{"name":"DashboardCEO.tsx","total_count":2,"children":[{"name":"DashboardCEO()","total_count":1,"children":[]},{"name":"DATA_PNL","total_count":1,"children":[]}]},{"name":"Demanda.tsx","total_count":1,"children":[{"name":"Demanda()","total_count":1,"children":[]}]},{"name":"Escenarios.tsx","total_count":6,"children":[{"name":"COP()","total_count":1,"children":[]},{"name":"CustomTooltip()","total_count":1,"children":[]},{"name":"Escenarios()","total_count":1,"children":[]},{"name":"pct()","total_count":1,"children":[]},{"name":"SCENARIO_META","total_count":1,"children":[]},{"name":"SliderField()","total_count":1,"children":[]}]},{"name":"EstadoDIAN.tsx","total_count":2,"children":[{"name":"COP()","total_count":1,"children":[]},{"name":"EstadoDIAN()","total_count":1,"children":[]}]},{"name":"FabricaBOM.tsx","total_count":2,"children":[{"name":"FabricaBOM()","total_count":1,"children":[]},{"name":"ProductMeta","total_count":1,"children":[]}]},{"name":"FlujoCaja.tsx","total_count":1,"children":[{"name":"FlujoCaja()","total_count":1,"children":[]}]},{"name":"index.tsx","total_count":20,"children":[{"name":"BalanceGeneral","total_count":1,"children":[]},{"name":"BLOCKS","total_count":1,"children":[]},{"name":"CAC_LTV","total_count":1,"children":[]},{"name":"Cohortes","total_count":1,"children":[]},{"name":"CostosProduccion","total_count":1,"children":[]},{"name":"Demanda","total_count":1,"children":[]},{"name":"Escenarios","total_count":1,"children":[]},{"name":"EstadoDIAN","total_count":1,"children":[]},{"name":"FinancialCenter()","total_count":1,"children":[]},{"name":"FlujoCaja","total_count":1,"children":[]},{"name":"KardexNIIF","total_count":1,"children":[]},{"name":"MixProductos","total_count":1,"children":[]},{"name":"Pricing","total_count":1,"children":[]},{"name":"PuntoEquilibrio","total_count":1,"children":[]},{"name":"PyL","total_count":1,"children":[]},{"name":"RentabilidadProd","total_count":1,"children":[]},{"name":"Riesgo","total_count":1,"children":[]},{"name":"ROI","total_count":1,"children":[]},{"name":"SimuladorVentas","total_count":1,"children":[]},{"name":"ViewMode","total_count":1,"children":[]}]},{"name":"KardexNIIF.tsx","total_count":3,"children":[{"name":"COP()","total_count":1,"children":[]},{"name":"KardexNIIF()","total_count":1,"children":[]},{"name":"Product","total_count":1,"children":[]}]},{"name":"MixProductos.tsx","total_count":2,"children":[{"name":"COLORS","total_count":1,"children":[]},{"name":"MixProductos()","total_count":1,"children":[]}]},{"name":"Pricing.tsx","total_count":5,"children":[{"name":"DemandTooltip()","total_count":1,"children":[]},{"name":"fmt()","total_count":1,"children":[]},{"name":"fmtNum()","total_count":1,"children":[]},{"name":"Pricing()","total_count":1,"children":[]},{"name":"Product","total_count":1,"children":[]}]},{"name":"PuntoEquilibrio.tsx","total_count":5,"children":[{"name":"COP()","total_count":1,"children":[]},{"name":"CustomTooltip()","total_count":1,"children":[]},{"name":"fmt()","total_count":1,"children":[]},{"name":"PuntoEquilibrio()","total_count":1,"children":[]},{"name":"safetyColor()","total_count":1,"children":[]}]},{"name":"PyL.tsx","total_count":9,"children":[{"name":"COLORS","total_count":1,"children":[]},{"name":"COP()","total_count":1,"children":[]},{"name":"CustomTooltip()","total_count":1,"children":[]},{"name":"fmtPct()","total_count":1,"children":[]},{"name":"marginColor()","total_count":1,"children":[]},{"name":"OpEx","total_count":1,"children":[]},{"name":"PnLRow()","total_count":1,"children":[]},{"name":"PyL()","total_count":1,"children":[]},{"name":"UmmaInsightsModal()","total_count":1,"children":[]}]},{"name":"RentabilidadProd.tsx","total_count":5,"children":[{"name":"fmt()","total_count":1,"children":[]},{"name":"INITIAL_PRODUCTS","total_count":1,"children":[]},{"name":"MarginTooltip()","total_count":1,"children":[]},{"name":"ProductRow","total_count":1,"children":[]},{"name":"RentabilidadProd()","total_count":1,"children":[]}]},{"name":"Riesgo.tsx","total_count":7,"children":[{"name":"getRiskColor()","total_count":1,"children":[]},{"name":"getRiskQuadrant()","total_count":1,"children":[]},{"name":"InputField()","total_count":1,"children":[]},{"name":"Riesgo()","total_count":1,"children":[]},{"name":"RiskMatrix()","total_count":1,"children":[]},{"name":"RiskPoint","total_count":1,"children":[]},{"name":"Slider()","total_count":1,"children":[]}]},{"name":"ROI.tsx","total_count":3,"children":[{"name":"InputField()","total_count":1,"children":[]},{"name":"MetricCard()","total_count":1,"children":[]},{"name":"ROI()","total_count":1,"children":[]}]},{"name":"SimuladorVentas.tsx","total_count":10,"children":[{"name":"COP()","total_count":1,"children":[]},{"name":"CustomBarTooltip()","total_count":1,"children":[]},{"name":"CustomPieTooltip()","total_count":1,"children":[]},{"name":"DEFAULT_PRODUCTS","total_count":1,"children":[]},{"name":"MONTHS","total_count":1,"children":[]},{"name":"Product","total_count":1,"children":[]},{"name":"PRODUCT_COLORS","total_count":1,"children":[]},{"name":"ScenarioSharedData","total_count":1,"children":[]},{"name":"SimuladorVentas()","total_count":1,"children":[]},{"name":"SimuladorVentasProps","total_count":1,"children":[]}]},{"name":"UmmaAdvisorBtn.tsx","total_count":2,"children":[{"name":"UmmaAdvisorBtn()","total_count":1,"children":[]},{"name":"UmmaAdvisorProps","total_count":1,"children":[]}]}]},{"name":"FlowEditor.tsx","total_count":6,"children":[{"name":"CustomNode()","total_count":1,"children":[]},{"name":"FlowEditor()","total_count":1,"children":[]},{"name":"FlowEditorCanvas()","total_count":1,"children":[]},{"name":"initialNodes","total_count":1,"children":[]},{"name":"NODE_TYPES_DEF","total_count":1,"children":[]},{"name":"nodeTypes","total_count":1,"children":[]}]},{"name":"GCAPanel.tsx","total_count":2,"children":[{"name":"GCAPanel()","total_count":1,"children":[]},{"name":"ImageUploaderInput()","total_count":1,"children":[]}]},{"name":"GranNoticiasPanel.tsx","total_count":2,"children":[{"name":"GranNoticiasPanel()","total_count":1,"children":[]},{"name":"RSSSource","total_count":1,"children":[]}]},{"name":"Login.tsx","total_count":3,"children":[{"name":"getSavedAccounts()","total_count":1,"children":[]},{"name":"Login()","total_count":1,"children":[]},{"name":"saveAccount()","total_count":1,"children":[]}]},{"name":"MarkdownRenderer.tsx","total_count":3,"children":[{"name":"COLORS","total_count":1,"children":[]},{"name":"MarkdownRenderer","total_count":1,"children":[]},{"name":"MarkdownRendererProps","total_count":1,"children":[]}]},{"name":"Messaging.tsx","total_count":6,"children":[{"name":"ChatMessage","total_count":1,"children":[]},{"name":"CustomerChat","total_count":1,"children":[]},{"name":"formatMsgTime()","total_count":1,"children":[]},{"name":"getChannelIcon()","total_count":1,"children":[]},{"name":"getChannelLabel()","total_count":1,"children":[]},{"name":"Messaging()","total_count":1,"children":[]}]},{"name":"Movement.tsx","total_count":1,"children":[{"name":"Movement()","total_count":1,"children":[]}]},{"name":"NeuronasPanel.tsx","total_count":6,"children":[{"name":"colorStyles","total_count":1,"children":[]},{"name":"ConnectionLine()","total_count":1,"children":[]},{"name":"NeuronasPanel()","total_count":1,"children":[]},{"name":"NeuronNode()","total_count":1,"children":[]},{"name":"NeuronNodeProps","total_count":1,"children":[]},{"name":"Props","total_count":1,"children":[]}]},{"name":"Notifications.tsx","total_count":2,"children":[{"name":"NotificationItem","total_count":1,"children":[]},{"name":"Notifications()","total_count":1,"children":[]}]},{"name":"PresentationViewer.tsx","total_count":4,"children":[{"name":"PresentationData","total_count":1,"children":[]},{"name":"PresentationViewer()","total_count":1,"children":[]},{"name":"Props","total_count":1,"children":[]},{"name":"SlideData","total_count":1,"children":[]}]},{"name":"ProfilePanel.tsx","total_count":2,"children":[{"name":"AdminUserRecord","total_count":1,"children":[]},{"name":"ProfilePanel()","total_count":1,"children":[]}]},{"name":"Settings.tsx","total_count":3,"children":[{"name":"Integration","total_count":1,"children":[]},{"name":"IntegrationCategory","total_count":1,"children":[]},{"name":"Settings()","total_count":1,"children":[]}]},{"name":"ShippingCenter.tsx","total_count":6,"children":[{"name":"COLOMBIA_CITIES","total_count":1,"children":[]},{"name":"createCustomIcon()","total_count":1,"children":[]},{"name":"DraggableMarker()","total_count":1,"children":[]},{"name":"getCityCoords()","total_count":1,"children":[]},{"name":"Order","total_count":1,"children":[]},{"name":"ShippingCenter()","total_count":1,"children":[]}]},{"name":"TelegramPanel.tsx","total_count":3,"children":[{"name":"TelegramMessage","total_count":1,"children":[]},{"name":"TelegramPanel()","total_count":1,"children":[]},{"name":"tgFetch()","total_count":1,"children":[]}]},{"name":"UmmaBubble.tsx","total_count":12,"children":[{"name":".componentDidCatch()","total_count":1,"children":[]},{"name":".constructor()","total_count":1,"children":[]},{"name":".getDerivedStateFromError()","total_count":1,"children":[]},{"name":".render()","total_count":1,"children":[]},{"name":"Message","total_count":1,"children":[]},{"name":"speak()","total_count":1,"children":[]},{"name":"transcribeAudio()","total_count":1,"children":[]},{"name":"UmmaBubble()","total_count":1,"children":[]},{"name":"UmmaBubbleContent()","total_count":1,"children":[]},{"name":"UmmaErrorBoundary","total_count":1,"children":[]},{"name":"UmmaMessage()","total_count":1,"children":[]},{"name":"usePrimaryModel()","total_count":1,"children":[]}]},{"name":"UmmaWiki.tsx","total_count":2,"children":[{"name":"KnowledgeDoc","total_count":1,"children":[]},{"name":"UmmaWiki()","total_count":1,"children":[]}]},{"name":"UmmaWindow","total_count":5,"children":[{"name":"UmmaWindowLayout.tsx","total_count":1,"children":[{"name":"UmmaWindowLayout()","total_count":1,"children":[]}]},{"name":"views","total_count":4,"children":[{"name":"UmmaAppView.tsx","total_count":1,"children":[{"name":"UmmaAppView()","total_count":1,"children":[]}]},{"name":"UmmaNoteView.tsx","total_count":1,"children":[{"name":"UmmaNoteView()","total_count":1,"children":[]}]},{"name":"UmmaPdfView.tsx","total_count":1,"children":[{"name":"UmmaPdfView()","total_count":1,"children":[]}]},{"name":"UmmaYouTubeView.tsx","total_count":1,"children":[{"name":"UmmaYouTubeView()","total_count":1,"children":[]}]}]}]},{"name":"Versions.tsx","total_count":1,"children":[{"name":"Versions()","total_count":1,"children":[]}]},{"name":"VocesDelClub.tsx","total_count":2,"children":[{"name":"Testimonial","total_count":1,"children":[]},{"name":"VocesDelClub()","total_count":1,"children":[]}]},{"name":"VoiceVisualizer.tsx","total_count":3,"children":[{"name":"VoiceState","total_count":1,"children":[]},{"name":"VoiceVisualizer()","total_count":1,"children":[]},{"name":"VoiceVisualizerProps","total_count":1,"children":[]}]}]},{"name":"contexts","total_count":9,"children":[{"name":"AuthProvider.tsx","total_count":5,"children":[{"name":"auth","total_count":1,"children":[]},{"name":"AuthContext","total_count":1,"children":[]},{"name":"AuthContextType","total_count":1,"children":[]},{"name":"AuthProvider()","total_count":1,"children":[]},{"name":"useAuth()","total_count":1,"children":[]}]},{"name":"ConnectionContext.tsx","total_count":4,"children":[{"name":"ConnectionContext","total_count":1,"children":[]},{"name":"ConnectionContextType","total_count":1,"children":[]},{"name":"ConnectionProvider()","total_count":1,"children":[]},{"name":"useConnection()","total_count":1,"children":[]}]}]},{"name":"env.d.ts","total_count":1,"children":[{"name":"Window","total_count":1,"children":[]}]},{"name":"hooks","total_count":1,"children":[{"name":"useLocalStorage.ts","total_count":1,"children":[{"name":"useLocalStorage()","total_count":1,"children":[]}]}]},{"name":"main.tsx","total_count":4,"children":[{"name":".constructor()","total_count":1,"children":[]},{"name":".getDerivedStateFromError()","total_count":1,"children":[]},{"name":".render()","total_count":1,"children":[]},{"name":"ErrorBoundary","total_count":1,"children":[]}]},{"name":"utils","total_count":150,"children":[{"name":"analyticsEngine.ts","total_count":4,"children":[{"name":"AnalyticsCredentials","total_count":1,"children":[]},{"name":"AnalyticsProfile","total_count":1,"children":[]},{"name":"fetchAggregatedAnalytics()","total_count":1,"children":[]},{"name":"getAnalyticsKeys()","total_count":1,"children":[]}]},{"name":"cryptoService.ts","total_count":5,"children":[{"name":"base64ToBuffer()","total_count":1,"children":[]},{"name":"bufferToBase64()","total_count":1,"children":[]},{"name":"decryptText()","total_count":1,"children":[]},{"name":"encryptText()","total_count":1,"children":[]},{"name":"getMasterKey()","total_count":1,"children":[]}]},{"name":"dataGenerator.ts","total_count":1,"children":[{"name":"generateSimulationData()","total_count":1,"children":[]}]},{"name":"financialEngine.ts","total_count":29,"children":[{"name":"BOMRecipe","total_count":1,"children":[]},{"name":"BreakevenResult","total_count":1,"children":[]},{"name":"CACLTVResult","total_count":1,"children":[]},{"name":"calcBOMCogs()","total_count":1,"children":[]},{"name":"calcBreakeven()","total_count":1,"children":[]},{"name":"calcCAC()","total_count":1,"children":[]},{"name":"calcCACLTV()","total_count":1,"children":[]},{"name":"calcCashFlowProjection()","total_count":1,"children":[]},{"name":"calcDCF()","total_count":1,"children":[]},{"name":"calcElasticity()","total_count":1,"children":[]},{"name":"calcLTV()","total_count":1,"children":[]},{"name":"calcMarketSize()","total_count":1,"children":[]},{"name":"calcPnL()","total_count":1,"children":[]},{"name":"calcProductMargin()","total_count":1,"children":[]},{"name":"calcProductMix()","total_count":1,"children":[]},{"name":"calcReorderPoint()","total_count":1,"children":[]},{"name":"calcROI()","total_count":1,"children":[]},{"name":"calcSafetyStock()","total_count":1,"children":[]},{"name":"calcScenarios()","total_count":1,"children":[]},{"name":"DCFResult","total_count":1,"children":[]},{"name":"ElasticityResult","total_count":1,"children":[]},{"name":"formatCOP()","total_count":1,"children":[]},{"name":"formatPct()","total_count":1,"children":[]},{"name":"PLACEHOLDER_VALUE","total_count":1,"children":[]},{"name":"PnLResult","total_count":1,"children":[]},{"name":"RawMaterial","total_count":1,"children":[]},{"name":"RecipeIngredient","total_count":1,"children":[]},{"name":"ROIResult","total_count":1,"children":[]},{"name":"ScenarioResult","total_count":1,"children":[]}]},{"name":"firebase.ts","total_count":4,"children":[{"name":"auth","total_count":1,"children":[]},{"name":"db","total_count":1,"children":[]},{"name":"firebaseConfig","total_count":1,"children":[]},{"name":"storage","total_count":1,"children":[]}]},{"name":"googleTTSService.ts","total_count":1,"children":[{"name":"synthesizeSpeech()","total_count":1,"children":[]}]},{"name":"thesisToDocx.ts","total_count":2,"children":[{"name":"downloadTesisDocx()","total_count":1,"children":[]},{"name":"generateTesisMarkdown()","total_count":1,"children":[]}]},{"name":"ummaApp.ts","total_count":6,"children":[{"name":"AppSession","total_count":1,"children":[]},{"name":"getActiveAppSession()","total_count":1,"children":[]},{"name":"getActiveAppSessionsCount()","total_count":1,"children":[]},{"name":"handleAppCommand()","total_count":1,"children":[]},{"name":"QUESTIONS","total_count":1,"children":[]},{"name":"saveAppSession()","total_count":1,"children":[]}]},{"name":"ummaApprovalQueue.ts","total_count":11,"children":[{"name":".addAction()","total_count":1,"children":[]},{"name":".awaitActionResolution()","total_count":1,"children":[]},{"name":".clearResolved()","total_count":1,"children":[]},{"name":".getQueue()","total_count":1,"children":[]},{"name":".notify()","total_count":1,"children":[]},{"name":".resolveAction()","total_count":1,"children":[]},{"name":".subscribe()","total_count":1,"children":[]},{"name":"ApprovalQueue","total_count":1,"children":[]},{"name":"QueuedAction","total_count":1,"children":[]},{"name":"QueueListener","total_count":1,"children":[]},{"name":"ummaQueue","total_count":1,"children":[]}]},{"name":"ummaClassifier.ts","total_count":3,"children":[{"name":"detectIntentComplexity()","total_count":1,"children":[]},{"name":"IntentComplexity","total_count":1,"children":[]},{"name":"isSensitive()","total_count":1,"children":[]}]},{"name":"ummaHomeostasis.ts","total_count":1,"children":[{"name":"getHomeostasisDirective()","total_count":1,"children":[]}]},{"name":"ummaIntentClassifier.ts","total_count":4,"children":[{"name":"classifyIntent()","total_count":1,"children":[]},{"name":"PermissionLevel","total_count":1,"children":[]},{"name":"TOOL_PERMISSION_MAP","total_count":1,"children":[]},{"name":"ToolPermissionDef","total_count":1,"children":[]}]},{"name":"ummaPersonaRouter.ts","total_count":4,"children":[{"name":"PersonaDefinition","total_count":1,"children":[]},{"name":"PERSONAS","total_count":1,"children":[]},{"name":"PersonaType","total_count":1,"children":[]},{"name":"routePersona()","total_count":1,"children":[]}]},{"name":"ummaService.ts","total_count":42,"children":[{"name":"askAnthropic()","total_count":1,"children":[]},{"name":"askDeepSeek()","total_count":1,"children":[]},{"name":"askGemini()","total_count":1,"children":[]},{"name":"askNvidia()","total_count":1,"children":[]},{"name":"askOllama()","total_count":1,"children":[]},{"name":"askOpenAI()","total_count":1,"children":[]},{"name":"askOpenAICompatible()","total_count":1,"children":[]},{"name":"askUmma()","total_count":1,"children":[]},{"name":"buildSystemPrompt()","total_count":1,"children":[]},{"name":"DynamicModel","total_count":1,"children":[]},{"name":"DynamicModelMap","total_count":1,"children":[]},{"name":"extractClientKeywords()","total_count":1,"children":[]},{"name":"generateSpeech()","total_count":1,"children":[]},{"name":"getKokoroInstance()","total_count":1,"children":[]},{"name":"getNeuronActivity()","total_count":1,"children":[]},{"name":"getRelevantRoles()","total_count":1,"children":[]},{"name":"getUmmaMemoryContext()","total_count":1,"children":[]},{"name":"loadAgendaSummary()","total_count":1,"children":[]},{"name":"loadAgentsSummary()","total_count":1,"children":[]},{"name":"loadBlogSummary()","total_count":1,"children":[]},{"name":"loadCartsSummary()","total_count":1,"children":[]},{"name":"loadCashflowSummary()","total_count":1,"children":[]},{"name":"loadCatalogSummary()","total_count":1,"children":[]},{"name":"loadClientsSummary()","total_count":1,"children":[]},{"name":"loadCouponsSummary()","total_count":1,"children":[]},{"name":"loadDynamicModels()","total_count":1,"children":[]},{"name":"loadKnowledgeBase()","total_count":1,"children":[]},{"name":"loadMessagingSummary()","total_count":1,"children":[]},{"name":"loadPcInfo()","total_count":1,"children":[]},{"name":"loadPersistentMemory()","total_count":1,"children":[]},{"name":"loadUmmaContext()","total_count":1,"children":[]},{"name":"loadUmmaContextWithActivity()","total_count":1,"children":[]},{"name":"NeuronActivity","total_count":1,"children":[]},{"name":"ROLES_ANALISIS_FINANCIERO","total_count":1,"children":[]},{"name":"savePersistentMemory()","total_count":1,"children":[]},{"name":"UmmaContext","total_count":1,"children":[]},{"name":"UmmaHecho","total_count":1,"children":[]},{"name":"UmmaHomeostasis","total_count":1,"children":[]},{"name":"UmmaMemoria","total_count":1,"children":[]},{"name":"UmmaMemory","total_count":1,"children":[]},{"name":"UmmaMessage","total_count":1,"children":[]},{"name":"updateUmmaMemory()","total_count":1,"children":[]}]},{"name":"ummaTesis.ts","total_count":5,"children":[{"name":"getTesisSession()","total_count":1,"children":[]},{"name":"handleTesisCommand()","total_count":1,"children":[]},{"name":"QUESTIONS","total_count":1,"children":[]},{"name":"saveTesisSession()","total_count":1,"children":[]},{"name":"TesisSession","total_count":1,"children":[]}]},{"name":"ummaTokenUtils.ts","total_count":1,"children":[{"name":"trimToSafeBudget()","total_count":1,"children":[]}]},{"name":"ummaTools.ts","total_count":27,"children":[{"name":"executeUmmaTool()","total_count":1,"children":[]},{"name":"openAIFunctionDeclarations","total_count":1,"children":[]},{"name":"tool_abrir_aplicacion","total_count":1,"children":[]},{"name":"tool_actualizar_producto","total_count":1,"children":[]},{"name":"tool_borrar_cliente","total_count":1,"children":[]},{"name":"tool_buscar_cliente","total_count":1,"children":[]},{"name":"tool_busqueda_web","total_count":1,"children":[]},{"name":"tool_consultar_agenda","total_count":1,"children":[]},{"name":"tool_consultar_inventario","total_count":1,"children":[]},{"name":"tool_copiar_portapapeles","total_count":1,"children":[]},{"name":"tool_crear_cuaderno","total_count":1,"children":[]},{"name":"tool_crear_evento_agenda","total_count":1,"children":[]},{"name":"tool_crear_tarea_agenda","total_count":1,"children":[]},{"name":"tool_ejecutar_comando","total_count":1,"children":[]},{"name":"tool_enviar_alerta","total_count":1,"children":[]},{"name":"tool_enviar_comunicacion","total_count":1,"children":[]},{"name":"tool_escribir_archivo_local","total_count":1,"children":[]},{"name":"tool_generar_ventana","total_count":1,"children":[]},{"name":"tool_leer_archivo_local","total_count":1,"children":[]},{"name":"tool_modificar_archivo_local_con_diff","total_count":1,"children":[]},{"name":"tool_notificar_windows","total_count":1,"children":[]},{"name":"tool_obtener_info_pc","total_count":1,"children":[]},{"name":"tool_programar_recordatorio","total_count":1,"children":[]},{"name":"tool_registrar_error","total_count":1,"children":[]},{"name":"tool_registrar_movimiento","total_count":1,"children":[]},{"name":"tool_tomar_captura","total_count":1,"children":[]},{"name":"ummaFunctionDeclarations","total_count":1,"children":[]}]}]}]}]}]};
+
+    function transformData(jsonData) {
+        // Helper function to recursively build the children structure
+        function processNode(node, parentL1StageName) {
+            let displayName = node.name;
+            // Append total_count if it exists and is not already in the name
+            if (node.total_count !== undefined) {
+                if (!/\(Total Count: \d+\)$/.test(displayName)) {
+                    displayName += ` (Total Count: ${node.total_count})`;
+                }
+            }
+
+            const newNode = { name: displayName };
+
+            if (parentL1StageName === "Root") {
+                 newNode.originalStageName = node.name;
+            } else {
+                newNode.originalStageName = parentL1StageName;
+            }
+
+            if (node.children && node.children.length > 0) {
+                const stageNameToPass = (parentL1StageName === "Root") ? node.name : parentL1StageName;
+                newNode.children = node.children.map(child => processNode(child, stageNameToPass));
+            }
+
+            return newNode;
+        }
+
+        let rootDisplayName = jsonData.name;
+        if (jsonData.total_count !== undefined && !/\(Total Count: \d+\)$/.test(rootDisplayName)) {
+            rootDisplayName += ` (Total Count: ${jsonData.total_count})`;
+        }
+
+        return {
+            name: rootDisplayName,
+            originalStageName: "Root",
+            children: (jsonData.children || []).map(child => processNode(child, "Root"))
+        };
+    }
+
+    const treeData = transformData(initialJsonData);
+
+    // Auto-populated phaseColors: every depth-1 child of the root gets
+    // a stable colour from a bigger palette so all top-level dirs are
+    // distinguishable.
+    const PALETTE = [
+      ["#3498DB","#2980B9","#AED6F1"], ["#2ECC71","#27AE60","#A9DFBF"],
+      ["#E74C3C","#C0392B","#F5B7B1"], ["#9B59B6","#8E44AD","#D7BDE2"],
+      ["#F39C12","#D68910","#FAD7A0"], ["#1ABC9C","#117864","#A2D9CE"],
+      ["#34495E","#1B2631","#ABB2B9"], ["#E67E22","#BA4A00","#F5CBA7"],
+      ["#16A085","#0E6655","#A2D9CE"], ["#D35400","#A04000","#EDBB99"],
+      ["#7F8C8D","#566573","#D5DBDB"], ["#C0392B","#7B241C","#F5B7B1"],
+      ["#2E86C1","#1B4F72","#A9CCE3"], ["#28B463","#196F3D","#A9DFBF"],
+      ["#AF7AC5","#6C3483","#D2B4DE"],
+    ];
+    const phaseColors = { "Root": { fill: "#4A4A4A", stroke: "#333333", collapsedFill: "#6C757D" },
+                          "Default": { fill: "#BDC3C7", stroke: "#95A5A6", collapsedFill: "#ECF0F1" } };
+    (initialJsonData.children || []).forEach((c, i) => {
+      const pal = PALETTE[i % PALETTE.length];
+      phaseColors[c.name] = { fill: pal[0], stroke: pal[1], collapsedFill: pal[2] };
+    });
+
+    const levelSpecificPalettes = {
+      0: { fill: "#4A4A4A", stroke: "#333333", collapsedFill: "#6C757D" },
+      2: { fill: "#6ab04c", stroke: "#508a38", collapsedFill: "#a3d391" },
+      3: { fill: "#f0932b", stroke: "#d0730f", collapsedFill: "#f6c07e" },
+      4: { fill: "#be2edd", stroke: "#a01cb3", collapsedFill: "#e08bf2" },
+      5: { fill: "#00a8ff", stroke: "#007ac1", collapsedFill: "#74d2ff" },
+      6: { fill: "#e55039", stroke: "#c23620", collapsedFill: "#f09a8d" },
+      default: { fill: "#747d8c", stroke: "#57606f", collapsedFill: "#a4b0be" }
+    };
+
+    const svgElement = d3.select("#tree-svg");
+    const initialSvgWidth = +svgElement.attr("width");
+    const initialSvgHeight = +svgElement.attr("height");
+    const margin = { top: 40, right: 120, bottom: 80, left: 450 };
+    let width = initialSvgWidth - margin.left - margin.right;
+    let height = initialSvgHeight - margin.top - margin.bottom;
+    const duration = 500;
+    let nodeCounter = 0;
+    const g = svgElement.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    const treemap = d3.tree().nodeSize([40, 0]);
+    let rootNode = d3.hierarchy(treeData, d => d.children);
+    rootNode.x0 = 0;
+    rootNode.y0 = 0;
+
+    if (rootNode.children) {
+      rootNode.children.forEach(d_child => {
+        if (d_child.children) { collapseBranch(d_child); }
+      });
+    }
+    updateTree(rootNode);
+
+    function collapseBranch(d) { if (d.children) { d._children = d.children; d._children.forEach(collapseBranch); d.children = null; } }
+    function expandBranch(d) { if (d._children) { d.children = d._children; d._children = null; } if (d.children) { d.children.forEach(expandBranch); } }
+    window.expandAll = () => { expandBranch(rootNode); updateTree(rootNode); };
+    window.collapseAll = () => { if (rootNode.children) { rootNode.children.forEach(collapseBranch); } updateTree(rootNode); };
+    window.resetView = () => { if (rootNode.children) { rootNode.children.forEach(d_child => { if (d_child.children || d_child._children) { collapseBranch(d_child); } }); } if (rootNode._children && !rootNode.children) { rootNode.children = rootNode._children; rootNode._children = null; } updateTree(rootNode); };
+
+    function updateTree(source) {
+      const treeLayoutData = treemap(rootNode);
+      let nodes = treeLayoutData.descendants();
+      let links = treeLayoutData.descendants().slice(1);
+
+      let minX = 0;
+      let maxX = 0;
+      if (nodes.length > 0) {
+        minX = d3.min(nodes, d => d.x);
+        maxX = d3.max(nodes, d => d.x);
+      }
+
+      let neededHeight = Math.max(initialSvgHeight, maxX - minX + margin.top + margin.bottom + 100);
+      svgElement.transition().duration(duration / 2).attr("height", neededHeight);
+      g.transition().duration(duration / 2).attr("transform", `translate(${margin.left},${margin.top - minX + 40})`);
+
+      nodes.forEach(d => { d.y = d.depth * 400; }); // Adjust horizontal separation if needed
+
+      const node = g.selectAll('g.node').data(nodes, d => d.id || (d.id = ++nodeCounter));
+      const nodeEnter = node.enter().append('g')
+        .attr('class', d => "node" + (d.children || d._children ? " node--internal" : " node--leaf") + (d._children ? " _children" : ""))
+        .attr('transform', d => `translate(${source.y0},${source.x0})`)
+        .on('click', (event, d) => { if (d.children) { d._children = d.children; d.children = null; } else if (d._children) { d.children = d._children; d._children = null; } updateTree(d); })
+        .style('cursor', d => (d.children || d._children) ? 'pointer' : 'default');
+
+      nodeEnter.append('circle').attr('r', 1e-6);
+
+      nodeEnter.append('text')
+        .attr('dy', '.35em')
+        .attr('x', d => d.children || d._children ? -14 : 14)
+        .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
+        .style("fill-opacity", 1e-6)
+        .call(wrapText, 380);
+
+      const nodeUpdate = nodeEnter.merge(node);
+      nodeUpdate.transition().duration(duration)
+        .attr('transform', d => `translate(${d.y},${d.x})`)
+        .attr('class', d => "node" + (d.children ? " node--internal" : " node--leaf") + (d._children ? " node--internal _children" : ""));
+
+      nodeUpdate.select('circle').attr('r', 8.5)
+        .style('fill', d => {
+            let palette;
+            if (d.depth === 0) {
+                palette = levelSpecificPalettes[0];
+            } else if (d.depth === 1) {
+                palette = phaseColors[d.data.originalStageName] || phaseColors.Default;
+            } else {
+                palette = levelSpecificPalettes[d.depth] || levelSpecificPalettes.default;
+            }
+            if (d._children) return palette.collapsedFill;
+            if (d.children) return palette.fill;
+            return "#fff";
+        })
+        .style('stroke', d => {
+            let palette;
+            if (d.depth === 0) {
+                palette = levelSpecificPalettes[0];
+            } else if (d.depth === 1) {
+                palette = phaseColors[d.data.originalStageName] || phaseColors.Default;
+            } else {
+                palette = levelSpecificPalettes[d.depth] || levelSpecificPalettes.default;
+            }
+            return palette.stroke;
+        });
+      nodeUpdate.select('text').style("fill-opacity", 1).call(wrapText, 380);
+
+      const nodeExit = node.exit().transition().duration(duration).attr('transform', d => `translate(${source.y},${source.x})`).remove();
+      nodeExit.select('circle').attr('r', 1e-6);
+      nodeExit.select('text').style('fill-opacity', 1e-6);
+
+      const link = g.selectAll('path.link').data(links, d => d.id);
+      const linkEnter = link.enter().insert('path', "g").attr('class', 'link').attr('d', d => { const o = { x: source.x0, y: source.y0 }; return diagonal(o, o); });
+
+      linkEnter.merge(link).transition().duration(duration).attr('d', d => diagonal(d, d.parent))
+        .style('stroke', d => {
+            const sourceNode = d.parent;
+            if (!sourceNode) return phaseColors.Default.stroke;
+            const l1AncestorName = sourceNode.data.originalStageName;
+            const colorPalette = phaseColors[l1AncestorName] || phaseColors.Default;
+            return colorPalette.stroke;
+        });
+      link.exit().transition().duration(duration).attr('d', d => { const o = { x: source.x, y: source.y }; return diagonal(o, o); }).remove();
+      nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+    }
+
+    function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
+
+    function wrapText(textElements, maxWidth) {
+        const textPartColors = {
+            name: '#343a40',
+            count: '#0056b3'
+        };
+        const countRegex = /(\s\(Total Count: \d+\))$/;
+
+        textElements.each(function () {
+            const textD3 = d3.select(this);
+            const originalNodeText = textD3.datum().data.name;
+            const x = parseFloat(textD3.attr("x") || 0);
+            const initialDy = textD3.attr("dy");
+            const textAnchor = textD3.attr("text-anchor");
+            const lineHeight = 1.1;
+
+            textD3.text(null);
+
+            let namePart = originalNodeText;
+            let countPartText = "";
+
+            const countMatch = originalNodeText.match(countRegex);
+            if (countMatch && originalNodeText.endsWith(countMatch[0])) {
+                namePart = originalNodeText.substring(0, originalNodeText.length - countMatch[0].length).trim();
+                countPartText = countMatch[0].trim();
+            }
+
+            const tokens = [];
+            namePart.split(/\s+/).filter(Boolean).forEach(word => {
+                tokens.push({ text: word, type: 'name' });
+            });
+            if (countPartText) {
+                tokens.push({ text: countPartText, type: 'count' });
+            }
+
+            if (tokens.length === 0 && originalNodeText) {
+                tokens.push({ text: originalNodeText, type: 'name' });
+            }
+
+            let currentTspan = textD3.append("tspan").attr("x", x).attr("dy", initialDy);
+            if (textAnchor === "end") currentTspan.attr("text-anchor", "end");
+
+            let lineTokens = [];
+
+            for (let i = 0; i < tokens.length; i++) {
+                const tokenObj = tokens[i];
+
+                lineTokens.push(tokenObj);
+                currentTspan.text(lineTokens.map(t => t.text).join(" "));
+
+                if (currentTspan.node().getComputedTextLength() > maxWidth && lineTokens.length > 1) {
+                    lineTokens.pop();
+
+                    currentTspan.text(null);
+                    lineTokens.forEach((prevToken, idx) => {
+                        currentTspan.append("tspan")
+                            .text((idx > 0 ? " " : "") + prevToken.text)
+                            .style("fill", textPartColors[prevToken.type] || textPartColors.name)
+                            .style("font-weight", prevToken.type === 'count' ? "bold" : "normal");
+                    });
+
+                    lineTokens = [tokenObj];
+                    currentTspan = textD3.append("tspan").attr("x", x).attr("dy", lineHeight + "em");
+                    if (textAnchor === "end") currentTspan.attr("text-anchor", "end");
+                }
+            }
+
+            currentTspan.text(null);
+            lineTokens.forEach((token, idx) => {
+                currentTspan.append("tspan")
+                    .text((idx > 0 ? " " : "") + token.text)
+                    .style("fill", textPartColors[token.type] || textPartColors.name)
+                    .style("font-weight", token.type === 'count' ? "bold" : "normal");
+            });
+
+            if (textD3.selectAll("tspan > tspan").empty() && textD3.select("tspan").text().length === 0 && originalNodeText) {
+                let t = textD3.select("tspan");
+                let displayText = originalNodeText;
+                t.text(displayText).style("fill", textPartColors.name);
+                if (t.node() && t.node().getComputedTextLength() > maxWidth && displayText.length > 20) {
+                    let estimatedChars = Math.floor(maxWidth / (t.node().getComputedTextLength()/displayText.length) );
+                    displayText = displayText.substring(0, Math.max(0, estimatedChars - 3)) + "...";
+                    t.text(displayText);
+                }
+            }
+        });
+    }
+  </script>
+</body>
+</html>
