@@ -24,6 +24,7 @@ const FIREBASE_PROJECT = 'gc-aponte-sas';
 const ALLOWED_ORIGINS = new Set([
   'https://grancolinos.com',
   'https://www.grancolinos.com',
+  'https://gca-admin.grancolinos.com',
   'http://localhost:3000'
 ]);
 

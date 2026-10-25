@@ -76,7 +76,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com data:",
               "img-src 'self' data: blob: https: https://*.googleapis.com https://*.googleusercontent.com https://checkout.bold.co https://*.bold.co",
-              "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.bold.co https://checkout.bold.co https://api.telegram.org",
+              "connect-src 'self' https://www.grancolinos.com https://grancolinos.com https://*.googleapis.com https://*.firebaseio.com https://*.bold.co https://checkout.bold.co https://api.telegram.org",
               "frame-src 'self' https://checkout.bold.co https://*.bold.co https://*.firebaseapp.com",
               "object-src 'none'",
               "base-uri 'self'",
