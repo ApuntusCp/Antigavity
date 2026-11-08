@@ -126,6 +126,23 @@ const nextConfig = {
         source: '/:path*',
         destination: '/GCA-Admin/:path*',
       },
+      // ── Soluciones Colina (facturación electrónica versión escritorio) ──
+      {
+        source: '/Soluciones-Colina',
+        destination: '/Soluciones-Colina/index.html',
+      },
+      {
+        source: '/Soluciones-Colina/:path*',
+        destination: '/Soluciones-Colina/:path*',
+      },
+      {
+        source: '/soluciones-colina',
+        destination: '/Soluciones-Colina/index.html',
+      },
+      {
+        source: '/soluciones-colina/:path*',
+        destination: '/Soluciones-Colina/:path*',
+      },
     ];
   },
 };
