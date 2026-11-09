@@ -3,7 +3,8 @@
   <head>
     <script>
       (function() {
-        if (!location.pathname.endsWith('/')) {
+        var p = location.pathname.toLowerCase();
+        if ((p === '/soluciones-colina' || p === '/soluciones-colina') && !location.pathname.endsWith('/')) {
           try {
             history.replaceState(null, '', location.pathname + '/' + location.search + location.hash);
           } catch (e) {}
@@ -26,7 +27,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Soluciones Colina" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="theme-color" content="#1a2d1a" />
+    <meta name="theme-color" content="#f5efe3" />
     <meta name="color-scheme" content="light" />
 
     <!-- Favicon / Icons -->
@@ -35,16 +36,12 @@
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="./manifest.json" />
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <script type="module" crossorigin src="./assets/index-CrOIJI7M.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CXxaJMGb.css">
+    <script type="module" crossorigin src="./assets/index-DLrm0kZC.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/vendor-react-core-Dz1Rs28e.js">
+    <link rel="modulepreload" crossorigin href="./assets/vendor-capacitor-TbAlYxhE.js">
+    <link rel="modulepreload" crossorigin href="./assets/vendor-firebase-core-gOV-Wzb-.js">
+    <link rel="modulepreload" crossorigin href="./assets/vendor-firebase-auth-xWRVZfnd.js">
+    <link rel="stylesheet" crossorigin href="./assets/index--Kbq6EcV.css">
   </head>
   <body>
     <!-- Filtro SVG nativo para textura de papel arrugado (Cara 1 del recibo) -->
