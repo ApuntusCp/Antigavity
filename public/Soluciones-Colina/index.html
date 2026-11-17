@@ -34,14 +34,48 @@
     <link rel="icon" type="image/png" href="./icon-512.png" />
     <link rel="apple-touch-icon" href="./icon-192.png" />
 
+    <!-- Preload fuente principal local OFL (D-03) -->
+    <link rel="preload" href="./fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="./manifest.json" />
-    <script type="module" crossorigin src="./assets/index-D4mltl1K.js"></script>
+
+    <!-- Anti-parpadeo: aplica tema y tokens validados antes del primer pintado -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('colina_tema_visual_v1');
+          if (t === 'dark' || t === 'nocturno') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          }
+          var raw = localStorage.getItem('colina_tema_tokens_v1');
+          if (raw) {
+            var c = JSON.parse(raw);
+            if (c && typeof c.tamanoBasePx === 'number' && c.tamanoBasePx >= 14 && c.tamanoBasePx <= 18) {
+              document.documentElement.style.fontSize = c.tamanoBasePx + 'px';
+            }
+            if (c && typeof c.radioPx === 'number' && c.radioPx >= 0 && c.radioPx <= 24) {
+              document.documentElement.style.setProperty('--radius-md', c.radioPx + 'px');
+            }
+            if (c && typeof c.contentMaxPx === 'number' && c.contentMaxPx >= 960 && c.contentMaxPx <= 1920) {
+              document.documentElement.style.setProperty('--content-max', c.contentMaxPx + 'px');
+            }
+            if (c && typeof c.sidebarWidthPx === 'number' && c.sidebarWidthPx >= 220 && c.sidebarWidthPx <= 360) {
+              document.documentElement.style.setProperty('--sidebar-w', c.sidebarWidthPx + 'px');
+            }
+            if (c && (c.movimiento === 'apagado' || c.movimiento === 'sutil' || c.movimiento === 'completo')) {
+              document.documentElement.setAttribute('data-motion', c.movimiento);
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <script type="module" crossorigin src="./assets/index-D-k0H3ro.js"></script>
     <link rel="modulepreload" crossorigin href="./assets/vendor-react-core-Cky5roEq.js">
     <link rel="modulepreload" crossorigin href="./assets/vendor-capacitor-2bab7esi.js">
     <link rel="modulepreload" crossorigin href="./assets/vendor-firebase-core-gOV-Wzb-.js">
-    <link rel="modulepreload" crossorigin href="./assets/vendor-firebase-auth-uQWBFoMG.js">
-    <link rel="stylesheet" crossorigin href="./assets/index-Ba_H58BH.css">
+    <link rel="modulepreload" crossorigin href="./assets/vendor-firebase-auth-BJXMNs0p.js">
+    <link rel="stylesheet" crossorigin href="./assets/index-Yqxw2hMN.css">
   </head>
   <body>
     <!-- Filtro SVG nativo para textura de papel arrugado (Cara 1 del recibo) -->
