@@ -1,7 +1,7 @@
 {
-  "version": "1.4.6",
-  "build": "20261117-2010",
-  "titulo": "Actualización Disponible · Soluciones Colina v1.4.6",
+  "version": "1.4.7",
+  "build": "20261117-2050",
+  "titulo": "Actualización Disponible · Soluciones Colina v1.4.7",
   "descripcion": "Notas Crédito y Débito, Documento Soporte y Nota de Ajuste con validación del servidor, consolas de licencias y equipo, y métricas con índices en Firestore.",
-  "timestamp": 1794964926538
+  "timestamp": 1794966799858
 }
