@@ -1,7 +1,7 @@
 {
-  "version": "1.6.3",
-  "build": "20261118-0122",
-  "titulo": "Actualización Disponible · Soluciones Colina v1.6.3",
-  "descripcion": "Notas Crédito y Débito, Documento Soporte y Nota de Ajuste con validación del servidor, consolas de licencias y equipo, y métricas con índices en Firestore.",
-  "timestamp": 1794983615887
+  "version": "1.7.0",
+  "build": "20261118-0325",
+  "titulo": "Actualización Disponible · Soluciones Colina v1.7.0 (Sprint 0)",
+  "descripcion": "Sprint 0 (Bloqueo Fiscal): eliminada la fabricación local de CUFE, números FE- y /1.19 en Central Principal; cobros QR y manuales generan solo borrador pendiente de emisión por el servidor.",
+  "timestamp": 1794990401904
 }
