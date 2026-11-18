@@ -2,7 +2,7 @@
 // COLINA STUDIO / SOLUCIONES COLINA
 // Service Worker con Auto-Actualización y Push Instantáneo
 // =====================================================
-const CACHE_NAME = 'soluciones-colina-v1.5.0-20261117-2150'
+const CACHE_NAME = 'soluciones-colina-v1.6.1-20261118-0026'
 
 self.addEventListener('install', (event) => {
   // Permitir activación inmediata cuando se ordene
