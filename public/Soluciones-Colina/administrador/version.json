@@ -1,7 +1,7 @@
 {
-  "version": "1.7.5",
-  "build": "20261118-0416",
-  "titulo": "Actualización Disponible · Soluciones Colina v1.7.5 (Sprint 5)",
-  "descripcion": "Sprint 5 (Limpieza Ronda 12): cero datos de ejemplo en medios de cobro, política de reembolsos persistida por comercio (Ley 1480/2011) y estado vacío útil en Central Principal.",
-  "timestamp": 1795139619535
+  "version": "1.7.6",
+  "build": "20261119-2241",
+  "titulo": "Actualización Disponible · Soluciones Colina v1.7.6",
+  "descripcion": "Login endurecido con bloqueo persistente y visibilidad de contraseña/PIN, Consola Admin con Firebase Auth real, texturas de cuero (Marfil y Nocturno Oliva sin bordes), tipografía LT Gram + Inter Variable y contraste de íconos y eje Y.",
+  "timestamp": 1795146288818
 }
