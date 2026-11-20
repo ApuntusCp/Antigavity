@@ -1,7 +1,7 @@
 {
-  "version": "1.7.0",
-  "build": "20261118-0325",
-  "titulo": "Actualización Disponible · Soluciones Colina v1.7.0 (Sprint 0)",
-  "descripcion": "Sprint 0 (Bloqueo Fiscal): eliminada la fabricación local de CUFE, números FE- y /1.19 en Central Principal; cobros QR y manuales generan solo borrador pendiente de emisión por el servidor.",
-  "timestamp": 1794990401904
+  "version": "1.7.5",
+  "build": "20261118-0416",
+  "titulo": "Actualización Disponible · Soluciones Colina v1.7.5 (Sprint 5)",
+  "descripcion": "Sprint 5 (Limpieza Ronda 12): cero datos de ejemplo en medios de cobro, política de reembolsos persistida por comercio (Ley 1480/2011) y estado vacío útil en Central Principal.",
+  "timestamp": 1795135867515
 }
