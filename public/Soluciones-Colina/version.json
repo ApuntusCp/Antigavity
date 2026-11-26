@@ -1,7 +1,7 @@
 {
-  "version": "1.7.6",
-  "build": "20261119-2241",
-  "titulo": "Actualización Disponible · Soluciones Colina v1.7.6",
-  "descripcion": "Login endurecido con bloqueo persistente y visibilidad de contraseña/PIN, Consola Admin con Firebase Auth real, texturas de cuero (Marfil y Nocturno Oliva sin bordes), tipografía LT Gram + Inter Variable y contraste de íconos y eje Y.",
-  "timestamp": 1795146288818
+  "version": "1.15.0",
+  "build": "20261125-2140",
+  "titulo": "Actualización Disponible · Soluciones Colina v1.15.0 (Auditoría, Visibilidad Google, CRM y Agentes)",
+  "descripcion": "Ronda 20 (Sprints 0–5): auditoría de falsos positivos (docs/AUDITORIA.md), página pública SEO prerenderizada (/n/{slug}) con JSON-LD validado, CRM con Bandeja «Para hoy» y consentimiento Ley 1581, asistente de 15 minutos con tablero de estados honestos, agentes en Nivel 2 con bandeja de aprobaciones y defensa anti-inyección, y marco legal (docs/LEGAL.md).",
+  "timestamp": 1795663535026
 }
